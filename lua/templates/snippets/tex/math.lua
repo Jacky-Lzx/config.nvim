@@ -32,7 +32,7 @@ end
 M = {
   autosnippet(
     { trig = "mk", name = "inline_math_select", desc = "(Select) In-line math block" },
-    fmta([[ \( <> \)]], { d(1, get_visual_or_insert) }),
+    fmta([[\(<>\)]], { d(1, get_visual_or_insert) }),
     {
       condition = cond_has_selected_text,
       show_condition = conds.obj.false_fn,
@@ -45,7 +45,7 @@ M = {
       name = "inline_math",
       desc = "In-line math block",
     },
-    fmta([[\( <> \)<>]], { i(1), i(0) }),
+    fmta([[\(<>\)<>]], { i(1), i(0) }),
     {
       condition = -conds.obj.in_math,
       show_condition = conds.obj.false_fn,
