@@ -3,10 +3,10 @@ vim.lsp.enable("tinymist")
 local M = {
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      opts.highlight = opts.highlight or {}
-      opts.ensure_installed = { "typst" }
-    end,
+    opts_extend = { "ensure_installed" },
+    opts = {
+      ensure_installed = { "typst" },
+    },
   },
 
   {

@@ -19,9 +19,13 @@ vim.lsp.enable("verible")
 local M = {
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      opts.ensure_installed = { "verilog" }
-    end,
+    opts_extend = { "ensure_installed", "highlight.disable" },
+    opts = {
+      ensure_installed = { "verilog" },
+      highlight = {
+        disable = { "verilog", "systemverilog" },
+      },
+    },
   },
 
   {
