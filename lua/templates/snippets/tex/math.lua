@@ -79,7 +79,8 @@ M = {
       { i(0) }
     ),
     {
-      condition = cond_line_begin * -conds.obj.in_math,
+      -- `dm` snippet does not need to be at the start of a line
+      condition = -conds.obj.in_math,
       show_condition = conds.obj.false_fn,
     }
   ),
