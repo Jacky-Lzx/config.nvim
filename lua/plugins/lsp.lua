@@ -109,6 +109,33 @@ snacks.toggle
   })
   :map("<leader>tv")
 
+-- TODO remove
+-- put this VERY early (before plugins are loaded)
+-- see https://github.com/folke/trouble.nvim/issues/655
+-- until fixed, use this to leave all of trouble working, just without its TS decoration
+-- helper; so, :Trouble commands work; no decoration provider gets registered.
+package.preload["trouble.view.treesitter"] = function()
+  local M = {}
+  function M.setup(_) end
+  function M.is_enabled()
+    return false
+  end
+  function M.enable()
+    return false
+  end
+  function M.attach(_) end
+  function M.detach(_) end
+  -- Neovim decoration provider callbacks (no-op)
+  function M.on_start(_) end
+  function M.on_buf(_) end
+  function M.on_win(_) end
+  function M.on_line(_) end
+  function M.on_end(_) end
+  function M.on_reload(_) end
+  function M.on_lines(_) end
+  return M
+end
+
 return {
   {
     "folke/trouble.nvim",
