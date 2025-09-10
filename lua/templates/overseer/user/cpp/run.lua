@@ -1,24 +1,30 @@
 return {
   name = "[C++] Run",
-  builder = function()
-    local filename_without_ext = vim.fn.expand("%:t:r")
-    -- check if the file exist
-    local executable_name = filename_without_ext
-    if vim.fn.filereadable(executable_name) == 0 then
-      executable_name = vim.fn.input("Executable: ")
-      if executable_name == "" then
-        local log = require("overseer.log")
-        log:error("No executable")
-        return { cmd = "exit", args = { "1" } }
-      end
+  params = {
+    executable = {
+      type = "string",
+      -- Default is the filename without extension
+      default = "./" .. vim.fn.expand("%:t:r"),
+      optional = false,
+      order = 1,
+    },
+    args = {
+      type = "list",
+      delimiter = " ",
+      -- The args are empty if the user just hits enter, without providing any args
+      default = {},
+      order = 2,
+    },
+  },
+  builder = function(params)
+    -- Check if the executable exists
+    if vim.fn.filereadable(params.executable) == 0 then
+      require("overseer.log"):error("Executable not found: " .. params.executable)
+      return { cmd = "exit", args = { "1" } }
     end
-
-    local args_str = vim.fn.input("CommandLine Args:", "")
-    local args = vim.split(args_str, " ", { plain = true })
-
     return {
-      cmd = { "./" .. executable_name },
-      args = args,
+      cmd = { params.executable },
+      args = params.args,
     }
   end,
   condition = {
