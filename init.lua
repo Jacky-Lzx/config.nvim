@@ -61,6 +61,15 @@ vim.g.python3_host_prog = python_path
 -- vim.opt.formatoptions:remove { "r", "o" }
 vim.cmd([[ autocmd FileType * set formatoptions-=ro ]])
 
+-- When a help file is opened, move its window to the right side
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "help",
+  callback = function()
+    -- Equivalent to :wincmd L in Vimscript
+    vim.cmd("wincmd L")
+  end,
+})
+
 require("global")
 
 if vim.g.neovide then
