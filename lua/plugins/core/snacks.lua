@@ -6,9 +6,6 @@ return {
     lazy = false,
     ---@type snacks.Config
     opts = {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
       bigfile = { enabled = true },
       dashboard = { enabled = true },
       explorer = { enabled = false },
@@ -20,21 +17,16 @@ return {
       },
       indent = {
         enabled = true,
-        animate = {
-          enabled = false,
-        },
-        indent = {
-          only_scope = true,
-        },
-        -- The scope setting will cause errors when the current scope is the last element in a markdown file
+        animate = { enabled = false },
+        indent = { only_scope = true },
         scope = {
-          enabled = false, -- enable highlighting the current scope
-          underline = true, -- underline the start of the scope
+          -- Enable highlighting the current scope
+          enabled = false,
+          -- underline the start of the scope
+          underline = true,
         },
-        chunk = {
-          -- when enabled, scopes will be rendered as chunks, except for the top-level scope which will be rendered as a scope.
-          enabled = true,
-        },
+        -- When enabled, scopes will be rendered as chunks, except for the top-level scope which will be rendered as a scope.
+        chunk = { enabled = true },
       },
       input = { enabled = true },
       lazygit = {
@@ -101,9 +93,7 @@ return {
         },
         refresh = 50, -- refresh at most every 50ms
       },
-      terminal = {
-        enabled = true,
-      },
+      terminal = { enabled = true },
       words = { enabled = true },
       styles = {
         terminal = {
@@ -186,20 +176,8 @@ return {
       { "]]", function() require("snacks").words.jump(vim.v.count1) end, desc = "[Snacks] Next Reference", mode = { "n", "t" }, },
       { "[[", function() require("snacks").words.jump(-vim.v.count1) end, desc = "[Snacks] Prev Reference", mode = { "n", "t" }, },
       -- Zen mode
-      {
-        "<leader>z",
-        function()
-          require("snacks").zen()
-        end,
-        desc = "[Snacks] Toggle Zen Mode",
-      },
-      {
-        "<leader>Z",
-        function()
-          require("snacks").zen.zoom()
-        end,
-        desc = "[Snacks] Toggle Zoom",
-      },
+      { "<leader>Z", function() require("snacks").zen() end, desc = "[Snacks] Toggle Zen Mode", },
+      { "<leader>z", function() require("snacks").zen.zoom() end, desc = "[Snacks] Toggle Zoom", },
     },
 
     init = function()

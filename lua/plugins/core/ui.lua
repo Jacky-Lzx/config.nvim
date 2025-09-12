@@ -35,48 +35,6 @@ return {
     main = "rainbow-delimiters.setup",
   },
 
-  -- {
-  --   "lukas-reineke/indent-blankline.nvim",
-  --   dependencies = {
-  --     "HiPhish/rainbow-delimiters.nvim",
-  --   },
-  --   main = "ibl",
-  --   event = "BufReadPost",
-  --   opts = {
-  --     scope = {},
-  --   },
-  --   config = function(_, opts)
-  --     local highlight = {
-  --       "RainbowYellow",
-  --       "RainbowGreen",
-  --       "RainbowOrange",
-  --       "RainbowViolet",
-  --       "RainbowPink",
-  --       "RainbowRosewater",
-  --       "RainbowRed",
-  --     }
-  --     local hooks = require("ibl.hooks")
-  --     -- create the highlight groups in the highlight setup hook, so they are reset
-  --     -- every time the colorscheme changes
-  --     -- stylua: ignore
-  --     hooks.register(hooks.type.HIGHLIGHT_SETUP, function()
-  --       vim.api.nvim_set_hl(0, "RainbowYellow",    { fg = "#f9e2af" })
-  --       vim.api.nvim_set_hl(0, "RainbowGreen",     { fg = "#a6e3a1" })
-  --       vim.api.nvim_set_hl(0, "RainbowOrange",    { fg = "#fab387" })
-  --       vim.api.nvim_set_hl(0, "RainbowViolet",    { fg = "#cba6f7" })
-  --       vim.api.nvim_set_hl(0, "RainbowPink",      { fg = "#f5c2e7" })
-  --       vim.api.nvim_set_hl(0, "RainbowRosewater", { fg = "#f5e0dc" })
-  --       vim.api.nvim_set_hl(0, "RainbowRed",       { fg = "#f38ba8" })
-  --     end)
-  --
-  --     vim.g.rainbow_delimiters = { highlight = highlight }
-  --     opts.scope.highlight = highlight
-  --     require("ibl").setup(opts)
-  --
-  --     hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
-  --   end,
-  -- },
-
   {
     "echasnovski/mini.diff",
     event = "BufReadPost",
@@ -574,9 +532,8 @@ return {
         },
       },
       lsp = {
-        progress = {
-          enabled = false, -- lsp progress is handled by fidget.nvim
-        },
+        -- Lsp progress is handled by fidget.nvim
+        progress = { enabled = false },
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
           ["vim.lsp.util.convert_input_to_markdown_lines"] = false,
