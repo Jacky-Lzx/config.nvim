@@ -19,9 +19,7 @@ return {
       winbar = {
         sections = { "scopes", "repl", "watches", "breakpoints", "exceptions" },
         default_section = "scopes",
-        controls = {
-          enabled = true,
-        },
+        controls = { enabled = true },
       },
       windows = {
         height = 0.25,
@@ -33,9 +31,7 @@ return {
           hide = {},
         },
       },
-      help = {
-        border = "rounded",
-      },
+      help = { border = "rounded" },
       auto_toggle = true,
     },
   },
@@ -43,17 +39,14 @@ return {
   {
     -- Show variable values as virtual texts
     "theHamsta/nvim-dap-virtual-text",
-    enabled = false, -- Disabled by default
-    opts = {
-      virt_text_pos = "eol",
-    },
+    -- Disabled by default
+    enabled = false,
+    opts = { virt_text_pos = "eol" },
   },
 
   {
     "mfussenegger/nvim-dap",
-    dependencies = {
-      "igorlfs/nvim-dap-view",
-    },
+    dependencies = { "igorlfs/nvim-dap-view" },
     -- stylua: ignore
     keys = {
       { "<F5>",       function() require("dap").continue() end,                                                        mode = "n",          desc = "[DAP] Continue" },
@@ -74,10 +67,14 @@ return {
       { "<Leader>Ds", function() local widgets = require("dap.ui.widgets") widgets.centered_float(widgets.scopes) end, mode = {"n"},        desc = "[DAP] Float scopes" },
     },
 
-    opts = function()
+    config = function()
+      local dap = require("dap")
+      dap.defaults.fallback.external_terminal = { command = "kitty" }
+
       --stylua: ignore
       local dap_breakpoint = {
-        breakpoint = { text = "", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" }, -- Nerd font: nf-cod-activate_breakpoints
+        -- Nerd font: nf-cod-activate_breakpoints
+        breakpoint = { text = "", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" },
         condition  = { text = "", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" },
         rejected   = { text = "", texthl = "DapBreakpoint", linehl = "DapBreakpoint", numhl = "DapBreakpoint" },
         logpoint   = { text = "", texthl = "DapLogPoint",   linehl = "DapLogPoint",   numhl = "DapLogPoint"   },
@@ -88,13 +85,6 @@ return {
       vim.fn.sign_define("DapBreakpointRejected", dap_breakpoint.rejected)
       vim.fn.sign_define("DapLogPoint", dap_breakpoint.logpoint)
       vim.fn.sign_define("DapStopped", dap_breakpoint.stopped)
-    end,
-
-    config = function()
-      local dap = require("dap")
-      dap.defaults.fallback.external_terminal = {
-        command = "kitty",
-      }
     end,
   },
 }
