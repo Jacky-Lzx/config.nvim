@@ -135,7 +135,6 @@ return {
             fallbacks = { "buffer" },
           },
           cmdline = {
-            min_keyword_length = 2,
             -- Ignores cmdline completions when executing shell commands
             enabled = function()
               return vim.fn.getcmdtype() ~= ":" or not vim.fn.getcmdline():match("^[%%0-9,'<>%-]*!")
@@ -268,13 +267,21 @@ return {
           show_documentation = true,
         },
       },
+      -- Completion in the command line behaves differently
+      -- The <Enter> input will not select the selected item
+      -- The <Tab> input will select the selected item
       cmdline = {
         completion = {
           menu = {
             auto_show = true,
           },
+          list = {
+            selection = {
+              preselect = true,
+              auto_insert = false,
+            },
+          },
         },
-
         keymap = {
           preset = "none",
           -- stylua: ignore
@@ -288,7 +295,7 @@ return {
           -- stylua: ignore
           ["<Tab>"] = { function(cmp) return cmp.accept() end, "fallback", },
           -- stylua: ignore
-          ["<CR>"] = { function(cmp) if vim.fn.getcmdtype() == ":" then return cmp.accept_and_enter() end return false end, "fallback", },
+          ["<CR>"] = { "fallback", },
           -- stylua: ignore
           ["<A-/>"] = { function(cmp) if cmp.is_menu_visible() then return cmp.hide() else return cmp.show() end end, "fallback", },
         },
