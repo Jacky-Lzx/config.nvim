@@ -23,6 +23,13 @@ vim.lsp.enable("harper_ls")
 
 local M = {
   {
+    "nvim-treesitter/nvim-treesitter",
+    optional = true,
+    opts_extend = { "indent.disable" },
+    opts = { indent = { disable = { "markdown" } } }, -- indentation at bullet points is worse
+  },
+
+  {
     "mason-org/mason.nvim",
     optional = true,
     opts_extend = { "ensure_installed" },

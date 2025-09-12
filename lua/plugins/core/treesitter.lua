@@ -1,9 +1,9 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
     lazy = false,
-    -- branch = "main",
+    build = ":TSUpdate",
+    main = "nvim-treesitter.configs",
     opts = {
       auto_install = true,
       highlight = {
@@ -16,14 +16,8 @@ return {
       },
       indent = {
         enabale = true,
-        disable = {
-          "markdown", -- indentation at bullet points is worse
-        },
       },
     },
-    config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
-    end,
   },
 
   {
