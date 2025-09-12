@@ -1,13 +1,3 @@
-local function findLast(haystack, needle)
-  --Set the third arg to false to allow pattern matching
-  local found = haystack:reverse():find(needle:reverse(), nil, true)
-  if found then
-    return haystack:len() - needle:len() - found + 2
-  else
-    return found
-  end
-end
-
 return {
   {
     "saghen/blink.cmp",
@@ -71,8 +61,48 @@ return {
           end,
         },
 
-        ["<A-n>"] = { function(cmp) cmp.show({ providers = {"buffer"} }) end, },
-        ["<A-p>"] = { function(cmp) cmp.show({ providers = {"buffer"} }) end, },
+        ["<A-n>"] = {
+          function(cmp)
+            local provider_arrs = {
+              { "buffer" },
+              { "snippets" },
+              { "lazydev", "lsp", "path" }
+            }
+            local provider_index = vim.b.blink_cmp_provider_index
+            if not provider_index then
+              provider_index = 0
+            end
+
+            provider_index = provider_index + 1
+            if provider_index > #provider_arrs then
+              provider_index = 1
+            end
+
+            cmp.show({ providers = provider_arrs[provider_index] })
+            vim.b.blink_cmp_provider_index = provider_index
+          end,
+        },
+        ["<A-p>"] = {
+          function(cmp)
+            local provider_arrs = {
+              { "buffer" },
+              { "snippets" },
+              { "lazydev", "lsp", "path" }
+            }
+            local provider_index = vim.b.blink_cmp_provider_index
+            if not provider_index then
+              provider_index = #provider_arrs + 1
+            end
+
+            provider_index = provider_index - 1
+            if provider_index == 0 then
+              provider_index = #provider_arrs
+            end
+
+            cmp.show({ providers = provider_arrs[provider_index] })
+            vim.b.blink_cmp_provider_index = provider_index
+          end,
+        },
       },
 
       appearance = {
@@ -116,6 +146,19 @@ return {
           },
           buffer = {
             score_offset = 20,
+
+            -- The default behavior is to only show completions from visible "normal" buffers (i.e. it wouldn't include
+            -- neo-tree). This will instead show completions from all buffers, even if they're not visible on screen.
+            -- Note that the performance impact of this has not been tested.
+            -- See https://cmp.saghen.dev/recipes.html#buffer-completion-from-all-open-buffers
+            opts = {
+              -- (Recommended) Filter to only "normal" buffers
+              get_bufnrs = function()
+                return vim.tbl_filter(function(bufnr)
+                  return vim.bo[bufnr].buftype == ""
+                end, vim.api.nvim_list_bufs())
+              end,
+            },
           },
           lazydev = {
             name = "LazyDev",
@@ -162,56 +205,29 @@ return {
         menu = {
           border = "rounded",
           max_height = 20,
-          -- draw = {
-          --   columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } },
-          --   components = {
-          --     label = {
-          --       text = function(ctx)
-          --         return require("colorful-menu").blink_components_text(ctx)
-          --       end,
-          --       highlight = function(ctx)
-          --         -- if ctx.source_name == "copilot" then
-          --         --   return "Comment"
-          --         -- end
-          --         return require("colorful-menu").blink_components_highlight(ctx)
-          --       end,
-          --     },
-          --     kind_icon = {
-          --       ellipsis = false,
-          --       text = function(ctx)
-          --         local icon = ctx.kind_icon
-          --         if icon then
-          --           -- Do nothing
-          --         elseif vim.tbl_contains({ "Path" }, ctx.source_name) then
-          --           local dev_icon, _ = require("nvim-web-devicons").get_icon(ctx.label)
-          --           if dev_icon then
-          --             icon = dev_icon
-          --           end
-          --         else
-          --           icon = require("lspkind").symbolic(ctx.kind, { mode = "symbol" })
-          --         end
-          --
-          --         return icon .. ctx.icon_gap
-          --       end,
-          --
-          --       -- Optionally, use the highlight groups from nvim-web-devicons
-          --       -- You can also add the same function for `kind.highlight` if you want to
-          --       -- keep the highlight groups in sync with the icons.
-          --       highlight = function(ctx)
-          --         local hl = ctx.kind_hl
-          --         if hl then
-          --           -- Do nothing
-          --         elseif vim.tbl_contains({ "Path" }, ctx.source_name) then
-          --           local dev_icon, dev_hl = require("nvim-web-devicons").get_icon(ctx.label)
-          --           if dev_icon then
-          --             hl = dev_hl
-          --           end
-          --         end
-          --         return hl
-          --       end,
-          --     },
-          --   },
-          -- },
+
+          -- When ghost text is enabled (completion.ghost_text.enabled = true), you may want the menu to avoid
+          -- overlapping with the ghost text. You may provide a custom completion.menu.direction_priority function to
+          -- achieve this
+          -- See https://cmp.saghen.dev/recipes#avoid-multi-line-completion-ghost-text
+          direction_priority = function()
+            local ctx = require("blink.cmp").get_context()
+            local item = require("blink.cmp").get_selected_item()
+            if ctx == nil or item == nil then
+              return { "s", "n" }
+            end
+
+            local item_text = item.textEdit ~= nil and item.textEdit.newText or item.insertText or item.label
+            local is_multi_line = item_text:find("\n") ~= nil
+
+            -- after showing the menu upwards, we want to maintain that direction
+            -- until we re-open the menu, so store the context id in a global variable
+            if is_multi_line or vim.g.blink_cmp_upwards_ctx_id == ctx.id then
+              vim.g.blink_cmp_upwards_ctx_id = ctx.id
+              return { "n", "s" }
+            end
+            return { "s", "n" }
+          end,
         },
         documentation = {
           auto_show = true,
