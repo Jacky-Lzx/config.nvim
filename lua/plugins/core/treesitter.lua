@@ -24,31 +24,49 @@ return {
     "nvim-treesitter/nvim-treesitter-context",
     event = "BufReadPost",
     opts = {
-      enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-      max_lines = 5, -- How many lines the window should span. Values <= 0 mean no limit.
-      min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+      -- Enable this plugin (Can be enabled/disabled later via commands)
+      enable = true,
+      -- Enable multiwindow support.
+      multiwindow = true,
+      -- How many lines the window should span. Values <= 0 mean no limit.
+      -- Can be '<int>%' like '30%' - to specify percentage of win.height
+      max_lines = 5,
+      -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+      min_window_height = 0,
+      -- Whether to show line numbers
       line_numbers = true,
-      multiline_threshold = 20, -- Maximum number of lines to collapse for a single context line
-      trim_scope = "outer", -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
-      mode = "cursor", -- Line used to calculate context. Choices: 'cursor', 'topline'
+      -- Maximum number of lines to show for a single context
+      multiline_threshold = 20,
+      -- Line used to calculate context. Choices: 'cursor', 'topline'
+      mode = "cursor",
       -- Separator between context and content. Should be a single character string, like '-'.
       -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
-      -- separator = nil,
       separator = "─",
-      zindex = 20, -- The Z-index of the context window
     },
     -- stylua: ignore
     keys = {
-      { "[c", function() require("treesitter-context").go_to_context(vim.v.count1) end, mode = { "n" }, desc = "TS go to context", silent = true, },
+      { "[C", function() require("treesitter-context").go_to_context(vim.v.count1) end, mode = { "n" }, desc = "TS go to context", silent = true, },
     },
     config = function(_, opts)
-      local configs = require("treesitter-context")
+      require("treesitter-context").setup(opts)
 
-      -- vim.keymap.set("n", "[c", function()
-      --   require("treesitter-context").go_to_context(vim.v.count1)
-      -- end, { silent = true })
+      local ts_context = require("treesitter-context")
 
-      configs.setup(opts)
+      require("snacks")
+        .toggle({
+          name = "Treesitter Context",
+          get = function()
+            return ts_context.enabled()
+          end,
+          set = function(enabled)
+            if enabled then
+              ts_context.enable()
+            else
+              ts_context.disable()
+            end
+          end,
+        })
+        :map("<leader>tC")
     end,
   },
 
