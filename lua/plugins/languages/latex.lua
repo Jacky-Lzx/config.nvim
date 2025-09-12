@@ -131,11 +131,17 @@ local M = {
     "lervag/vimtex",
     -- lazy = false, -- lazy-loading will disable inverse search
     ft = { "tex", "bib" },
-    init = function()
-      require("which-key").add({
-        { "<leader>l", group = "[VimTeX]" },
-      })
-    end,
+    dependencies = {
+      {
+        "folke/which-key.nvim",
+        optional = true,
+        opts = {
+          spec = {
+            { "<leader>l", group = "[VimTeX]" },
+          },
+        },
+      },
+    },
 
     config = function()
       -- Viewer options: One may configure the viewer either by specifying a built-in viewer method:

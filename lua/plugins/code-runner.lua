@@ -18,12 +18,16 @@ return {
         opts_extend = { "close_filetypes_on_save" },
         opts = { close_filetypes_on_save = { "OverseerList" } },
       },
+      {
+        "folke/which-key.nvim",
+        optional = true,
+        opts = {
+          spec = {
+            { "<leader>o", group = "[Overseer]" },
+          },
+        },
+      },
     },
-    init = function()
-      require("which-key").add({
-        { "<leader>o", group = "[Overseer]" },
-      })
-    end,
     cmd = "OverseerRun",
     keys = {
       -- Shift+F5

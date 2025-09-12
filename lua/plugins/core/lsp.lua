@@ -9,18 +9,15 @@ end
 
 local virtual_text_config_enabled = {
   spacing = 4,
-  -- format = function(_)
-  --   return ""
-  -- end,
   prefix = function(diagnostic)
     if diagnostic.severity == vim.diagnostic.severity.ERROR then
-      return ""
+      return signs.Error
     elseif diagnostic.severity == vim.diagnostic.severity.WARN then
-      return ""
+      return signs.Warn
     elseif diagnostic.severity == vim.diagnostic.severity.INFO then
-      return ""
+      return signs.Info
     elseif diagnostic.severity == vim.diagnostic.severity.HINT then
-      return "󰌶"
+      return signs.Hint
     end
     return diagnostic.message
   end,
@@ -33,13 +30,13 @@ local virtual_text_config_disabled = {
   end,
   prefix = function(diagnostic)
     if diagnostic.severity == vim.diagnostic.severity.ERROR then
-      return ""
+      return signs.Error
     elseif diagnostic.severity == vim.diagnostic.severity.WARN then
-      return ""
+      return signs.Warn
     elseif diagnostic.severity == vim.diagnostic.severity.INFO then
-      return ""
+      return signs.Info
     elseif diagnostic.severity == vim.diagnostic.severity.HINT then
-      return "󰌶"
+      return signs.Hint
     end
     return diagnostic.message
   end,
@@ -47,10 +44,10 @@ local virtual_text_config_disabled = {
 
 local signs_config = {
   text = {
-    [vim.diagnostic.severity.ERROR] = "",
-    [vim.diagnostic.severity.WARN] = "",
-    [vim.diagnostic.severity.INFO] = "",
-    [vim.diagnostic.severity.HINT] = "󰌶",
+    [vim.diagnostic.severity.ERROR] = signs.Error,
+    [vim.diagnostic.severity.WARN] = signs.Warn,
+    [vim.diagnostic.severity.INFO] = signs.Info,
+    [vim.diagnostic.severity.HINT] = signs.Hint,
   },
   severity = {
     vim.diagnostic.severity.ERROR,
@@ -109,7 +106,7 @@ snacks.toggle
   })
   :map("<leader>tv")
 
--- TODO remove
+-- FIXME: A temporary fix to trouble.nvim
 -- put this VERY early (before plugins are loaded)
 -- see https://github.com/folke/trouble.nvim/issues/655
 -- until fixed, use this to leave all of trouble working, just without its TS decoration
@@ -139,7 +136,6 @@ end
 return {
   {
     "folke/trouble.nvim",
-    event = "LspAttach",
     cmd = "Trouble",
 
     ---Open snacks picker results in trouble
@@ -152,10 +148,7 @@ return {
             win = {
               input = {
                 keys = {
-                  ["<c-t>"] = {
-                    "trouble_open",
-                    mode = { "n", "i" },
-                  },
+                  ["<c-t>"] = { "trouble_open", mode = { "n", "i" } },
                 },
               },
             },

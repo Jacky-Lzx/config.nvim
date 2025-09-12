@@ -19,12 +19,12 @@ return {
     "jake-stewart/multicursor.nvim",
     branch = "1.0",
     event = "BufReadPost",
-     -- stylua: ignore
-   keys = {
-    -- Append/insert for each line of visual selections. Similar to block selection insertion.
-    { "mI", function() require("multicursor-nvim").insertVisual() end, mode = "x", desc = "Insert cursors at visual selection" },
-    { "mA", function() require("multicursor-nvim").appendVisual() end, mode = "x", desc = "Append cursors at visual selection" },
-   },
+    -- stylua: ignore
+    keys = {
+      -- Append/insert for each line of visual selections. Similar to block selection insertion.
+      { "mI", function() require("multicursor-nvim").insertVisual() end, mode = "x", desc = "Insert cursors at visual selection" },
+      { "mA", function() require("multicursor-nvim").appendVisual() end, mode = "x", desc = "Append cursors at visual selection" },
+    },
     config = function()
       local mc = require("multicursor-nvim")
       mc.setup()
@@ -301,6 +301,7 @@ return {
 
   {
     "bullets-vim/bullets.vim",
+    ft = { "markdown", "text", "gitcommit" },
 
     config = function()
       vim.g.bullets_set_mappings = 0 -- disable adding default key mappings, default = 1
