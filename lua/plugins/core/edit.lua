@@ -220,7 +220,7 @@ return {
 
   {
     "ibhagwan/smartyank.nvim",
-    event = { "BufWinEnter" },
+    event = "VeryLazy",
     opts = {
       highlight = {
         enabled = true, -- highlight yanked text
