@@ -138,23 +138,26 @@ return {
     "folke/trouble.nvim",
     cmd = "Trouble",
 
-    ---Open snacks picker results in trouble
+    -- Open snacks picker results in trouble.
+    -- This config causes the trouble plugin to be loeaded when snacks.nvim is loaded.
     specs = {
-      "folke/snacks.nvim",
-      opts = function(_, opts)
-        return vim.tbl_deep_extend("force", opts or {}, {
-          picker = {
-            actions = require("trouble.sources.snacks").actions,
-            win = {
-              input = {
-                keys = {
-                  ["<c-t>"] = { "trouble_open", mode = { "n", "i" } },
+      {
+        "folke/snacks.nvim",
+        opts = function(_, opts)
+          return vim.tbl_deep_extend("force", opts or {}, {
+            picker = {
+              actions = require("trouble.sources.snacks").actions,
+              win = {
+                input = {
+                  keys = {
+                    ["<c-t>"] = { "trouble_open", mode = { "n", "i" } },
+                  },
                 },
               },
             },
-          },
-        })
-      end,
+          })
+        end,
+      },
     },
     opts = {
       focus = false,
