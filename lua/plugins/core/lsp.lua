@@ -402,6 +402,7 @@ return {
             desc = "[LSP] Show diagnostic",
           })
           vim.keymap.set("n", "<leader>gk", vim.lsp.buf.signature_help, { desc = "[LSP] Signature help" })
+          vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, { desc = "[LSP] Format" })
           vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, { desc = "[LSP] Add workspace folder" })
           vim.keymap.set(
             "n",

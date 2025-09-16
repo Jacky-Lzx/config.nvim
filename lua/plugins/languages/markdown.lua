@@ -206,6 +206,15 @@ local M = {
           },
         },
       },
+      {
+        "folke/which-key.nvim",
+        optional = true,
+        opts = {
+          spec = {
+            { "<leader>O", group = "[Obsidian]" },
+          },
+        },
+      },
     },
     -- ft = "markdown",
     cmd = { "Obsidian" },

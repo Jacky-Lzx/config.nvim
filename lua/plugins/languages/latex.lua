@@ -47,7 +47,7 @@ vim.lsp.config("texlab", {
           "-e16",
         },
       },
-      bibtexFormatter = "none", -- @type "texlab" | "latexindent" | "none"; @default "texlab"
+      bibtexFormatter = "texlab", -- @type "texlab" | "latexindent" | "none"; @default "texlab"
       latexFormatter = "none", -- @type "texlab" | "latexindent" | "none"; @default "latexindent"
       -- latexindent = {
       -- ["local"] = "~/.config/latexindent/lzx_settings.yaml", -- local is a reserved keyword
@@ -98,7 +98,8 @@ local M = {
       formatters_by_ft = {
         tex = { "tex-fmt" },
         -- tex = { "latexindent" },
-        bib = { "tex-fmt" },
+        -- The tex-fmt for bib cannot align the entries, or add additional spaces around `=`
+        -- bib = { "tex-fmt" },
       },
       formatters = {
         ["tex-fmt"] = {
