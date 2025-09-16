@@ -2,6 +2,15 @@ vim.lsp.enable("rust_analyzer")
 
 local M = {
   {
+    "nvim-treesitter/nvim-treesitter",
+    optional = true,
+    opts = {
+      ensure_installed = { "rust", "toml" },
+    },
+    opts_extend = { "ensure_installed" },
+  },
+
+  {
     "Saecki/crates.nvim",
     event = { "BufRead Cargo.toml" },
     opts = {
@@ -17,12 +26,6 @@ local M = {
         hover = true,
       },
     },
-  },
-
-  {
-    "mrcjkb/rustaceanvim",
-    version = "^6", -- Recommended
-    ft = "rust",
   },
 
   {
@@ -45,7 +48,6 @@ local M = {
 
   {
     "mfussenegger/nvim-dap",
-    ft = "rust",
     optional = true,
     opts = function()
       local dap = require("dap")

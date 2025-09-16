@@ -3,8 +3,7 @@ return {
   {
     "mason-org/mason.nvim",
     event = "VeryLazy",
-    -- keys = { { "<leader>cm", "<cmd>Mason<cr>", desc = "Mason" } },
-    opts_extend = { "ensure_installed" },
+    cmd = "Mason",
     opts = {
       ensure_installed = {},
     },

@@ -2,7 +2,6 @@ return {
   {
     "folke/trouble.nvim",
     cmd = "Trouble",
-
     -- Open snacks picker results in trouble.
     -- This config causes the trouble plugin to be loeaded when snacks.nvim is loaded.
     specs = {
@@ -56,6 +55,7 @@ return {
       -- { "gd", "<CMD>Trouble lsp_type_definitions focus=true<CR>",    mode = { "n" }, desc = "[Trouble] LSP type definitions" },
       -- { "gri", "<CMD>Trouble lsp_implementations focus=true<CR>",    mode = { "n" }, desc = "[Trouble] LSP implementations" },
     },
+
     config = function(_, opts)
       require("trouble").setup(opts)
       local symbols = require("trouble").statusline({
