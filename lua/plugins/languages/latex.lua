@@ -117,7 +117,9 @@ local M = {
     "mfussenegger/nvim-lint",
     optional = true,
     opts = function(_, opts)
-      opts.linters_by_ft = { tex = { "chktex" } }
+      opts.linters_by_ft = opts.linters_by_ft or {}
+      opts.linters_by_ft = vim.tbl_extend("force", opts.linters_by_ft, { tex = { "chktex" } })
+
       local chktex_l = require("lint").linters.chktex
       -- stylua: ignore
       chktex_l.args = {

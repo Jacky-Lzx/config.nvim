@@ -58,7 +58,7 @@ local M = {
     optional = true,
     opts = function(_, opts)
       opts.linters_by_ft = opts.linters_by_ft or {}
-      opts.linters_by_ft.verilog = { "iverilog" }
+      opts.linters_by_ft = vim.tbl_extend("force", opts.linters_by_ft, { verilog = { "iverilog" } })
 
       local verilator = require("lint").linters.verilator
       verilator.args = {

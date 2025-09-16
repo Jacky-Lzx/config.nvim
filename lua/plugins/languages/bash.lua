@@ -33,6 +33,17 @@ local M = {
     },
     optional = true,
   },
+
+  {
+    "mfussenegger/nvim-lint",
+    optional = true,
+    opts = {
+      linters_by_ft = {
+        fish = { "fish" },
+        bash = { "bash" },
+      },
+    },
+  },
 }
 
 return M
