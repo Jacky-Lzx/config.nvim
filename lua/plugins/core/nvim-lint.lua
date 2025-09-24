@@ -19,7 +19,7 @@ return {
       -- Configure linters
       require("lint").linters_by_ft = opts.linters_by_ft
 
-      require("snacks.debug").inspect(require("lint").linters_by_ft)
+      -- require("snacks.debug").inspect(require("lint").linters_by_ft)
 
       vim.api.nvim_create_autocmd({ "BufWritePost" }, {
         callback = function()
