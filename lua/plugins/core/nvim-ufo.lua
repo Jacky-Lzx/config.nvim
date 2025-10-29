@@ -85,12 +85,6 @@ return {
           vim.lsp.buf.hover()
         end
       end)
-      vim.keymap.set("n", "gk", function()
-        local winid = require("ufo").peekFoldedLinesUnderCursor()
-        if not winid then
-          vim.lsp.buf.hover()
-        end
-      end)
 
       -- stylua: ignore
       vim.keymap.set("n", "zM", function() set_buf_foldlevel(0) end, { desc = "[UFO] Close all folds" })
