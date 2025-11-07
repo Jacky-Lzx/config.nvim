@@ -25,6 +25,7 @@ local M = {
       formatters_by_ft = {
         c = { "clang-format" },
         cpp = { "clang-format" },
+        cuda = { "clang-format" },
       },
     },
   },
