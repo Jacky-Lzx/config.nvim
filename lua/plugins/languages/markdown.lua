@@ -152,8 +152,10 @@ local M = {
       default = {
         dir_path = "Figures", ---@type string | fun(): string
 
-        extension = "jpg", ---@type string
-        -- process_cmd = "convert - -quality 75 jpg:-", ---@type string
+        extension = "avif", ---@type string
+        -- Convert clipboard image to avif format before saving
+        process_cmd = "convert - avif:-", ---@type string
+        formats = { "jpeg", "jpg", "png", "heic", "pdf", "avif" }, ---@type string[]
 
         use_absolute_path = false, ---@type boolean
         relative_to_current_file = false, ---@type boolean
@@ -179,7 +181,7 @@ local M = {
         "<leader>pc",
         function()
           Snacks.picker.files({
-            ft = { "jpg", "jpeg", "png", "webp" },
+            ft = { "jpg", "jpeg", "png", "webp", "heic", "avif" },
             confirm = function(self, item, _)
               self:close()
               require("img-clip").paste_image({}, "./" .. item.file) -- ./ is necessary for img-clip to recognize it as path
