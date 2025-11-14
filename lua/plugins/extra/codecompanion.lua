@@ -54,7 +54,12 @@ return {
       -- },
 
       strategies = {
-        chat = { adapter = "copilot" },
+        chat = {
+          adapter = "copilot",
+          keymaps = {
+            stop = false,
+          },
+        },
         inline = { adapter = "copilot" },
       },
 
