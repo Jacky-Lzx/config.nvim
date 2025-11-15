@@ -30,7 +30,10 @@ vim.lsp.config("pyright", {
     end,
   },
 })
-vim.lsp.enable("pyright")
+-- vim.lsp.enable("pyright")
+
+vim.lsp.enable("basedpyright")
+-- vim.lsp.enable("ty")
 
 local M = {
   {
@@ -46,7 +49,7 @@ local M = {
     "mason-org/mason.nvim",
     optional = true,
     opts = {
-      ensure_installed = { "ruff", "pyright" },
+      ensure_installed = { "ruff", "pyright", "basedpyright" },
     },
     opts_extend = { "ensure_installed" },
   },
