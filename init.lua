@@ -32,6 +32,8 @@ vim.g.maplocalleader = " "
 
 vim.wo.wrap = false
 
+vim.o.winborder = "rounded"
+
 -- vim.bo.tabstop = 2
 
 vim.wo.cursorline = true
