@@ -39,11 +39,6 @@ return {
     },
 
     opts = {
-      template_dirs = { "templates.overseer.builtin", "templates.overseer.user" },
-      templates = {
-        "builtin",
-        "user",
-      },
       task_list = {
         -- Width dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
         -- min_width and max_width can be a single value or a list of mixed integer/float types.
