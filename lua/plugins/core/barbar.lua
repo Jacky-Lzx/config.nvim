@@ -16,16 +16,7 @@ return {
       -- Set to any value >=0 to enable.
       auto_hide = 1,
       -- Set the filetypes which barbar will offset itself for
-      sidebar_filetypes = {
-        -- Default values: {event = 'BufWinLeave', text = '', align = 'left'}
-        NvimTree = {
-          text = "NvimTree",
-          event = "BufWinLeave",
-        },
-        undotree = {
-          text = "UndoTree",
-        },
-      },
+      sidebar_filetypes = {},
     },
     lazy = false,
     -- event = { "VeryLazy" },
