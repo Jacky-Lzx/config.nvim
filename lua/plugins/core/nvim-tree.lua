@@ -20,6 +20,9 @@ return {
       { "<leader>e", "<CMD>NvimTreeToggle<CR>", mode = { "n" }, desc = "[NvimTree] Toggle NvimTree" },
     },
     opts = {
+      view = {
+        width = 40,
+      },
       update_focused_file = {
         enable = true,
       },
