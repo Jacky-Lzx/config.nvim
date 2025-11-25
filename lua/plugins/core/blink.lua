@@ -34,10 +34,11 @@ return {
         ["<C-p>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
         ["<C-n>"] = { function(cmp) return cmp.select_next({ auto_insert = false }) end, "fallback", },
 
+        ["<A-u>"] = { function(cmp) return cmp.select_prev({ count = 5 }) end, "fallback", },
+        ["<A-d>"] = { function(cmp) return cmp.select_next({ count = 5 }) end, "fallback", },
+
         ["<C-u>"] = { "scroll_documentation_up", "fallback" },
         ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-        -- ["<A-u>"] = { "scroll_documentation_up", "fallback" },
-        -- ["<A-d>"] = { "scroll_documentation_down", "fallback" },
 
         ["<Tab>"] = { function(cmp) return cmp.accept() end, "fallback", },
         ["<CR>"] = { function(cmp) return cmp.accept() end, "fallback", },
