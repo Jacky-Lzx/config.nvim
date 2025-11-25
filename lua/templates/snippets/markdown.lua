@@ -89,6 +89,15 @@ local function generate_list(_, snip, _, user_arg)
   return sn(nil, table)
 end
 
+local function repeat_hash(_, snip)
+  local n = tonumber(snip.captures[1])
+  if n and n > 0 then
+    return sn(nil, { t(string.rep("#", n)), t(" "), i(1) })
+  else
+    return sn(nil, { t("# "), i(1) })
+  end
+end
+
 return {
   -- stylua: ignore
   s({ trig = "figure", desc = "Image" }, {
@@ -102,9 +111,17 @@ return {
   }),
 
   -- stylua: ignore
+  autosnippet(
+    { trig = "#(%d+)%s", desc = "Repeat # n times", regTrig = true, hidden = true },
+    { d(1, repeat_hash, {}) },
+    { condition = cond_line_begin }
+  ),
+
+  -- stylua: ignore
   autosnippet({trig = "table(%d+)x(%d+)%s", desc = "Table generation", regTrig = true, hidden = true},
     {d(1, generate_table, {})}, {condition = cond_line_begin}
   ),
+
 
   -- stylua: ignore
   autosnippet({trig = "item(%d+)%s", desc = "Itemize generation", regTrig = true, hidden = true},
