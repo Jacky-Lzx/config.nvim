@@ -166,7 +166,7 @@ return {
       -- LSP
       { "gd", function() require("snacks").picker.lsp_definitions() end, desc = "[Snacks] Goto definition", },
       { "gD", function() require("snacks").picker.lsp_declarations() end, desc = "[Snacks] Goto declaration", },
-      { "gr", function() require("snacks").picker.lsp_references() end, desc = "[Snacks] References", },
+      { "gi", function() require("snacks").picker.lsp_references() end, {desc = "[Snacks] References"}, },
       { "gI", function() require("snacks").picker.lsp_implementations() end, desc = "[Snacks] Goto implementation", },
       { "gy", function() require("snacks").picker.lsp_type_definitions() end, desc = "[Snacks] Goto t[y]pe definition", },
       { "<leader>ss", function() require("snacks").picker.lsp_symbols() end, desc = "[Snacks] LSP symbols", },
