@@ -12,6 +12,17 @@ return {
         optional = true,
         ft = { "codecompanion" },
       },
+      {
+        "saghen/blink.cmp",
+        optional = true,
+        opts = {
+          sources = {
+            per_filetype = {
+              codecompanion = { "codecompanion" },
+            },
+          },
+        },
+      },
     },
 
     -- stylua: ignore
@@ -24,6 +35,9 @@ return {
 
     opts = {
       send_code = false,
+
+      -- Ignore the warnings for the upcoming v18.0.0
+      ignore_warnings = true,
 
       display = {
         chat = {
