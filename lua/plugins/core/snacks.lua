@@ -71,8 +71,25 @@ return {
             },
           },
         },
+        -- layout = {
+        --   preset = "telescope",
+        -- }
         layout = {
-          preset = "telescope",
+          reverse = true,
+          layout = {
+            backdrop = false,
+            width = 0.8,
+            min_width = 60,
+            height = 0.9,
+            -- min_height = 30,
+            box = "vertical",
+            border = true,
+            title = "{title} {live} {flags}",
+            title_pos = "center",
+            { win = "preview", title = "{preview}", height = 0.6, border = "bottom" },
+            { win = "list", border = "none" },
+            { win = "input", height = 1, border = "top" },
+          },
         },
       },
       quickfile = { enabled = true },
@@ -125,7 +142,6 @@ return {
       -- Top Pickers & Explorer
       -- { "<leader><space>", function() require("snacks").picker.smart() end, desc = "[Snacks] Smart find files", },
       { "<leader>,", function() require("snacks").picker.buffers() end, desc = "[Snacks] Buffers", },
-      { "<leader>sn", function() require("snacks").picker.notifications() end, desc = "[Snacks] Notification history", },
       -- find
       { "<leader>sb", function() require("snacks").picker.buffers() end, desc = "[Snacks] Buffers", },
       { "<leader>sf", function() require("snacks").picker.files() end, desc = "[Snacks] Find files", },
@@ -247,6 +263,9 @@ return {
           vim.keymap.del("n", "gri")
 
           vim.api.nvim_set_hl(0, "SnacksPickerListCursorLine", { bg = "#313244" })
+          vim.api.nvim_set_hl(0, "SnacksPickerPreviewCursorLine", { bg = "#313244" })
+          vim.api.nvim_set_hl(0, "SnacksPickerSearch", { bg = "#CBA6F7", fg = "#313244" })
+          vim.api.nvim_set_hl(0, "SnacksPickerMatch", { bg = "#CBA6F7", fg = "#313244" })
         end,
       })
     end,
