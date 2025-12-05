@@ -262,10 +262,10 @@ return {
           vim.keymap.del("n", "grr")
           vim.keymap.del("n", "gri")
 
-          vim.api.nvim_set_hl(0, "SnacksPickerListCursorLine", { bg = "#313244" })
-          vim.api.nvim_set_hl(0, "SnacksPickerPreviewCursorLine", { bg = "#313244" })
-          vim.api.nvim_set_hl(0, "SnacksPickerSearch", { bg = "#CBA6F7", fg = "#313244" })
-          vim.api.nvim_set_hl(0, "SnacksPickerMatch", { bg = "#CBA6F7", fg = "#313244" })
+          vim.api.nvim_set_hl(0, "SnacksPickerListCursorLine", { bg = "#2A2B3D" })
+          vim.api.nvim_set_hl(0, "SnacksPickerPreviewCursorLine", { bg = "#2A2B3D" })
+          vim.api.nvim_set_hl(0, "SnacksPickerSearch", { bg = "#CBA6F7", fg = "#2A2B3D" })
+          vim.api.nvim_set_hl(0, "SnacksPickerMatch", { bg = "#CBA6F7", fg = "#2A2B3D" })
         end,
       })
     end,
