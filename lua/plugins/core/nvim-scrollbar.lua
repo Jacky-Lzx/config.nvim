@@ -15,6 +15,10 @@ return {
         gitsigns = true, -- for gitsigns
         search = true, -- for hlslens
       },
+      excluded_buftypes = {
+        "terminal",
+        "nofile", -- This buftype is used by dap's hover() window
+      },
       marks = {
         Search = {
           color = "#CBA6F7",
