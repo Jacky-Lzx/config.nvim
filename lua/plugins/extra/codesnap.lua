@@ -3,6 +3,7 @@ return {
   {
     "mistricky/codesnap.nvim",
     build = "make",
+    enabled = false,
     opts = {
       mac_window_bar = false,
       -- title = "CodeSnap.nvim",
