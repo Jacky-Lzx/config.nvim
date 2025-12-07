@@ -75,10 +75,10 @@ return {
           },
         },
         layout = {
-          preset = "custom",
+          preset = "default",
         },
         layouts = {
-          custom = {
+          default = {
             reverse = true,
             layout = {
               backdrop = false,
