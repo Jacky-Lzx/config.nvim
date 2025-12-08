@@ -155,4 +155,35 @@ return {
       show_condition = conds.obj.false_fn,
     }
   ),
+
+  autosnippet(
+    { trig = "dm", name = "multi_line_math_select", desc = "(Select) Multi-line math block" },
+    fmta(
+      [[
+        $$
+          <>
+        $$
+      ]],
+      { d(1, get_visual_or_insert) }
+    ),
+    {
+      show_condition = conds.obj.false_fn,
+      priority = 2000,
+    }
+  ),
+  autosnippet(
+    { trig = "dm", name = "multi_line_math", desc = "Multi-line math block" },
+    fmta(
+      [[
+        $$
+          <>
+        $$
+    ]],
+      { i(0) }
+    ),
+    {
+      -- `dm` snippet does not need to be at the start of a line
+      show_condition = conds.obj.false_fn,
+    }
+  ),
 }

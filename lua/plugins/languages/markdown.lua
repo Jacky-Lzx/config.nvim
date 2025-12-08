@@ -1,4 +1,4 @@
--- Set the markdown file use the tabindent values set in the config instead of recommended
+-- Set the markdown style with the tabindent values set in the config instead of the built-in value
 vim.g.markdown_recommended_style = 0
 
 -- FIXME: Vale is not configured correctly. It doesn't work
@@ -25,8 +25,11 @@ local M = {
   {
     "nvim-treesitter/nvim-treesitter",
     optional = true,
-    opts_extend = { "indent.disable" },
-    opts = { indent = { disable = { "markdown" } } }, -- indentation at bullet points is worse
+    opts_extend = { "ensure_installed", "indent.disable" },
+    opts = {
+      ensure_installed = { "markdown" },
+      indent = { disable = { "markdown" } }, -- indentation at bullet points is worse
+    },
   },
 
   {
@@ -49,9 +52,9 @@ local M = {
 
   {
     "iamcco/markdown-preview.nvim",
+    ft = { "markdown" },
     cmd = { "MarkdownPreviewToggle" },
     build = "cd app && yarn install",
-    ft = { "markdown" },
   },
 
   {
