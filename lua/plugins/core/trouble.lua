@@ -42,8 +42,6 @@ return {
 
     -- stylua: ignore
     keys = {
-      { "<A-j>", function() vim.diagnostic.jump({ count = 1 }) end,  mode = {"n"},   desc = "Go to next diagnostic"},
-      { "<A-k>", function() vim.diagnostic.jump({ count = -1 }) end, mode = {"n"},   desc = "Go to previous diagnostic"},
       { "<leader>gd", "<cmd>Trouble diagnostics toggle<cr>",                         desc = "[Trouble] toggle buffer diagnostics" },
       { "<leader>gs", "<cmd>Trouble symbols toggle focus=false<cr>",                 desc = "[Trouble] toggle symbols " },
       { "<leader>gl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",  desc = "[Trouble] toggle LSP definitions/references/...", },
