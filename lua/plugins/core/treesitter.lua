@@ -14,9 +14,18 @@ return {
         -- Instead of true it can also be a list of languages
         additional_vim_regex_highlighting = false,
       },
+      ensure_installed = { "regex" },
       indent = {
         enabale = true,
       },
     },
+  },
+
+  -- This tool is used for the compilation of some tree-sitter parsers, e.g. LaTeX
+  {
+    "mason-org/mason.nvim",
+    optional = true,
+    opts_extend = { "ensure_installed" },
+    opts = { ensure_installed = { "tree-sitter-cli" } },
   },
 }
