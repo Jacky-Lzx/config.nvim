@@ -5,7 +5,7 @@ local M = {
     optional = true,
     opts = {
       formatters_by_ft = {
-        yaml = { "prettier" },
+        yaml = { "prettierd" },
       },
     },
   },
