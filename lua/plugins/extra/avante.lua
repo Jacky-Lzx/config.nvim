@@ -46,7 +46,7 @@ return {
         ft = { "markdown", "Avante" },
       },
     },
-    ---@module 'avante'
+    -- Configuration options: `https://github.com/yetone/avante.nvim/blob/main/lua/avante/config.lua`
     ---@type avante.Config
     opts = {
       -- add any opts here
@@ -181,6 +181,9 @@ return {
           ---@type AvanteInitialDiff
           focus_on_apply = "ours", -- which diff to focus after applying
         },
+      },
+      selection = {
+        hint_display = "none",
       },
     },
   },
