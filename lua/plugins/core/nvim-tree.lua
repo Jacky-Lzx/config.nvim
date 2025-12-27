@@ -26,6 +26,9 @@ return {
       update_focused_file = {
         enable = true,
       },
+      notify = {
+        threshold = vim.log.levels.WARN,
+      },
     },
   },
 }
