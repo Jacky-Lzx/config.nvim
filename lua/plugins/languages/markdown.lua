@@ -351,18 +351,24 @@ local M = {
         customizations = {},
       },
 
-      -- Optional, customize how note IDs are generated given an optional title.
-      ---@param title string|?
+      ---@param id string
+      ---@param dir obsidian.Path
       ---@return string
-      note_id_func = function(title)
+      note_id_func = function(id, dir)
+        -- A fix of generating daily notes IDs after version 3.15.0
+        -- Refer to `https://github.com/obsidian-nvim/obsidian.nvim/issues/584#issuecomment-3693179057`
+        local daily_notes_dir = Obsidian.dir / Obsidian.opts.daily_notes.folder
+        if daily_notes_dir == dir then
+          return id
+        end
         -- Create note IDs in a Zettelkasten format with a timestamp and a suffix.
         -- In this case a note with the title 'My new note' will be given an ID that looks
         -- like '1657296016-my-new-note', and therefore the file name '1657296016-my-new-note.md'.
         -- You may have as many periods in the note ID as you'd like—the ".md" will be added automatically
         local suffix = ""
-        if title ~= nil then
+        if id ~= nil then
           -- If title is given, transform it into valid file name.
-          suffix = title:gsub(" ", "-"):gsub("[^A-Za-z0-9-]", ""):lower()
+          suffix = id:gsub(" ", "-"):gsub("[^A-Za-z0-9-]", ""):lower()
         else
           -- If title is nil, just add 4 random uppercase letters to the suffix.
           for _ = 1, 4 do
