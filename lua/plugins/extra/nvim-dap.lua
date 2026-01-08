@@ -22,10 +22,10 @@ return {
         controls = { enabled = true },
       },
       windows = {
-        height = 0.25,
+        size = 0.25,
         position = "below",
         terminal = {
-          width = 0.1,
+          size = 0.1,
           position = "right",
           -- List of debug adapters for which the terminal should be ALWAYS hidden
           hide = {},
