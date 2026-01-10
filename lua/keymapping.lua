@@ -25,6 +25,9 @@ vim.keymap.set({ "n", "x" }, "Q", "<CMD>:qa<CR>")
 vim.keymap.set({ "n", "x" }, "qq", "<CMD>:q<CR>")
 -- vim.keymap.set("n", "Q", "<CMD>:q<CR>")
 
+vim.keymap.set("n", "<leader>J", "<CMD>cnext<CR>")
+vim.keymap.set("n", "<leader>K", "<CMD>cprev<CR>")
+
 vim.keymap.set("n", "<A-z>", "<CMD>set wrap!<CR>", { desc = "Toggle line wrap" })
 vim.keymap.set("n", "<A-d>", "<NOP>", { desc = "Disabled" })
 

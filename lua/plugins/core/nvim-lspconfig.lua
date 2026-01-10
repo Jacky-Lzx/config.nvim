@@ -68,7 +68,7 @@ return {
             desc = "[LSP] Show diagnostic",
           })
           vim.keymap.set("n", "<leader>gk", vim.lsp.buf.signature_help, { desc = "[LSP] Signature help" })
-          vim.keymap.set("n", "<leader>K", vim.lsp.buf.signature_help, { desc = "[LSP] Signature help" })
+          -- vim.keymap.set("n", "<leader>sK", vim.lsp.buf.signature_help, { desc = "[LSP] Signature help" })
 
           vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, { desc = "[LSP] Format" })
           vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, { desc = "[LSP] Add workspace folder" })
