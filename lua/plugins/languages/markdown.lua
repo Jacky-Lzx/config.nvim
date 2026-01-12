@@ -306,6 +306,13 @@ local M = {
         workdays_only = false,
       },
 
+      checkbox = {
+        enabled = true,
+        create_new = false,
+        -- order = { " ", "~", "!", ">", "x" },
+        order = { " ", "x" },
+      },
+
       completion = {
         -- Enables completion using nvim_cmp
         nvim_cmp = false,
