@@ -42,7 +42,9 @@ vim.opt.clipboard = ""
 
 vim.o.textwidth = 120
 -- Prevent auto insertion of new lines when writing a long sentence
-vim.opt.formatoptions = vim.o.formatoptions:gsub("t", "")
+vim.api.nvim_create_autocmd("FileType", {
+  command = "set formatoptions-=cro",
+})
 
 -- Enables project-local `.nvim.lua` configuration file
 vim.o.exrc = true
