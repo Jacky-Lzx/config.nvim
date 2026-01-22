@@ -256,6 +256,7 @@ return {
 
   {
     "bullets-vim/bullets.vim",
+    cond = false,
     ft = { "markdown", "text", "gitcommit" },
 
     config = function()
