@@ -1,7 +1,7 @@
 -- Verilog related plugins
 
 vim.lsp.config("verible", {
-  -- cmd = { "verible-verilog-ls", "--rules_config_search" },
+  cmd = { "verible-verilog-ls", "--rules_config_search" },
 
   -- root_dir = function(fname)
   --   -- return vim.fs.dirname(vim.fs.find(".git", { path = fname, upward = true })[1])
