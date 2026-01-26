@@ -41,7 +41,7 @@ local M = {
     optional = true,
     opts = {
       formatters_by_ft = {
-        verilog = { "verible-verilog-format" },
+        verilog = { "trim_whitespace", "verible-verilog-format" },
       },
       formatters = {
         ["verible-verilog-format"] = {
