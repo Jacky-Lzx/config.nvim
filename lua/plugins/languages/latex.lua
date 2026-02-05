@@ -68,7 +68,10 @@ local M = {
     "nvim-treesitter/nvim-treesitter",
     opts_extend = { "ensure_installed", "highlight.disable" },
     opts = {
-      ensure_installed = { "latex", "bibtex" },
+      -- A temporary workaround to avoid the building issue of latex parser.
+      -- See `https://github.com/nvim-treesitter/nvim-treesitter/issues/7781#issuecomment-3816426774`
+      -- ensure_installed = { "latex", "bibtex" },
+      ensure_installed = { "bibtex" },
       highlight = {
         disable = { "latex" },
       },
