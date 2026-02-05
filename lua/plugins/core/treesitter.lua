@@ -3,6 +3,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
     lazy = false,
     build = ":TSUpdate",
+    branch = "master",
     main = "nvim-treesitter.configs",
     opts = {
       auto_install = true,
