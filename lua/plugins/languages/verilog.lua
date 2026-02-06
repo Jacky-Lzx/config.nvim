@@ -21,7 +21,7 @@ local M = {
     "nvim-treesitter/nvim-treesitter",
     opts_extend = { "ensure_installed", "highlight.disable" },
     opts = {
-      ensure_installed = { "verilog" },
+      ensure_installed = { "systemverilog" },
       highlight = {
         disable = { "verilog", "systemverilog" },
       },

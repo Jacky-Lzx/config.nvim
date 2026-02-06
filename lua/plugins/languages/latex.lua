@@ -70,8 +70,8 @@ local M = {
     opts = {
       -- A temporary workaround to avoid the building issue of latex parser.
       -- See `https://github.com/nvim-treesitter/nvim-treesitter/issues/7781#issuecomment-3816426774`
-      -- ensure_installed = { "latex", "bibtex" },
-      ensure_installed = { "bibtex" },
+      ensure_installed = { "latex", "bibtex" },
+      -- ensure_installed = { "bibtex" },
       highlight = {
         disable = { "latex" },
       },
