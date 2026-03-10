@@ -9,6 +9,17 @@ vim.api.nvim_create_autocmd("FileType", {
     local installed = require("nvim-treesitter").get_installed("parsers")
     if vim.tbl_contains(installed, lang) then
       vim.treesitter.start(args.buf)
+      require("snacks.notify").info("Start treesitter for " .. lang)
+
+      -- Use regex based syntax-highlighting as fallback as some plugins might need it
+      vim.bo[args.buf].syntax = "ON"
+      -- Use treesitter for folds
+      vim.wo.foldlevel = 99
+      vim.wo.foldmethod = "expr"
+      vim.wo.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+      vim.wo.foldtext = "v:lua.vim.treesitter.foldtext()"
+      -- Use treesitter for indentation
+      vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
     end
   end,
 })

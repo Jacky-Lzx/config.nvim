@@ -1,5 +1,12 @@
 vim.g.tex_flavor = "latex"
 
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = "tex",
+--   callback = function(args)
+--     vim.treesitter.stop(args.buf)
+--   end,
+-- })
+
 vim.lsp.config("texlab", {
   settings = {
     texlab = {

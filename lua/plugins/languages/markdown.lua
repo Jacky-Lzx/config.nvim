@@ -32,7 +32,7 @@ local M = {
     optional = true,
     opts_extend = { "ensure_installed", "indent.disable" },
     opts = {
-      ensure_installed = { "markdown" },
+      ensure_installed = { "markdown", "markdown_inline" },
       indent = { disable = { "markdown" } }, -- Indentation at bullet points is worse
     },
   },
