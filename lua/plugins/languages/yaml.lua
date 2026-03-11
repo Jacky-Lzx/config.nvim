@@ -1,4 +1,13 @@
 local M = {
+  {
+    "nvim-treesitter/nvim-treesitter",
+    optional = true,
+    opts = {
+      ensure_installed = { "yaml" },
+    },
+    opts_extend = { "ensure_installed" },
+  },
+
   -- formatter
   {
     "stevearc/conform.nvim",
