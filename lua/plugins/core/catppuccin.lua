@@ -8,7 +8,7 @@ return {
       float = {
         transparent = true, -- enable transparent floating windows
       },
-      -- flavour = "mocha"
+      flavour = "mocha",
       integrations = {
         barbar = true,
         blink_cmp = true,
@@ -76,7 +76,8 @@ return {
     config = function(_, opts)
       require("catppuccin").setup(opts)
 
-      vim.cmd([[colorscheme catppuccin-mocha]])
+      -- vim.cmd([[colorscheme catppuccin-mocha]])
+      vim.cmd.colorscheme("catppuccin")
     end,
   },
 }

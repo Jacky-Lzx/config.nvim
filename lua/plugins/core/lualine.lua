@@ -8,7 +8,7 @@ return {
     event = "VeryLazy",
     opts = {
       options = {
-        theme = "catppuccin",
+        theme = "catppuccin-nvim",
         always_divide_middle = false,
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
