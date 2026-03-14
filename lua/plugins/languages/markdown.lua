@@ -20,6 +20,8 @@ vim.lsp.config("harper_ls", {
       linters = {
         SentenceCapitalization = false,
         SpellCheck = false,
+        Spaces = false,
+        NoFrenchSpaces = false,
       },
     },
   },
