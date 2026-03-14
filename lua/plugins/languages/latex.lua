@@ -35,7 +35,7 @@ vim.lsp.config("texlab", {
       -- The inverse search is configured in "f2fora/nvim-texlabconfig"
       forwardSearch = {
         executable = "/Applications/Skim.app/Contents/SharedSupport/displayline",
-        args = { "-r", "%l", "%p", "%f" },
+        args = { "%l", "%p", "%f" },
       },
       chktex = {
         onOpenAndSave = false,
@@ -97,7 +97,7 @@ local M = {
     "mason-org/mason.nvim",
     optional = true,
     opts_extend = { "ensure_installed" },
-    opts = { ensure_installed = { "tex-fmt" } },
+    opts = { ensure_installed = { "tex-fmt", "texlab" } },
   },
 
   -- formatter
