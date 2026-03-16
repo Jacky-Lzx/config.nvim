@@ -420,7 +420,6 @@ return {
             should_show_items = function(ctx)
               return ctx.trigger.initial_kind ~= "trigger_character"
             end,
-            fallbacks = { "buffer" },
           },
         },
       },
