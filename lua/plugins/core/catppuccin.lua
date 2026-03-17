@@ -77,7 +77,7 @@ return {
       require("catppuccin").setup(opts)
 
       -- vim.cmd([[colorscheme catppuccin-mocha]])
-      vim.cmd.colorscheme("catppuccin")
+      vim.cmd.colorscheme("catppuccin-nvim")
     end,
   },
 }
