@@ -262,32 +262,12 @@ local M = {
       new_notes_location = "notes_subdir",
       -- Either 'wiki' or 'markdown'.
       preferred_link_style = "wiki",
-      -- Optional, customize how wiki links are formatted. You can set this to one of:
-      -- _ "use_alias_only", e.g. '[[Foo Bar]]'
-      -- _ "prepend_note_id", e.g. '[[foo-bar|Foo Bar]]'
-      -- * "prepend_note_path", e.g. '[[foo-bar.md|Foo Bar]]'
-      -- * "use_path_only", e.g. '[[foo-bar.md]]'
-      -- Or you can set it to a function that takes a table of options and returns a string
-      -- Below is a function that can create the relative path like '[[../subdir/foo-bar.md|Foo Bar]]'
-      -- wiki_link_func = function(opts)
-      --   -- "prepend_note_path" will not generate the relative path if the note is in a subdirectory
-      --   local path_from_workspace = require("obsidian.util").wiki_link_path_prefix(opts)
-      --
-      --   local rel_path = opts.path
-      --   -- Remove the first two chars `[[` from path_from_workspace
-      --   path_from_workspace = string.sub(path_from_workspace, 3)
-      --
-      --   -- Calculate the number of `/` occurred in rel_path
-      --   local depth = #vim.split(rel_path, "/") - 1
-      --   if depth == 0 then
-      --     return "[[./" .. path_from_workspace
-      --   end
-      --   -- Generate the relative path prefix based on the depth
-      --   local relative_path_prefix = string.rep("../", depth)
-      --   return "[[" .. relative_path_prefix .. path_from_workspace
-      -- end,
-      ---@diagnostic disable-next-line: assign-type-mismatch
-      wiki_link_func = "prepend_note_path",
+
+      -- Customize how wiki links are formatted.
+      link = {
+        style = "wiki",
+        format = "absolute",
+      },
 
       legacy_commands = false,
 
