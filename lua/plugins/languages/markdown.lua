@@ -260,8 +260,6 @@ local M = {
       -- _ "current_dir" - put new notes in same directory as the current buffer.
       -- _ "notes_subdir" - put new notes in the default notes subdirectory.
       new_notes_location = "notes_subdir",
-      -- Either 'wiki' or 'markdown'.
-      preferred_link_style = "wiki",
 
       -- Customize how wiki links are formatted.
       link = {
