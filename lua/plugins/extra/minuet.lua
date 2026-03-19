@@ -16,6 +16,7 @@ return {
           name = "LM Studio", -- A custom name for your model
         },
       },
+      request_timeout = 10,
     },
   },
   { "nvim-lua/plenary.nvim" },
@@ -37,7 +38,7 @@ return {
             async = true,
             -- Should match minuet.config.request_timeout * 1000,
             -- since minuet.config.request_timeout is in seconds
-            timeout_ms = 3000,
+            timeout_ms = 10000,
             score_offset = 200, -- Gives minuet higher priority among suggestions
             opts = {
               kind_icon = "",
