@@ -35,7 +35,7 @@ vim.keymap.set("v", "<M-m>", 'c\\( <c-r>" \\)')
 vim.keymap.set("i", "<M-m>", "\\(  \\)<esc>hhi")
 
 -- 在命令行模式下，将 ":W" 映射为 ":w"
-vim.keymap.set("c", "W", "w", { noremap = true, desc = "Map :W to :w (save file)" })
+-- vim.keymap.set("c", "W", "w", { noremap = true, desc = "Map :W to :w (save file)" })
 
 vim.api.nvim_create_user_command("ConvertTabToSpace", "%s/\t/  /g", {})
 
