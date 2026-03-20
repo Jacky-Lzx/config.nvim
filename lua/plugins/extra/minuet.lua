@@ -1,4 +1,4 @@
-vim.api.nvim_set_hl(0, "BlinkCmpItemKindMinuet", { fg = "#CBA6F7" })
+vim.api.nvim_set_hl(0, "BlinkCmpItemKindMinuet", { fg = "#a6e3a1" })
 return {
   {
     "milanglacier/minuet-ai.nvim",
@@ -40,10 +40,13 @@ return {
             -- since minuet.config.request_timeout is in seconds
             timeout_ms = 10000,
             score_offset = 200, -- Gives minuet higher priority among suggestions
-            opts = {
-              kind_icon = "",
-              kind_hl = "DevIconCopilot",
-            },
+            transform_items = function(_, items)
+              for _, item in ipairs(items) do
+                item.kind_icon = ""
+                item.kind_name = "Local LM"
+              end
+              return items
+            end,
           },
         },
       },
