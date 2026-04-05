@@ -63,7 +63,7 @@ return {
   }),
   -- stylua: ignore
   s({ trig = "for", desc = "For Loop" }, {
-    t("for (int "), i(1, "i"), t("= 0; "), rep(1), t(" < "), i(2, "N"), t("; "), rep(1), t(" = "), rep(1), t(" + 1) begin"),
+    t("for ("), i(1, "i"), t("= 0; "), rep(1), t(" < "), i(2, "N"), t("; "), rep(1), t(" = "), rep(1), t(" + 1) begin"),
     t({ "", "  " }), i(0),
     t({ "", "end" }),
   }),
