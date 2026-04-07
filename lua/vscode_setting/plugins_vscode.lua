@@ -28,79 +28,133 @@ require("lazy").setup({
     name = "catppuccin",
     priority = 1000,
     opts = {
-      -- flavour = "mocha"
-      integrations = {
-        -- alpha = true,
-        -- gitsigns = true,
-        noice = true,
-        -- notify = true,
-        -- which_key = true,
-        nvim_surround = true,
-        -- barbar = true,
-        -- nvimtree = true,
-        -- mini = {
-        --   enabled = true,
-        --   indentscope_color = "blue", -- catppuccin color (eg. `lavender`) Default: text
-        -- },
+      transparent_background = true,
+      float = {
+        transparent = true, -- enable transparent floating windows
       },
+      flavour = "mocha",
+      integrations = {
+        flash = true,
+        native_lsp = {
+          enabled = true,
+          virtual_text = {
+            errors = { "italic" },
+            hints = { "italic" },
+            warnings = { "italic" },
+            information = { "italic" },
+            ok = { "italic" },
+          },
+          underlines = {
+            errors = { "underline" },
+            hints = { "underline" },
+            warnings = { "underline" },
+            information = { "underline" },
+            ok = { "underline" },
+          },
+          inlay_hints = {
+            background = true,
+          },
+        },
+        nvim_surround = true,
+        treesitter = true,
+      },
+      custom_highlights = function(colors)
+          -- stylua: ignore
+          return {
+            LineNr                      = { fg = colors.surface2 },
+            Visual                      = { bg = colors.overlay0 },
+            Search                      = { bg = colors.surface2 },
+            IncSearch                   = { bg = colors.mauve },
+            CurSearch                   = { bg = colors.mauve },
+            LspSignatureActiveParameter = { bg = colors.overlay0 },
+            MatchParen                  = { bg = colors.mauve, fg = colors.base, bold = true},
+          }
+      end,
     },
     config = function(_, opts)
       require("catppuccin").setup(opts)
 
-      vim.cmd([[colorscheme catppuccin-mocha]])
+      -- vim.cmd([[colorscheme catppuccin-mocha]])
+      vim.cmd.colorscheme("catppuccin-nvim")
     end,
   },
   {
     "folke/flash.nvim",
-    event = "VeryLazy",
+    event = "BufReadPost",
     opts = {
+      label = {
+        rainbow = {
+          enabled = true,
+          shade = 1,
+        },
+      },
       modes = {
         char = {
           enabled = false,
         },
       },
     },
-    -- stylua: ignore
     keys = {
+      -- stylua: ignore
       { "<leader>f", mode = { "n", "x", "o" }, function() require("flash").jump() end,                                                                                               desc = "[Flash] Jump"              },
+      -- stylua: ignore
       { "<leader>F", mode = { "n", "x", "o" }, function() require("flash").treesitter() end,                                                                                         desc = "[Flash] Treesitter"        },
-      -- { "r",      mode = "o",               function() require("flash").remote() end,                                                                                             desc = "Remote Flash"              },
+      -- stylua: ignore
       { "<leader>F", mode = { "o", "x" },      function() require("flash").treesitter_search() end,                                                                                  desc = "[Flash] Treesitter Search" },
-      { "<c-s>",     mode = { "c" },           function() require("flash").toggle() end,                                                                                             desc = "[Flash] Toggle Search"     },
-      { "<leader>j", mode = { "n", "x", "o" }, function() require("flash").jump({ search = { mode = "search", max_length = 0 }, label = { after = { 0, 0 } }, pattern = "^", }) end, desc = "[Flash] Line jump"         },
-      { "<leader>k", mode = { "n", "x", "o" }, function() require("flash").jump({ search = { mode = "search", max_length = 0 }, label = { after = { 0, 0 } }, pattern = "^", }) end, desc = "[Flash] Line jump"         },
+      -- stylua: ignore
+      { "<c-f>",     mode = { "c" },           function() require("flash").toggle() end,                                                                                             desc = "[Flash] Toggle Search"     },
+      {
+        "<leader>j",
+        mode = { "n", "x", "o" },
+        function()
+          require("flash").jump({
+            search = { mode = "search", max_length = 0 },
+            jump = { pos = "end" },
+            label = { after = { 0, 0 }, matches = false },
+            pattern = "^\\s*\\S\\?", -- match non-whitespace at start plus any character (ignores empty lines)
+          })
+        end,
+        desc = "[Flash] Line jump",
+      },
+      {
+        "<leader>k",
+        mode = { "n", "x", "o" },
+        function()
+          require("flash").jump({
+            search = { mode = "search", max_length = 0 },
+            jump = { pos = "end" },
+            label = { after = { 0, 0 }, matches = false },
+            pattern = "^\\s*\\S\\?", -- match non-whitespace at start plus any character (ignores empty lines)
+          })
+        end,
+        desc = "[Flash] Line jump",
+      },
     },
   },
   {
     "echasnovski/mini.surround",
     version = "*",
     event = "BufReadPost",
-    config = true,
     keys = {
       -- Disable the vanilla `s` keybinding
       { "s", "<NOP>", mode = { "n", "x", "o" } },
+      { "sa", mode = { "n", "x", "o" } },
+      { "sr", mode = { "n", "x", "o" } },
+      { "sd", mode = { "n", "x", "o" } },
     },
+    config = true,
   },
   {
     "numToStr/Comment.nvim",
     -- stylua: ignore
     keys = {
-      { "<leader>/", function() require("Comment.api").toggle.linewise.current() end,                 mode = "n", desc = "comment current line", },
-      { "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<cr>", mode = "v", desc = "comment current line", },
+      { "<leader>/", function() require("Comment.api").toggle.linewise.current() end,                 mode = "n", desc = "[Comment] Comment current line", },
+      { "<leader>/", "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<cr>", mode = "v", desc = "Comment current line",           },
+      -- control + / keymappings
+      { "<C-_>",     function() require("Comment.api").toggle.linewise.current() end,                 mode = "n", desc = "[Comment] Comment current line", },
+      { "<C-_>",     "<esc><cmd>lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<cr>", mode = "v", desc = "Comment current line",           },
     },
-    config = function()
-      require("Comment").setup()
-
-      local ft = require("Comment.ft")
-      ft.cpp = { "//%s", "/*%s*/" }
-      ft.c = { "//%s", "/*%s*/" }
-      ft.python = { "#%s" }
-    end,
-  },
-  {
-    "cappyzawa/trim.nvim",
-    event = "BufWritePre",
-    opts = {},
+    config = true,
   },
   {
     "ibhagwan/smartyank.nvim",
