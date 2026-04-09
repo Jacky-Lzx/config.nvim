@@ -9,7 +9,7 @@ vim.api.nvim_create_autocmd("FileType", {
     local installed = require("nvim-treesitter").get_installed("parsers")
     if vim.tbl_contains(installed, lang) then
       vim.treesitter.start(args.buf)
-      require("snacks.notify").info("Start treesitter for " .. lang)
+      -- require("snacks.notify").info("Start treesitter for " .. lang)
 
       -- Use regex based syntax-highlighting as fallback as some plugins might need it
       vim.bo[args.buf].syntax = "ON"
