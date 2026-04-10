@@ -31,7 +31,8 @@ return {
       %\setmainfont{Times New Roman}
 
       \PassOptionsToPackage{hyphens}{url}
-      \usepackage{hyperref} \usepackage{ulem}
+      \usepackage[colorlinks=true]{hyperref}
+      \usepackage{ulem}
       \usepackage{graphicx}
       %\usepackage{wrapfig}
       \usepackage{enumitem}
