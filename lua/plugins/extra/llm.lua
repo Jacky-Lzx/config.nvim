@@ -1,7 +1,7 @@
 return {
   {
     "huggingface/llm.nvim",
-    cond = false,
+    enabled = false,
     opts = {
       -- cf Setup
     },
