@@ -132,6 +132,12 @@ return {
           row = 0.8,
           col = -1,
         },
+        -- Enable line wrapping in notification history
+        notification_history = {
+          wo = {
+            wrap = true,
+          },
+        },
       },
     },
 
