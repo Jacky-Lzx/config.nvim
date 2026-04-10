@@ -40,16 +40,5 @@ vim.keymap.set("i", "<M-m>", "\\(  \\)<esc>hhi")
 vim.api.nvim_create_user_command("ConvertTabToSpace", "%s/\t/  /g", {})
 
 vim.keymap.set({ "i", "n" }, "<M-m>", function()
-  vim.ui.select({ "tabs", "spaces" }, {
-    prompt = "Select tabs or spaces:",
-    format_item = function(item)
-      return "I'd like to choose " .. item
-    end,
-  }, function(choice)
-    if choice == "spaces" then
-      vim.o.expandtab = true
-    else
-      vim.o.expandtab = false
-    end
-  end)
+  vim.cmd("DebugSileMath")
 end, { desc = "test" })

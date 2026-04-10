@@ -16,6 +16,7 @@ local m = extras.match
 local autosnippet = ls.extend_decorator.apply(s, { snippetType = "autosnippet" })
 
 local conds = require("templates.snippets.tex.utils.conditions")
+local math_conds = require("templates.snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 local cond_has_selected_text = require("luasnip.extras.conditions.expand").has_selected_text
 
@@ -29,13 +30,15 @@ local get_visual_or_insert = function(_, parent)
   end
 end
 
+local str_util = require("templates.snippets.utils.strings")
+
 M = {
   autosnippet(
     { trig = "mk", name = "inline_math_select", desc = "(Select) In-line math block" },
     fmta([[\(<>\)]], { d(1, get_visual_or_insert) }),
     {
       condition = cond_has_selected_text,
-      show_condition = conds.obj.false_fn,
+      show_condition = math_conds.obj.false_fn,
       priority = 2000,
     }
   ),
@@ -47,8 +50,8 @@ M = {
     },
     fmta([[\(<>\)<>]], { i(1), i(0) }),
     {
-      condition = -conds.obj.in_math,
-      show_condition = conds.obj.false_fn,
+      condition = -math_conds.obj.in_math,
+      show_condition = math_conds.obj.false_fn,
     }
   ),
 
@@ -64,7 +67,7 @@ M = {
     ),
     {
       condition = cond_line_begin * cond_has_selected_text,
-      show_condition = conds.obj.false_fn,
+      show_condition = math_conds.obj.false_fn,
       priority = 2000,
     }
   ),
@@ -80,8 +83,8 @@ M = {
     ),
     {
       -- `dm` snippet does not need to be at the start of a line
-      condition = -conds.obj.in_math,
-      show_condition = conds.obj.false_fn,
+      condition = -math_conds.obj.in_math,
+      show_condition = math_conds.obj.false_fn,
     }
   ),
 
@@ -93,7 +96,7 @@ M = {
     ]],
       { c(1, { t("="), t("\\leq"), i(1) }), i(2) }
     ),
-    { condition = conds.fn.in_align, show_condition = conds.fn.in_align }
+    { condition = math_conds.fn.in_align, show_condition = math_conds.fn.in_align }
   ),
 
   s(
@@ -109,14 +112,13 @@ M = {
         \end{align<>}
       ]],
       {
-        m(nil, conds.fn.in_math, "ed"),
+        m(nil, math_conds.fn.in_math, "ed"),
         i(0),
-        m(nil, conds.fn.in_math, "ed"),
+        m(nil, math_conds.fn.in_math, "ed"),
       }
     )
   ),
 
-  -- TODO: If not use "*", add \label automatically
   s(
     { trig = "equation", name = "equation environment", dscr = "Equation environment" },
     fmta(
@@ -125,7 +127,21 @@ M = {
           <>
         \end{equation<>}
     ]],
-      { c(1, { t(""), t("*") }), i(0), rep(1) }
+      {
+        c(1, {
+          t(""),
+          t("*"),
+        }),
+        d(2, function(args)
+          -- args = { { "" } } or { { "*" } }
+          if str_util.ends_with(args[1][1], "*") then
+            return sn(nil, { i(1) })
+          else
+            return sn(nil, { i(1), t({ "", "\\label{" }), i(2, "eq:"), t("}") })
+          end
+        end, { 1 }),
+        rep(1),
+      }
     )
   ),
 
@@ -138,7 +154,7 @@ M = {
     ]],
       { i(1), i(2), i(0) }
     ),
-    { condition = conds.obj.in_math, show_condition = conds.obj.in_math }
+    { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
   ),
 
   -- TODO: auto fraction
@@ -160,16 +176,18 @@ M = {
   --   { condition = cond.in_math, show_condition = cond.in_math }
   -- ),
   -- autosnippet(
-  --   { trig = "(^.*\\))/", name = "fraction", dscr = "auto fraction 2", trigEngine = "ecma" },
+  --   { trig = [[(^.*\\))/]], name = "fraction", dscr = "auto fraction 2", trigEngine = "ecma" },
   --   { d(1, generate_fraction) },
-  --   { condition = cond.in_math, show_condition = cond.in_math }
+  --   { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
   -- ),
 
   s(
     { trig = "ope", desc = "operatorname" },
     fmta([[\operatorname{<>} ]], { i(1) }),
-    { show_condition = conds.obj.in_math }
+    { show_condition = math_conds.obj.in_math }
   ),
+
+  s({ trig = "test", desc = "test" }, fmta([[test<> ]], { i(1) }), { show_condition = math_conds.obj.in_math }),
 
   s(
     { trig = "big-bracket", desc = "Big bracket" },
@@ -184,7 +202,7 @@ M = {
     ]],
       { i(1), i(2), i(3), i(4) }
     ),
-    { show_condition = conds.obj.in_math }
+    { show_condition = math_conds.obj.in_math }
   ),
 
   --   "\\mathrm": {
@@ -234,7 +252,7 @@ M = {
     ]],
       { i(1), i(0) }
     ),
-    { condition = conds.obj.in_math }
+    { condition = math_conds.obj.in_math }
   ),
 
   autosnippet(
@@ -243,12 +261,12 @@ M = {
       i(1),
       i(0),
     }),
-    { condition = conds.obj.in_math, show_condition = conds.obj.false_fn }
+    { condition = math_conds.obj.in_math, show_condition = math_conds.obj.false_fn }
   ),
   autosnippet(
     { trig = "__", name = "subscript", desc = "Subscript", wordTrig = false },
     fmta([[_{<>}<>]], { i(1), i(0) }),
-    { condition = conds.obj.in_math, show_condition = conds.obj.false_fn }
+    { condition = math_conds.obj.in_math, show_condition = math_conds.obj.false_fn }
   ),
 
   s(
@@ -263,7 +281,7 @@ M = {
         i(0),
       }
     ),
-    { condition = conds.obj.in_math, show_condition = conds.obj.in_math }
+    { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
   ),
 
   s(
@@ -274,8 +292,46 @@ M = {
       ]],
       { c(1, { fmta([[_{<>}^{<>}]], { i(1, "i = 0"), i(2, "\\infty") }), t("") }), i(0) }
     ),
-    { condition = conds.obj.in_math, show_condition = conds.obj.in_math }
+    { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
   ),
 }
+
+--- Copied from `https://github.com/L3MON4D3/LuaSnip/wiki/Cool-Snippets#smart-postfix-snippets`
+-- dynamic node
+-- generally, postfix comes in the form PRE-CAPTURE-POST, so in this case, arg1 is the "pre" text, arg2 the "post" text
+local dynamic_postfix = function(_, parent, _, user_arg1, user_arg2)
+  local capture = parent.snippet.env.POSTFIX_MATCH
+  if #capture > 0 then
+    return sn(
+      nil,
+      fmta(
+        [[
+        <><><><>
+        ]],
+        { t(user_arg1), t(capture), t(user_arg2), i(0) }
+      )
+    )
+  else
+    local visual_placeholder = ""
+    if #parent.snippet.env.SELECT_RAW > 0 then
+      visual_placeholder = parent.snippet.env.SELECT_RAW
+    end
+    return sn(
+      nil,
+      fmta(
+        [[
+        <><><><>
+        ]],
+        { t(user_arg1), i(1, visual_placeholder), t(user_arg2), i(0) }
+      )
+    )
+  end
+end
+
+postfix(
+  { trig = "vec", snippetType = "autosnippet" },
+  { d(1, dynamic_postfix, {}, { user_args = { "\\vec{", "}" } }) },
+  { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
+)
 
 return M

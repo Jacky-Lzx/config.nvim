@@ -10,7 +10,7 @@ local fmta = require("luasnip.extras.fmt").fmta
 local autosnippet = ls.extend_decorator.apply(s, { snippetType = "autosnippet" })
 
 local utils = require("templates.snippets.utils.utils")
-local conds = require("templates.snippets.tex.utils.conditions")
+local math_conds = require("templates.snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 local cond_has_selected_text = require("luasnip.extras.conditions.expand").has_selected_text
 
@@ -140,7 +140,7 @@ return {
     fmta([[$<>$]], { d(1, get_visual_or_insert) }),
     {
       condition = cond_has_selected_text,
-      show_condition = conds.obj.false_fn,
+      show_condition = math_conds.obj.false_fn,
       priority = 2000,
     }
   ),
@@ -152,7 +152,7 @@ return {
     },
     fmta([[$<>$<>]], { i(1), i(0) }),
     {
-      show_condition = conds.obj.false_fn,
+      show_condition = math_conds.obj.false_fn,
     }
   ),
 
@@ -167,7 +167,7 @@ return {
       { d(1, get_visual_or_insert) }
     ),
     {
-      show_condition = conds.obj.false_fn,
+      show_condition = math_conds.obj.false_fn,
       priority = 2000,
     }
   ),
@@ -183,7 +183,7 @@ return {
     ),
     {
       -- `dm` snippet does not need to be at the start of a line
-      show_condition = conds.obj.false_fn,
+      show_condition = math_conds.obj.false_fn,
     }
   ),
 }

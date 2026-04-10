@@ -12,6 +12,7 @@ local rep = extras.rep
 local autosnippet = ls.extend_decorator.apply(s, { snippetType = "autosnippet" })
 
 local conds = require("templates.snippets.tex.utils.conditions")
+local math_conds = require("templates.snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 
 -- local tex = require("templates.snippets.tex.utils.conditions")
@@ -46,16 +47,17 @@ return {
   s(
     { trig = "item", name = "item", desc = "A single item" },
     { t("\\item ") },
-    { condition = conds.obj.in_bullets, show_condition = conds.obj.in_bullets }
+    { condition = math_conds.obj.in_bullets, show_condition = math_conds.obj.in_bullets }
   ),
   -- autosnippet(
   --   { trig = "--", hidden = true },
   --   { t("\\item ") },
-  --   { condition = conds.obj.in_bullets * cond_line_begin, show_condition = conds.obj.in_bullets * cond_line_begin }
+  --   {
+  --     condition = math_conds.obj.in_bullets * cond_line_begin,
+  --     show_condition = math_conds.obj.in_bullets * cond_line_begin,
+  --   }
   --   -- { condition = cond_line_begin, show_condition = cond_line_begin }
   -- ),
-
-
 
   -- stylua: ignore
   s({ trig = "enumerate", name = "enumerate", desc = "Enumerate" },
@@ -161,7 +163,7 @@ return {
         i(6),
       }
     ),
-    { condition = -conds.obj.in_figure, show_condition = -conds.obj.in_figure }
+    { condition = -math_conds.obj.in_figure, show_condition = -math_conds.obj.in_figure }
   ),
 
   s(
@@ -185,6 +187,6 @@ return {
         end, { 1 }),
       }
     ),
-    { condition = conds.obj.in_figure, show_condition = conds.obj.in_figure }
+    { condition = math_conds.obj.in_figure, show_condition = math_conds.obj.in_figure }
   ),
 }

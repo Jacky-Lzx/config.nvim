@@ -80,6 +80,8 @@ return {
       -- local ls = require("luasnip")
       -- ls.filetype_extend("systemverilog", { "verilog" })
 
+      require("luasnip").filetype_extend("markdown", { "tex" })
+
       vim.api.nvim_create_user_command("LuaSnipList", require("luasnip.extras.snippet_list").open, {})
       vim.api.nvim_create_user_command("LuaSnipEdit", require("luasnip.loaders").edit_snippet_files, {})
 
