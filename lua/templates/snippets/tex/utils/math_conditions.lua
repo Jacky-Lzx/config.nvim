@@ -14,12 +14,9 @@ Features:
 Last updated: 2025-05-25  
 ]]
 
-local cond_obj = require("luasnip.extras.conditions")
-
 -- Module table
 local M = {}
 M.fn = {}
-M.obj = {}
 
 local buffer_id = vim.api.nvim_get_current_buf() -- Current buffer ID
 
@@ -341,8 +338,6 @@ function M.is_mathzone()
   end
 
   local root = parser:parse()[1]:root()
-  local row, col = get_cursor_pos()
-  local cursor_row, cursor_col = row - 1, col - 1
 
   local query = get_math_query(lang)
   if not query then
@@ -350,6 +345,7 @@ function M.is_mathzone()
   end
 
   local cursor = vim.api.nvim_win_get_cursor(0)
+  cursor[1] = cursor[1] - 1 -- Convert to 0-indexed for Treesitter
 
   local function check_math_environment(node, capture)
     if lang == "latex" then
@@ -365,7 +361,6 @@ function M.is_mathzone()
 
   for id, node in query:iter_captures(root, 0) do
     local capture = query.captures[id]
-    local s_row, s_col, e_row, e_col = node:range()
 
     local is_in_zone = (capture == "inline" or capture == "display")
       and vim.treesitter.is_in_node_range(node, unpack(cursor))
@@ -451,6 +446,7 @@ end
 ------------------------------------------------------------------------------
 -- ENVIRONMENT DETECTION
 ------------------------------------------------------------------------------
+
 local function in_environment(env_name)
   local current_row = get_cursor_pos()
 
@@ -515,6 +511,43 @@ local function in_environment(env_name)
   return result
 end
 
+local function in_environment_ts(env_name)
+  if vim.bo.filetype ~= "tex" then
+    return false -- Only applies to TeX files, not markdown or others
+  end
+
+  local parser = get_incremental_parser(0, "latex")
+  if not parser then
+    return in_environment(env_name) -- Fallback to regex-based detection
+  end
+
+  local node = vim.treesitter.get_node()
+
+  while node do
+    if node:type() == "generic_environment" or node:type() == "math_environment" then
+      local begin_node = node:field("begin")[1] -- Tree-sitter fields often return a list
+      if begin_node then
+        local name_node = begin_node:field("name")[1]
+        if name_node then
+          -- Get text and strip potential curly braces if necessary
+          -- But usually get_node_text on the 'text' node is cleanest
+          local current_env = vim.treesitter.get_node_text(name_node, 0)
+
+          -- LaTeX names in curly_group_text often include the braces in the text
+          -- or have a nested 'text' node. We strip braces to be safe.
+          current_env = current_env:gsub("[{}]", "")
+
+          if current_env == env_name then
+            return true
+          end
+        end
+      end
+    end
+    node = node:parent()
+  end
+
+  return false
+end
 ------------------------------------------------------------------------------
 -- SPECIFIC ENVIRONMENT CHECKS
 ------------------------------------------------------------------------------
@@ -522,24 +555,30 @@ M.fn.in_math = function()
   return M.fn.math_mode()
 end
 
-M.fn.in_text = function()
-  return in_environment("text") and not M.fn.math_mode()
+-- M.fn.in_text = function()
+--   return in_environment("text") and not M.fn.math_mode()
+-- end
+
+M.fn.in_align = function()
+  return vim.bo.filetype == "tex"
+    and (in_environment_ts("align") or in_environment_ts("align*") or in_environment_ts("aligned"))
 end
 
 M.fn.in_tikz = function()
-  return in_environment("tikzpicture")
+  return vim.bo.filetype == "tex" and (in_environment("tikzpicture"))
 end
 
 M.fn.in_figure = function()
-  return in_environment("figure") or in_environment("figure*")
+  -- Only check for figure environments in TeX files, not markdown or others
+  return vim.bo.filetype == "tex" and (in_environment_ts("figure") or in_environment_ts("figure*"))
 end
 
 M.fn.in_bullets = function()
-  return in_environment("itemize") or in_environment("enumerate")
+  return vim.bo.filetype == "tex" and (in_environment("itemize") or in_environment("enumerate"))
 end
 
 M.fn.in_MPcode = function()
-  return in_environment("MPcode")
+  return vim.bo.filetype == "tex" and in_environment("MPcode")
 end
 
 local function is_math_range()
@@ -655,6 +694,8 @@ local function true_fn()
 end
 M.fn.true_fn = true_fn
 
+local cond_obj = require("luasnip.extras.conditions")
+M.obj = {}
 -- traverse all key-value pairs in M.fn
 for k, v in pairs(M.fn) do
   M.obj[k] = cond_obj.make_condition(v)

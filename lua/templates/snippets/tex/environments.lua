@@ -1,17 +1,6 @@
 local ls = require("luasnip")
-local s = ls.snippet
-local sn = ls.snippet_node
-local t = ls.text_node
-local i = ls.insert_node
-local c = ls.choice_node
-local f = ls.function_node
 
-local fmta = require("luasnip.extras.fmt").fmta
-local extras = require("luasnip.extras")
-local rep = extras.rep
-local autosnippet = ls.extend_decorator.apply(s, { snippetType = "autosnippet" })
-
-local conds = require("templates.snippets.tex.utils.conditions")
+local nodes_util = require("templates.snippets.utils.nodes")
 local math_conds = require("templates.snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 
@@ -189,4 +178,6 @@ return {
     ),
     { condition = math_conds.obj.in_figure, show_condition = math_conds.obj.in_figure }
   ),
+
+  s({ trig = "verbatim", name = "verbatim", desc = "Verbatim environment" }, nodes_util.fmt_env("verbatim")),
 }

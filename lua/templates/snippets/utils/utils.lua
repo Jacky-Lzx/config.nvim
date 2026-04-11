@@ -15,18 +15,6 @@ M.get_insert_with_content = function(args)
   return sn(nil, i(1, M.same(args)))
 end
 
-M.get_visual_or_insert = function(_, parent, _, user_args)
-  local ret = ""
-  if user_args then
-    ret = user_args
-  end
-  if #parent.snippet.env.SELECT_RAW > 0 then
-    return sn(nil, i(1, parent.snippet.env.SELECT_RAW))
-  else
-    return sn(nil, i(1, ret))
-  end
-end
-
 M.get_insert_with_formulated_path_text = function(args)
   local text = args[1][1]
   -- Remove file extension

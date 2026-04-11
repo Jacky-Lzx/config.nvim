@@ -7,23 +7,11 @@ local sn = ls.snippet_node
 
 local fmta = require("luasnip.extras.fmt").fmta
 
-local autosnippet = ls.extend_decorator.apply(s, { snippetType = "autosnippet" })
-
 local utils = require("templates.snippets.utils.utils")
 local math_conds = require("templates.snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 local cond_has_selected_text = require("luasnip.extras.conditions.expand").has_selected_text
-
--- Copied from latex snippets
-local get_visual_or_insert = function(_, parent)
-  if #parent.snippet.env.SELECT_RAW == 1 then
-    return sn(nil, t(vim.trim(parent.snippet.env.SELECT_RAW[1])))
-  elseif #parent.snippet.env.SELECT_RAW > 1 then
-    return sn(nil, t(parent.snippet.env.SELECT_RAW))
-  else
-    return sn(nil, i(1))
-  end
-end
+local nodes_util = require("templates.snippets.utils.nodes")
 
 local function generate_table(_, snip)
   local rows = tonumber(snip.captures[1])
@@ -98,91 +86,76 @@ local function repeat_hash(_, snip)
   end
 end
 
-return {
-  -- stylua: ignore
+return
+-- Normal snippets
+{
   s({ trig = "figure", desc = "Image" }, {
     t("!["),
     -- i(0, "content"),
-    d(2, utils.get_insert_with_formulated_path_text, {1}),
+    d(2, utils.get_insert_with_formulated_path_text, { 1 }),
     t({ "](./Figures_markdown/" }),
     i(1),
     t(")"),
-    i(0)
+    i(0),
   }),
 
-  -- stylua: ignore
-  autosnippet(
+  s(
+    { trig = "link", desc = "Link" },
+    fmta([[[<>](<>)]], {
+      i(1),
+      d(2, nodes_util.visual_or_insert),
+    })
+  ),
+},
+-- Autosnippets
+{
+  -- Headers: e.g. "#3 " will be expanded to "### " with the cursor after the space
+  s(
     { trig = "#(%d+)%s", desc = "Repeat # n times", regTrig = true, hidden = true },
     { d(1, repeat_hash, {}) },
     { condition = cond_line_begin }
   ),
 
-  -- stylua: ignore
-  autosnippet({trig = "table(%d+)x(%d+)%s", desc = "Table generation", regTrig = true, hidden = true},
-    {d(1, generate_table, {})}, {condition = cond_line_begin}
+  s(
+    { trig = "table(%d+)x(%d+)%s", desc = "Table generation", regTrig = true, hidden = true },
+    { d(1, generate_table, {}) },
+    { condition = cond_line_begin }
   ),
 
-
-  -- stylua: ignore
-  autosnippet({trig = "item(%d+)%s", desc = "Itemize generation", regTrig = true, hidden = true},
-    {d(1, generate_list, {}, {user_args = {"-"}})}, {condition = cond_line_begin}
+  s(
+    { trig = "item(%d+)%s", desc = "Itemize generation", regTrig = true, hidden = true },
+    { d(1, generate_list, {}, { user_args = { "-" } }) },
+    { condition = cond_line_begin }
   ),
 
-  -- stylua: ignore
-  autosnippet(
-    {trig = "enum(%d+)%s", desc = "Enumerate generation", regTrig = true, hidden = true},
-    {d(1, generate_list, {}, {user_args = {"1"}})}, {condition = cond_line_begin}
+  s(
+    { trig = "enum(%d+)%s", desc = "Enumerate generation", regTrig = true, hidden = true },
+    { d(1, generate_list, {}, { user_args = { "1" } }) },
+    { condition = cond_line_begin }
   ),
 
   -- Copied and modified from latex snippets
-  autosnippet(
-    { trig = "mk", name = "inline_math_select", desc = "(Select) In-line math block" },
-    fmta([[$<>$]], { d(1, get_visual_or_insert) }),
+  s(
+    { trig = "mk", name = "math_inline", desc = "Math (inline)" },
+    fmta([[$<>$]], { d(1, nodes_util.visual_or_insert) }),
     {
-      condition = cond_has_selected_text,
-      show_condition = math_conds.obj.false_fn,
-      priority = 2000,
-    }
-  ),
-  autosnippet(
-    {
-      trig = "mk",
-      name = "inline_math",
-      desc = "In-line math block",
-    },
-    fmta([[$<>$<>]], { i(1), i(0) }),
-    {
+      condition = cond_has_selected_text + -math_conds.obj.in_math,
       show_condition = math_conds.obj.false_fn,
     }
   ),
-
-  autosnippet(
-    { trig = "dm", name = "multi_line_math_select", desc = "(Select) Multi-line math block" },
-    fmta(
-      [[
-        $$
-          <>
-        $$
-      ]],
-      { d(1, get_visual_or_insert) }
-    ),
-    {
-      show_condition = math_conds.obj.false_fn,
-      priority = 2000,
-    }
-  ),
-  autosnippet(
-    { trig = "dm", name = "multi_line_math", desc = "Multi-line math block" },
+  s(
+    { trig = "dm", name = "math_block", desc = "Math (block)" },
     fmta(
       [[
         $$
           <>
         $$
     ]],
-      { i(0) }
+      { d(1, nodes_util.visual_or_insert) }
     ),
     {
       -- `dm` snippet does not need to be at the start of a line
+      condition = (cond_line_begin * cond_has_selected_text) + -math_conds.obj.in_math,
       show_condition = math_conds.obj.false_fn,
     }
   ),

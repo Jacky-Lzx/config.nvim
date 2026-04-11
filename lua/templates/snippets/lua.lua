@@ -1,36 +1,19 @@
-local ls = require("luasnip")
-local s = ls.snippet
--- local sn = ls.snippet_node
-local i = ls.insert_node
-local t = ls.text_node
-local fmta = require("luasnip.extras.fmt").fmta
-local d = ls.dynamic_node
-local c = ls.choice_node
-local sn = ls.snippet_node
--- local f = ls.function_node
-
 local utils = require("templates.snippets.utils.utils")
 local conds = require("templates.snippets.utils.conditions")
--- local autosnippet = ls.extend_decorator.apply(s, { snippetType = "autosnippet" })
 
 return {
-  -- stylua: ignore
-  s({ trig = "stylua-ignore", desc = "Ignore stylua" },
+  s(
+    { trig = "stylua-ignore", desc = "Ignore stylua" },
     { t("-- stylua: ignore") },
     { show_condition = conds.line_begin }
   ),
 
-  -- stylua: ignore
   s(
     { trig = "codespell-ignore", desc = "Ignore codespell (Place at the end of the line)" },
     fmta([[-- codespell:ignore "<>"]], { i(0, "<WORD>") })
   ),
 
-  -- stylua: ignore
-  s({ trig = "typos-ignore", desc = "Ignore typos" },
-    { t("-- typos: ignore") },
-    { show_condition = conds.line_begin }
-  ),
+  s({ trig = "typos-ignore", desc = "Ignore typos" }, { t("-- typos: ignore") }, { show_condition = conds.line_begin }),
 
   -- stylua: ignore
   s({trig = "req", desc = "Require module"},
@@ -86,10 +69,10 @@ return {
   ),
 
   s(
-    { trig = "sni", desc = "Snippet" },
+    { trig = "snippet", desc = "Snippet" },
     fmta(
       [=[
-    <>(
+    s(
       {trig="<>", desc = "<>"},
       fmta([[
         <>
@@ -97,12 +80,11 @@ return {
     )
   ]=],
       {
-        c(1, { t("s"), t("autosnippet") }),
+        i(1),
         i(2),
         i(3),
         i(4),
-        i(5),
-        c(6, {
+        c(5, {
           t(""),
           sn(nil, {
             t({ ",", "{show_condition = " }),
@@ -113,4 +95,4 @@ return {
       }
     )
   ),
-}
+}, {}

@@ -1,16 +1,7 @@
-local ls = require("luasnip")
-local s = ls.snippet
-local t = ls.text_node
-local i = ls.insert_node
-local fmta = require("luasnip.extras.fmt").fmta
-
-local temple = require("templates.snippets.utils.utils")
+local nodes_util = require("templates.snippets.utils.nodes")
+local math_conds = require("templates.snippets.tex.utils.math_conditions")
 
 return {
-  -- s({ trig = "figure", desc = "Image" }, {
-  --   t("!["), i(1, "content"), t({ "](./Figures_markdown/" }), i(0), t(")")
-  -- }),
-
   -- stylua: ignore
   s({trig = "template", desc = "Template LaTeX file" },
     fmta([[
@@ -63,22 +54,60 @@ return {
 
   s({ trig = "par", desc = "Paragraph" }, { t("\\par ") }),
 
+  s({ trig = "it", desc = "Italic text" }, fmta([[\textit{<>}]], { d(1, nodes_util.visual_or_insert) })),
+  s({ trig = "bf", desc = "Bold text" }, fmta([[\textbf{<>}]], { d(1, nodes_util.visual_or_insert) })),
+
   s(
-    { trig = "it", desc = "italic" },
+    { trig = "box", desc = { "Box around text", "\tNeed `\\usepackage{fbox}`" } },
+    fmta([[\fbox{<>}]], { d(1, nodes_util.visual_or_insert) }),
+    {
+      condition = -math_conds.obj.in_math,
+      show_condition = -math_conds.obj.in_math,
+    }
+  ),
+  s(
+    { trig = "box2", desc = { "Box around text (with line break)", "\tNeed `\\usepackage{fbox}`" } },
     fmta(
       [[
-        \textit{<>}
+        \fbox{\parbox{0.4\textwidth}{%
+          <>
+        }}
+    ]],
+      { d(1, nodes_util.visual_or_insert) }
+    ),
+    {
+      condition = -math_conds.obj.in_math,
+      show_condition = -math_conds.obj.in_math,
+    }
+  ),
+
+  s({ trig = "verb", desc = "Verb" }, fmta([[\verb|<>|]], { d(1, nodes_util.visual_or_insert) }), {
+    condition = -math_conds.obj.in_math,
+    show_condition = -math_conds.obj.in_math,
+  }),
+
+  s(
+    { trig = "resize", desc = "Resize-box" },
+    fmta(
+      [[
+        \resizebox*{\textwidth}{!}{%
+          <>
+        }
       ]],
-      { i(1) }
+      { d(1, nodes_util.visual_or_insert) }
     )
   ),
   s(
-    { trig = "bf", desc = "bold" },
+    { trig = "scale", desc = "Scale box" },
     fmta(
       [[
-        \textbf{<>}
+        \scalebox{0.8}{%
+          <>
+        }
       ]],
-      { i(1) }
+      { d(1, nodes_util.visual_or_insert) }
     )
   ),
-}
+},
+-- Autosnippets
+{}
