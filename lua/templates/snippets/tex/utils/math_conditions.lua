@@ -574,7 +574,7 @@ M.fn.in_figure = function()
 end
 
 M.fn.in_bullets = function()
-  return vim.bo.filetype == "tex" and (in_environment("itemize") or in_environment("enumerate"))
+  return vim.bo.filetype == "tex" and (in_environment_ts("itemize") or in_environment_ts("enumerate"))
 end
 
 M.fn.in_MPcode = function()

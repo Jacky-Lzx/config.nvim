@@ -76,6 +76,7 @@ return {
       local auto_expand = ls.expand_auto
       ls.expand_auto = function(...)
         vim.o.undolevels = vim.o.undolevels
+        ---@diagnostic disable-next-line: redundant-parameter
         auto_expand(...)
       end
 

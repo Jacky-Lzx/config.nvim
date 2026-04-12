@@ -56,6 +56,7 @@ return {
 
   s({ trig = "it", desc = "Italic text" }, fmta([[\textit{<>}]], { d(1, nodes_util.visual_or_insert) })),
   s({ trig = "bf", desc = "Bold text" }, fmta([[\textbf{<>}]], { d(1, nodes_util.visual_or_insert) })),
+  s({ trig = "emph", desc = "Emph text" }, fmta([[\emph{<>}]], { d(1, nodes_util.visual_or_insert) })),
 
   s(
     { trig = "box", desc = { "Box around text", "\tNeed `\\usepackage{fbox}`" } },
@@ -107,6 +108,15 @@ return {
       ]],
       { d(1, nodes_util.visual_or_insert) }
     )
+  ),
+
+  s(
+    { trig = "ladd", desc = "Lzx add" },
+    fmta([[\ldel{<>}\ladd{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }), i(0) })
+  ),
+  s(
+    { trig = "ldel", desc = "Lzx del" },
+    fmta([[\ldel{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }) })
   ),
 },
 -- Autosnippets

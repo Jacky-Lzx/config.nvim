@@ -6,17 +6,24 @@ local fmta = require("luasnip.extras.fmt").fmta
 
 local M = {}
 
-function M.visual_or_insert(_, parent, _, user_args)
-  local ret = ""
-  if user_args then
-    ret = user_args
+function M.visual_or_insert(_, parent, _, is_trim)
+  -- user_args:
+  --   is_trim: trim on single select row (default: true)
+
+  if is_trim == nil then
+    is_trim = true
   end
+
   if #parent.snippet.env.SELECT_RAW == 1 then
-    return sn(nil, t(vim.trim(parent.snippet.env.SELECT_RAW[1])))
+    if is_trim then
+      return sn(nil, t(vim.trim(parent.snippet.env.SELECT_RAW[1])))
+    else
+      return sn(nil, t(parent.snippet.env.SELECT_RAW[1]))
+    end
   elseif #parent.snippet.env.SELECT_RAW > 1 then
     return sn(nil, t(parent.snippet.env.SELECT_RAW))
   else
-    return sn(nil, i(1, ret))
+    return sn(nil, i(1, ""))
   end
 end
 
