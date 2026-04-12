@@ -6,7 +6,7 @@ return {
       signcolumn = false,
       numhl = true,
       -- word_diff = true,
-      current_line_blame = true,
+      current_line_blame = false,
       attach_to_untracked = true,
       preview_config = {
         border = "rounded",
