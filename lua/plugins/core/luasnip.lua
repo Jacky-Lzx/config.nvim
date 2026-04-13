@@ -49,13 +49,13 @@ return {
           },
           [types.insertNode] = {
             active = {
-              virt_text = { { "󰗧", "BlinkCmpKindText" } },
-              sign_text = "󰗧",
+              virt_text = { { "", "BlinkCmpKindText" } },
+              sign_text = "",
               sign_hl_group = "BlinkCmpKindText",
             },
             passive = {
-              virt_text = { { "󰗧", "BlinkCmpLabel" } },
-              sign_text = "󰗧",
+              virt_text = { { "", "BlinkCmpLabel" } },
+              sign_text = "",
               sign_hl_group = "BlinkCmpLabel",
             },
           },
