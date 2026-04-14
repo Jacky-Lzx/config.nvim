@@ -194,7 +194,6 @@ M.snippets = {
   symbol("+-", "+-", [[\pm]]),
   symbol("-+", "-+", [[\mp]]),
 
-  symbol("sqrt", "Sqrt", [[\sqrt]]),
   symbol("degree", "Degree", [[^\circ]]),
 
   symbol("hl", "Hline", [[\hline]]),
@@ -213,7 +212,7 @@ M.snippets = {
 M.autosnippets = {
   s(
     { trig = "mk", name = "math_inline", desc = "Math (inline)" },
-    fmta([[\(<>\)]], { d(1, nodes_util.visual_or_insert) }),
+    fmta([[\( <> \)]], { d(1, nodes_util.visual_or_insert) }),
     {
       condition = cond_has_selected_text + -math_conds.obj.in_math,
       show_condition = math_conds.obj.false_fn,
@@ -317,14 +316,20 @@ M.autosnippets = {
   ),
 
   symbol("xx", "Times", [[\times]]),
+
   postfix(
     { trig = "sr", desc = "Square" },
-    { fmta([[^2]], {}) },
+    { d(1, nodes_util.dynamic_postfix, {}, { user_args = { "", "^2" } }) },
     { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
   ),
   postfix(
     { trig = "cb", desc = "Cube" },
-    { fmta([[^3]], {}) },
+    { d(1, nodes_util.dynamic_postfix, {}, { user_args = { "", "^3" } }) },
+    { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
+  ),
+  postfix(
+    { trig = "sq", desc = "Sqrt" },
+    { d(1, nodes_util.dynamic_postfix, {}, { user_args = { "\\sqrt{", "}" } }) },
     { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
   ),
 }

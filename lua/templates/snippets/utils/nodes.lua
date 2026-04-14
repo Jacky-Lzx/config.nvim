@@ -40,7 +40,11 @@ function M.dynamic_postfix(_, parent, _, user_arg1, user_arg2)
     end
   end
 
-  return sn(nil, fmta([[<><><>]], { t(user_arg1), t(text), t(user_arg2) }))
+  if text == "" then
+    return sn(nil, fmta([[<><><>]], { t(user_arg1), i(1), t(user_arg2) }))
+  else
+    return sn(nil, fmta([[<><><>]], { t(user_arg1), t(text), t(user_arg2) }))
+  end
 end
 
 function M.fmt_env(env_name, required_args)
