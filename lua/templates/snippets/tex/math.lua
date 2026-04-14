@@ -5,6 +5,26 @@ local nodes_util = require("templates.snippets.utils.nodes")
 
 local str_util = require("templates.snippets.utils.strings")
 
+--- Modified from `https://github.com/L3MON4D3/LuaSnip/wiki/Cool-Snippets#smart-postfix-snippets`
+local function dynamic_postfix_divide(_, parent, _)
+  local capture = parent.snippet.env.POSTFIX_MATCH
+
+  local text = ""
+  if capture and #capture > 0 then
+    text = capture
+  else
+    if #parent.snippet.env.SELECT_RAW > 0 then
+      text = parent.snippet.env.SELECT_RAW
+    end
+  end
+
+  if text == "" then
+    return sn(nil, fmta([[\frac{<>}{<>}]], { i(1), i(2) }))
+  else
+    return sn(nil, fmta([[\frac{<>}{<>}]], { t(text), i(1) }))
+  end
+end
+
 local M = {}
 
 local function symbol(prefix, desc, body)
@@ -279,30 +299,11 @@ M.autosnippets = {
     fmta([[\frac{<>}{<>}]], { i(1), i(2) }),
     { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
   ),
-
-  -- TODO: auto fraction
-  -- autosnippet(
-  --   {
-  --     trig = "((\\d+)|(\\d*)(\\\\)?([A-Za-z]+)((\\^|_)(\\{\\d+\\}|\\d))*)\\/",
-  --     name = "fraction",
-  --     desc = "auto fraction 1",
-  --     trigEngine = "ecma",
-  --   },
-  --   fmta(
-  --     [[
-  --   \frac{<>}{<>}<>
-  --   ]],
-  --     { f(function(_, snip)
-  --       return snip.captures[1]
-  --     end), i(1), i(0) }
-  --   ),
-  --   { condition = cond.in_math, show_condition = cond.in_math }
-  -- ),
-  -- autosnippet(
-  --   { trig = [[(^.*\\))/]], name = "fraction", desc = "auto fraction 2", trigEngine = "ecma" },
-  --   { d(1, generate_fraction) },
-  --   { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
-  -- ),
+  postfix(
+    { trig = "//", desc = "Auto Fraction", priority = 2000 },
+    { d(1, dynamic_postfix_divide, {}) },
+    { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
+  ),
 
   s(
     { trig = "^^", name = "superscript", desc = "Superscript", wordTrig = false },
