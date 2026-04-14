@@ -40,5 +40,6 @@ vim.keymap.set("i", "<M-m>", "\\(  \\)<esc>hhi")
 vim.api.nvim_create_user_command("ConvertTabToSpace", "%s/\t/  /g", {})
 
 vim.keymap.set({ "i", "n" }, "<M-m>", function()
-  vim.cmd("DebugSileMath")
+  local ret = require("templates.snippets.utils.conditions").obj.inside_node("class_definition")
+  require("snacks.notify").info(tostring(ret))
 end, { desc = "test" })
