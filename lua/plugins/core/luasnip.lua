@@ -84,6 +84,7 @@ return {
       -- ls.filetype_extend("systemverilog", { "verilog" })
 
       ls.filetype_extend("markdown", { "tex" })
+      ls.filetype_extend("markdown_inline", { "markdown" })
 
       vim.api.nvim_create_user_command("LuaSnipList", require("luasnip.extras.snippet_list").open, {})
       vim.api.nvim_create_user_command("LuaSnipEdit", require("luasnip.loaders").edit_snippet_files, {})

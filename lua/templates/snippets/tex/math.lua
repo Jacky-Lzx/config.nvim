@@ -174,6 +174,12 @@ M.snippets = {
   ),
 
   s(
+    { trig = "set", name = "set", desc = "`{ }`" },
+    fmta([[\{ <> \}]], { d(1, nodes_util.visual_or_insert) }),
+    { show_condition = math_conds.obj.in_math }
+  ),
+
+  s(
     { trig = "matrix", name = "matrix", desc = { "Matrix", "\tThe matrix without close characters" } },
     nodes_util.fmt_env("matrix"),
     { show_condition = math_conds.obj.in_math }

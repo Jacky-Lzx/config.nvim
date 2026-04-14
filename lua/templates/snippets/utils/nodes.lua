@@ -6,12 +6,17 @@ local fmta = require("luasnip.extras.fmt").fmta
 
 local M = {}
 
-function M.visual_or_insert(_, parent, _, is_trim)
+function M.visual_or_insert(_, parent, _, is_trim, insert_text)
   -- user_args:
   --   is_trim: trim on single select row (default: true)
+  --   insert_text: text to insert if no visual selection (default: "")
 
   if is_trim == nil then
     is_trim = true
+  end
+
+  if insert_text == nil then
+    insert_text = ""
   end
 
   if #parent.snippet.env.SELECT_RAW == 1 then
@@ -23,7 +28,7 @@ function M.visual_or_insert(_, parent, _, is_trim)
   elseif #parent.snippet.env.SELECT_RAW > 1 then
     return sn(nil, t(parent.snippet.env.SELECT_RAW))
   else
-    return sn(nil, i(1, ""))
+    return sn(nil, i(1, insert_text))
   end
 end
 

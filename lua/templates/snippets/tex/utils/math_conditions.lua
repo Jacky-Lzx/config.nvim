@@ -542,7 +542,6 @@ local function document_type()
 
     if capture_name == "document_type" then
       local doc_type = vim.treesitter.get_node_text(node, 0)
-      require("snacks.notify").info(doc_type)
       return doc_type
     end
   end

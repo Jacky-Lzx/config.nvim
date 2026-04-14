@@ -1,12 +1,3 @@
-local ls = require("luasnip")
-local s = ls.snippet
-local t = ls.text_node
-local i = ls.insert_node
-local d = ls.dynamic_node
-local sn = ls.snippet_node
-
-local fmta = require("luasnip.extras.fmt").fmta
-
 local utils = require("templates.snippets.utils.utils")
 local math_conds = require("templates.snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
@@ -102,9 +93,51 @@ return
   s(
     { trig = "link", desc = "Link" },
     fmta([[[<>](<>)]], {
-      i(1),
-      d(2, nodes_util.visual_or_insert),
+      i(1, "NAME"),
+      d(2, nodes_util.visual_or_insert, {}, { user_args = { true, "LINK" } }),
     })
+  ),
+
+  s(
+    { trig = "code", desc = "Code block" },
+    fmta(
+      [[
+        ```<>
+        <>
+        ```
+      ]],
+      {
+        i(1),
+        d(2, nodes_util.visual_or_insert),
+      }
+    )
+  ),
+
+  -- Bold Text
+  s("bold", { t("**"), d(1, nodes_util.visual_or_insert, {}, { user_args = { true, "BOLD" } }), t("**") }),
+
+  -- Italics
+  s("italic", { t("_"), d(1, nodes_util.visual_or_insert, {}, { user_args = { true, "ITALIC" } }), t("_") }),
+
+  -- Strikethrough
+  s("strike", { t("~~"), d(1, nodes_util.visual_or_insert, {}, { user_args = { true, "STRIKETHROUGH" } }), t("~~") }),
+
+  -- Blockquote
+  s("quote", { t("> "), d(1, nodes_util.visual_or_insert, {}, { user_args = { true, "QUOTE" } }) }),
+
+  -- Emphasis Variations
+  s(
+    { trig = "emph", desc = "Emphasis", priority = 2000 }, -- Higher priority to avoid conflict with "emph" snippet from LaTeX
+    { t("**_"), d(1, nodes_util.visual_or_insert, {}, { user_args = { true, "EMPH" } }), t("_**") }
+  ),
+
+  -- HTML Comment
+  s("comment", { t("<!-- "), d(1, nodes_util.visual_or_insert, {}, { user_args = { true, "COMMENT" } }), t(" -->") }),
+
+  -- Task List
+  s(
+    { trig = "todo", desc = "Checkbox", priority = 2000 }, -- Higher priority to avoid conflict with the todo-comment snippets
+    fmta([[- <> ]], { c(1, { { t("["), i(1, " "), t("]") }, t("[x]") }) })
   ),
 },
 -- Autosnippets
