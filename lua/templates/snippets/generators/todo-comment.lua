@@ -26,20 +26,20 @@ local marks = {
 }
 
 --- Get the comment string {beg,end} table
----@param ctype integer 1 for `line`-comment and 2 for `block`-comment
 ---@return table comment_strings {begcstring, endcstring}
-local get_cstring = function(ctype)
-  local calculate_comment_string = require("Comment.ft").calculate
-  local utils = require("Comment.utils")
-  -- use the `Comments.nvim` API to fetch the comment string for the region (eq. '--%s' or '--[[%s]]' for `lua`)
-  local cstring = calculate_comment_string({ ctype = ctype, range = utils.get_region() }) or vim.bo.commentstring
-  -- as we want only the strings themselves and not strings ready for using `format` we want to split the left and right side
-  local left, right = utils.unwrap_cstr(cstring)
+local get_cstring = function()
+  local cursor = vim.api.nvim_win_get_cursor(0) -- get the current cursor position
+  local cstring = require("mini.comment").get_commentstring({ cursor[1], cursor[2] + 1 })
+
+  local left, right = cstring:match("^(.*)%%s(.*)$")
+  left = vim.trim(left)
+  right = vim.trim(right)
+
   -- create a `{left, right}` table for it
   return { left, right }
 end
 
-local todo_snippet_nodes = function(aliases, opts)
+local todo_snippet_nodes = function(aliases)
   local aliases_node = nil
   if #aliases == 1 then
     aliases_node = sn(1, t(aliases[1])) -- if we have only one alias, we do not need a choice-node, so we can just return a text-node
@@ -61,13 +61,13 @@ local todo_snippet_nodes = function(aliases, opts)
   -- format them into the actual snippet
   local comment_node = fmta("<> <>: <> <> <>", {
     f(function()
-      return get_cstring(opts.ctype)[1] -- get <comment-string[1]>
+      return get_cstring()[1] -- get <comment-string[1]>
     end),
     aliases_node,
     i(3), -- {comment-text}
     c(2, sigmark_nodes), -- [comment-mark]
     f(function()
-      return get_cstring(opts.ctype)[2] -- get <comment-string[2]>
+      return get_cstring()[2] -- get <comment-string[2]>
     end),
   })
   return comment_node
@@ -84,12 +84,11 @@ local todo_snippet = function(context, aliases, opts)
   if not context.trig then
     return error("context doesn't include a `trig` key which is mandatory", 2) -- all we need from the context is the trigger
   end
-  opts.ctype = opts.ctype or 1 -- comment type can be passed in the `opts` table, but if it is not, we have to ensure, it is defined
   local alias_string = table.concat(aliases, "|") -- `choice_node` documentation
   context.name = context.name or (alias_string .. " comment") -- generate the `name` of the snippet if not defined
   context.dscr = context.dscr or (alias_string .. " comment with a signature-mark") -- generate the `dscr` if not defined
   context.docstring = context.docstring or (" {1:" .. alias_string .. "}: {3} <{2:mark}>{0} ") -- generate the `docstring` if not defined
-  local comment_node = todo_snippet_nodes(aliases, opts) -- nodes from the previously defined function for their generation
+  local comment_node = todo_snippet_nodes(aliases) -- nodes from the previously defined function for their generation
   return s(context, comment_node, opts) -- the final todo-snippet constructed from our parameters
 end
 
@@ -100,13 +99,6 @@ local todo_snippet_specs = {
   { { trig = "warn" }, { "WARN", "WARNING", "XXX" } },
   { { trig = "perf" }, { "PERF", "PERFORMANCE", "OPTIM", "OPTIMIZE" } },
   { { trig = "note" }, { "NOTE", "INFO" } },
-  -- NOTE: Block commented todo-comments <kunzaatko>
-  { { trig = "todob" }, "TODO", { ctype = 2 } },
-  { { trig = "fixb" }, { "FIX", "BUG", "ISSUE", "FIXIT" }, { ctype = 2 } },
-  { { trig = "hackb" }, "HACK", { ctype = 2 } },
-  { { trig = "warnb" }, { "WARN", "WARNING", "XXX" }, { ctype = 2 } },
-  { { trig = "perfb" }, { "PERF", "PERFORMANCE", "OPTIM", "OPTIMIZE" }, { ctype = 2 } },
-  { { trig = "noteb" }, { "NOTE", "INFO" }, { ctype = 2 } },
 }
 
 local M = {}
