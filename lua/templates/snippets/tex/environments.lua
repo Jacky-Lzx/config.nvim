@@ -4,6 +4,17 @@ local nodes_util = require("templates.snippets.utils.nodes")
 local math_conds = require("templates.snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 
+local function label_fn(args, _, _)
+  -- Remove extension str
+  local ret = args[1][1]:gsub("%.[^.]*$", "")
+  -- Change `_` to `-`
+  --  NOTE: This is a bug of the LaTeX treesiter parser. `_` breaks the treesitter parsing
+  --        Link: `https://github.com/latex-lsp/tree-sitter-latex/issues/208`
+  --        <2026.04.14, lzx>
+  ret = ret:gsub("_", "-")
+  return ret
+end
+
 -- local tex = require("templates.snippets.tex.utils.conditions")
 
 return {
@@ -82,10 +93,7 @@ return {
         t("./Figures/"),
         i(3),
         i(4),
-        f(function(args, _, _)
-          -- Remove extension str
-          return args[1][1]:gsub("%.[^.]*$", "")
-        end, { 3 }),
+        f(label_fn, { 3 }),
       }
     )
   ),
@@ -137,17 +145,11 @@ return {
         t("./Figures/"),
         i(1),
         i(2),
-        f(function(args, _, _)
-          -- Remove extension str
-          return args[1][1]:gsub("%.[^.]*$", "")
-        end, { 1 }),
+        f(label_fn, { 1 }),
         t("./Figures/"),
         i(3),
         i(4),
-        f(function(args, _, _)
-          -- Remove extension str
-          return args[1][1]:gsub("%.[^.]*$", "")
-        end, { 3 }),
+        f(label_fn, { 3 }),
         i(5),
         i(6),
       }
@@ -170,10 +172,7 @@ return {
         t("./Figures/"),
         i(1),
         i(2),
-        f(function(args, _, _)
-          -- Remove extension str
-          return args[1][1]:gsub("%.[^.]*$", "")
-        end, { 1 }),
+        f(label_fn, { 1 }),
       }
     ),
     { condition = math_conds.obj.in_figure, show_condition = math_conds.obj.in_figure }
