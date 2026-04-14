@@ -66,7 +66,17 @@ return {
       opts = function(_, opts)
         return vim.tbl_deep_extend("force", opts or {}, {
           picker = {
-            actions = require("trouble.sources.snacks").actions,
+            -- NOTE: Copy from `require("trouble.sources.snacks").actions` to avoid the loading of trouble at startup
+            -- <2026.04.14, lzx>
+            actions = {
+              -- Open selected or all items in the trouble list.
+              trouble_open = {
+                action = function()
+                  require("trouble.sources.snacks").wrap({ type = "smart" })
+                end,
+                desc = "smart-open-with-trouble",
+              },
+            },
             win = {
               input = {
                 keys = {
