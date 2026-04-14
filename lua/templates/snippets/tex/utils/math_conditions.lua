@@ -511,6 +511,45 @@ local function in_environment(env_name)
   return result
 end
 
+local document_query = vim.treesitter.query.parse(
+  "latex",
+  [[
+    (class_include
+      (curly_group_path
+        (path) @document_type
+      )
+    )
+  ]]
+)
+
+local function document_type()
+  if vim.bo.filetype ~= "tex" then
+    return nil -- Only applies to TeX files, not markdown or others
+  end
+
+  local parser = get_incremental_parser(0, "latex")
+  if not parser then
+    require("snacks.notify").warn("LaTeX parser not available. Cannot determine document type.")
+  end
+
+  local root = parser:parse()[1]:root()
+
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  cursor[1] = cursor[1] - 1 -- Convert to 0-indexed for Treesitter
+
+  for id, node in document_query:iter_captures(root, 0) do
+    local capture_name = document_query.captures[id]
+
+    if capture_name == "document_type" then
+      local doc_type = vim.treesitter.get_node_text(node, 0)
+      require("snacks.notify").info(doc_type)
+      return doc_type
+    end
+  end
+
+  return nil
+end
+
 local function in_environment_ts(env_name)
   if vim.bo.filetype ~= "tex" then
     return false -- Only applies to TeX files, not markdown or others
@@ -558,6 +597,14 @@ end
 -- M.fn.in_text = function()
 --   return in_environment("text") and not M.fn.math_mode()
 -- end
+
+M.fn.in_beamer = function()
+  if vim.bo.filetype ~= "tex" then
+    return false -- Only applies to TeX files, not markdown or others
+  end
+  local doc_type = document_type()
+  return doc_type == "beamer" or doc_type == "ctexbeamer"
+end
 
 M.fn.in_align = function()
   return vim.bo.filetype == "tex"

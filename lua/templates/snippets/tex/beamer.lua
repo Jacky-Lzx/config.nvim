@@ -1,3 +1,5 @@
+local math_conditions = require("templates.snippets.tex.utils.math_conditions")
+
 return {
   s(
     { trig = "frame", desc = "Frame" },
@@ -8,7 +10,8 @@ return {
         \end{frame}
       ]],
       { c(2, { t(""), t("[fragile]") }), c(1, { sn(nil, { t("{"), i(1, "Title"), t("}") }), t("") }), i(0) }
-    )
+    ),
+    { condition = math_conditions.obj.in_beamer, show_condition = math_conditions.obj.in_beamer }
   ),
 
   s(
@@ -27,7 +30,8 @@ return {
         }
       ]],
       { i(1, "Outline"), rep(1) }
-    )
+    ),
+    { condition = math_conditions.obj.in_beamer, show_condition = math_conditions.obj.in_beamer }
   ),
 
   s(
@@ -45,6 +49,7 @@ return {
         \end{columns}
       ]],
       { i(1, "5"), i(3), i(2, "5"), i(0) }
-    )
+    ),
+    { condition = math_conditions.obj.in_beamer, show_condition = math_conditions.obj.in_beamer }
   ),
 }
