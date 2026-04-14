@@ -27,6 +27,9 @@ return {
         { "<leader>s",  group = "[Snacks]"                    },
         { "<leader>t",  group = "[Snacks] Toggle"             },
         { "<leader>g",  group = "[Trouble] / [Git]"           },
+
+        { "]c", desc = "Jump to next change"     },
+        { "[c", desc = "Jump to previous change" },
       },
       -- expand all nodes wighout a description
       expand = function(node)

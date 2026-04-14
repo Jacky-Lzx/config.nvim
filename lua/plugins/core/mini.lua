@@ -24,6 +24,8 @@ return {
     opts = {
       indent = { suffix = "" },
       oldfile = { suffix = "" },
+      conflict = { suffix = "" },
+      comment = { suffix = "" },
     },
   },
 

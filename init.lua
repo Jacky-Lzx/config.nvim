@@ -92,6 +92,8 @@ require("keymapping")
 -- Do not show `~` when the buffer is end
 -- See `https://github.com/catppuccin/nvim/commit/50c34a2cf18776a77f770fcf5df777de6fe69e08`
 vim.opt.fillchars:append({ eob = " " })
+-- Do not show strikethroughs in the diff view
+vim.opt.fillchars:append({ diff = " " })
 
 -- Snacks profiler settings
 -- Use `PROF=1` nvim to start profiling
