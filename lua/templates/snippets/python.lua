@@ -1,3 +1,5 @@
+local conds = require("templates.snippets.utils.conditions")
+
 --- Some snippets modified from `https://github.com/mireq/luasnip-snippets/blob/main/lua/luasnip_snippets/python.lua`
 local function has_ts_ancestor(node, type)
   if not node then
@@ -31,14 +33,53 @@ end
 return
 -- Normal snippets
 {
-  -- stylua: ignore
-  s({trig = "main", desc = "Main"},
-    fmta([[
+
+  --- Imports [[[
+  s(
+    { trig = "fr", desc = "From ... import ... statement" },
+    fmta([[from <module> import <name>]], {
+      module = i(1, "MODULE"),
+      name = i(2, "NAME"),
+    }),
+    { show_condition = conds.line_begin }
+  ),
+  s(
+    { trig = "fras", desc = "From ... import ... as ... statement" },
+    fmta([[from <module> import <name> as <alias>]], {
+      module = i(1, "MODULE"),
+      name = i(2, "NAME"),
+      alias = i(3, "ALIAS"),
+    }),
+    { show_condition = conds.line_begin }
+  ),
+  s(
+    { trig = "im", desc = "import ... statement" },
+    fmta([[import <name>]], {
+      name = i(1, "NAME"),
+    }),
+    { show_condition = conds.line_begin }
+  ),
+  s(
+    { trig = "imas", desc = "import ... as ... statement" },
+    fmta([[import <name> as <alias>]], {
+      name = i(1, "NAME"),
+      alias = i(2, "ALIAS"),
+    }),
+    { show_condition = conds.line_begin }
+  ),
+  --- ]]]
+
+  s(
+    { trig = "main", desc = "Main" },
+    fmta(
+      [[
     if __name__ == "__main__":
         <args>
-    ]], {
-      args = i(0),
-    })
+    ]],
+      {
+        args = i(0, "pass"),
+      }
+    )
   ),
 
   s(
