@@ -139,6 +139,24 @@ return
     { trig = "todo", desc = "Checkbox", priority = 2000 }, -- Higher priority to avoid conflict with the todo-comment snippets
     fmta([[- <> ]], { c(1, { { t("["), i(1, " "), t("]") }, t("[x]") }) })
   ),
+
+  ms(
+    {
+      { trig = "hide", desc = "Hide details" },
+      { trig = "detail", desc = "Hide details" },
+    },
+    fmt(
+      [[
+        <details> <summary> {summary} </summary>
+          {detail}
+        </details>
+      ]],
+      {
+        summary = i(1, "SUMMARY"),
+        detail = i(2, "DETAILS"),
+      }
+    )
+  ),
 },
 -- Autosnippets
 {
