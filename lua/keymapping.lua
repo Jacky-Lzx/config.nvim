@@ -40,6 +40,32 @@ vim.keymap.set("i", "<M-m>", "\\(  \\)<esc>hhi")
 vim.api.nvim_create_user_command("ConvertTabToSpace", "%s/\t/  /g", {})
 
 vim.keymap.set({ "i", "n" }, "<M-m>", function()
-  local ret = require("templates.snippets.utils.conditions").obj.inside_node("class_definition")
-  require("snacks.notify").info(tostring(ret))
+  local function on_files_selected(files)
+    -- `files` is a list of absolute/normalized-ish paths (strings)
+    -- Do whatever you want here:
+    vim.notify("Selected:\n" .. table.concat(files, "\n"))
+  end
+
+  Snacks.picker.files({
+    -- Override what happens when you press <CR> (confirm)
+    actions = {
+      confirm = function(picker, item)
+        -- Get multi-selection (or current item if nothing is selected)
+        local items = picker:selected({ fallback = true })
+
+        -- Convert items -> file paths
+        local files = vim.tbl_map(function(it)
+          -- for the files picker items typically have it.file (and it.text)
+          return it.file or it.text
+        end, items)
+
+        picker:close()
+
+        -- Schedule if you’re going to open/edit files, etc.
+        vim.schedule(function()
+          on_files_selected(files)
+        end)
+      end,
+    },
+  })
 end, { desc = "test" })
