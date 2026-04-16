@@ -70,6 +70,25 @@ return {
       },
       picker = {
         enabled = true,
+        actions = {
+          copy_selected = {
+            desc = "Copy selected to clipboard",
+            action = function(picker)
+              -- selected items; if none selected, fall back to current item
+              local items = picker:selected({ fallback = true })
+
+              -- choose what you want to copy: file path, text, etc.
+              local lines = vim.tbl_map(function(it)
+                return it.file or it.text
+              end, items)
+
+              local value = table.concat(lines, "\n")
+              vim.fn.setreg("+", value) -- system clipboard
+
+              Snacks.notify(("Copied %d item(s) to clipboard"):format(#lines), { title = "Snacks Picker" })
+            end,
+          },
+        },
         previewers = {
           diff = {
             builtin = false, -- use Neovim for previewing diffs (true) or use an external tool (false)
@@ -103,6 +122,7 @@ return {
               ["<A-d>"] = { "list_scroll_down", mode = { "n", "i" } },
               ["<c-j>"] = {},
               ["<c-k>"] = {},
+              ["<c-y>"] = { "copy_selected", mode = { "n", "i" } },
             },
           },
         },
