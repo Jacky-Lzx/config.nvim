@@ -74,6 +74,13 @@ local opts = {
       },
     },
   },
+  dev = {
+    -- Directory where you store your local plugin projects. If a function is used,
+    -- the plugin directory (e.g. `~/projects/plugin-name`) must be returned.
+    ---@type string | fun(plugin: LazyPlugin): string
+    path = "~/Documents/Github/nvim_plugins",
+    fallback = true, -- Fallback to git when local plugin doesn't exist
+  },
 }
 
 require("lazy").setup(opts)

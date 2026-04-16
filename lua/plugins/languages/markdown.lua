@@ -61,8 +61,13 @@ local M = {
   {
     "iamcco/markdown-preview.nvim",
     ft = { "markdown" },
-    cmd = { "MarkdownPreviewToggle" },
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
     build = "cd app && yarn install",
+    init = function()
+      vim.g.mkdp_filetypes = { "markdown" }
+      -- Set to 1, the nvim will auto close current preview window when changing from Markdown buffer to another buffer
+      vim.g.mkdp_auto_close = 0
+    end,
   },
 
   {
@@ -157,9 +162,94 @@ local M = {
   -- },
 
   {
-    "HakonHarnes/img-clip.nvim",
+    "Jacky-Lzx/image-insert.nvim",
+    -- dev = true,
     keys = {
-      { "<leader>pi", "<CMD>PasteImage<CR>", desc = "[Img-Clip] Paste image from system clipboard" },
+      {
+        "<leader>pI",
+        function()
+          require("image-insert").insert_image({ insert_strategy = "insert_line_after" })
+        end,
+        desc = "[image-insert] Insert next line",
+      },
+      {
+        "<leader>pi",
+        function()
+          require("image-insert").insert_image({ insert_strategy = "insert_after" })
+        end,
+        desc = "[image-insert] Insert after cursor",
+      },
+      {
+        "<leader>PI",
+        function()
+          require("image-insert").insert_image({ insert_strategy = "insert_line_before" })
+        end,
+        desc = "[image-insert] Insert prev line",
+      },
+      {
+        "<leader>Pi",
+        function()
+          require("image-insert").insert_image({ insert_strategy = "insert_before" })
+        end,
+        desc = "[image-insert] Insert before cursor",
+      },
+      {
+        "<leader>pC",
+        function()
+          require("image-insert").insert_image({
+            process = {
+              { cmd = "", extension = "png" },
+              { cmd = "", extension = "jpeg" },
+              { cmd = "", extension = "avif" },
+              { cmd = "convert - avif:-", extension = "avif" },
+              { cmd = "magick - -quality 85 png:-", extension = "png" },
+              { cmd = "magick - -quality 75 webp:-", extension = "webp" },
+            },
+          })
+        end,
+        desc = "[image-insert] Paste image from system clipboard",
+      },
+      {
+        "<leader>pc",
+        function()
+          Snacks.picker.files({
+            ft = { "jpg", "jpeg", "png", "webp", "heic", "avif" },
+            confirm = function(self, item, _)
+              self:close()
+              require("image-insert").insert_image({}, "./" .. item.file) -- ./ is necessary for image-insert to recognize it as path
+            end,
+          })
+        end,
+        desc = "[image-insert] Choose an image to paste",
+      },
+    },
+    opts = {
+      dir_path = "Figures",
+      prompt_for_file_name = false,
+      relative_to_current_file = false,
+      process = { cmd = "convert - avif:-", extension = "avif" },
+    },
+  },
+
+  {
+    "HakonHarnes/img-clip.nvim",
+    enabled = false,
+    dev = true,
+    keys = {
+      {
+        "<leader>pi",
+        function()
+          require("img-clip").paste_image({ insert_at_current_line = true, insert_at_current_line_after = true })
+        end,
+        desc = "[Img-Clip] Paste image from system clipboard",
+      },
+      {
+        "<leader>pI",
+        function()
+          require("img-clip").paste_image({ insert_at_current_line = true, insert_at_current_line_after = false })
+        end,
+        desc = "[Img-Clip] Paste image from system clipboard",
+      },
       {
         "<leader>pc",
         function()
@@ -181,10 +271,17 @@ local M = {
         extension = "avif", ---@type string
         -- Convert clipboard image to avif format before saving
         process_cmd = "convert - avif:-", ---@type string
+        copy_images = true,
         formats = { "jpeg", "jpg", "png", "heic", "pdf", "avif" }, ---@type string[]
 
         use_absolute_path = false, ---@type boolean
         relative_to_current_file = false, ---@type boolean
+
+        insert_mode_after_paste = true,
+
+        insert_template_after_cursor = true,
+        insert_at_current_line = true,
+        insert_at_current_line_after = false,
 
         show_dir_path_in_prompt = true, ---@type boolean
 
@@ -218,6 +315,13 @@ local M = {
           default = {
             dir_path = "assets/imgs", ---@type string | fun(): string
           },
+        },
+      },
+      {
+        "Jacky-Lzx/image-insert.nvim",
+        optional = true,
+        opts = {
+          dir_path = "assets/imgs",
         },
       },
       {
