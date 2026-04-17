@@ -1,3 +1,14 @@
+vim.api.nvim_create_autocmd("User", {
+  pattern = "TSUpdate",
+  callback = function()
+    require("nvim-treesitter.parsers").latex.install_info = {
+      url = "https://github.com/Jacky-Lzx/tree-sitter-latex",
+      branch = "master",
+      generate = true,
+    }
+  end,
+})
+
 vim.g.tex_flavor = "latex"
 
 -- vim.api.nvim_create_autocmd("FileType", {
