@@ -71,6 +71,21 @@ return {
       picker = {
         enabled = true,
         actions = {
+          system_open = {
+            desc = "Open with system app",
+            action = function(picker, item)
+              local items = picker:selected({ fallback = true })
+              local lines = vim.tbl_map(function(it)
+                local path = it.file or it.text
+                if path then
+                  -- Snacks.util.system_open(path)
+                  vim.fn.jobstart({ "open", path }, { detach = true })
+                else
+                  Snacks.notify("No file or text to open", { title = "Snacks Picker", level = "error" })
+                end
+              end, items)
+            end,
+          },
           copy_selected = {
             desc = "Copy selected to clipboard",
             action = function(picker)
@@ -123,6 +138,7 @@ return {
               ["<c-j>"] = {},
               ["<c-k>"] = {},
               ["<c-y>"] = { "copy_selected", mode = { "n", "i" } },
+              ["<c-o>"] = { "system_open", mode = { "n", "i" } },
             },
           },
         },
