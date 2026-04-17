@@ -69,3 +69,10 @@ vim.keymap.set({ "i", "n" }, "<M-m>", function()
     },
   })
 end, { desc = "test" })
+
+vim.keymap.set(
+  { "n", "x" },
+  "go",
+  require("utils.utils").open_at_cursor,
+  { desc = "Open link under cursor", nowait = true }
+)
