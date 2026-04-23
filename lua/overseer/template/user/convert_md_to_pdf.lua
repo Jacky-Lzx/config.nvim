@@ -1,5 +1,5 @@
 return {
-  name = "Convert markdown to pdf",
+  name = "[Markdown] Convert to pdf",
   builder = function()
     local file = vim.fn.expand("%:p")
     local filename_without_ext = vim.fn.expand("%:t:r")
