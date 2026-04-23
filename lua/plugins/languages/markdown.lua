@@ -60,7 +60,7 @@ local M = {
 
   {
     "toppair/peek.nvim",
-    conds = require("conds").is_mac,
+    enabled = require("conds").is_mac,
     cmd = { "MarkdownPreview" },
     build = "deno task --quiet build:fast",
     opts = {},
