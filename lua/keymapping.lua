@@ -1,3 +1,15 @@
+-- Map :W to :w
+vim.api.nvim_create_user_command("W", "w", {})
+-- Map :Wq to :wq
+vim.api.nvim_create_user_command("Wq", "wq", {})
+-- Bonus: Map :Q to :q
+vim.api.nvim_create_user_command("Q", "q", {})
+
+vim.keymap.del("n", "]a")
+vim.keymap.del("n", "]A")
+vim.keymap.del("n", "[a")
+vim.keymap.del("n", "[A")
+
 vim.keymap.set("i", "<C-h>", "<Left>")
 vim.keymap.set("i", "<C-l>", "<Right>")
 vim.keymap.set("i", "<C-j>", "<Down>")

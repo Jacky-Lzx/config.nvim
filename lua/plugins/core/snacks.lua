@@ -170,6 +170,12 @@ return {
       scope = {
         enabled = true,
         cursor = true,
+        keys = {
+          jump = {
+            ["[i"] = false,
+            ["]i"] = false,
+          },
+        },
       },
       scroll = { enabled = false },
       statuscolumn = {
