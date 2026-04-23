@@ -14,5 +14,3 @@ vim.opt.clipboard = ""
 vim.cmd([[ autocmd FileType * set formatoptions-=ro ]])
 
 require("vscode_setting.plugins_vscode")
-
-require("keymapping")

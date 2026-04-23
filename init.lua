@@ -43,7 +43,9 @@ vim.opt.clipboard = ""
 vim.o.textwidth = 120
 -- Prevent auto insertion of new lines when writing a long sentence
 vim.api.nvim_create_autocmd("FileType", {
-  command = "set formatoptions=qj",
+  callback = function(_)
+    vim.opt.formatoptions = { q = true, j = true, n = true }
+  end,
 })
 
 -- Set block cursor with blinking in all modes
@@ -61,53 +63,14 @@ local uname = vim.uv.os_uname()
 if uname.sysname == "Linux" then
   python_path = "/home/lzx/.pyenv/versions/3.10.0/envs/neovim3/bin/python3"
 elseif uname.sysname == "Darwin" then
-  python_path = "/opt/homebrew/anaconda3/envs/neovim/bin/python3"
+  python_path = vim.fn.expand("$HOME/.uv/neovim/bin/python3")
   -- elseif uname.sysname == "Windows_NT" then
 end
 
 vim.g.python3_host_prog = python_path
-
--- vim.opt.formatoptions:remove { "r", "o" }
-vim.cmd([[ autocmd FileType * set formatoptions-=ro ]])
-
--- When a help file is opened, move its window to the right side
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "help",
-  callback = function()
-    -- Equivalent to :wincmd L in Vimscript
-    vim.cmd("wincmd L")
-  end,
-})
-
-require("global")
 
 if vim.g.neovide then
   require("neovide.neovide")
 end
 
 require("plugin")
-
-require("keymapping")
-
--- Do not show `~` when the buffer is end
--- See `https://github.com/catppuccin/nvim/commit/50c34a2cf18776a77f770fcf5df777de6fe69e08`
-vim.opt.fillchars:append({ eob = " " })
--- Do not show strikethroughs in the diff view
-vim.opt.fillchars:append({ diff = " " })
-
--- Snacks profiler settings
--- Use `PROF=1` nvim to start profiling
-if vim.env.PROF then
-  -- example for lazy.nvim
-  -- change this to the correct path for your plugin manager
-  local snacks = vim.fn.stdpath("data") .. "/lazy/snacks.nvim"
-  vim.opt.rtp:append(snacks)
-  ---@diagnostic disable-next-line: missing-fields
-  require("snacks.profiler").startup({
-    startup = {
-      event = "VimEnter", -- stop profiler on this event. Defaults to `VimEnter`
-      -- event = "UIEnter",
-      -- event = "VeryLazy",
-    },
-  })
-end

@@ -43,7 +43,7 @@ local M = {
     "mason-org/mason.nvim",
     optional = true,
     opts_extend = { "ensure_installed" },
-    opts = { ensure_installed = { "marksman", "harper-ls", "prettierd" } },
+    opts = { ensure_installed = { "marksman", "harper-ls", "prettierd", "prettier", "mmdc" } },
   },
 
   -- formatter

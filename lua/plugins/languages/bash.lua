@@ -17,10 +17,18 @@ vim.lsp.enable("bashls")
 
 local M = {
   {
+    "nvim-treesitter/nvim-treesitter",
+    opts_extend = { "ensure_installed" },
+    opts = {
+      ensure_installed = { "bash" },
+    },
+  },
+
+  {
     "mason-org/mason.nvim",
     optional = true,
     opts_extend = { "ensure_installed" },
-    opts = { ensure_installed = { "shfmt" } },
+    opts = { ensure_installed = { "shfmt", "bash-language-server" } },
   },
 
   {
