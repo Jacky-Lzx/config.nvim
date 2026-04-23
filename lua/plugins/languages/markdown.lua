@@ -59,14 +59,13 @@ local M = {
   },
 
   {
-    "iamcco/markdown-preview.nvim",
-    ft = { "markdown" },
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = "cd app && yarn install",
-    init = function()
-      vim.g.mkdp_filetypes = { "markdown" }
-      -- Set to 1, the nvim will auto close current preview window when changing from Markdown buffer to another buffer
-      vim.g.mkdp_auto_close = 0
+    "toppair/peek.nvim",
+    cmd = { "MarkdownPreview" },
+    build = "deno task --quiet build:fast",
+    opts = {},
+    config = function(_, opts)
+      require("peek").setup(opts)
+      vim.api.nvim_create_user_command("MarkdownPreview", require("peek").open, {})
     end,
   },
 
