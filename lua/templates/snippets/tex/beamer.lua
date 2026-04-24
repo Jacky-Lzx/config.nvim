@@ -9,7 +9,7 @@ return {
           <>
         \end{frame}
       ]],
-      { c(2, { t(""), t("[fragile]") }), c(1, { sn(nil, { t("{"), i(1, "Title"), t("}") }), t("") }), i(0) }
+      { c(2, { t(""), t("[fragile]"), t("[t]") }), c(1, { sn(nil, { t("{"), i(1, "Title"), t("}") }), t("") }), i(0) }
     ),
     { condition = math_conditions.obj.in_beamer, show_condition = math_conditions.obj.in_beamer }
   ),
@@ -38,17 +38,29 @@ return {
     { trig = "columns", desc = "Create columns" },
     fmta(
       [[
-        \begin{columns}
-          \begin{column}{0.<>\linewidth}
+        \begin{columns}[onlytextwidth,T]
+          \begin{column}{0.<>\textwidth}
             <>
           \end{column}
 
-          \begin{column}{0.<>\linewidth}
+          \begin{column}{0.<>\textwidth}
             <>
           \end{column}
         \end{columns}
       ]],
-      { i(1, "5"), i(3), i(2, "5"), i(0) }
+      {
+        i(1, "5"),
+        i(2),
+        f(function(args)
+          local val = tonumber("0." .. args[1][1])
+          if val then
+            local new_val = 1 - val
+            return tostring(1 - val):sub(3)
+          end
+          return "5" -- Default fallback
+        end, { 1 }),
+        i(0),
+      }
     ),
     { condition = math_conditions.obj.in_beamer, show_condition = math_conditions.obj.in_beamer }
   ),

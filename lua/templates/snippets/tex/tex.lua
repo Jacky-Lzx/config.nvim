@@ -118,6 +118,9 @@ return {
     { trig = "ldel", desc = "Lzx del" },
     fmta([[\ldel{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }) })
   ),
+
+  s({ trig = "ignore", desc = "tex-fmt ignore" }, { t("% tex-fmt: skip") }),
+  s({ trig = "ignoreb", desc = "tex-fmt ignore (block)" }, { t("% tex-fmt: off"), t({ "", "% tex-fmt: on" }) }),
 },
 -- Autosnippets
 {}
