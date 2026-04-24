@@ -11,75 +11,6 @@ vim.api.nvim_create_autocmd("User", {
 
 vim.g.tex_flavor = "latex"
 
--- vim.api.nvim_create_autocmd("FileType", {
---   pattern = "tex",
---   callback = function(args)
---     vim.treesitter.stop(args.buf)
---   end,
--- })
-
-vim.lsp.config("texlab", {
-  settings = {
-    texlab = {
-      -- build = {
-      --   executable = "latexmk",
-      --   args = {
-      --     "%f",
-      --   },
-      --   onSave = false,
-      --   forwardSearchAfter = false,
-      -- },
-      build = {
-        executable = "tectonic",
-        args = {
-          "-X",
-          "compile",
-          "%f",
-          "--synctex",
-          "--keep-logs",
-          "--keep-intermediates",
-        },
-        onSave = false,
-        forwardSearchAfter = false,
-      },
-      -- Use Skim for preview and forward search
-      -- The inverse search is configured in "f2fora/nvim-texlabconfig"
-      forwardSearch = {
-        executable = "/Applications/Skim.app/Contents/SharedSupport/displayline",
-        args = { "%l", "%p", "%f" },
-      },
-      chktex = {
-        onOpenAndSave = false,
-        onEdit = false,
-        additionalArgs = {
-          "-wall",
-          "-q",
-          "-n1",
-          "-n3",
-          "-n8",
-          "-n9",
-          "-n22",
-          "-n30",
-          "-n24",
-          "-n17",
-          "-e16",
-        },
-      },
-      bibtexFormatter = "texlab", -- @type "texlab" | "latexindent" | "none"; @default "texlab"
-      latexFormatter = "none", -- @type "texlab" | "latexindent" | "none"; @default "latexindent"
-      -- latexindent = {
-      -- ["local"] = "~/.config/latexindent/lzx_settings.yaml", -- local is a reserved keyword
-      -- ["local"] = vim.env.HOME .. "/.config/latexindent/lzx_settings.yaml", -- local is a reserved keyword
-      -- modifyLineBreaks = true, -- @default false
-      -- },
-    },
-  },
-})
--- NOTE: Currently TeXLab does not work correctly in terms of formatting
-vim.lsp.enable("texlab")
-
-vim.keymap.set("n", "<leader>lb", "<CMD>LspTexlabBuild<CR>", { desc = "[Texlab] Build LaTeX" })
-
 local M = {
   -- Add BibTeX/LaTeX to treesitter
   {
@@ -156,20 +87,29 @@ local M = {
     -- lazy = false, -- lazy-loading will disable inverse search
     ft = { "tex", "bib" },
     dependencies = {
-      {
-        "folke/which-key.nvim",
-        optional = true,
-        opts = {
-          spec = {
-            { "<leader>l", group = "[VimTeX]" },
-          },
-        },
-      },
+      -- {
+      --   "folke/which-key.nvim",
+      --   optional = true,
+      --   opts = {
+      --     spec = {
+      --       { "<leader>l", group = "[VimTeX]" },
+      --     },
+      --   },
+      -- },
     },
 
     config = function()
       -- Viewer options: One may configure the viewer either by specifying a built-in viewer method:
       vim.g.vimtex_view_enabled = true
+
+      -- Removed default imap
+      vim.g.vimtex_imaps_enabled = false
+      vim.g.vimtex_complete_enabled = false
+      vim.g.vimtex_syntax_enabled = false
+      vim.g.vimtex_indent_enabled = false
+
+      -- Only open quickfix when there are errors, not warnings
+      vim.g.vimtex_quickfix_open_on_warning = false
 
       -- vim.g.vimtex_view_method = "zathura_simple"
       -- vim.g.vimtex_view_zathura_use_synctex = 0

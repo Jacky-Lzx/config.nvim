@@ -38,7 +38,7 @@ return {
     { trig = "columns", desc = "Create columns" },
     fmta(
       [[
-        \begin{columns}[onlytextwidth,T]
+        \begin{columns}[onlytextwidth, T]
           \begin{column}{0.<>\textwidth}
             <>
           \end{column}

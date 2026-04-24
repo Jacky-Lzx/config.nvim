@@ -95,4 +95,6 @@ return {
       }
     )
   ),
+
+  s({ trig = "command", desc = "Neovim command" }, fmt([[<CMD>{}<ESC>]], { i(0) })),
 }, {}
