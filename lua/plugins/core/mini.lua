@@ -132,4 +132,12 @@ return {
       },
     },
   },
+
+  {
+    "nvim-mini/mini.pairs",
+    enabled = false,
+    version = "*",
+    event = "InsertEnter",
+    opts = true,
+  },
 }
