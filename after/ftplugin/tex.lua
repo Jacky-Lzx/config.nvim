@@ -1,3 +1,5 @@
+vim.treesitter.start()
+
 vim.lsp.config("texlab", {
   settings = {
     texlab = {

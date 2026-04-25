@@ -51,11 +51,12 @@ local M = {
         tex = { "tex-fmt" },
         -- tex = { "latexindent" },
         -- The tex-fmt for bib cannot align the entries, or add additional spaces around `=`
-        -- bib = { "tex-fmt" },
+        bib = { "tex-fmt" },
       },
       formatters = {
         ["tex-fmt"] = {
-          prepend_args = { "-l", "120" },
+          -- Wrap long lines manually
+          prepend_args = { "--nowrap" },
         },
         latexindent = {
           prepend_args = { "--local", vim.fn.stdpath("config") .. "/configs/latexindent.yaml" },
@@ -84,6 +85,7 @@ local M = {
 
   {
     "lervag/vimtex",
+    enabled = false,
     -- lazy = false, -- lazy-loading will disable inverse search
     ft = { "tex", "bib" },
     dependencies = {
@@ -98,7 +100,7 @@ local M = {
       -- },
     },
 
-    config = function()
+    init = function()
       -- Viewer options: One may configure the viewer either by specifying a built-in viewer method:
       vim.g.vimtex_view_enabled = true
 
