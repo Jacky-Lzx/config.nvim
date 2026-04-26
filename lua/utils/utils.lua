@@ -4,18 +4,15 @@ local M = {}
 local function get_visual_selection()
   local s_start = vim.fn.getpos("'<")
   local s_end = vim.fn.getpos("'>")
-  local n_lines = math.abs(s_end[2] - s_start[2]) + 1
   local lines = vim.api.nvim_buf_get_lines(0, s_start[2] - 1, s_end[2], false)
 
   if #lines == 0 then
     return nil
   end
 
-  -- Handle single line selection
   if #lines == 1 then
     lines[1] = string.sub(lines[1], s_start[3], s_end[3])
   else
-    -- Handle multi-line (unlikely for paths, but for completeness)
     lines[1] = string.sub(lines[1], s_start[3])
     lines[#lines] = string.sub(lines[#lines], 1, s_end[3])
   end
@@ -23,25 +20,27 @@ local function get_visual_selection()
   return table.concat(lines, "\n")
 end
 
---- Opens the link or path under the cursor or selection using the system 'open' command.
+--- Opens the link or path under the cursor or selection
 function M.open_at_cursor()
   local mode = vim.api.nvim_get_mode().mode
   local path
 
-  if mode == "v" or mode == "V" or mode == "" then
-    -- Must exit visual mode first to update the marks '< and '>
+  if mode:match("[vV]") or mode == "␖" then
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
-
-    -- Schedule the execution to ensure marks are updated
     vim.schedule(function()
       path = get_visual_selection()
       M.process_open(path)
     end)
-    return
   else
     path = vim.fn.expand("<cfile>")
     M.process_open(path)
   end
+end
+
+--- Internal helper to check if a file exists
+local function file_exists(path)
+  local stat = vim.loop.fs_stat(path)
+  return stat ~= nil
 end
 
 --- Internal helper to process and open the path
@@ -54,9 +53,34 @@ function M.process_open(path)
   -- Trim whitespace
   path = path:gsub("^%s*(.-)%s*$", "%1")
 
-  -- Detect if it's a URL or a file path
-  if not path:match("^%a+://") and not path:match("^/") then
-    path = vim.fn.expand("%:p:h") .. "/" .. path
+  -- 1. Check if it's already a URL or Absolute Path
+  if path:match("^%a+://") or path:match("^/") then
+    -- Path is already valid for 'open'
+  else
+    -- 2. Trial 1: Relative to current file
+    local path_rel_file = vim.fn.expand("%:p:h") .. "/" .. path
+
+    -- 3. Trial 2: Relative to CWD (Where Neovim opened)
+    local cwd = vim.fn.getcwd()
+    local path_rel_cwd = cwd .. "/" .. path
+
+    if file_exists(path_rel_file) then
+      path = path_rel_file
+    elseif file_exists(path_rel_cwd) then
+      path = path_rel_cwd
+    else
+      -- 4. Trial 3: Relative to Project Root (.git, etc.)
+      local root = vim.fs.root(0, { ".git" })
+      local path_rel_root = root and (root .. "/" .. path) or nil
+
+      if path_rel_root and file_exists(path_rel_root) then
+        path = path_rel_root
+      else
+        -- Fallback: If none exist, we default to CWD trial so 'open' can
+        -- at least try to handle it (or show its own error).
+        path = path_rel_cwd
+      end
+    end
   end
 
   vim.notify("Opening: " .. path, vim.log.levels.INFO)
