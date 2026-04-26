@@ -125,15 +125,15 @@ return {
       [[
         \begin{figure}[H]
           \centering
-          \begin{subfigure}[b]{0.45\linewidth}
+          \begin{subfigure}[b]{0.45\textwidth}
             \centering
-            \includegraphics[width=0.9\linewidth]{<><>}
+            \includegraphics[width=\textwidth]{<><>}
             \caption{<>}
             \label{subfig:<>}
           \end{subfigure}
-          \begin{subfigure}[b]{0.45\linewidth}
+          \begin{subfigure}[b]{0.45\textwidth}
             \centering
-            \includegraphics[width=0.9\linewidth]{<><>}
+            \includegraphics[width=\textwidth]{<><>}
             \caption{<>}
             \label{subfig:<>}
           \end{subfigure}
@@ -161,9 +161,9 @@ return {
     { trig = "subfigure", desc = "Subfigure (simple)" },
     fmta(
       [[
-        \begin{subfigure}[b]{0.45\linewidth}
+        \begin{subfigure}[b]{0.45\textwidth}
           \centering
-          \includegraphics[width=0.9\linewidth]{<><>}
+          \includegraphics[width=\textwidth]{<><>}
           \caption{<>}
           \label{subfig:<>}
         \end{subfigure}
@@ -179,4 +179,6 @@ return {
   ),
 
   s({ trig = "verbatim", name = "verbatim", desc = "Verbatim environment" }, nodes_util.fmt_env("verbatim")),
+}, {
+  s({ trig = ";t", desc = "`\\item`" }, { t("\\item") }),
 }

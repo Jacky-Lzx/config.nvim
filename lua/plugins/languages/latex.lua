@@ -85,9 +85,8 @@ local M = {
 
   {
     "lervag/vimtex",
-    enabled = false,
     -- lazy = false, -- lazy-loading will disable inverse search
-    ft = { "tex", "bib" },
+    ft = { "tex", "latex", "bib" },
     dependencies = {
       -- {
       --   "folke/which-key.nvim",
@@ -107,7 +106,7 @@ local M = {
       -- Removed default imap
       vim.g.vimtex_imaps_enabled = false
       vim.g.vimtex_complete_enabled = false
-      vim.g.vimtex_syntax_enabled = false
+      -- vim.g.vimtex_syntax_enabled = false
       vim.g.vimtex_indent_enabled = false
 
       -- Only open quickfix when there are errors, not warnings
