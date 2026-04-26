@@ -18,8 +18,6 @@ Last updated: 2025-05-25
 local M = {}
 M.fn = {}
 
-local buffer_id = vim.api.nvim_get_current_buf() -- Current buffer ID
-
 ------------------------------------------------------------------------------
 -- UNIFIED CACHE MECHANISM (Configurable)
 ------------------------------------------------------------------------------
@@ -421,7 +419,7 @@ function M.is_mathzone_fallback()
     end
   end
 
-  local line = vim.api.nvim_buf_get_lines(buffer_id, current_row - 1, current_row, false)[1] or ""
+  local line = vim.api.nvim_buf_get_lines(0, current_row - 1, current_row, false)[1] or ""
   local matches = safe_regex_matcher(line)
 
   -- Check for math zones in the current line
@@ -469,7 +467,7 @@ local function in_environment(env_name)
 
   local last_start_marker = nil
   for line_num = current_row, 1, -1 do
-    local text = vim.api.nvim_buf_get_lines(buffer_id, line_num - 1, line_num, false)[1] or ""
+    local text = vim.api.nvim_buf_get_lines(0, line_num - 1, line_num, false)[1] or ""
 
     for _, pat in ipairs(start_patterns) do
       if text:find(pat, 1, true) then
@@ -491,7 +489,7 @@ local function in_environment(env_name)
   end
 
   for line_num = last_start_marker, vim.api.nvim_buf_line_count(0) do
-    local text = vim.api.nvim_buf_get_lines(buffer_id, line_num - 1, line_num, false)[1] or ""
+    local text = vim.api.nvim_buf_get_lines(0, line_num - 1, line_num, false)[1] or ""
 
     for _, pat in ipairs(end_patterns) do
       if text:find(pat, 1, true) then
@@ -663,7 +661,7 @@ function M.is_in_sile_display_math()
   -- Look for the begin marker above the current row
   local begin_row = nil
   for row = current_row, 1, -1 do
-    local line = vim.api.nvim_buf_get_lines(buffer_id, row - 1, row, false)[1] or ""
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1] or ""
     if line:match("\\begin%[mode=display%]{math}") then
       begin_row = row
       break
@@ -680,8 +678,8 @@ function M.is_in_sile_display_math()
 
   -- Look for end marker below the last found begin marker
   local end_row = nil
-  for row = begin_row, vim.api.nvim_buf_line_count(buffer_id) do
-    local line = vim.api.nvim_buf_get_lines(buffer_id, row - 1, row, false)[1] or ""
+  for row = begin_row, vim.api.nvim_buf_line_count(0) do
+    local line = vim.api.nvim_buf_get_lines(0, row - 1, row, false)[1] or ""
     if line:match("\\end{math}") then
       end_row = row
       break
@@ -710,7 +708,7 @@ local function is_cursor_in_text_command()
     return cached_result
   end
 
-  local line = vim.api.nvim_buf_get_lines(buffer_id, current_row - 1, current_row, false)[1] or ""
+  local line = vim.api.nvim_buf_get_lines(0, current_row - 1, current_row, false)[1] or ""
   local text_start = line:find("\\text{")
   local text_end = line:find("}")
 
@@ -766,7 +764,7 @@ M.setup({
   incremental_parsing = {
     enabled = true,
     max_lines_for_full_parse = function()
-      local line_count = vim.api.nvim_buf_line_count(buffer_id)
+      local line_count = vim.api.nvim_buf_line_count(0)
       return math.max(line_count, 1000) -- Minimum 1000 lines for full parse
     end,
     -- partial_update_threshold = 50, -- Lines for partial updates
@@ -777,7 +775,7 @@ M.setup({
 vim.api.nvim_create_user_command("DebugSileMath", function()
   local current_row, current_col = get_cursor_pos()
   local cursor = vim.api.nvim_win_get_cursor(0) -- Get cursor position
-  local line = vim.api.nvim_buf_get_lines(buffer_id, current_row - 1, current_row, false)[1] or ""
+  local line = vim.api.nvim_buf_get_lines(0, current_row - 1, current_row, false)[1] or ""
 
   print("SILE Math Debug")
   print("Current line:", line)
