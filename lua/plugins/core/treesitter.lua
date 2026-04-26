@@ -67,10 +67,11 @@ return {
   },
 
   -- This tool is used for the compilation of some tree-sitter parsers, e.g. LaTeX
-  {
-    "mason-org/mason.nvim",
-    optional = true,
-    opts_extend = { "ensure_installed" },
-    opts = { ensure_installed = { "tree-sitter-cli" } },
-  },
+  -- Since tree-sitter-cli 0.26.0 is a breaking change, the tree-sitter-cli is better manually installed in the system.
+  -- {
+  --   "mason-org/mason.nvim",
+  --   optional = true,
+  --   opts_extend = { "ensure_installed" },
+  --   opts = { ensure_installed = { "tree-sitter-cli" } },
+  -- },
 }
