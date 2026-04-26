@@ -205,6 +205,7 @@ local M = {
               { cmd = "magick - -quality 85 png:-", extension = "png" },
               { cmd = "magick - -quality 75 webp:-", extension = "webp" },
             },
+            prompt_for_file_name = true,
           })
         end,
         desc = "[image-insert] Paste image from system clipboard",
@@ -246,6 +247,7 @@ local M = {
       dir_path = "Figures",
       prompt_for_file_name = false,
       relative_to_current_file = false,
+      insert_relative_to = "file",
       process = { cmd = "convert - avif:-", extension = "avif" },
     },
   },
