@@ -294,14 +294,15 @@ local function create_math_query()
             (displayed_equation) @display
           ]]
         )
-      elseif lang == "markdown" then
+      elseif lang == "markdown" or lang == "markdown_inline" then
         -- Only if markdown Treesitter supports math nodes (optional)
         cached_query[lang] = vim.treesitter.query.parse(
           "markdown_inline",
           [[
-            (inline_math) @inline
-            (display_math) @display
+            ; (inline_math) @inline
+            ; (display_math) @display
             (latex_block) @display
+            ; (displayed_equation) @display
           ]]
         )
       end
@@ -351,7 +352,7 @@ function M.is_mathzone()
       local env_name = vim.treesitter.get_node_text(node, 0)
       local env_node = node:parent():parent():parent()
       return M.config.math_environments["latex"][env_name] and vim.treesitter.is_in_node_range(env_node, unpack(cursor))
-    elseif lang == "markdown" then
+    elseif lang == "markdown" or lang == "markdown_inline" then
       -- For markdown, just check node range
       return vim.treesitter.is_in_node_range(node, unpack(cursor))
     end
@@ -737,6 +738,10 @@ local function true_fn()
   return false
 end
 M.fn.true_fn = true_fn
+
+function M.fn.is_latex()
+  return vim.bo.filetype == "tex"
+end
 
 local cond_obj = require("luasnip.extras.conditions")
 M.obj = {}

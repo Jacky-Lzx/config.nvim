@@ -147,7 +147,7 @@ M.snippets = {
     fmta([[\textcolor<>{<>}]], {
       c(1, {
         -- fmta does not work well with nested choices
-        sn(nil, { t("{"), i(1, "green"), t("}") }),
+        sn(nil, { t("{"), i(1, "red"), t("}") }),
         sn(nil, { t("[RGB]{"), i(1, "0"), t(","), i(2, "255"), t(","), i(3, "0"), t("}") }),
       }),
       d(2, nodes_util.visual_or_insert),

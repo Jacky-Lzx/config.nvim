@@ -1,7 +1,7 @@
 local ls = require("luasnip")
 
 local nodes_util = require("templates.snippets.utils.nodes")
-local math_conds = require("templates.snippets.tex.utils.math_conditions")
+local conds = require("templates.snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 
 local function label_fn(args, _, _)
@@ -18,37 +18,44 @@ end
 -- local tex = require("templates.snippets.tex.utils.conditions")
 
 return {
-  -- stylua: ignore
-  s({ trig = "begin", name = "begin/end", desc = "begin/end" },
-    fmta([[
+  s(
+    { trig = "begin", name = "begin/end", desc = "begin/end" },
+    fmta(
+      [[
           \begin{<>}
             <>
           \end{<>}
-    ]], { i(1), i(0), rep(1) })
+    ]],
+      { i(1), i(0), rep(1) }
+    ),
+    { show_condition = conds.obj.is_latex }
   ),
 
-  -- stylua: ignore
-  s({ trig = "itemize", name = "itemize", desc = "Itemize" },
-    fmta([[
+  s(
+    { trig = "itemize", name = "itemize", desc = "Itemize" },
+    fmta(
+      [[
         \begin{itemize}<>
           \item <>
         \end{itemize}
-      ]], {
+      ]],
+      {
         c(1, {
           i(1),
           t("[leftmargin=0.5cm]"),
         }),
-        i(0)
+        i(0),
       }
-    )
-    -- { condition = tex.in_text, show_condition = tex.in_text }
+    ),
+    { show_condition = conds.obj.is_latex }
   ),
 
   s(
     { trig = "item", name = "item", desc = "A single item" },
     { t("\\item ") },
-    { condition = math_conds.obj.in_bullets, show_condition = math_conds.obj.in_bullets }
+    { condition = conds.obj.in_bullets, show_condition = conds.obj.in_bullets }
   ),
+
   -- autosnippet(
   --   { trig = "--", hidden = true },
   --   { t("\\item ") },
@@ -59,35 +66,41 @@ return {
   --   -- { condition = cond_line_begin, show_condition = cond_line_begin }
   -- ),
 
-  -- stylua: ignore
-  s({ trig = "enumerate", name = "enumerate", desc = "Enumerate" },
-    fmta([[
+  s(
+    { trig = "enumerate", name = "enumerate", desc = "Enumerate" },
+    fmta(
+      [[
       \begin{enumerate}<>
         \item <>
       \end{enumerate}
-      ]], {
+      ]],
+      {
         c(1, {
           t("[label=\\arabic*.]"),
           t("[label=\\alph*.]"),
           t("[label=\\roman*.]"),
           i(1),
         }),
-        i(0)
+        i(0),
       }
-    )
+    ),
+    { show_condition = conds.obj.is_latex }
+
     -- { condition = tex.in_text, show_condition = tex.in_text }
   ),
 
-  -- stylua: ignore
-  s({ trig = "figure", name = "figure", desc = "Figure environment" },
-    fmta([[
+  s(
+    { trig = "figure", name = "figure", desc = "Figure environment" },
+    fmta(
+      [[
         \begin{figure}[<>]
           \centering
           \includegraphics[width=0.<>\linewidth]{<><>}
           \caption{<>}%
           \label{fig:<>}
         \end{figure}
-      ]],{
+      ]],
+      {
         c(1, { t("H"), t("htbp") }),
         i(2, "6"),
         t("./Figures/"),
@@ -95,12 +108,14 @@ return {
         i(4),
         f(label_fn, { 3 }),
       }
-    )
+    ),
+    { show_condition = conds.obj.is_latex }
   ),
 
-  -- stylua: ignore
-  s({ trig = "table", name = "table", desc = "Table environment" },
-    fmta([[
+  s(
+    { trig = "table", name = "table", desc = "Table environment" },
+    fmta(
+      [[
         \begin{table}[<>]
           \centering
           \begin{tabular}{<>}
@@ -109,14 +124,16 @@ return {
           \caption{<>}
           \label{tab:<>}
         \end{table}
-      ]], {
+      ]],
+      {
         c(1, { t("H"), t("htbp") }),
         i(2, "cc"),
         i(0),
         i(3),
         i(4),
       }
-    )
+    ),
+    { show_condition = conds.obj.is_latex }
   ),
 
   s(
@@ -154,7 +171,7 @@ return {
         i(6),
       }
     ),
-    { condition = -math_conds.obj.in_figure, show_condition = -math_conds.obj.in_figure }
+    { show_condition = conds.obj.is_latex * -conds.obj.in_figure }
   ),
 
   s(
@@ -175,10 +192,14 @@ return {
         f(label_fn, { 1 }),
       }
     ),
-    { condition = math_conds.obj.in_figure, show_condition = math_conds.obj.in_figure }
+    { show_condition = conds.obj.is_latex * conds.obj.in_figure }
   ),
 
-  s({ trig = "verbatim", name = "verbatim", desc = "Verbatim environment" }, nodes_util.fmt_env("verbatim")),
+  s(
+    { trig = "verbatim", name = "verbatim", desc = "Verbatim environment" },
+    nodes_util.fmt_env("verbatim"),
+    { show_condition = conds.obj.is_latex * conds.obj.in_figure }
+  ),
 }, {
-  s({ trig = ";t", desc = "`\\item`" }, { t("\\item") }),
+  s({ trig = ";t", desc = "`\\item`" }, { t("\\item") }, { condition = conds.obj.is_latex }),
 }

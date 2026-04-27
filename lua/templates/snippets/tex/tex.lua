@@ -1,5 +1,5 @@
 local nodes_util = require("templates.snippets.utils.nodes")
-local math_conds = require("templates.snippets.tex.utils.math_conditions")
+local conds = require("templates.snippets.tex.utils.math_conditions")
 
 return {
   -- stylua: ignore
@@ -49,21 +49,31 @@ return {
         <>
 
       \end{document}
-    ]], {i(0)})
+    ]], {i(0)}), { show_condition = conds.obj.is_latex }
   ),
 
-  s({ trig = "par", desc = "Paragraph" }, { t("\\par ") }),
+  s({ trig = "par", desc = "Paragraph" }, { t("\\par ") }, { show_condition = conds.obj.is_latex }),
 
-  s({ trig = "it", desc = "Italic text" }, fmta([[\textit{<>}]], { d(1, nodes_util.visual_or_insert) })),
-  s({ trig = "bf", desc = "Bold text" }, fmta([[\textbf{<>}]], { d(1, nodes_util.visual_or_insert) })),
-  s({ trig = "emph", desc = "Emph text" }, fmta([[\emph{<>}]], { d(1, nodes_util.visual_or_insert) })),
+  s(
+    { trig = "it", desc = "Italic text" },
+    fmta([[\textit{<>}]], { d(1, nodes_util.visual_or_insert) }),
+    { show_condition = conds.obj.is_latex }
+  ),
+  s(
+    { trig = "bf", desc = "Bold text" },
+    fmta([[\textbf{<>}]], { d(1, nodes_util.visual_or_insert) }),
+    { show_condition = conds.obj.is_latex }
+  ),
+  s(
+    { trig = "emph", desc = "Emph text" },
+    fmta([[\emph{<>}]], { d(1, nodes_util.visual_or_insert) }, { show_condition = conds.obj.is_latex })
+  ),
 
   s(
     { trig = "box", desc = { "Box around text", "\tNeed `\\usepackage{fbox}`" } },
     fmta([[\fbox{<>}]], { d(1, nodes_util.visual_or_insert) }),
     {
-      condition = -math_conds.obj.in_math,
-      show_condition = -math_conds.obj.in_math,
+      show_condition = -conds.obj.in_math,
     }
   ),
   s(
@@ -77,14 +87,12 @@ return {
       { d(1, nodes_util.visual_or_insert) }
     ),
     {
-      condition = -math_conds.obj.in_math,
-      show_condition = -math_conds.obj.in_math,
+      show_condition = -conds.obj.in_math,
     }
   ),
 
   s({ trig = "verb", desc = "Verb" }, fmta([[\verb|<>|]], { d(1, nodes_util.visual_or_insert) }), {
-    condition = -math_conds.obj.in_math,
-    show_condition = -math_conds.obj.in_math,
+    show_condition = -conds.obj.in_math,
   }),
 
   s(
@@ -96,7 +104,8 @@ return {
         }
       ]],
       { d(1, nodes_util.visual_or_insert) }
-    )
+    ),
+    { show_condition = conds.obj.is_latex }
   ),
   s(
     { trig = "scale", desc = "Scale box" },
@@ -107,20 +116,27 @@ return {
         }
       ]],
       { d(1, nodes_util.visual_or_insert) }
-    )
+    ),
+    { show_condition = conds.obj.is_latex }
   ),
 
   s(
     { trig = "ladd", desc = "Lzx add" },
-    fmta([[\ldel{<>}\ladd{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }), i(0) })
+    fmta([[\ldel{<>}\ladd{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }), i(0) }),
+    { show_condition = conds.obj.is_latex }
   ),
   s(
     { trig = "ldel", desc = "Lzx del" },
-    fmta([[\ldel{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }) })
+    fmta([[\ldel{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }) }),
+    { show_condition = conds.obj.is_latex }
   ),
 
-  s({ trig = "ignore", desc = "tex-fmt ignore" }, { t("% tex-fmt: skip") }),
-  s({ trig = "ignoreb", desc = "tex-fmt ignore (block)" }, { t("% tex-fmt: off"), t({ "", "% tex-fmt: on" }) }),
+  s({ trig = "ignore", desc = "tex-fmt ignore" }, { t("% tex-fmt: skip") }, { show_condition = conds.obj.is_latex }),
+  s(
+    { trig = "ignoreb", desc = "tex-fmt ignore (block)" },
+    { t("% tex-fmt: off"), t({ "", "% tex-fmt: on" }) },
+    { show_condition = conds.obj.is_latex }
+  ),
 },
 -- Autosnippets
 {}
