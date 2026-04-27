@@ -1,7 +1,7 @@
 return {
   {
     "petertriho/nvim-scrollbar",
-    event = "BufReadPost",
+    event = "VeryLazy",
     opts = {
       handle = {
         text = " ",

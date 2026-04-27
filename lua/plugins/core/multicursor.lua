@@ -2,7 +2,6 @@ return {
   {
     "jake-stewart/multicursor.nvim",
     branch = "1.0",
-    event = "BufReadPost",
     -- stylua: ignore
     keys = {
       -- Append/insert for each line of visual selections. Similar to block selection insertion.

@@ -1,4 +1,7 @@
 vim.treesitter.start()
+-- Use regex based syntax-highlighting as fallback as VimTex needs it
+local buffnr = vim.api.nvim_get_current_buf()
+vim.bo[buffnr].syntax = "ON"
 
 vim.lsp.config("texlab", {
   settings = {

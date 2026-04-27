@@ -1,7 +1,7 @@
 return {
   {
     "brenoprata10/nvim-highlight-colors",
-    event = "BufRead",
+    event = "VeryLazy",
     opts = {
       ---Render style
       ---@usage 'background'|'foreground'|'virtual'

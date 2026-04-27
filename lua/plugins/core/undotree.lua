@@ -1,18 +1,6 @@
 return {
   {
     "mbbill/undotree",
-    dependencies = {
-      {
-        "romgrk/barbar.nvim",
-        optional = true,
-        opts = {
-          -- Set the filetypes which barbar will offset itself for
-          sidebar_filetypes = {
-            undotree = { text = "UndoTree", align = "center" },
-          },
-        },
-      },
-    },
     keys = {
       { "<leader>ut", "<cmd>UndotreeToggle<cr>", desc = "Toggle undo-tree" },
     },
@@ -32,5 +20,16 @@ return {
       endif
       ]])
     end,
+  },
+
+  {
+    "romgrk/barbar.nvim",
+    optional = true,
+    opts = {
+      -- Set the filetypes which barbar will offset itself for
+      sidebar_filetypes = {
+        undotree = { text = "UndoTree", align = "center" },
+      },
+    },
   },
 }

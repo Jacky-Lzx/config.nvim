@@ -2,7 +2,7 @@ return {
   {
     "folke/todo-comments.nvim",
     dependencies = { "nvim-lua/plenary.nvim", "folke/snacks.nvim" },
-    event = "BufReadPost",
+    event = "VeryLazy",
     -- stylua: ignore
     keys = {
       ---@diagnostic disable-next-line: undefined-field

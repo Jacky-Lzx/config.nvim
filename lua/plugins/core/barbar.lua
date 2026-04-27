@@ -2,7 +2,8 @@ return {
   -- New replacement of tabline
   {
     "romgrk/barbar.nvim",
-    event = "VeryLazy",
+    -- event = "VeryLazy",
+    lazy = false,
     version = "^1.0.0", -- optional: only update when a new 1.x version is released
     dependencies = {
       "nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
@@ -18,8 +19,6 @@ return {
       -- Set the filetypes which barbar will offset itself for
       sidebar_filetypes = {},
     },
-    lazy = false,
-    -- event = { "VeryLazy" },
     -- stylua: ignore
     keys = {
       { "<A-<>", "<CMD>BufferMovePrevious<CR>", mode = {"n"}, desc = "[Buffer] Move buffer left"  },

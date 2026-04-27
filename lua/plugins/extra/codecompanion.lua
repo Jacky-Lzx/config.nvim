@@ -72,8 +72,12 @@ return {
         },
       },
     },
-    init = function()
+
+    config = function(_, opts)
       require("utils.codecompanion_fidget_spinner"):init()
+
+      local codecompanion = require("codecompanion")
+      codecompanion.setup(opts)
     end,
   },
 

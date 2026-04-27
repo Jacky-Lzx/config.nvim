@@ -4,14 +4,14 @@ return {
     -- Extende `a`/`i` textobjects
     "echasnovski/mini.ai",
     version = "*",
-    event = "BufReadPost",
+    event = "VeryLazy",
     config = true,
   },
 
   {
     "echasnovski/mini.bracketed",
     version = "*",
-    event = "BufReadPost",
+    event = "VeryLazy",
       -- stylua: ignore
     keys = {
       { "]i",    function() require("mini.bracketed").indent("forward",  { change_type = "more" }) end, mode = { "n", "x", "o" }, desc = "Inner indent forward",      },
@@ -32,7 +32,7 @@ return {
   {
     "echasnovski/mini.surround",
     version = "*",
-    event = "BufReadPost",
+    event = "VeryLazy",
     keys = {
       -- Disable the vanilla `s` keybinding
       { "s", "<NOP>", mode = { "n", "x", "o" } },
@@ -46,7 +46,7 @@ return {
   {
     "echasnovski/mini.operators",
     version = "*",
-    event = "BufReadPost",
+    event = "VeryLazy",
     opts = {
       replace = { prefix = "cr" },
     },
@@ -62,7 +62,7 @@ return {
   {
     "echasnovski/mini.align",
     version = "*",
-    event = "BufRead",
+    event = "VeryLazy",
     opts = {
       mappings = {
         start = "gA",
@@ -77,7 +77,7 @@ return {
   -- {
   --   "echasnovski/mini.cursorword",
   --   version = false,
-  --   event = "BufRead",
+  --   event = "VeryLazy",
   --   config = function()
   --     require("mini.cursorword").setup()
   --   end,
@@ -85,7 +85,7 @@ return {
 
   {
     "echasnovski/mini.diff",
-    event = "BufReadPost",
+    event = "VeryLazy",
     version = "*",
     -- stylua: ignore
     keys = {
@@ -113,6 +113,7 @@ return {
 
   {
     "echasnovski/mini.comment",
+    event = "VeryLazy",
     opts = {
       -- Module mappings. Use `''` (empty string) to disable one.
       mappings = {

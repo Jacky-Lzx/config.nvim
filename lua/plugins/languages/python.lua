@@ -78,8 +78,10 @@ local M = {
 
   {
     "linux-cultist/venv-selector.nvim",
-    dependencies = { "mfussenegger/nvim-dap" },
+    --  Call config for python files and load the cached venv automatically
+    ft = "python",
     cmd = "VenvSelect",
+    keys = { { "<leader>cv", "<CMD>VenvSelect<CR>", desc = "Select VirtualEnv", ft = "python" } },
     opts = {
       settings = {
         options = {
@@ -87,14 +89,10 @@ local M = {
         },
       },
     },
-    --  Call config for python files and load the cached venv automatically
-    ft = "python",
-    keys = { { "<leader>cv", "<CMD>VenvSelect<CR>", desc = "Select VirtualEnv", ft = "python" } },
   },
 
   {
     "mfussenegger/nvim-dap",
-    ft = "python",
     optional = true,
     opts = function()
       local dap = require("dap")

@@ -1,7 +1,7 @@
 return {
   {
     "lewis6991/gitsigns.nvim",
-    event = "BufReadPost",
+    event = "VeryLazy",
     opts = {
       signcolumn = false,
       numhl = true,

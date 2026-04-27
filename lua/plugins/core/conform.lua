@@ -12,7 +12,12 @@ return {
         end
       end,
     },
-    init = function()
+    config = function(_, opts)
+      opts["formatters_by_ft"].javascript = { "prettierd", "prettier", stop_after_first = true }
+      opts["formatters_by_ft"]["_"] = { "trim_whitespace" }
+
+      require("conform").setup(opts)
+
       vim.g.enable_autoformat = true
       require("snacks").toggle
         .new({
@@ -26,12 +31,6 @@ return {
           end,
         })
         :map("<leader>tf")
-    end,
-    config = function(_, opts)
-      opts["formatters_by_ft"].javascript = { "prettierd", "prettier", stop_after_first = true }
-      opts["formatters_by_ft"]["_"] = { "trim_whitespace" }
-
-      require("conform").setup(opts)
     end,
   },
 }
