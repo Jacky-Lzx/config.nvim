@@ -2,7 +2,8 @@ return {
   -- cmdline tools and lsp servers
   {
     "mason-org/mason.nvim",
-    event = "VeryLazy",
+    -- event = "VeryLazy",
+    lazy = false,
     cmd = "Mason",
     opts = {
       ensure_installed = {},

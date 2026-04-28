@@ -1,8 +1,8 @@
 return {
   {
     "nvim-neo-tree/neo-tree.nvim",
-    lazy = false, -- neo-tree will lazily load itself
     enabled = false,
+    -- lazy = false, -- neo-tree will lazily load itself
     branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",

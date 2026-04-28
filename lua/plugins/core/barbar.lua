@@ -2,7 +2,7 @@ return {
   -- New replacement of tabline
   {
     "romgrk/barbar.nvim",
-    -- event = "VeryLazy",
+    -- NOTE: This plugin cannot be lazy-loaded. Otherwise the tabline will not be shown at all. <2026.04.28, lzx>
     lazy = false,
     version = "^1.0.0", -- optional: only update when a new 1.x version is released
     dependencies = {

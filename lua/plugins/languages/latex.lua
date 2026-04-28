@@ -85,21 +85,9 @@ local M = {
 
   {
     "lervag/vimtex",
-    -- lazy = false, -- lazy-loading will disable inverse search
+    lazy = true, -- lazy-loading will disable inverse search
     ft = { "tex", "latex", "bib" },
-    dependencies = {
-      -- {
-      --   "folke/which-key.nvim",
-      --   optional = true,
-      --   opts = {
-      --     spec = {
-      --       { "<leader>l", group = "[VimTeX]" },
-      --     },
-      --   },
-      -- },
-    },
-
-    init = function()
+    config = function()
       -- Viewer options: One may configure the viewer either by specifying a built-in viewer method:
       vim.g.vimtex_view_enabled = true
 
@@ -107,7 +95,7 @@ local M = {
       vim.g.vimtex_imaps_enabled = false
 
       vim.g.vimtex_complete_enabled = false
-      vim.g.vimtex_syntax_enabled = true
+      vim.g.vimtex_syntax_enabled = true -- This config controls conceals. Should be true
       vim.g.vimtex_indent_enabled = false
 
       -- Only open quickfix when there are errors, not warnings

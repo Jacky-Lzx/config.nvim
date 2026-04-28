@@ -43,6 +43,7 @@ return {
   -- Customization of the Copilot icon
   {
     "nvim-tree/nvim-web-devicons",
+    optional = true,
     opts = {
       override = {
         copilot = {

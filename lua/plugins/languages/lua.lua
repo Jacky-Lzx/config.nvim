@@ -29,7 +29,7 @@ return {
   },
 
   -- Provide neovim config completion
-  -- Have its settings in blink.cmp in `completion.lua`
+  -- Have its settings in blink.cmp
   {
     "folke/lazydev.nvim",
     ft = "lua", -- only load on lua files
