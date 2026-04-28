@@ -10,8 +10,10 @@ return {
     },
 
     opts = {
-      ---@type false | "classic" | "modern" | "helix"
       preset = "helix",
+      defer = function(ctx)
+        return false
+      end,
       win = {
         -- no_overlap = true,
         title = false,
@@ -30,6 +32,20 @@ return {
 
         { "]c", desc = "Jump to next change"     },
         { "[c", desc = "Jump to previous change" },
+      },
+
+      replace = {
+        desc = {
+          { "<Plug>%(?(.*)%)?", "%1" },
+          { "<plug>%(?(.*)%)?", "%1" },
+          { "^%+", "" },
+          { "<[cC]md>", "" },
+          { "<[cC][rR]>", "" },
+          { "<[sS]ilent>", "" },
+          { "^lua%s+", "" },
+          { "^call%s+", "" },
+          { "^:%s*", "" },
+        },
       },
       -- expand all nodes wighout a description
       expand = function(node)

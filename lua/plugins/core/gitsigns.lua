@@ -83,11 +83,19 @@ return {
             end,
           })
           :map("<leader>tgw")
+
+        require("snacks")
+          .toggle({
+            name = "Git Signs",
+            get = function()
+              return require("gitsigns.config").config.signcolumn
+            end,
+            set = function(state)
+              require("gitsigns").toggle_signs(state)
+            end,
+          })
+          :map("<leader>tgs")
       end,
     },
-    config = function(_, opts)
-      require("gitsigns").setup(opts)
-      -- require("scrollbar.handlers.gitsigns").setup()
-    end,
   },
 }
