@@ -1,5 +1,3 @@
-vim.lsp.enable("matlab_ls")
-
 local M = {
   {
     "nvim-treesitter/nvim-treesitter",

@@ -1,5 +1,3 @@
-vim.lsp.enable("gdscript")
-
 return {
   {
     "nvim-treesitter/nvim-treesitter",

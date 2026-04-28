@@ -1,6 +1,3 @@
--- At this point (2025.11.10), the LSP has problem to start
-vim.lsp.enable("cmake") -- From Mason package "cmake-language-server"
-
 local M = {
   {
     "nvim-treesitter/nvim-treesitter",

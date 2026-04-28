@@ -1,5 +1,3 @@
-vim.lsp.enable("jsonls")
-
 local M = {
   {
     "mason-org/mason.nvim",

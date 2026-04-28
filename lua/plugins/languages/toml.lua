@@ -1,5 +1,3 @@
-vim.lsp.enable("taplo")
-
 return {
   {
     "mason-org/mason.nvim",

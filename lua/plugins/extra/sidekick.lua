@@ -1,5 +1,3 @@
-vim.lsp.enable("copilot")
-
 return {
   {
     "folke/sidekick.nvim",
@@ -18,7 +16,6 @@ return {
         },
       },
     },
-    -- Hello World of Keybindings! Here's how you can set up some keybindings for Sidekick. You can customize these to fit your workflow.
     keys = {
       {
         "<leader>cn",

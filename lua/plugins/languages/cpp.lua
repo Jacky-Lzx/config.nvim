@@ -1,5 +1,3 @@
-vim.lsp.enable("clangd")
-
 local M = {
   {
     "nvim-treesitter/nvim-treesitter",

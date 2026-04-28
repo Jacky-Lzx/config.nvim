@@ -1,5 +1,3 @@
-vim.lsp.enable("tinymist")
-
 local M = {
   {
     "nvim-treesitter/nvim-treesitter",
