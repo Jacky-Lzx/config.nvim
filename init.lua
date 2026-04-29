@@ -36,7 +36,7 @@ vim.o.winborder = "rounded"
 
 -- vim.bo.tabstop = 2
 
-vim.wo.cursorline = true
+vim.wo.cursorline = false
 
 vim.opt.clipboard = ""
 

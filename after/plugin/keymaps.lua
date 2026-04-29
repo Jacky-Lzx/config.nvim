@@ -93,3 +93,19 @@ vim.keymap.set(
   require("utils.utils").open_at_cursor,
   { desc = "Open link under cursor", nowait = true }
 )
+
+-- Function to pulse the cursor line
+local function pulse_cursor()
+  -- Set a highlight on the current line
+  -- 'CursorLine' is a standard group, but you can use 'Visual' or 'Search' for more pop
+  local match_id = vim.fn.matchadd("Visual", "\\%" .. vim.fn.line(".") .. "l")
+
+  -- Clear the highlight after 200 milliseconds
+  vim.defer_fn(function()
+    vim.fn.matchdelete(match_id)
+  end, 200)
+end
+
+-- Map double space to the function
+-- <Space> is usually the leader, so we map it directly
+vim.keymap.set("n", "<Space><Space>", pulse_cursor, { desc = "Pulse current line" })
