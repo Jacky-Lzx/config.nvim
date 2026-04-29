@@ -51,6 +51,10 @@ vim.keymap.set("i", ",", ",<c-g>u")
 vim.keymap.set("i", ".", ".<c-g>u")
 vim.keymap.set("i", ";", ";<c-g>u")
 
+-- Better indenting (Re-select the texts after indentation)
+vim.keymap.set("x", "<", "<gv")
+vim.keymap.set("x", ">", ">gv")
+
 -- 在命令行模式下，将 ":W" 映射为 ":w"
 -- vim.keymap.set("c", "W", "w", { noremap = true, desc = "Map :W to :w (save file)" })
 
