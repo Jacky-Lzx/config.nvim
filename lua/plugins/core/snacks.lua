@@ -337,9 +337,12 @@ return {
           Snacks.toggle.indent():map("<leader>tG")
           Snacks.toggle.dim():map("<leader>tD")
           -- Toggle the profiler
-          Snacks.toggle.profiler():map("<leader>tpp")
+          Snacks.toggle.profiler():map("<leader>tPp")
           -- Toggle the profiler highlights
-          Snacks.toggle.profiler_highlights():map("<leader>tph")
+          Snacks.toggle.profiler_highlights():map("<leader>tPh")
+          require("which-key").add({
+            { "<leader>tP", group = "[profiler]" },
+          })
 
           vim.keymap.del("n", "grn")
           vim.keymap.del("n", "gra")
