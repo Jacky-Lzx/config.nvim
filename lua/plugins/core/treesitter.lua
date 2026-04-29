@@ -57,13 +57,15 @@ return {
 
       ts.setup(opts)
 
-      local function ensure_installed()
-        for _, tool in ipairs(opts.ensure_installed) do
-          ts.install(tool)
+      vim.schedule(function()
+        local function ensure_installed()
+          for _, tool in ipairs(opts.ensure_installed) do
+            ts.install(tool)
+          end
         end
-      end
 
-      ensure_installed()
+        ensure_installed()
+      end)
     end,
   },
 
