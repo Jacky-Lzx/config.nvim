@@ -46,6 +46,11 @@ vim.keymap.set("n", "<A-d>", "<NOP>", { desc = "Disabled" })
 vim.keymap.set("v", "<M-m>", 'c\\( <c-r>" \\)')
 vim.keymap.set("i", "<M-m>", "\\(  \\)<esc>hhi")
 
+-- Add undo break-points
+vim.keymap.set("i", ",", ",<c-g>u")
+vim.keymap.set("i", ".", ".<c-g>u")
+vim.keymap.set("i", ";", ";<c-g>u")
+
 -- 在命令行模式下，将 ":W" 映射为 ":w"
 -- vim.keymap.set("c", "W", "w", { noremap = true, desc = "Map :W to :w (save file)" })
 

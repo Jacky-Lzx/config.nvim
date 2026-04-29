@@ -69,19 +69,24 @@ return {
       local ls = require("luasnip")
       ls.setup(opts)
 
-      -- require("luasnip.loaders.from_vscode").lazy_load({ paths = { "./my_snippets/snippets" } }) -- Load snippets from my-snippets folder
-      -- require("luasnip.loaders.from_vscode").lazy_load({ paths = { "./my_snippets/friendly-snippets" } })
       require("luasnip.loaders.from_lua").lazy_load({ paths = { "./lua/templates/snippets" } })
 
-      local auto_expand = ls.expand_auto
-      ls.expand_auto = function(...)
-        vim.o.undolevels = vim.o.undolevels
-        ---@diagnostic disable-next-line: redundant-parameter
-        auto_expand(...)
-      end
+      -- NOTE: Adding undo point in `expand_auto` will lead to neovim recording every character you type in an expansion trigger.
+      --       (https://github.com/L3MON4D3/LuaSnip/issues/830#issuecomment-1489967687) <2026.04.28, lzx>
+      -- local auto_expand = ls.expand_auto
+      -- ls.expand_auto = function(...)
+      --   vim.print("hello world")
+      --   vim.o.undolevels = vim.o.undolevels
+      --   ---@diagnostic disable-next-line: redundant-parameter
+      --   auto_expand(...)
+      -- end
 
-      -- local ls = require("luasnip")
-      -- ls.filetype_extend("systemverilog", { "verilog" })
+      -- -- NOTE: This can undo snippet that is expanded manually. It cannot undo autosnippets <2026.04.29, lzx>
+      local snip_expand = ls.snip_expand
+      ls.snip_expand = function(...)
+        vim.o.undolevels = vim.o.undolevels
+        snip_expand(...)
+      end
 
       ls.filetype_extend("markdown", { "tex" })
       ls.filetype_extend("markdown_inline", { "markdown" })
