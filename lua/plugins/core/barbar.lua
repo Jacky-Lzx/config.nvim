@@ -2,14 +2,15 @@ return {
   -- New replacement of tabline
   {
     "romgrk/barbar.nvim",
-    -- NOTE: This plugin cannot be lazy-loaded. Otherwise the tabline will not be shown at all. <2026.04.28, lzx>
-    lazy = false,
+    event = "VeryLazy",
     version = "^1.0.0", -- optional: only update when a new 1.x version is released
     dependencies = {
       "nvim-tree/nvim-web-devicons", -- OPTIONAL: for file icons
     },
     init = function()
       vim.g.barbar_auto_setup = false
+      -- NOTE: This config is essential to make barbar work with nvim-tree. <2026.04.30, lzx>
+      vim.o.showtabline = 2
     end,
     opts = {
       animation = false,

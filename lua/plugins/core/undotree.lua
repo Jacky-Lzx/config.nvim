@@ -4,6 +4,18 @@ return {
     keys = {
       { "<leader>ut", "<cmd>UndotreeToggle<cr>", desc = "Toggle undo-tree" },
     },
+    specs = {
+      {
+        "romgrk/barbar.nvim",
+        optional = true,
+        opts = {
+          -- Set the filetypes which barbar will offset itself for
+          sidebar_filetypes = {
+            undotree = { text = "UndoTree", align = "center" },
+          },
+        },
+      },
+    },
     init = function()
       vim.cmd([[
       if has("persistent_undo")
@@ -20,16 +32,5 @@ return {
       endif
       ]])
     end,
-  },
-
-  {
-    "romgrk/barbar.nvim",
-    optional = true,
-    opts = {
-      -- Set the filetypes which barbar will offset itself for
-      sidebar_filetypes = {
-        undotree = { text = "UndoTree", align = "center" },
-      },
-    },
   },
 }
