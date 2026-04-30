@@ -106,10 +106,14 @@ return {
       { "<A-k>", function() require("mini.bracketed").diagnostic("backward")                       end, mode = { "n" },           desc = "Go to previous diagnostic", },
     },
     opts = {
+      comment = { suffix = "" },
+      conflict = { suffix = "" },
+      file = { suffix = "" },
       indent = { suffix = "" },
       oldfile = { suffix = "" },
-      conflict = { suffix = "" },
-      comment = { suffix = "" },
+      undo = { suffix = "" },
+      window = { suffix = "" },
+      yank = { suffix = "" },
     },
   },
 
