@@ -1,7 +1,8 @@
 return {
   {
     "rmagatti/auto-session",
-    lazy = false,
+    -- lazy = false,
+    event = "VeryLazy",
 
     -- stylua: ignore
     keys = {
