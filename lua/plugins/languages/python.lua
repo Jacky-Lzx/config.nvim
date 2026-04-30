@@ -1,4 +1,4 @@
-local M = {
+return {
   {
     "nvim-treesitter/nvim-treesitter",
     optional = true,
@@ -106,5 +106,3 @@ local M = {
     end,
   },
 }
-
-return M

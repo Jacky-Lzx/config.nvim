@@ -1,1 +1,1 @@
-vim.lsp.enable("matlab_ls")
+vim.lsp.enable("cmake-language-server")

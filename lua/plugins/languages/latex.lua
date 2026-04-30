@@ -11,7 +11,7 @@ vim.api.nvim_create_autocmd("User", {
 
 vim.g.tex_flavor = "latex"
 
-local M = {
+return {
   -- Add BibTeX/LaTeX to treesitter
   {
     "nvim-treesitter/nvim-treesitter",
@@ -157,5 +157,3 @@ local M = {
     ft = { "tex" },
   },
 }
-
-return M

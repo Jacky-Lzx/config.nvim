@@ -1,4 +1,4 @@
-local M = {
+return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts_extend = { "ensure_installed", "highlight.disable" },
@@ -89,5 +89,3 @@ local M = {
   --   opts = {},
   -- },
 }
-
-return M

@@ -1,4 +1,4 @@
-local M = {
+return {
   {
     "nvim-treesitter/nvim-treesitter",
     opts_extend = { "ensure_installed" },
@@ -42,5 +42,3 @@ local M = {
     },
   },
 }
-
-return M

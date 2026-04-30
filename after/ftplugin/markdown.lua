@@ -13,17 +13,4 @@ vim.g.markdown_recommended_style = 0
 -- For available configurations, see `https://github.com/artempyanykh/marksman/blob/main/Tests/default.marksman.toml`
 vim.lsp.enable("marksman")
 
-vim.lsp.config("harper_ls", {
-  filetypes = { "markdown", "text", "tex", "plaintex" },
-  settings = {
-    ["harper-ls"] = {
-      linters = {
-        SentenceCapitalization = false,
-        SpellCheck = false,
-        Spaces = false,
-        NoFrenchSpaces = false,
-      },
-    },
-  },
-})
 vim.lsp.enable("harper_ls")

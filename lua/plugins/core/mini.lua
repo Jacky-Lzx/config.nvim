@@ -1,5 +1,4 @@
 return {
-
   {
     -- Extende `a`/`i` textobjects
     "echasnovski/mini.ai",

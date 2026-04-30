@@ -1,4 +1,4 @@
-local M = {
+return {
   {
     "mason-org/mason.nvim",
     optional = true,
@@ -17,5 +17,3 @@ local M = {
     },
   },
 }
-
-return M
