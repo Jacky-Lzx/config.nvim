@@ -16,7 +16,8 @@ return {
         local function ensure_installed()
           for _, tool in ipairs(opts.ensure_installed) do
             local p = mr.get_package(tool)
-            if not p:is_installed() then
+            if not p:is_installed() and vim.fn.executable(tool) ~= 1 then
+              vim.print("Installing " .. tool)
               p:install()
             end
           end
