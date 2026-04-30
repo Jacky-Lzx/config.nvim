@@ -270,6 +270,8 @@ return {
       { "gi", function() require("snacks").picker.lsp_references() end, {desc = "[Snacks] References"}, },
       { "gI", function() require("snacks").picker.lsp_implementations() end, desc = "[Snacks] Goto implementation", },
       { "gy", function() require("snacks").picker.lsp_type_definitions() end, desc = "[Snacks] Goto t[y]pe definition", },
+      { "gci", function() Snacks.picker.lsp_incoming_calls() end, desc = "[Snacks] Calls Incoming" },
+      { "gco", function() Snacks.picker.lsp_outgoing_calls() end, desc = "[Snacks] Calls Outgoing" },
       { "<leader>ss", function() require("snacks").picker.lsp_symbols() end, desc = "[Snacks] LSP symbols", },
       { "<leader>sS", function() require("snacks").picker.lsp_workspace_symbols() end, desc = "[Snacks] LSP workspace symbols", },
       -- Words

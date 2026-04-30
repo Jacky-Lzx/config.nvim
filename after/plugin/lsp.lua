@@ -10,13 +10,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "<leader>gf", vim.lsp.buf.format, { desc = "[LSP] Format" })
     vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "[LSP] Rename" })
 
+    vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, { desc = "[LSP] References" })
+    vim.keymap.set("n", "<leader>gt", vim.lsp.buf.type_definition, { desc = "[LSP] Type definition" })
+
     vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, { desc = "[LSP] Add workspace folder" })
     vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, { desc = "[LSP] Remove workspace folder" })
     vim.keymap.set("n", "<leader>wl", function()
       print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
     end, { desc = "[LSP] List workspace folders" })
     -- vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, opts_local)
-    -- vim.keymap.set("n", "gr", vim.lsp.buf.references, opts_local)
   end,
 })
 
