@@ -298,21 +298,17 @@ return {
             },
           },
         },
+        -- stylua: ignore
         keymap = {
           preset = "none",
-          -- stylua: ignore
           ["<A-k>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
-          -- stylua: ignore
           ["<A-j>"] = { function(cmp) return cmp.select_next({ auto_insert = false }) end, "fallback", },
-          -- stylua: ignore
           ["<C-p>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
-          -- stylua: ignore
           ["<C-n>"] = { function(cmp) return cmp.select_next({ auto_insert = false }) end, "fallback", },
-          -- stylua: ignore
+          ["<A-u>"] = { function(cmp) return cmp.select_prev({ count = 5 }) end, "fallback", },
+          ["<A-d>"] = { function(cmp) return cmp.select_next({ count = 5 }) end, "fallback", },
           ["<Tab>"] = { function(cmp) return cmp.accept() end, "fallback", },
-          -- stylua: ignore
           ["<CR>"] = { "fallback", },
-          -- stylua: ignore
           ["<A-/>"] = { function(cmp) if cmp.is_menu_visible() then return cmp.hide() else return cmp.show() end end, "fallback", },
         },
       },
