@@ -184,7 +184,7 @@ return {
         "<leader>pc",
         function()
           Snacks.picker.files({
-            ft = { "jpg", "jpeg", "png", "webp", "heic", "avif" },
+            ft = { "jpg", "jpeg", "png", "webp", "heic", "avif", "pdf" },
             -- Override what happens when you press <CR> (confirm)
             actions = {
               confirm = function(picker, _)
