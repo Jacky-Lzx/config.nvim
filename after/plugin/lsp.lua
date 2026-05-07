@@ -95,6 +95,10 @@ vim.schedule(function()
     },
   })
 
+  if vim.g.vscode then
+    return
+  end
+
   local snacks = require("snacks")
 
   snacks.toggle.diagnostics():map("<leader>td")

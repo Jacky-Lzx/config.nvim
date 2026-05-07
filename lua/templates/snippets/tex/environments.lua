@@ -201,5 +201,5 @@ return {
     { show_condition = conds.obj.is_latex * conds.obj.in_figure }
   ),
 }, {
-  s({ trig = ";t", desc = "`\\item`" }, { t("\\item") }, { condition = conds.obj.is_latex }),
+  s({ trig = ";t", desc = "`\\item `" }, { t("\\item ") }, { condition = conds.obj.is_latex }),
 }
