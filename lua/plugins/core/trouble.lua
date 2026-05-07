@@ -1,6 +1,9 @@
 return {
   {
     "folke/trouble.nvim",
+    -- NOTE: The plugin should be loaded when LSP is attached to enable the display of LSP document symbols.
+    --       <2026.05.07, lzx>
+    event = "LspAttach",
     cmd = "Trouble",
     opts = {
       focus = false,
