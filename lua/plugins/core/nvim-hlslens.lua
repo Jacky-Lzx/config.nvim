@@ -27,7 +27,7 @@ return {
 
       -- Set vim highlight group for HlSearchLens
       vim.api.nvim_set_hl(0, "HlSearchLens", { link = "CurSearch" })
-      vim.api.nvim_set_hl(0, "HlSearchLensNear", { fg = "#CBA6F7" })
+      vim.api.nvim_set_hl(0, "HlSearchLensNear", { link = "CurSearch" })
     end,
   },
 }

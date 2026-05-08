@@ -64,7 +64,7 @@ return {
             LineNr                      = { fg = colors.surface2 },
             -- Search                   = { bg = colors.flamingo },
             Visual                      = { bg = colors.overlay0 },
-            Search                      = { bg = colors.surface1 },
+            Search                      = { link = "SelectionInactive" },
             IncSearch                   = { bg = colors.mauve },
             CurSearch                   = { bg = colors.mauve },
             -- CursorLine               = { bg = colors.falmingo }
