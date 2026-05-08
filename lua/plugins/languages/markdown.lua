@@ -168,12 +168,13 @@ return {
         function()
           require("image-insert").insert_image({
             process = {
-              { cmd = "", extension = "png" },
-              { cmd = "", extension = "jpeg" },
-              { cmd = "", extension = "avif" },
-              { cmd = "convert - avif:-", extension = "avif" },
-              { cmd = "magick - -quality 85 png:-", extension = "png" },
+              { cmd = "magick - -quality 75 png:-", extension = "png" },
+              { cmd = "magick - -quality 75 jpg:-", extension = "jpg" },
               { cmd = "magick - -quality 75 webp:-", extension = "webp" },
+              { cmd = "convert - avif:-", extension = "avif" },
+              { cmd = "", extension = "png" },
+              { cmd = "", extension = "jpg" },
+              { cmd = "", extension = "avif" },
             },
             prompt_for_file_name = true,
           })
