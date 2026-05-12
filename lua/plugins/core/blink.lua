@@ -53,11 +53,12 @@ return {
           --- Disable copilot suggestions
           function(cmp)
             cmp.show({
-              providers = (function()
-                local success, node = pcall(vim.treesitter.get_node)
-                if success and node and vim.tbl_contains({ "comment", "line_comment", "block_comment" }, node:type())
-                then return { "buffer" } else return { "lazydev", "lsp", "path", "snippets" } end
-              end)(),
+              -- providers = (function()
+              --   local success, node = pcall(vim.treesitter.get_node)
+              --   if success and node and vim.tbl_contains({ "comment", "line_comment", "block_comment" }, node:type())
+              --   then return { "buffer" } else return { "lazydev", "lsp", "path", "snippets" } end
+              -- end)(),
+              providers = { "lazydev", "lsp", "path", "snippets", "buffer", "dictionary" }
             })
           end,
         },
