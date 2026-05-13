@@ -50,8 +50,6 @@ vim.keymap.set("x", ">", ">gv")
 -- 在命令行模式下，将 ":W" 映射为 ":w"
 -- vim.keymap.set("c", "W", "w", { noremap = true, desc = "Map :W to :w (save file)" })
 
-vim.api.nvim_create_user_command("ConvertTabToSpace", "%s/\t/  /g", {})
-
 vim.keymap.set(
   { "n", "x" },
   "go",
