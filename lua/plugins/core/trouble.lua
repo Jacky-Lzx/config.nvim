@@ -20,6 +20,12 @@ return {
         size = { width = 0.6, height = 0.5 },
         zindex = 200,
       },
+      icons = {
+        ---@type trouble.Indent.symbols
+        indent = {
+          ws = " ",
+        },
+      },
     },
 
     -- stylua: ignore
