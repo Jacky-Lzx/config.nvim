@@ -23,7 +23,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 vim.schedule(function()
+  -- NOTE: Have not figured out the difference of these two lsps <2026.05.13, lzx>
   vim.lsp.enable("copilot")
+  vim.lsp.enable("copilot_ls") -- Required by copilot-lsp.nvim
   vim.lsp.enable("typos_lsp")
 
   local signs = { Error = "", Warn = "", Hint = "󰌶", Info = "" }
