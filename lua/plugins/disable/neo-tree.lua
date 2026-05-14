@@ -1,7 +1,6 @@
 return {
   {
     "nvim-neo-tree/neo-tree.nvim",
-    enabled = false,
     -- lazy = false, -- neo-tree will lazily load itself
     branch = "v3.x",
     dependencies = {
@@ -29,6 +28,18 @@ return {
         end,
       },
     },
+  },
+
+  {
+    "antosha417/nvim-lsp-file-operations",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-neo-tree/neo-tree.nvim", -- makes sure that this loads after Neo-tree.
+    },
+    opts = true,
+    -- config = function()
+    --   require("lsp-file-operations").setup()
+    -- end,
   },
 
   {
