@@ -28,7 +28,7 @@ return {
           copilot = {
             name = "copilot",
             module = "blink-copilot",
-            score_offset = 100,
+            score_offset = 90,
             async = true,
             opts = {
               kind_icon = "",
