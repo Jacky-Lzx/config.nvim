@@ -22,7 +22,10 @@ return {
       { "<leader>e", "<CMD>NvimTreeToggle<CR>", mode = { "n" }, desc = "[NvimTree] Toggle NvimTree" },
     },
     opts = {
+      -- keep the cursor on the first letter of the filename when moving in the tree.
+      hijack_cursor = true,
       view = {
+        signcolumn = "no",
         width = 40,
       },
       update_focused_file = {
@@ -31,6 +34,20 @@ return {
       notify = {
         threshold = vim.log.levels.WARN,
       },
+      on_attach = function(bufnr)
+        local api = require("nvim-tree.api")
+
+        local function opts(desc)
+          return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+        end
+
+        -- default mappings
+        api.map.on_attach.default(bufnr)
+
+        -- custom mappings
+        vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+        vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+      end,
     },
   },
 
