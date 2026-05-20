@@ -93,8 +93,6 @@ return {
 
       vim.api.nvim_create_user_command("LuaSnipList", require("luasnip.extras.snippet_list").open, {})
       vim.api.nvim_create_user_command("LuaSnipEdit", require("luasnip.loaders").edit_snippet_files, {})
-
-      ls.log.set_loglevel("info")
     end,
   },
 }
