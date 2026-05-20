@@ -1,8 +1,5 @@
 vim.treesitter.start()
 
--- Set the markdown style with the tabindent values set in the config instead of the built-in value
-vim.g.markdown_recommended_style = 0
-
 vim.schedule(function()
   -- FIXME: Vale is not configured correctly. It doesn't work
   -- vim.lsp.enable("vale_ls")
