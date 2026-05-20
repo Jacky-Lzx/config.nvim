@@ -1,4 +1,4 @@
-local conds = require("templates.snippets.utils.conditions")
+local conds = require("snippets.utils.conditions")
 
 --- Some snippets modified from `https://github.com/mireq/luasnip-snippets/blob/main/lua/luasnip_snippets/python.lua`
 local function has_ts_ancestor(node, type)

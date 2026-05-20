@@ -2,7 +2,7 @@
 
 --- This file defines global variables for luasnip to suppress "undefined global" warnings in snippets.
 --- Reference: luasnip help page "SNIP-ENV DIAGNOSTICS"
---- Related files: `templates/snippets/.luarc.lua`
+--- Related files: `lua/snippets/.luarc.json`
 
 --- However, this does not work as expected. In other files than the snippet files, these variables are still defined.
 --- It may be because this file is already in the `workspace.library`.

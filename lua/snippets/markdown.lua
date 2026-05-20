@@ -1,8 +1,8 @@
-local utils = require("templates.snippets.utils.utils")
-local math_conds = require("templates.snippets.tex.utils.math_conditions")
+local utils = require("snippets.utils.utils")
+local math_conds = require("snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 local cond_has_selected_text = require("luasnip.extras.conditions.expand").has_selected_text
-local nodes_util = require("templates.snippets.utils.nodes")
+local nodes_util = require("snippets.utils.nodes")
 
 local function generate_table(_, snip)
   local rows = tonumber(snip.captures[1])

@@ -73,7 +73,7 @@ end
 vim.g.python3_host_prog = python_path
 
 if vim.g.neovide then
-  require("neovide.neovide")
+  require("third_party.neovide")
 end
 
 require("plugin")

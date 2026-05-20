@@ -1,7 +1,7 @@
 local ls = require("luasnip")
 
-local nodes_util = require("templates.snippets.utils.nodes")
-local conds = require("templates.snippets.tex.utils.math_conditions")
+local nodes_util = require("snippets.utils.nodes")
+local conds = require("snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 
 local function label_fn(args, _, _)
@@ -15,7 +15,7 @@ local function label_fn(args, _, _)
   return ret
 end
 
--- local tex = require("templates.snippets.tex.utils.conditions")
+-- local tex = require("snippets.tex.utils.conditions")
 
 return {
   s(

@@ -350,11 +350,6 @@ return {
           vim.keymap.del("n", "gra")
           vim.keymap.del("n", "grr")
           vim.keymap.del("n", "gri")
-
-          vim.api.nvim_set_hl(0, "SnacksPickerListCursorLine", { bg = "#2A2B3D" })
-          vim.api.nvim_set_hl(0, "SnacksPickerPreviewCursorLine", { bg = "#2A2B3D" })
-          vim.api.nvim_set_hl(0, "SnacksPickerSearch", { link = "SelectionInactive" })
-          vim.api.nvim_set_hl(0, "SnacksPickerMatch", { link = "SelectionInactive" })
         end,
       })
     end,

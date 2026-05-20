@@ -69,7 +69,7 @@ return {
       local ls = require("luasnip")
       ls.setup(opts)
 
-      require("luasnip.loaders.from_lua").lazy_load({ paths = { "./lua/templates/snippets" } })
+      require("luasnip.loaders.from_lua").lazy_load({ paths = { "./lua/snippets" } })
 
       -- NOTE: Adding undo point in `expand_auto` will lead to neovim recording every character you type in an expansion trigger.
       --       (https://github.com/L3MON4D3/LuaSnip/issues/830#issuecomment-1489967687) <2026.04.28, lzx>

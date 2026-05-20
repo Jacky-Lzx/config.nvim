@@ -1,5 +1,5 @@
-local nodes_util = require("templates.snippets.utils.nodes")
-local conds = require("templates.snippets.tex.utils.math_conditions")
+local nodes_util = require("snippets.utils.nodes")
+local conds = require("snippets.tex.utils.math_conditions")
 
 return {
   -- stylua: ignore

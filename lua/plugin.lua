@@ -19,7 +19,6 @@ local opts = {
   spec = {
     { import = "plugins.core" },
     { import = "plugins.extra" },
-    -- { import = "plugins" },
     { import = "plugins.languages" },
   },
   install = {

@@ -30,7 +30,7 @@ return {
 
   {
     "toppair/peek.nvim",
-    enabled = require("conds").is_mac,
+    enabled = require("utils.conds").is_mac,
     cmd = { "MarkdownPreview" },
     build = "deno task --quiet build:fast",
     opts = {},

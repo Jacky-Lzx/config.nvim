@@ -54,29 +54,10 @@ return {
         lsp_trouble = true,
         which_key = true,
       },
-      custom_highlights = function(colors)
-          -- stylua: ignore
-          return {
-            -- Comment                  = { fg = colors.flamingo },
-            -- TabLineSel               = { bg = colors.pink     },
-            -- CmpBorder                = { fg = colors.surface2 },
-            -- Pmenu                    = { bg = colors.none     },
-            LineNr                      = { fg = colors.surface2 },
-            -- Search                   = { bg = colors.flamingo },
-            Visual                      = { bg = colors.overlay0 },
-            Search                      = { link = "SelectionInactive" },
-            IncSearch                   = { bg = colors.mauve },
-            CurSearch                   = { bg = colors.mauve },
-            -- CursorLine               = { bg = colors.falmingo }
-            LspSignatureActiveParameter = { bg = colors.overlay0 },
-            MatchParen                  = { bg = colors.mauve, fg = colors.base, bold = true},
-          }
-      end,
     },
     config = function(_, opts)
       require("catppuccin").setup(opts)
 
-      -- vim.cmd([[colorscheme catppuccin-mocha]])
       vim.cmd.colorscheme("catppuccin-nvim")
     end,
   },

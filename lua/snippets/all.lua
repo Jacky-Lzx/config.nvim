@@ -1,4 +1,4 @@
-local todo_comment_snippets = require("templates.snippets.generators.todo-comment").generate_todo_comment_snippets()
+local todo_comment_snippets = require("snippets.generators.todo-comment").generate_todo_comment_snippets()
 
 return {
   s({ trig = "date", desc = "Date" }, { t(os.date("%Y.%m.%d")) }),

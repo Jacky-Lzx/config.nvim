@@ -1,5 +1,5 @@
-local utils = require("templates.snippets.utils.utils")
-local conds = require("templates.snippets.utils.conditions")
+local utils = require("snippets.utils.utils")
+local conds = require("snippets.utils.conditions")
 
 return {
   s(

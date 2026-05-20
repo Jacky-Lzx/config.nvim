@@ -1,9 +1,9 @@
-local math_conds = require("templates.snippets.tex.utils.math_conditions")
+local math_conds = require("snippets.tex.utils.math_conditions")
 local cond_line_begin = require("luasnip.extras.conditions.expand").line_begin
 local cond_has_selected_text = require("luasnip.extras.conditions.expand").has_selected_text
-local nodes_util = require("templates.snippets.utils.nodes")
+local nodes_util = require("snippets.utils.nodes")
 
-local str_util = require("templates.snippets.utils.strings")
+local str_util = require("snippets.utils.strings")
 
 --- Modified from `https://github.com/L3MON4D3/LuaSnip/wiki/Cool-Snippets#smart-postfix-snippets`
 local function dynamic_postfix_divide(_, parent, _)

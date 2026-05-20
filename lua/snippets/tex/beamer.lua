@@ -1,4 +1,4 @@
-local math_conditions = require("templates.snippets.tex.utils.math_conditions")
+local math_conditions = require("snippets.tex.utils.math_conditions")
 
 return {
   s(

@@ -377,7 +377,7 @@ return {
             max_items = 10,
             opts = {
               -- options for blink-cmp-dictionary
-              dictionary_directories = { "~/.config/nvim/dictionary" },
+              dictionary_files = { vim.fn.stdpath("config") .. "/configs/dictionary.txt" },
             },
           },
         },

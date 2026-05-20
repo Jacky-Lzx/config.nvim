@@ -1,5 +1,3 @@
-vim.api.nvim_set_hl(0, "BlinkCmpItemKindMinuet", { fg = "#a6e3a1" })
-
 return {
   {
     "milanglacier/minuet-ai.nvim",
