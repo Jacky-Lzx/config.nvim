@@ -69,6 +69,10 @@ return {
       local ls = require("luasnip")
       ls.setup(opts)
 
+      -- NOTE: This extension has to be executed before lazy_load(). Don't know why. <2026.05.24, lzx>
+      ls.filetype_extend("markdown", { "tex" })
+      ls.filetype_extend("markdown_inline", { "markdown", "tex" })
+
       require("luasnip.loaders.from_lua").lazy_load({ paths = { "./lua/snippets" } })
 
       -- NOTE: Adding undo point in `expand_auto` will lead to neovim recording every character you type in an expansion trigger.
@@ -87,9 +91,6 @@ return {
         vim.o.undolevels = vim.o.undolevels
         snip_expand(...)
       end
-
-      ls.filetype_extend("markdown", { "tex" })
-      ls.filetype_extend("markdown_inline", { "markdown" })
 
       vim.api.nvim_create_user_command("LuaSnipList", require("luasnip.extras.snippet_list").open, {})
       vim.api.nvim_create_user_command("LuaSnipEdit", require("luasnip.loaders").edit_snippet_files, {})

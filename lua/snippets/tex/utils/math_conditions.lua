@@ -700,6 +700,10 @@ end
 -- TEXT COMMAND DETECTION
 ------------------------------------------------------------------------------
 local function is_cursor_in_text_command()
+  if vim.bo.filetype ~= "tex" then
+    return false -- Only applies to TeX files, not markdown or others
+  end
+
   local current_row, current_col = get_cursor_pos()
   local cache_key = string.format("%d:%d", current_row, current_col)
 
@@ -786,7 +790,7 @@ vim.api.nvim_create_user_command("DebugSileMath", function()
   print("Current line:", line)
   print("Cursor position:", current_row, current_col)
   print("Cursor position (nvim):", unpack(cursor))
-  print("In math mode:", M.fn.math_mode())
+  print("In math mode:", M.obj.math_mode())
   print("In math environment:", in_environment("math"))
   print("In SILE display math:", M.is_in_sile_display_math())
 
