@@ -30,7 +30,7 @@ return {
           -- You can call `try_lint` with a linter name or a list of names to always
           -- run specific linters, independent of the `linters_by_ft` configuration
           require("lint").try_lint("codespell")
-          require("lint").try_lint("typos")
+          -- require("lint").try_lint("typos")
         end,
       })
     end,

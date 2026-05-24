@@ -23,7 +23,7 @@ return {
     optional = true,
     opts = {
       formatters_by_ft = {
-        verilog = { "trim_whitespace", "verible-verilog-format" },
+        verilog = { "verible-verilog-format" },
       },
       formatters = {
         ["verible-verilog-format"] = {
