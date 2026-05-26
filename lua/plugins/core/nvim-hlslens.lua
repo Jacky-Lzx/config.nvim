@@ -1,6 +1,5 @@
 return {
   {
-    -- Conflict with vscode_nvim, don't know why
     "kevinhwang91/nvim-hlslens",
     -- stylua: ignore
     keys = {
