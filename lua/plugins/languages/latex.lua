@@ -55,8 +55,7 @@ return {
       },
       formatters = {
         ["tex-fmt"] = {
-          -- Wrap long lines manually
-          prepend_args = { "--nowrap" },
+          prepend_args = { "--config", vim.fn.stdpath("config") .. "/configs/tex-fmt.toml" },
         },
         latexindent = {
           prepend_args = { "--local", vim.fn.stdpath("config") .. "/configs/latexindent.yaml" },

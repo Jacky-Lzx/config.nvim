@@ -1,0 +1,17 @@
+# Check formatting, do not modify files
+check = false
+# Check formatting, do not modify files
+print = false
+# Process stdin as a single file, output to stdout
+stdin = false
+verbosity = "warn"
+
+wrap = false
+wraplen = 120
+tabsize = 2
+tabchar = "space"
+
+format-tables = true
+
+lists = []
+no-indent-envs = []
