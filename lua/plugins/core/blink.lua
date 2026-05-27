@@ -25,10 +25,10 @@ return {
       -- C-k: Toggle signature help (if signature.enabled = true)
       --
       -- See :h blink-cmp-config-keymap for defining your own keymap
-      -- stylua: ignore
       keymap = {
         -- If the command/function returns false or nil, the next command/function will be run.
         preset = "default",
+        -- stylua: ignore start
         ["<A-k>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
         ["<A-j>"] = { function(cmp) return cmp.select_next({ auto_insert = false }) end, "fallback", },
         ["<C-p>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
@@ -47,32 +47,46 @@ return {
 
         -- Show/Remove completion
         ["<A-/>"] = { function(cmp) if cmp.is_menu_visible() then return cmp.hide() else return cmp.show() end end, "fallback", },
+        -- stylua: ignore end
 
-        -- show with a list of providers
-        ["<C-space>"] = {
-          --- Disable copilot suggestions
+        ["<A-i>"] = {
+          --- Toggle copilot suggestions
           function(cmp)
-            cmp.show({
-              -- providers = (function()
-              --   local success, node = pcall(vim.treesitter.get_node)
-              --   if success and node and vim.tbl_contains({ "comment", "line_comment", "block_comment" }, node:type())
-              --   then return { "buffer" } else return { "lazydev", "lsp", "path", "snippets" } end
-              -- end)(),
-              providers = { "lazydev", "lsp", "path", "snippets", "buffer", "dictionary" }
-            })
+            if not vim.b.blink_sources then
+              vim.b.blink_sources = require("blink.cmp.config").sources.default
+            end
+
+            local sources = vim.b.blink_sources
+
+            if vim.tbl_contains(sources, "copilot") then
+              sources = vim.tbl_filter(function(source)
+                return source ~= "copilot"
+              end, sources)
+            else
+              table.insert(sources, 1, "copilot")
+            end
+
+            cmp.show({ providers = sources })
+
+            vim.b.blink_sources = sources
           end,
         },
 
         ["<A-n>"] = {
           function(cmp)
+            if not vim.b.blink_sources then
+              vim.b.blink_sources = require("blink.cmp.config").sources.default
+            end
+
             local provider_arrs = {
+              vim.b.blink_sources,
               { "buffer" },
               { "snippets" },
-              { "lazydev", "lsp", "path" }
+              { "lazydev", "lsp", "path" },
             }
             local provider_index = vim.b.blink_cmp_provider_index
             if not provider_index then
-              provider_index = 0
+              provider_index = 1
             end
 
             provider_index = provider_index + 1
@@ -86,10 +100,15 @@ return {
         },
         ["<A-p>"] = {
           function(cmp)
+            if not vim.b.blink_sources then
+              vim.b.blink_sources = require("blink.cmp.config").sources.default
+            end
+
             local provider_arrs = {
+              vim.b.blink_sources,
               { "buffer" },
               { "snippets" },
-              { "lazydev", "lsp", "path" }
+              { "lazydev", "lsp", "path" },
             }
             local provider_index = vim.b.blink_cmp_provider_index
             if not provider_index then

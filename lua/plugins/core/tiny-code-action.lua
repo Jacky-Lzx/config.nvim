@@ -8,8 +8,8 @@ return {
     event = "LspAttach",
     -- stylua: ignore
     keys = {
-      { "<leader>a", function() require("tiny-code-action").code_action({}) end, desc = "[LSP] Code action",             noremap = true, silent = true, },
-      { "<A-a>",     function() require("tiny-code-action").code_action({}) end, desc = "[LSP] Code action", mode = "i", noremap = true, silent = true, },
+      { "<leader>a", function() require("tiny-code-action").code_action({}) end, desc = "[LSP] Code action", mode = {"n", "x"}, noremap = true, silent = true, },
+      { "<A-a>",     function() require("tiny-code-action").code_action({}) end, desc = "[LSP] Code action", mode = "i",        noremap = true, silent = true, },
     },
     opts = {
       backend = "delta",
