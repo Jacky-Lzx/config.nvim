@@ -4,7 +4,7 @@ local conds = require("snippets.utils.conditions")
 return {
   s(
     { trig = "stylua-ignore", desc = "Ignore stylua" },
-    { t("-- stylua: ignore") },
+    { t("-- stylua: ignore"), c(1, { t(""), t(" start"), t(" end") }) },
     { show_condition = conds.line_begin }
   ),
 
