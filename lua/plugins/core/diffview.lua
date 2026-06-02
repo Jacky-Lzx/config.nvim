@@ -2,7 +2,8 @@ return {
   -- NOTE: The original repo `https://github.com/sindrets/diffview.nvim` is not active anymore.
   --       Use the forked repo. <2026.04.14, lzx>
   {
-    "dlyongemallo/diffview.nvim",
+    "dlyongemallo/diffview-plus.nvim",
+    version = "*",
     cmd = { "DiffviewOpen", "DiffviewFileHistory" },
     keys = {
       {
