@@ -120,6 +120,8 @@ return {
     { show_condition = conds.obj.is_latex }
   ),
 
+  s({ trig = "vs", desc = "vspace" }, fmta([[\vspace{<>em}]], { i(0, "-1") }), { show_condition = conds.obj.is_latex }),
+
   s(
     { trig = "ladd", desc = "Lzx add" },
     fmta([[\ldel{<>}\ladd{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }), i(0) }),
