@@ -321,6 +321,8 @@ return {
         -- stylua: ignore
         keymap = {
           preset = "none",
+          ["<Up>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
+          ["<Down>"] = { function(cmp) return cmp.select_next({ auto_insert = false }) end, "fallback", },
           ["<A-k>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
           ["<A-j>"] = { function(cmp) return cmp.select_next({ auto_insert = false }) end, "fallback", },
           ["<C-p>"] = { function(cmp) return cmp.select_prev({ auto_insert = false }) end, "fallback", },
