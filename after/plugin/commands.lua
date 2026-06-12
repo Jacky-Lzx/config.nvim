@@ -10,6 +10,7 @@ vim.schedule(function()
       ["a"] = true,
       ["an"] = true,
       ["the"] = true,
+      ["with"] = true,
       ["and"] = true,
       ["but"] = true,
       ["for"] = true,

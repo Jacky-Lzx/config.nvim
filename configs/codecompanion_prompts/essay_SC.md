@@ -17,13 +17,7 @@ tone and appropriate academic vocabulary, while maintaining the original meaning
 
 If the text has LaTeX commands, process them as follows:
 
-- If the command is `\del{}` or similar, ignore the contents inside the command
-- If the command is `\add{}` or similar, include the contents inside the command
+- If the command is `\*del{}` or similar, ignore the contents inside the command
+- If the command is `\*add{}` or similar, include the contents inside the command
 
-Organize your changes in two lists, one for grammatical errors and another for syntax improvements.
-Each item in the list should follow this format:
-
-- [original sentence]
-  - `quick` -> `quickly`
-  - `...` -> `...`
-  - [if it is a syntax improvement, briefly explain the reason for the change]
+Wrap the output LaTeX codes in the markdown code block.
