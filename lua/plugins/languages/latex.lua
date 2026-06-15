@@ -97,8 +97,11 @@ return {
       vim.g.vimtex_syntax_enabled = true -- This config controls conceals. Should be true
       vim.g.vimtex_indent_enabled = false
 
+      vim.g.vimtex_quickfix_enabled = true
       -- Only open quickfix when there are errors, not warnings
       vim.g.vimtex_quickfix_open_on_warning = false
+      vim.g.vimtex_quickfix_method = vim.fn.executable("pplatex") == 1 and "pplatex" or "latexlog"
+      vim.g.vimtex_quickfix_mode = 0
 
       -- vim.g.vimtex_view_method = "zathura_simple"
       -- vim.g.vimtex_view_zathura_use_synctex = 0
@@ -112,7 +115,6 @@ return {
       vim.g.vimtex_compiler_method = "latexmk"
 
       vim.g.vimtex_mappings_disable = { ["n"] = { "K" } } -- disable `K` as it conflicts with LSP hover
-      vim.g.vimtex_quickfix_method = vim.fn.executable("pplatex") == 1 and "pplatex" or "latexlog"
 
       vim.g.vimtex_syntax_conceal = {
         accents = 1,
