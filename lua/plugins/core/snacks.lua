@@ -211,6 +211,13 @@ return {
           wo = {
             wrap = true,
           },
+          relative = "editor",
+          border = "rounded",
+          position = "float",
+          backdrop = 60,
+          height = 0.8,
+          width = 0.8,
+          zindex = 50,
         },
       },
     },
