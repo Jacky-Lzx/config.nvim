@@ -24,6 +24,9 @@ return {
     opts = {
       -- keep the cursor on the first letter of the filename when moving in the tree.
       hijack_cursor = true,
+      filters = {
+        git_ignored = false,
+      },
       view = {
         signcolumn = "no",
         width = 40,
