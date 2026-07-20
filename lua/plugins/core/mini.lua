@@ -140,13 +140,6 @@ return {
     },
   },
 
-  -- {
-  --   "echasnovski/mini.pairs",
-  --   version = "*",
-  --   event = { "InsertEnter" },
-  --   config = true,
-  -- },
-
   {
     "echasnovski/mini.align",
     version = "*",
@@ -224,6 +217,7 @@ return {
 
   {
     "nvim-mini/mini.pairs",
+    cond = false,
     version = "*",
     event = "InsertEnter",
     -- NOTE: Copied from LazyVim (https://www.lazyvim.org/plugins/coding#minipairs) <2026.04.28, lzx>
