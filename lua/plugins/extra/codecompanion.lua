@@ -45,6 +45,14 @@ return {
                   return os.getenv("DEEPSEEK_API_KEY_NEOVIM")
                 end,
               },
+              schema = {
+                max_tokens = {
+                  default = 16384,
+                },
+              },
+              parameters = {
+                max_tokens = 16384,
+              },
             })
           end,
         },
@@ -55,12 +63,12 @@ return {
 
       strategies = {
         chat = {
-          adapter = "copilot",
+          adapter = "deepseek",
           keymaps = {
             stop = false,
           },
         },
-        inline = { adapter = "copilot" },
+        inline = { adapter = "deepseek" },
       },
 
       prompt_library = {
