@@ -67,4 +67,18 @@ function M.fmt_env(env_name, required_args)
   )
 end
 
+function M.fn_date_and_time(
+  _,
+  _, -- parent snippet or parent node
+  user_args -- user_args from opts.user_args
+)
+  -- require("snacks.notify").info(user_args)
+
+  if user_args == "date" then
+    return os.date("%Y.%m.%d")
+  else -- user_args[0] == "datetime"
+    return os.date("%Y.%m.%d %H:%M:%S")
+  end
+end
+
 return M

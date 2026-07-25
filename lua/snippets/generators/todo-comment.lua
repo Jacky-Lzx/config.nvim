@@ -5,6 +5,9 @@ local i = require("luasnip.nodes.insertNode").I
 local f = require("luasnip.nodes.functionNode").F
 local c = require("luasnip.nodes.choiceNode").C
 local fmta = require("luasnip.extras.fmt").fmta
+local fmt = require("luasnip.extras.fmt").fmt
+
+local nodes = require("snippets.utils.nodes")
 
 _G.luasnip = {}
 _G.luasnip.vars = {
@@ -15,10 +18,16 @@ _G.luasnip.vars = {
 local marks = {
   order = { "date_signature", "date", "none" },
   date_signature = function()
-    return i(1, "<" .. os.date("%Y.%m.%d") .. ", " .. _G.luasnip.vars.username .. ">")
+    return sn(
+      nil,
+      fmt(
+        "<{}, " .. _G.luasnip.vars.username .. ">{}",
+        { f(nodes.fn_date_and_time, {}, { user_args = { "date" } }), i(1) }
+      )
+    )
   end,
   date = function()
-    return i(1, "<" .. os.date("%Y.%m.%d") .. ">")
+    return sn(nil, fmt("<{}>{}", { f(nodes.fn_date_and_time, {}, { user_args = { "date" } }), i(1) }))
   end,
   none = function()
     return t("")
