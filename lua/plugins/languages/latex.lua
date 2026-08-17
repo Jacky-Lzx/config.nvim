@@ -93,6 +93,9 @@ return {
       -- Removed default imap
       vim.g.vimtex_imaps_enabled = false
 
+      -- Silence the compiler messages during start, stop, and callbacks
+      -- vim.g.vimtex_compiler_silent = true
+
       vim.g.vimtex_complete_enabled = false
       vim.g.vimtex_syntax_enabled = true -- This config controls conceals. Should be true
       vim.g.vimtex_indent_enabled = false

@@ -311,15 +311,17 @@ M.autosnippets = {
     { condition = math_conds.obj.in_math, show_condition = math_conds.obj.in_math }
   ),
 
+  -- NOTE: Sometimes the math condition does not work. Should investigate why the math cond does not work. But for now,
+  -- just disable the condition checking as these two snippets are so often used. <2026.07.21, lzx>
   s(
     { trig = "^^", name = "superscript", desc = "Superscript", wordTrig = false },
-    fmta([[^{<>}]], { i(1) }),
-    { condition = math_conds.obj.in_math, show_condition = math_conds.obj.false_fn }
+    fmta([[^{<>}]], { i(1) })
+    -- { condition = math_conds.obj.in_math, show_condition = math_conds.obj.false_fn }
   ),
   s(
     { trig = "__", name = "subscript", desc = "Subscript", wordTrig = false },
-    fmta([[_{<>}]], { i(1) }),
-    { condition = math_conds.obj.in_math, show_condition = math_conds.obj.false_fn }
+    fmta([[_{<>}]], { i(1) })
+    -- { condition = math_conds.obj.in_math, show_condition = math_conds.obj.false_fn }
   ),
 
   symbol("xx", "Times", [[\times]]),
