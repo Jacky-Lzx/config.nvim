@@ -73,6 +73,14 @@ end
 -- <Space> is usually the leader, so we map it directly
 vim.keymap.set("n", "<Space><Space>", pulse_cursor, { desc = "Pulse current line" })
 
+vim.api.nvim_create_user_command("KeyTest", function()
+  print("Press any key...")
+  local key = vim.fn.getcharstr()
+  print("Key: " .. vim.fn.keytrans(key))
+end, {
+  desc = "Show the next pressed key",
+})
+
 vim.schedule(function()
   vim.keymap.set({ "i", "n" }, "<M-m>", function()
     local function on_files_selected(files)
