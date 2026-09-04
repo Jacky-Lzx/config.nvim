@@ -27,6 +27,8 @@ return {
 
       display = {
         chat = {
+          fold_reasoning = false,
+          show_reasoning = true,
           show_settings = false, -- If show settings, can not change adapter during the chat
         },
         diff = {
@@ -38,6 +40,27 @@ return {
 
       adapters = {
         http = {
+          lm_studio = function()
+            return require("codecompanion.adapters").extend("openai_compatible", {
+              formatted_name = "LM Studio",
+              env = {
+                api_key = "LM_STUDIO_API_KEY_CODECOMPANION",
+                url = "http://localhost:1234",
+              },
+              handlers = {
+                parse_message_meta = function(_, data)
+                  local extra = data.extra
+                  if extra and extra.reasoning_content then
+                    data.output.reasoning = { content = extra.reasoning_content }
+                    if data.output.content == "" then
+                      data.output.content = nil
+                    end
+                  end
+                  return data
+                end,
+              },
+            })
+          end,
           deepseek = function()
             return require("codecompanion.adapters").extend("deepseek", {
               env = {
@@ -63,12 +86,12 @@ return {
 
       strategies = {
         chat = {
-          adapter = "deepseek",
+          adapter = "lm_studio",
           keymaps = {
             stop = false,
           },
         },
-        inline = { adapter = "deepseek" },
+        inline = { adapter = "lm_studio" },
       },
 
       prompt_library = {
