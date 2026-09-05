@@ -29,7 +29,7 @@ return {
 
   {
     "toppair/peek.nvim",
-    enabled = require("utils.conds").is_mac,
+    enabled = require("config.platform").executable("deno") ~= nil,
     cmd = { "MarkdownPreview" },
     build = "deno task --quiet build:fast",
     opts = {},
@@ -296,6 +296,7 @@ return {
 
   {
     "obsidian-nvim/obsidian.nvim",
+    enabled = vim.uv.fs_stat(require("config.platform").obsidian_workspace()) ~= nil,
     version = "*", -- Recommended, use latest release instead of latest commit
     dependencies = {
       -- Modified img-clip configs for obsidian vaults
@@ -345,7 +346,7 @@ return {
       workspaces = {
         {
           name = "Research Workspace",
-          path = "~/Research/Obsidian_Workspace",
+          path = require("config.platform").obsidian_workspace(),
         },
       },
 

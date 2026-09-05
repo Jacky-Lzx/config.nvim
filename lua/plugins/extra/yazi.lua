@@ -1,6 +1,7 @@
 return {
   {
     "mikavilpas/yazi.nvim",
+    enabled = require("config.platform").executable("yazi") ~= nil,
     dependencies = { "folke/snacks.nvim" },
     -- stylua: ignore
     keys = {

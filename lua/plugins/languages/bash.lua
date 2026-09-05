@@ -1,3 +1,5 @@
+local has_fish = require("config.platform").executable("fish") ~= nil
+
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -19,7 +21,7 @@ return {
     opts = {
       formatters_by_ft = {
         sh = { "shfmt" },
-        fish = { "fish_indent" }, -- Installed with fish
+        fish = has_fish and { "fish_indent" } or nil,
       },
     },
     optional = true,
@@ -30,7 +32,7 @@ return {
     optional = true,
     opts = {
       linters_by_ft = {
-        fish = { "fish" },
+        fish = has_fish and { "fish" } or nil,
         bash = { "bash" },
       },
     },

@@ -1,3 +1,5 @@
+local platform = require("config.platform")
+
 return {
   {
     "folke/snacks.nvim",
@@ -61,7 +63,7 @@ return {
       },
       input = { enabled = true },
       lazygit = {
-        enabled = true,
+        enabled = platform.executable("lazygit") ~= nil,
         configure = false,
       },
       notifier = {
@@ -75,15 +77,17 @@ return {
             desc = "Open with system app",
             action = function(picker, item)
               local items = picker:selected({ fallback = true })
-              local lines = vim.tbl_map(function(it)
+              for _, it in ipairs(items) do
                 local path = it.file or it.text
                 if path then
-                  -- Snacks.util.system_open(path)
-                  vim.fn.jobstart({ "open", path }, { detach = true })
+                  local ok, err = platform.open(path)
+                  if not ok then
+                    Snacks.notify(err, { title = "Snacks Picker", level = "error" })
+                  end
                 else
                   Snacks.notify("No file or text to open", { title = "Snacks Picker", level = "error" })
                 end
-              end, items)
+              end
             end,
           },
           copy_selected = {
@@ -106,8 +110,8 @@ return {
         },
         previewers = {
           diff = {
-            builtin = false, -- use Neovim for previewing diffs (true) or use an external tool (false)
-            cmd = { "delta" }, -- example to show a diff with delta
+            builtin = platform.executable("delta") == nil,
+            cmd = platform.executable("delta") and { "delta" } or nil,
           },
           git = {
             builtin = false, -- use Neovim for previewing git output (true) or use git (false)

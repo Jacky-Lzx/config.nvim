@@ -1,3 +1,5 @@
+local html_beautify = require("config.platform").executable("html_beautify")
+
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -19,7 +21,7 @@ return {
     opts = {
       formatters_by_ft = {
         -- Should install js-beautify first `https://github.com/beautifier/js-beautify`
-        html = { "html_beautify" },
+        html = html_beautify and { "html_beautify" } or nil,
       },
     },
     optional = true,

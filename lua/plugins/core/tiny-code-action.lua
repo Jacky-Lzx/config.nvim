@@ -1,3 +1,5 @@
+local has_delta = require("config.platform").executable("delta") ~= nil
+
 return {
   {
     "rachartier/tiny-code-action.nvim",
@@ -12,7 +14,7 @@ return {
       { "<A-a>",     function() require("tiny-code-action").code_action({}) end, desc = "[LSP] Code action", mode = "i",        noremap = true, silent = true, },
     },
     opts = {
-      backend = "delta",
+      backend = has_delta and "delta" or "vim",
       backend_opts = {
         delta = {
           -- The arguments to pass to delta
