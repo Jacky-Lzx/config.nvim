@@ -83,16 +83,10 @@ function M.process_open(path)
     end
   end
 
-  vim.notify("Opening: " .. path, vim.log.levels.INFO)
-
-  vim.fn.jobstart({ "open", path }, {
-    detach = true,
-    on_exit = function(_, exit_code)
-      if exit_code ~= 0 then
-        vim.notify("Failed to open: " .. path, vim.log.levels.ERROR)
-      end
-    end,
-  })
+  local ok, err = require("config.platform").open(path)
+  if not ok then
+    vim.notify(err, vim.log.levels.ERROR)
+  end
 end
 
 return M
