@@ -52,4 +52,33 @@ function M.server_path()
   })
 end
 
+--- Pin an incompatible bundled TypeScript version during explicit tool installation.
+function M.ensure_typescript5(package_path)
+  local path = package_path .. "/node_modules/@vue/language-server"
+  local package_json = path .. "/node_modules/typescript/package.json"
+  local file = io.open(package_json)
+  if not file then
+    return
+  end
+
+  local version = file:read("*a"):match('"version"%s*:%s*"([%d%.]+)"')
+  file:close()
+  if not (version and version:match("^7%.")) then
+    return
+  end
+
+  vim.notify(("vue-language-server: replacing incompatible TypeScript %s with TypeScript 5"):format(version))
+  vim.system({ "npm", "install", "typescript@5", "--no-save", "--no-audit", "--no-fund" }, {
+    cwd = path,
+  }, function(result)
+    vim.schedule(function()
+      vim.notify(
+        result.code == 0 and "vue-language-server: TypeScript 5 installed; restart Vue LSP clients"
+          or "vue-language-server: failed to install TypeScript 5",
+        result.code == 0 and vim.log.levels.INFO or vim.log.levels.ERROR
+      )
+    end)
+  end)
+end
+
 return M
