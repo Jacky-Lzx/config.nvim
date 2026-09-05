@@ -58,20 +58,18 @@ vim.api.nvim_create_autocmd("FileType", {
 --   .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
 
 -- Enables project-local `.nvim.lua` configuration file
-vim.o.exrc = true
+vim.o.exrc = vim.env.NVIM_SMOKE_TEST ~= "1"
 
-vim.opt.shell = "fish"
-
-local python_path = ""
-local uname = vim.uv.os_uname()
-if uname.sysname == "Linux" then
-  python_path = "/home/lzx/.pyenv/versions/3.10.0/envs/neovim3/bin/python3"
-elseif uname.sysname == "Darwin" then
-  python_path = vim.fn.expand("$HOME/.uv/neovim/bin/python3")
-  -- elseif uname.sysname == "Windows_NT" then
+local platform = require("config.platform")
+local shell = platform.shell()
+if shell then
+  vim.opt.shell = shell
 end
 
-vim.g.python3_host_prog = python_path
+local python_host = platform.python_host()
+if python_host then
+  vim.g.python3_host_prog = python_host
+end
 
 if vim.g.neovide then
   require("third_party.neovide")

@@ -1,6 +1,9 @@
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  if vim.env.NVIM_SMOKE_TEST == "1" then
+    error("lazy.nvim is missing; smoke tests never install dependencies")
+  end
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
   local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
   if vim.v.shell_error ~= 0 then
@@ -27,7 +30,7 @@ local opts = {
   spec = spec,
   install = {
     -- install missing plugins on startup. This doesn't increase startup time.
-    missing = true,
+    missing = vim.env.NVIM_SMOKE_TEST ~= "1",
     -- try to load one of these colorschemes when starting an installation during startup
     colorscheme = { "catppuccin" },
   },
@@ -81,7 +84,7 @@ local opts = {
     -- Directory where you store your local plugin projects. If a function is used,
     -- the plugin directory (e.g. `~/projects/plugin-name`) must be returned.
     ---@type string | fun(plugin: LazyPlugin): string
-    path = "~/Documents/Github/nvim_plugins",
+    path = require("config.platform").dev_plugin_root(),
     fallback = true, -- Fallback to git when local plugin doesn't exist
   },
 }
