@@ -80,7 +80,10 @@ return {
         dap.configurations[filetype] = dap.configurations[source]
       end
 
-      dap.defaults.fallback.external_terminal = { command = "kitty" }
+      local terminal = require("config.platform").external_terminal()
+      if terminal then
+        dap.defaults.fallback.external_terminal = { command = terminal }
+      end
 
       --stylua: ignore
       local dap_breakpoint = {

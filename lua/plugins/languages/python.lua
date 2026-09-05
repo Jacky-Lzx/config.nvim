@@ -72,9 +72,14 @@ return {
               options = { source_filetype = "python" },
             })
           else
+            local python = require("config.platform").debugpy_python()
+            if not python then
+              vim.notify("debugpy is not installed; run :MasonToolsInstall", vim.log.levels.ERROR)
+              return
+            end
             cb({
               type = "executable",
-              command = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python",
+              command = python,
               args = { "-m", "debugpy.adapter" },
               options = { source_filetype = "python" },
             })
