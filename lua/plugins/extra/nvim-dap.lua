@@ -47,6 +47,11 @@ return {
   {
     "mfussenegger/nvim-dap",
     dependencies = { "igorlfs/nvim-dap-view" },
+    opts = {
+      adapters = {},
+      configurations = {},
+      configuration_aliases = {},
+    },
     -- stylua: ignore
     keys = {
       { "<F5>",       function() require("dap").continue() end,                                                        mode = "n",          desc = "[DAP] Continue" },
@@ -67,8 +72,14 @@ return {
       { "<Leader>Ds", function() local widgets = require("dap.ui.widgets") widgets.centered_float(widgets.scopes) end, mode = {"n"},        desc = "[DAP] Float scopes" },
     },
 
-    config = function()
+    config = function(_, opts)
       local dap = require("dap")
+      dap.adapters = vim.tbl_deep_extend("force", dap.adapters, opts.adapters)
+      dap.configurations = vim.tbl_deep_extend("force", dap.configurations, opts.configurations)
+      for filetype, source in pairs(opts.configuration_aliases) do
+        dap.configurations[filetype] = dap.configurations[source]
+      end
+
       dap.defaults.fallback.external_terminal = { command = "kitty" }
 
       --stylua: ignore

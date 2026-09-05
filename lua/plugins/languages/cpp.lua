@@ -32,36 +32,37 @@ return {
     "mfussenegger/nvim-dap",
     ft = { "c", "cpp" },
     optional = true,
-    opts = function()
-      local dap = require("dap")
-
+    opts = {
       -- See `https://codeberg.org/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation`
-      dap.adapters.codelldb = {
-        name = "codelldb",
-        type = "executable",
-        command = "codelldb", -- or if not in $PATH: "/absolute/path/to/codelldb"
+      adapters = {
+        codelldb = {
+          name = "codelldb",
+          type = "executable",
+          command = "codelldb", -- or if not in $PATH: "/absolute/path/to/codelldb"
 
-        -- On windows you may have to uncomment this:
-        -- detached = false,
-      }
-      dap.configurations.cpp = {
-        {
-          name = "[C/C++] Launch file",
-          type = "codelldb",
-          request = "launch",
-          program = function()
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-          end,
-          cwd = "${workspaceFolder}",
-          stopOnEntry = false,
-          -- You can also dynamically get arguments, e.g., from user input:
-          args = function()
-            local args_str = vim.fn.input("Commandline args: ")
-            return vim.split(args_str, " ", { plain = true })
-          end,
+          -- On windows you may have to uncomment this:
+          -- detached = false,
         },
-      }
-      dap.configurations.c = dap.configurations.cpp
-    end,
+      },
+      configurations = {
+        cpp = {
+          {
+            name = "[C/C++] Launch file",
+            type = "codelldb",
+            request = "launch",
+            program = function()
+              return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
+            end,
+            cwd = "${workspaceFolder}",
+            stopOnEntry = false,
+            args = function()
+              local args_str = vim.fn.input("Commandline args: ")
+              return vim.split(args_str, " ", { plain = true })
+            end,
+          },
+        },
+      },
+      configuration_aliases = { c = "cpp" },
+    },
   },
 }

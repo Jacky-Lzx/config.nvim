@@ -57,52 +57,44 @@ return {
   {
     "mfussenegger/nvim-dap",
     optional = true,
-    opts = function()
-      local dap = require("dap")
-
-      -- See `https://codeberg.org/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation`
-      dap.adapters.python = function(cb, config)
-        if config.request == "attach" then
-          ---@diagnostic disable-next-line: undefined-field
-          local port = (config.connect or config).port
-          ---@diagnostic disable-next-line: undefined-field
-          local host = (config.connect or config).host or "127.0.0.1"
-          cb({
-            type = "server",
-            port = assert(port, "`connect.port` is required for a python `attach` configuration"),
-            host = host,
-            options = {
-              source_filetype = "python",
-            },
-          })
-        else
-          cb({
-            type = "executable",
-            command = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python",
-            args = { "-m", "debugpy.adapter" },
-            options = {
-              source_filetype = "python",
-            },
-          })
-        end
-      end
-
-      dap.configurations.python = {
-        {
-          -- The first three options are required by nvim-dap
-          type = "python", -- the type here established the link to the adapter definition: `dap.adapters.python`
-          request = "launch",
-          name = "[Python] Launch file",
-
-          -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
-          program = "${file}", -- This configuration will launch the current file if used.
-          -- You can also dynamically get arguments, e.g., from user input:
-          args = function()
-            local args_str = vim.fn.input("Commandline args: ")
-            return vim.split(args_str, " ", { plain = true })
-          end,
+    opts = {
+      adapters = {
+        python = function(cb, config)
+          if config.request == "attach" then
+            ---@diagnostic disable-next-line: undefined-field
+            local port = (config.connect or config).port
+            ---@diagnostic disable-next-line: undefined-field
+            local host = (config.connect or config).host or "127.0.0.1"
+            cb({
+              type = "server",
+              port = assert(port, "`connect.port` is required for a python `attach` configuration"),
+              host = host,
+              options = { source_filetype = "python" },
+            })
+          else
+            cb({
+              type = "executable",
+              command = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python",
+              args = { "-m", "debugpy.adapter" },
+              options = { source_filetype = "python" },
+            })
+          end
+        end,
+      },
+      configurations = {
+        python = {
+          {
+            type = "python",
+            request = "launch",
+            name = "[Python] Launch file",
+            program = "${file}",
+            args = function()
+              local args_str = vim.fn.input("Commandline args: ")
+              return vim.split(args_str, " ", { plain = true })
+            end,
+          },
         },
-      }
-    end,
+      },
+    },
   },
 }
