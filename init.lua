@@ -46,8 +46,9 @@ vim.opt.clipboard = ""
 vim.o.textwidth = 120
 -- Prevent auto insertion of new lines when writing a long sentence
 vim.api.nvim_create_autocmd("FileType", {
+  group = vim.api.nvim_create_augroup("lzx_formatoptions", { clear = true }),
   callback = function(_)
-    vim.opt.formatoptions = { q = true, j = true, n = true }
+    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
   end,
 })
 

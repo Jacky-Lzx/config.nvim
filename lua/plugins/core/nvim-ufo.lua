@@ -54,7 +54,9 @@ return {
     config = function(_, opts)
       require("ufo").setup(opts)
       -- Ensure our ufo foldlevel is set for the buffer
+      vim.b.ufo_foldlevel = 0
       vim.api.nvim_create_autocmd("BufReadPre", {
+        group = vim.api.nvim_create_augroup("lzx_ufo", { clear = true }),
         callback = function()
           vim.b.ufo_foldlevel = 0
         end,
