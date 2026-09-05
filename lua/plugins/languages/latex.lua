@@ -1,4 +1,5 @@
 vim.api.nvim_create_autocmd("User", {
+  group = vim.api.nvim_create_augroup("lzx_treesitter_latex", { clear = true }),
   pattern = "TSUpdate",
   callback = function()
     require("nvim-treesitter.parsers").latex.install_info = {
@@ -15,15 +16,12 @@ return {
   -- Add BibTeX/LaTeX to treesitter
   {
     "nvim-treesitter/nvim-treesitter",
-    opts_extend = { "ensure_installed", "highlight.disable" },
+    opts_extend = { "ensure_installed" },
     opts = {
       -- A temporary workaround to avoid the building issue of latex parser.
       -- See `https://github.com/nvim-treesitter/nvim-treesitter/issues/7781#issuecomment-3816426774`
       ensure_installed = { "latex", "bibtex" },
       -- ensure_installed = { "bibtex" },
-      highlight = {
-        disable = { "latex" },
-      },
     },
     -- opts = function(_, opts)
     --   opts.ensure_installed = opts.ensure_installed or {}
@@ -68,18 +66,19 @@ return {
   {
     "mfussenegger/nvim-lint",
     optional = true,
-    opts = function(_, opts)
-      opts.linters_by_ft = opts.linters_by_ft or {}
-      opts.linters_by_ft = vim.tbl_extend("force", opts.linters_by_ft, { tex = { "chktex" } })
-
-      local chktex_l = require("lint").linters.chktex
-      -- stylua: ignore
-      chktex_l.args = {
-        "-wall", "-q", "-n1", "-n3", "-n8", "-n9", "-n22", "-n30", "-n24", "-n17", "-e16",
-        "-v0", "-I0", "-s", ":", "-f", "%l%b%c%b%d%b%k%b%n%b%m%b%b%b",
-      }
-      chktex_l.ignore_exitcode = true
-    end,
+    opts = {
+      linters_by_ft = { tex = { "chktex" } },
+      linters = {
+        chktex = {
+          -- stylua: ignore
+          args = {
+            "-wall", "-q", "-n1", "-n3", "-n8", "-n9", "-n22", "-n30", "-n24", "-n17", "-e16",
+            "-v0", "-I0", "-s", ":", "-f", "%l%b%c%b%d%b%k%b%n%b%m%b%b%b",
+          },
+          ignore_exitcode = true,
+        },
+      },
+    },
   },
 
   {

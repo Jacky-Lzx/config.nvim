@@ -1,12 +1,9 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    opts_extend = { "ensure_installed", "highlight.disable" },
+    opts_extend = { "ensure_installed" },
     opts = {
       ensure_installed = { "systemverilog" },
-      highlight = {
-        disable = { "verilog", "systemverilog" },
-      },
     },
   },
 
@@ -39,14 +36,6 @@ return {
     "mfussenegger/nvim-lint",
     optional = true,
     opts = function(_, opts)
-      opts.linters_by_ft = opts.linters_by_ft or {}
-      opts.linters_by_ft = vim.tbl_extend("force", opts.linters_by_ft, { verilog = { "iverilog" } })
-
-      local verilator = require("lint").linters.verilator
-      verilator.args = {
-        "+1800-2017ext+sv",
-      }
-
       local pattern = "(.-):(%d+): ([%w ]+): (.*)"
       local groups = { "file", "lnum", "severity", "message" }
       local severities = {
@@ -56,24 +45,20 @@ return {
         ["       "] = vim.diagnostic.severity.INFO,
       }
 
-      require("lint").linters.iverilog = {
-        name = "iverilog",
-        cmd = "iverilog",
-        stdin = false, -- or false if it doesn't support content input via stdin. In that case the filename is automatically added to the arguments.
-        append_fname = true, -- Automatically append the file name to `args` if `stdin = false` (default: true)
-        args = {
-          "-g2012",
-          "-Wall",
-          "-y",
-          ".",
-          "-o",
-          "/dev/null",
-        }, -- list of arguments. Can contain functions with zero arguments that will be evaluated once the linter is used.
-        stream = "both", -- ('stdout' | 'stderr' | 'both') configure the stream to which the linter outputs the linting result.
-        ignore_exitcode = true, -- set this to true if the linter exits with a code != 0 and that's considered normal.
-        env = nil, -- custom environment table to use with the external process. Note that this replaces the *entire* environment, it is not additive.
-        parser = require("lint.parser").from_pattern(pattern, groups, severities, { ["source"] = "iverilog" }),
-      }
+      opts.linters_by_ft = vim.tbl_deep_extend("force", opts.linters_by_ft or {}, { verilog = { "iverilog" } })
+      opts.linters = vim.tbl_deep_extend("force", opts.linters or {}, {
+        iverilog = {
+          name = "iverilog",
+          cmd = "iverilog",
+          stdin = false,
+          append_fname = true,
+          args = { "-g2012", "-Wall", "-y", ".", "-o", "/dev/null" },
+          stream = "both",
+          ignore_exitcode = true,
+          parser = require("lint.parser").from_pattern(pattern, groups, severities, { source = "iverilog" }),
+        },
+      })
+      return opts
     end,
   },
 
