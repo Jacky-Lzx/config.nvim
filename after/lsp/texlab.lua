@@ -1,3 +1,5 @@
+local displayline = require("config.platform").skim_displayline()
+
 return {
   settings = {
     texlab = {
@@ -24,10 +26,10 @@ return {
       },
       -- Use Skim for preview and forward search
       -- The inverse search is configured in "f2fora/nvim-texlabconfig"
-      forwardSearch = {
-        executable = "/Applications/Skim.app/Contents/SharedSupport/displayline",
+      forwardSearch = displayline and {
+        executable = displayline,
         args = { "%l", "%p", "%f" },
-      },
+      } or nil,
       chktex = {
         onOpenAndSave = false,
         onEdit = false,

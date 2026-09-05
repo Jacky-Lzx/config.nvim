@@ -1,3 +1,5 @@
+local platform = require("config.platform")
+
 vim.api.nvim_create_autocmd("User", {
   group = vim.api.nvim_create_augroup("lzx_treesitter_latex", { clear = true }),
   pattern = "TSUpdate",
@@ -87,7 +89,7 @@ return {
     ft = { "tex", "latex", "bib" },
     config = function()
       -- Viewer options: One may configure the viewer either by specifying a built-in viewer method:
-      vim.g.vimtex_view_enabled = true
+      vim.g.vimtex_view_enabled = platform.skim_displayline() ~= nil or platform.executable("zathura") ~= nil
 
       -- Removed default imap
       vim.g.vimtex_imaps_enabled = false
@@ -108,8 +110,12 @@ return {
       -- vim.g.vimtex_view_method = "zathura_simple"
       -- vim.g.vimtex_view_zathura_use_synctex = 0
 
-      vim.g.vimtex_view_method = "skim"
-      vim.g.vimtex_view_skim_sync = 1
+      if platform.skim_displayline() then
+        vim.g.vimtex_view_method = "skim"
+        vim.g.vimtex_view_skim_sync = 1
+      elseif platform.executable("zathura") then
+        vim.g.vimtex_view_method = "zathura_simple"
+      end
 
       -- VimTeX uses latexmk as the default compiler backend. If you use it, which is strongly recommended, you probably
       -- don't need to configure anything. If you want another compiler backend, you can change it as follows. The list
@@ -143,8 +149,8 @@ return {
   -- a homonymous executable which allows a fast Inverse Search. Should setup pdf viewer as well, see the documentation
   {
     "f3fora/nvim-texlabconfig",
-    -- build = "go build",
-    build = "go build -o ~/.local/bin/", -- if e.g. ~/.local/bin/ is in $PATH
+    enabled = platform.executable("go") ~= nil,
+    build = "go build",
     ft = { "tex", "bib" }, -- Lazy-load on filetype
 
     opts = {},
@@ -157,6 +163,7 @@ return {
   -- and make sure the texpresso executable is in your $PATH.
   {
     "let-def/texpresso.vim",
+    enabled = platform.executable("texpresso") ~= nil,
     ft = { "tex" },
   },
 }
