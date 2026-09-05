@@ -63,21 +63,5 @@ return {
         autostart_on_load = false,
       },
     },
-    config = function(_, opts)
-      require("overseer").setup(opts)
-
-      -- Insert status into lualine
-      opts = require("lualine").get_config()
-      table.insert(opts.sections.lualine_x, 1, "overseer")
-      require("lualine").setup(opts)
-    end,
-  },
-
-  {
-    "mfussenegger/nvim-dap",
-    optional = true,
-    opts = function()
-      require("overseer").enable_dap()
-    end,
   },
 }

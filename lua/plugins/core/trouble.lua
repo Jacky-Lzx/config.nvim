@@ -41,28 +41,6 @@ return {
       -- { "gd", "<CMD>Trouble lsp_type_definitions focus=true<CR>",    mode = { "n" }, desc = "[Trouble] LSP type definitions" },
       -- { "gri", "<CMD>Trouble lsp_implementations focus=true<CR>",    mode = { "n" }, desc = "[Trouble] LSP implementations" },
     },
-
-    config = function(_, opts)
-      require("trouble").setup(opts)
-      local symbols = require("trouble").statusline({
-        mode = "lsp_document_symbols",
-        groups = {},
-        title = false,
-        filter = { range = true },
-        format = "{kind_icon}{symbol.name:Normal}",
-        -- The following line is needed to fix the background color
-        -- Set it to the lualine section you want to use
-        -- hl_group = "lualine_b_normal",
-      })
-
-      -- Insert status into lualine
-      opts = require("lualine").get_config()
-      table.insert(opts.winbar.lualine_b, 1, {
-        symbols.get,
-        cond = symbols.has,
-      })
-      require("lualine").setup(opts)
-    end,
   },
 
   -- Open snacks picker results in trouble.

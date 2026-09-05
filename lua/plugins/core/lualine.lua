@@ -4,6 +4,8 @@ return {
     dependencies = {
       "nvim-tree/nvim-web-devicons",
       "AndreM222/copilot-lualine",
+      "folke/trouble.nvim",
+      "stevearc/overseer.nvim",
     },
     event = "VeryLazy",
     opts = {
@@ -35,6 +37,13 @@ return {
     },
     config = function(_, opts)
       local mocha = require("catppuccin.palettes").get_palette("mocha")
+      local symbols = require("trouble").statusline({
+        mode = "lsp_document_symbols",
+        groups = {},
+        title = false,
+        filter = { range = true },
+        format = "{kind_icon}{symbol.name:Normal}",
+      })
 
       local function show_macro_recording()
         local recording_register = vim.fn.reg_recording()
@@ -70,7 +79,12 @@ return {
       }
 
       table.insert(opts.sections.lualine_x, 1, macro_recording)
+      table.insert(opts.sections.lualine_x, 1, "overseer")
       table.insert(opts.sections.lualine_c, copilot)
+      table.insert(opts.winbar.lualine_b, 1, {
+        symbols.get,
+        cond = symbols.has,
+      })
 
       require("lualine").setup(opts)
     end,
