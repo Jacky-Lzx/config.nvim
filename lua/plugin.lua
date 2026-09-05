@@ -15,12 +15,16 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+local spec = {
+  { import = "plugins.core" },
+  { import = "plugins.extra" },
+}
+for _, language in ipairs(require("config.languages").enabled_languages()) do
+  spec[#spec + 1] = { import = "plugins.languages." .. language }
+end
+
 local opts = {
-  spec = {
-    { import = "plugins.core" },
-    { import = "plugins.extra" },
-    { import = "plugins.languages" },
-  },
+  spec = spec,
   install = {
     -- install missing plugins on startup. This doesn't increase startup time.
     missing = true,
@@ -85,3 +89,8 @@ local opts = {
 require("lazy").setup(opts)
 
 vim.keymap.set("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "[Lazy] Open Lazy.nvim" })
+
+vim.api.nvim_create_user_command("ConfigToolsInstall", function()
+  vim.cmd("TSInstallConfigured")
+  vim.cmd("MasonToolsInstall")
+end, { desc = "Install tools and parsers for enabled language profiles", force = true })
