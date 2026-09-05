@@ -237,12 +237,12 @@ return {
       -- find
       { "<leader>sb", function() require("snacks").picker.buffers() end, desc = "[Snacks] Buffers", },
       { "<leader>sf", function() require("snacks").picker.files() end, desc = "[Snacks] Find files", },
-      { "<leader>sp", function() require("snacks").picker.projects() end, desc = "[Snacks] Projects", },
-      { "<leader>sr", function() require("snacks").picker.recent() end, desc = "[Snacks] Recent", },
+      { "<leader>sP", function() require("snacks").picker.projects() end, desc = "[Snacks] Projects", },
+      { "<leader>sR", function() require("snacks").picker.recent() end, desc = "[Snacks] Recent", },
       -- git
       { "<C-g>", function() require("snacks").lazygit() end, desc = "[Snacks] Lazygit", },
       { "<leader>ggl", function() require("snacks").picker.git_log() end, desc = "[Snacks] Git log", },
-      { "<leader>ggd", function() require("snacks").picker.git_diff() end, desc = "[Snacks] Git diff", },
+      { "<leader>ggc", function() require("snacks").picker.git_diff() end, desc = "[Snacks] Git changes", },
       { "<leader>ggb", function() require("snacks").git.blame_line() end, desc = "[Snacks] Git blame line", },
       { "<leader>ggB", function() require("snacks").gitbrowse() end, desc = "[Snacks] Git browse", },
       -- Grep
@@ -274,7 +274,7 @@ return {
       -- LSP
       { "gd", function() require("snacks").picker.lsp_definitions() end, desc = "[Snacks] Goto definition", },
       { "gD", function() require("snacks").picker.lsp_declarations() end, desc = "[Snacks] Goto declaration", },
-      { "gi", function() require("snacks").picker.lsp_references() end, {desc = "[Snacks] References"}, },
+      { "gi", function() require("snacks").picker.lsp_references() end, desc = "[Snacks] References", },
       { "gI", function() require("snacks").picker.lsp_implementations() end, desc = "[Snacks] Goto implementation", },
       { "gy", function() require("snacks").picker.lsp_type_definitions() end, desc = "[Snacks] Goto t[y]pe definition", },
       { "gci", function() Snacks.picker.lsp_incoming_calls() end, desc = "[Snacks] Calls Incoming" },
