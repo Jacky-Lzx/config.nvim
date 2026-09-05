@@ -2,10 +2,9 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     optional = true,
-    opts_extend = { "ensure_installed", "indent.disable" },
+    opts_extend = { "ensure_installed" },
     opts = {
       ensure_installed = { "markdown", "markdown_inline" },
-      indent = { disable = { "markdown" } }, -- Indentation at bullet points is worse
     },
   },
 

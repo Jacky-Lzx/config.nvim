@@ -4,7 +4,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    event = { "BufReadPre", "BufNewFile" },
+    lazy = false,
     build = ":TSUpdate",
     specs = {
       -- This tool is used for the compilation of some tree-sitter parsers, e.g. LaTeX
@@ -21,18 +21,21 @@ return {
     },
     config = function(_, opts)
       local ts = require("nvim-treesitter")
+      local ensure_installed = opts.ensure_installed
+      opts.ensure_installed = nil
 
       ts.setup(opts)
 
       vim.schedule(function()
-        local function ensure_installed()
-          for _, tool in ipairs(opts.ensure_installed) do
-            ts.install(tool)
-          end
-        end
-
-        ensure_installed()
+        ts.install(ensure_installed)
       end)
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("lzx_treesitter", { clear = true }),
+        callback = function(ev)
+          pcall(vim.treesitter.start, ev.buf)
+        end,
+      })
     end,
   },
 }

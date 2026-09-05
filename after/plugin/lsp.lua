@@ -2,7 +2,7 @@ vim.lsp.config("*", { capabilities = vim.lsp.protocol.make_client_capabilities()
 
 -- Use LspAttach autocommand to only map the following keys after the language server attaches to the current buffer
 vim.api.nvim_create_autocmd("LspAttach", {
-  group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+  group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
   callback = function(ev)
     local function map(lhs, rhs, desc)
       vim.keymap.set("n", lhs, rhs, { buffer = ev.buf, desc = desc })
@@ -27,9 +27,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 vim.schedule(function()
-  vim.lsp.enable("copilot")
-  vim.lsp.enable("typos_lsp")
-
   local signs = { Error = "", Warn = "", Hint = "󰌶", Info = "" }
   for type, icon in pairs(signs) do
     local hl = "DiagnosticSign" .. type

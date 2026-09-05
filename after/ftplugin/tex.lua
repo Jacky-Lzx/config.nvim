@@ -1,4 +1,3 @@
-vim.treesitter.start()
 -- Use regex based syntax-highlighting as fallback as VimTex needs it
 local bufnr = vim.api.nvim_get_current_buf()
 vim.bo[bufnr].syntax = "ON"
@@ -7,9 +6,6 @@ vim.schedule(function()
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return
   end
-
-  -- NOTE: Currently TeXLab does not work correctly in terms of formatting
-  vim.lsp.enable("texlab")
 
   vim.keymap.set("n", "<leader>lb", "<CMD>LspTexlabBuild<CR>", { buffer = bufnr, desc = "[Texlab] Compile" })
 
