@@ -11,7 +11,7 @@ return {
         highlight = "Visual",
         hide_if_all_visible = true, -- Hides handle if all lines are visible
       },
-      handelers = {
+      handlers = {
         gitsigns = true, -- for gitsigns
         search = true, -- for hlslens
       },
