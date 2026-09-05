@@ -12,7 +12,7 @@ return {
 
   -- 安装 Volar (vue-language-server)
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     optional = true,
     opts = {
       ensure_installed = { "vue-language-server", "typescript-language-server", "vtsls" },
