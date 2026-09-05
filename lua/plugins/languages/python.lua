@@ -12,7 +12,7 @@ return {
     "mason-org/mason.nvim",
     optional = true,
     opts = {
-      ensure_installed = { "ruff", "pyright", "basedpyright" },
+      ensure_installed = { "ruff", "pyright", "basedpyright", "debugpy" },
     },
     opts_extend = { "ensure_installed" },
   },
@@ -78,7 +78,7 @@ return {
         else
           cb({
             type = "executable",
-            command = "python",
+            command = vim.fn.stdpath("data") .. "/mason/packages/debugpy/venv/bin/python",
             args = { "-m", "debugpy.adapter" },
             options = {
               source_filetype = "python",
