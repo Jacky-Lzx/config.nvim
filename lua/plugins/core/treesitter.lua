@@ -22,13 +22,14 @@ return {
     config = function(_, opts)
       local ts = require("nvim-treesitter")
       local ensure_installed = opts.ensure_installed
-      opts.ensure_installed = nil
+      local setup_opts = vim.deepcopy(opts)
+      setup_opts.ensure_installed = nil
 
-      ts.setup(opts)
+      ts.setup(setup_opts)
 
-      vim.schedule(function()
+      vim.api.nvim_create_user_command("TSInstallConfigured", function()
         ts.install(ensure_installed)
-      end)
+      end, { desc = "Install Tree-sitter parsers for enabled language profiles", force = true })
 
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("lzx_treesitter", { clear = true }),
