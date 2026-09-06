@@ -1,3 +1,8 @@
+-- Keep long LaTeX lines intact while typing.
+vim.opt_local.textwidth = 0
+vim.opt_local.wrapmargin = 0
+vim.opt_local.formatoptions:remove({ "t", "c" })
+
 if not require("config.languages").is_enabled("latex") then
   return
 end
