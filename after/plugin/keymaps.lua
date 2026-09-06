@@ -80,4 +80,3 @@ vim.api.nvim_create_user_command("KeyTest", function()
 end, {
   desc = "Show the next pressed key",
 })
-

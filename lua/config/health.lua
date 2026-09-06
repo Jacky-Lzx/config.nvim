@@ -8,9 +8,9 @@ local function check_executable(name, required)
   if path then
     vim.health.ok(('%s: "%s"'):format(name, path))
   elseif required then
-    vim.health.error(('%s is not executable'):format(name))
+    vim.health.error(("%s is not executable"):format(name))
   else
-    vim.health.warn(('%s is not executable; related features will be unavailable'):format(name))
+    vim.health.warn(("%s is not executable; related features will be unavailable"):format(name))
   end
 end
 

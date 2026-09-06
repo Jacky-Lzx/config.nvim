@@ -10,7 +10,7 @@ M.profiles = {
 }
 
 -- Add "optional" here, or define another profile above, to enable more languages.
-M.enabled_profiles = { "base", "web", "native", "data", "writing" }
+M.enabled_profiles = { "base", "web", "native", "data", "writing", "optional" }
 
 M.lsp_servers = {
   bash = { "bashls" },

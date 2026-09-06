@@ -30,8 +30,7 @@ function M.shell()
 end
 
 function M.python_host()
-  return executable_path(vim.env.NVIM_PYTHON3_HOST_PROG)
-    or executable_path(vim.fn.expand("~/.uv/neovim/bin/python3"))
+  return executable_path(vim.env.NVIM_PYTHON3_HOST_PROG) or executable_path(vim.fn.expand("~/.uv/neovim/bin/python3"))
 end
 
 function M.python()
