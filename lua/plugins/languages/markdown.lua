@@ -170,7 +170,7 @@ return {
               { cmd = "magick - -quality 75 png:-", extension = "png" },
               { cmd = "magick - -quality 75 jpg:-", extension = "jpg" },
               { cmd = "magick - -quality 75 webp:-", extension = "webp" },
-              { cmd = "convert - avif:-", extension = "avif" },
+              { cmd = "magick - avif:-", extension = "avif" },
               { cmd = "", extension = "png" },
               { cmd = "", extension = "jpg" },
               { cmd = "", extension = "avif" },
@@ -218,7 +218,7 @@ return {
       prompt_for_file_name = false,
       relative_to_current_file = false,
       insert_relative_to = "file",
-      process = { cmd = "convert - avif:-", extension = "avif" },
+      process = { cmd = "magick - avif:-", extension = "avif" },
     },
   },
 
@@ -261,7 +261,7 @@ return {
 
         extension = "avif", ---@type string
         -- Convert clipboard image to avif format before saving
-        process_cmd = "convert - avif:-", ---@type string
+        process_cmd = "magick - avif:-", ---@type string
         copy_images = true,
         formats = { "jpeg", "jpg", "png", "heic", "pdf", "avif" }, ---@type string[]
 
