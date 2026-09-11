@@ -50,6 +50,14 @@ vim.keymap.set("x", ">", ">gv")
 -- 在命令行模式下，将 ":W" 映射为 ":w"
 -- vim.keymap.set("c", "W", "w", { noremap = true, desc = "Map :W to :w (save file)" })
 
+-- 在visual mode下:w的结果跟在normal mode下一致，全文保存，并且执行完仍然保留visual selection
+vim.cmd([[
+  cnoreabbrev <expr> w
+        \ getcmdtype() ==# ':' && getcmdline() ==# "'<,'>w"
+        \ ? "<C-U>w<Bar>normal! gv"
+        \ : "w"
+]])
+
 vim.keymap.set(
   { "n", "x" },
   "go",
