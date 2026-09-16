@@ -8,9 +8,7 @@ if not require("config.languages").is_enabled("latex") then
 end
 
 local bufnr = vim.api.nvim_get_current_buf()
-pcall(vim.treesitter.start, bufnr, "latex")
--- Restore VimTeX syntax after Tree-sitter disables it.
-vim.bo[bufnr].syntax = "ON"
+require("utils.latex_highlighting").attach(bufnr)
 
 vim.schedule(function()
   if not vim.api.nvim_buf_is_valid(bufnr) then

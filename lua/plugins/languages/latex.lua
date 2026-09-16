@@ -87,6 +87,9 @@ return {
     "lervag/vimtex",
     lazy = true, -- lazy-loading will disable inverse search
     ft = { "tex", "latex", "bib" },
+    init = function()
+      vim.g.vimtex_syntax_enabled = true -- Syntax matches are needed for conceal.
+    end,
     config = function()
       -- Viewer options: One may configure the viewer either by specifying a built-in viewer method:
       vim.g.vimtex_view_enabled = platform.skim_displayline() ~= nil or platform.executable("zathura") ~= nil
@@ -98,7 +101,6 @@ return {
       -- vim.g.vimtex_compiler_silent = true
 
       vim.g.vimtex_complete_enabled = false
-      vim.g.vimtex_syntax_enabled = true -- This config controls conceals. Should be true
       vim.g.vimtex_indent_enabled = false
 
       vim.g.vimtex_quickfix_enabled = true
