@@ -124,12 +124,12 @@ return {
 
   s(
     { trig = "ladd", desc = "Lzx add" },
-    fmta([[\ldel{<>}\ladd{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }), i(0) }),
+    fmta([[\ldelA{<>}\laddA{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }), i(0) }),
     { show_condition = conds.obj.is_latex }
   ),
   s(
     { trig = "ldel", desc = "Lzx del" },
-    fmta([[\ldel{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }) }),
+    fmta([[\ldelA{<>}]], { d(1, nodes_util.visual_or_insert, {}, { user_args = { false } }) }),
     { show_condition = conds.obj.is_latex }
   ),
 
