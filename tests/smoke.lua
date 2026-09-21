@@ -21,6 +21,10 @@ assert(vim.list_contains(languages.enabled_lsp_servers(), "lua_ls"))
 assert(not vim.list_contains(languages.enabled_lsp_servers(), "kdl"))
 assert(not vim.list_contains(languages.enabled_lsp_servers(), "jdtls"))
 
+languages.enabled_profiles = { "native" }
+assert(languages.is_enabled("swift"))
+assert(vim.list_contains(languages.enabled_lsp_servers(), "sourcekit"))
+
 languages.enabled_profiles = { "base", "optional", "base" }
 assert(languages.is_enabled("java"))
 assert(vim.list_contains(languages.enabled_lsp_servers(), "jdtls"))

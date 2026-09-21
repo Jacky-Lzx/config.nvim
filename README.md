@@ -9,7 +9,7 @@ Language support is selected in `lua/config/languages.lua`. The currently enable
 
 - `base`: Lua, Bash, JSON, YAML, TOML, KDL
 - `web`: HTML, Vue, JavaScript, TypeScript
-- `native`: C, C++, CMake, Rust
+- `native`: C, C++, CMake, Rust, Swift
 - `data`: Python
 - `writing`: Markdown, LaTeX, Typst
 - `optional`: Java, Verilog, Godot, Matlab
@@ -49,7 +49,8 @@ some integrations still use system packages:
 - General: `fish`, `delta`, `lazygit`, `yazi`, `kitty`
 - Web and Markdown: `deno`, `npm`, `gh`, `html_beautify`
 - Images: ImageMagick (`magick` or `convert`)
-- Native: `clang`, `clang-format`, `codelldb`, `cargo`, `rustfmt`
+- Native: `clang`, `clang-format`, `codelldb`, `cargo`, `rustfmt`, the Swift toolchain,
+  `swiftlint`, and optionally `xcode-build-server` for Xcode projects
 - LaTeX: `chktex`, `latexmk`, `tectonic`, and Skim or Zathura
 - Optional Verilog: `iverilog` and Verible
 - Document conversion tasks: `pandoc`, `xelatex`

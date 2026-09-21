@@ -26,6 +26,8 @@ local tools = {
   cpp = { "clangd", "clang-format", "codelldb" },
   cmake = { "cmake-language-server", "cmake-format" },
   rust = { "rust-analyzer", "rustfmt", "cargo", "codelldb" },
+  swift = platform.is("macos") and { "swift", "xcrun", "swiftlint", "xcode-build-server" }
+    or { "swift", "sourcekit-lsp", "swiftlint", "lldb-dap" },
   python = { "basedpyright", "ruff" },
   markdown = { "marksman", "harper-ls", "prettierd", "gh" },
   latex = { "texlab", "tex-fmt", "chktex", "latexmk", "tectonic" },

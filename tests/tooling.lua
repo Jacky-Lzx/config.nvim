@@ -106,6 +106,12 @@ for _, language in ipairs({ "vue", "yaml" }) do
   assert(vim.list_contains(spec(language, "mason-org/mason.nvim").opts.ensure_installed, "prettierd"))
 end
 assert(vim.list_contains(spec("toml", "nvim-treesitter/nvim-treesitter").opts.ensure_installed, "toml"))
+assert(vim.list_contains(spec("swift", "nvim-treesitter/nvim-treesitter").opts.ensure_installed, "swift"))
+assert(vim.deep_equal(spec("swift", "stevearc/conform.nvim").opts.formatters_by_ft.swift, { "swift" }))
+assert(vim.deep_equal(spec("swift", "mfussenegger/nvim-lint").opts.linters_by_ft.swift, { "swiftlint" }))
+local swift_dap = spec("swift", "mfussenegger/nvim-dap").opts
+assert(swift_dap.configurations.swift[1].type == "lldb")
+assert(swift_dap.adapters.lldb.command == (vim.fn.has("mac") == 1 and "xcrun" or "lldb-dap"))
 assert(not vim.list_contains(spec("python", "mason-org/mason.nvim").opts.ensure_installed, "pyright"))
 assert(not vim.list_contains(spec("vue", "mason-org/mason.nvim").opts.ensure_installed, "typescript-language-server"))
 local formats = spec("verilog", "stevearc/conform.nvim").opts.formatters_by_ft
