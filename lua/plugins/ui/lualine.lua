@@ -1,9 +1,11 @@
+local features = require("config.selection").features
+
 return {
   {
     "nvim-lualine/lualine.nvim",
     dependencies = {
       "nvim-tree/nvim-web-devicons",
-      "AndreM222/copilot-lualine",
+      { "AndreM222/copilot-lualine", enabled = features.ai },
     },
     event = "VeryLazy",
     opts = {
@@ -95,8 +97,12 @@ return {
       }
 
       table.insert(opts.sections.lualine_x, 1, macro_recording)
-      table.insert(opts.sections.lualine_x, 1, { overseer, component_name = "overseer" })
-      table.insert(opts.sections.lualine_c, copilot)
+      if features.tasks then
+        table.insert(opts.sections.lualine_x, 1, { overseer, component_name = "overseer" })
+      end
+      if features.ai then
+        table.insert(opts.sections.lualine_c, copilot)
+      end
       table.insert(opts.winbar.lualine_b, 1, {
         trouble_symbols,
       })

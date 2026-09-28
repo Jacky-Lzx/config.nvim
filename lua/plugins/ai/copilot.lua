@@ -22,6 +22,30 @@ return {
       },
     },
     opts = {
+      keymap = {
+        ["<A-i>"] = {
+          --- Toggle copilot suggestions
+          function(cmp)
+            if not vim.b.blink_sources then
+              vim.b.blink_sources = require("blink.cmp.config").sources.default
+            end
+
+            local sources = vim.b.blink_sources
+
+            if vim.tbl_contains(sources, "copilot") then
+              sources = vim.tbl_filter(function(source)
+                return source ~= "copilot"
+              end, sources)
+            else
+              table.insert(sources, 1, "copilot")
+            end
+
+            cmp.show({ providers = sources })
+
+            vim.b.blink_sources = sources
+          end,
+        },
+      },
       sources = {
         default = { "copilot" },
         providers = {

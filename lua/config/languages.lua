@@ -1,16 +1,8 @@
 local M = {}
 
-M.profiles = {
-  base = { "lua", "bash", "json", "yaml", "toml", "kdl" },
-  web = { "html", "vue" },
-  native = { "cpp", "cmake", "rust", "swift" },
-  data = { "python" },
-  writing = { "markdown", "latex", "typst" },
-  optional = { "java", "verilog", "godot", "matlab" },
-}
+M.profiles = require("config.profiles")
 
--- Select profiles here, or define a smaller profile above.
-M.enabled_profiles = { "base", "web", "native", "data", "writing", "optional" }
+M.enabled_profiles = require("config.selection").profiles
 
 M.lsp_servers = {
   bash = { "bashls" },

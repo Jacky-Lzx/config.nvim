@@ -18,16 +18,8 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local spec = {
-  { import = "plugins.core" },
-  { import = "plugins.extra" },
-}
-for _, language in ipairs(require("config.languages").enabled_languages()) do
-  spec[#spec + 1] = { import = "plugins.languages." .. language }
-end
-
 local opts = {
-  spec = spec,
+  spec = require("config.specs").build(),
   install = {
     -- install missing plugins on startup. This doesn't increase startup time.
     missing = vim.env.NVIM_SMOKE_TEST ~= "1",
