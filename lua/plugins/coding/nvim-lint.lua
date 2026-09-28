@@ -13,8 +13,8 @@ return {
       },
     },
     opts = {
-      linters = {},
-      linters_by_ft = {},
+      linters = require("languages").current().linter_options,
+      linters_by_ft = require("languages").current().linters,
     },
     config = function(_, opts)
       -- Configure linters

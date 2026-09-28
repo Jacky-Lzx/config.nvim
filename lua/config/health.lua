@@ -1,7 +1,7 @@
 local M = {}
 
 local platform = require("config.platform")
-local languages = require("config.languages")
+local languages = require("languages")
 
 local function check_executable(name, required)
   local path = platform.executable(name)
@@ -14,34 +14,10 @@ local function check_executable(name, required)
   end
 end
 
-local tools = {
-  lua = { "lua-language-server", "stylua" },
-  bash = { "bash-language-server", "shfmt" },
-  json = { "vscode-json-language-server", "jq" },
-  yaml = { "yaml-language-server" },
-  toml = { "taplo" },
-  kdl = { "kdlfmt" },
-  html = { "superhtml", "html_beautify" },
-  vue = { "vue-language-server", "vtsls", "npm" },
-  cpp = { "clangd", "clang-format", "codelldb" },
-  cmake = { "cmake-language-server", "cmake-format" },
-  rust = { "rust-analyzer", "rustfmt", "cargo", "codelldb" },
-  swift = platform.is("macos") and { "swift", "xcrun", "swiftlint", "xcode-build-server" }
-    or { "swift", "sourcekit-lsp", "swiftlint", "lldb-dap" },
-  python = { "basedpyright", "ruff" },
-  markdown = { "marksman", "harper-ls", "prettierd", "gh" },
-  latex = { "texlab", "tex-fmt", "chktex", "latexmk", "tectonic" },
-  typst = { "tinymist", "typstyle" },
-  java = { "jdtls" },
-  verilog = { "verible-verilog-ls", "verible-verilog-format", "iverilog" },
-  godot = { "gdformat", "gdlint" },
-  matlab = { "matlab-language-server", "mh_style" },
-}
-
 function M.check()
   vim.health.start("Neovim config")
   vim.health.info("Platform: " .. platform.os)
-  vim.health.info("Enabled profiles: " .. table.concat(languages.enabled_profiles, ", "))
+  vim.health.info("Enabled profiles: " .. table.concat(require("config.selection").profiles, ", "))
 
   check_executable("git", true)
 
@@ -64,15 +40,6 @@ function M.check()
     vim.health.ok('Python provider: "' .. python .. '"')
   else
     vim.health.warn("No explicit Python provider; set NVIM_PYTHON3_HOST_PROG if auto-discovery fails")
-  end
-
-  if languages.is_enabled("python") then
-    local debugpy = platform.debugpy_python()
-    if debugpy then
-      vim.health.ok('debugpy Python: "' .. debugpy .. '"')
-    else
-      vim.health.warn("debugpy is unavailable; run :ConfigToolsInstall")
-    end
   end
 
   vim.health.start("Optional integrations")
@@ -98,11 +65,19 @@ function M.check()
 
   vim.health.start("Enabled language tools")
   local seen = {}
-  for _, language in ipairs(languages.enabled_languages()) do
-    for _, executable in ipairs(tools[language] or {}) do
-      if not seen[executable] then
-        seen[executable] = true
-        check_executable(executable, false)
+  for _, tool in ipairs(languages.current().tools) do
+    local name = tool.executable or tool.mason
+    if not seen[name] then
+      seen[name] = true
+      if tool.resolve then
+        local path = tool.resolve()
+        if path then
+          vim.health.ok(('%s: "%s"'):format(name, path))
+        else
+          vim.health.warn(name .. " is unavailable; run :ConfigToolsInstall or configure its system path")
+        end
+      else
+        check_executable(name, false)
       end
     end
   end

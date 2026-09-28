@@ -13,39 +13,10 @@ end
 
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
-    optional = true,
-    opts_extend = { "ensure_installed" },
-    opts = {
-      ensure_installed = { "swift" },
-    },
-  },
-
-  {
-    "stevearc/conform.nvim",
-    optional = true,
-    opts = {
-      formatters_by_ft = {
-        -- Swift 6's official formatter, invoked as `swift format`.
-        swift = { "swift" },
-      },
-    },
-  },
-
-  {
-    "mfussenegger/nvim-lint",
-    optional = true,
-    opts = {
-      linters_by_ft = {
-        swift = { "swiftlint" },
-      },
-    },
-  },
-
-  {
     "mfussenegger/nvim-dap",
     ft = "swift",
     optional = true,
+    enabled = require("config.selection").features.debugging == true,
     opts = {
       adapters = {
         lldb = lldb_adapter,

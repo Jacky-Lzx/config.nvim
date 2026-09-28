@@ -105,7 +105,7 @@ return {
     },
 
     config = function(_, opts)
-      require("utils.codecompanion_fidget_spinner"):init()
+      require("integrations.codecompanion_fidget"):init()
 
       local codecompanion = require("codecompanion")
       codecompanion.setup(opts)

@@ -1,45 +1,5 @@
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
-    optional = true,
-    opts = {
-      ensure_installed = { "python" },
-    },
-    opts_extend = { "ensure_installed" },
-  },
-
-  {
-    "mason-org/mason.nvim",
-    optional = true,
-    opts = {
-      ensure_installed = { "ruff", "basedpyright", "debugpy" },
-    },
-    opts_extend = { "ensure_installed" },
-  },
-
-  -- formatter
-  {
-    "stevearc/conform.nvim",
-    optional = true,
-    opts = {
-      formatters_by_ft = {
-        python = { "ruff_fix", "ruff_organize_imports", "ruff_format" },
-      },
-    },
-  },
-
-  -- linter
-  {
-    "mfussenegger/nvim-lint",
-    optional = true,
-    opts = {
-      linters_by_ft = {
-        python = { "ruff" },
-      },
-    },
-  },
-
-  {
     "linux-cultist/venv-selector.nvim",
     --  Call config for python files and load the cached venv automatically
     ft = "python",
@@ -53,7 +13,6 @@ return {
       },
     },
   },
-
   {
     "mfussenegger/nvim-dap",
     optional = true,

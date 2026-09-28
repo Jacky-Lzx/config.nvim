@@ -17,7 +17,7 @@ return {
       -- },
     },
     opts = {
-      ensure_installed = { "regex" },
+      ensure_installed = vim.list_extend({ "regex" }, require("languages").current().parsers),
     },
     config = function(_, opts)
       local ts = require("nvim-treesitter")

@@ -12,7 +12,7 @@ return {
       "j-hui/fidget.nvim",
     },
     opts = {
-      servers = require("config.languages").enabled_lsp_servers(),
+      servers = require("languages").current().servers,
     },
     config = function(_, opts)
       vim.lsp.config("*", {

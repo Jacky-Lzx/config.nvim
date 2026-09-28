@@ -1,33 +1,5 @@
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
-    optional = true,
-    opts_extend = { "ensure_installed" },
-    opts = {
-      ensure_installed = { "markdown", "markdown_inline" },
-    },
-  },
-
-  {
-    "mason-org/mason.nvim",
-    optional = true,
-    opts_extend = { "ensure_installed" },
-    opts = { ensure_installed = { "marksman", "harper-ls", "prettierd", "prettier", "mmdc", "typos-lsp" } },
-  },
-
-  -- formatter
-  {
-    "stevearc/conform.nvim",
-    optional = true,
-    opts = {
-      formatters_by_ft = {
-        -- Conform will run the first available formatter
-        markdown = { "prettierd", "prettier", stop_after_first = true },
-      },
-    },
-  },
-
-  {
     "toppair/peek.nvim",
     enabled = require("config.platform").executable("deno") ~= nil,
     cmd = { "MarkdownPreview" },
@@ -38,7 +10,6 @@ return {
       vim.api.nvim_create_user_command("MarkdownPreview", require("peek").open, {})
     end,
   },
-
   {
     "MeanderingProgrammer/render-markdown.nvim",
     ft = { "markdown" },
@@ -100,36 +71,6 @@ return {
         :map("<leader>tm")
     end,
   },
-
-  -- The markview plugin needs to be loaded before nvim-treesitter
-  -- {
-  --   "nvim-treesitter/nvim-treesitter",
-  --   dependencies = {
-  --     "OXY2DEV/markview.nvim",
-  --   },
-  -- },
-  --
-  -- {
-  --   "OXY2DEV/markview.nvim",
-  --   -- Do not lazy load this plugin as it is already lazy-loaded.
-  --   -- Lazy-loading will cause more time for the previews to load when starting Neovim.
-  --   lazy = false,
-  --
-  --   opts = {
-  --     preview = {
-  --       modes = { "n", "no", "c", "i" },
-  --       filetypes = { "md", "rmd", "quarto", "codecompanion" },
-  --       icon_provider = "devicons", -- "internal", "mini" or "devicons"
-  --     },
-  --   },
-  --
-  --   -- For blink.cmp's completion
-  --   -- source
-  --   -- dependencies = {
-  --   --     "saghen/blink.cmp"
-  --   -- },
-  -- },
-
   {
     "Jacky-Lzx/image-insert.nvim",
     dev = true,
@@ -221,7 +162,6 @@ return {
       process = { cmd = "magick - avif:-", extension = "avif" },
     },
   },
-
   {
     "HakonHarnes/img-clip.nvim",
     enabled = false,
@@ -293,7 +233,6 @@ return {
       },
     },
   },
-
   {
     "obsidian-nvim/obsidian.nvim",
     enabled = vim.uv.fs_stat(require("config.platform").obsidian_workspace()) ~= nil,

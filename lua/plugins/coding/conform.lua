@@ -13,7 +13,12 @@ return {
       },
     },
     opts = {
-      formatters_by_ft = {},
+      formatters_by_ft = vim.tbl_extend(
+        "force",
+        { ["_"] = { "trim_whitespace" } },
+        require("languages").current().formatters
+      ),
+      formatters = require("languages").current().formatter_options,
       format_on_save = function(bufnr)
         -- Disable with a global or buffer-local variable
         if
@@ -26,10 +31,6 @@ return {
       end,
     },
     config = function(_, opts)
-      opts.formatters_by_ft = opts.formatters_by_ft or {}
-      opts["formatters_by_ft"].javascript = { "prettierd", "prettier", stop_after_first = true }
-      opts["formatters_by_ft"]["_"] = { "trim_whitespace" }
-
       require("conform").setup(opts)
 
       if vim.g.enable_autoformat == nil then

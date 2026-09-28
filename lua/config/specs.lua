@@ -17,9 +17,7 @@ function M.build(selection)
       specs[#specs + 1] = { import = "plugins." .. group }
     end
   end
-  for _, language in ipairs(require("config.languages").enabled_languages()) do
-    specs[#specs + 1] = { import = "plugins.languages." .. language }
-  end
+  vim.list_extend(specs, require("languages").resolve(selection).plugins)
   return specs
 end
 

@@ -1,34 +1,5 @@
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
-    optional = true,
-    opts = {
-      ensure_installed = { "cpp", "c", "cuda" },
-    },
-    opts_extend = { "ensure_installed" },
-  },
-
-  {
-    "mason-org/mason.nvim",
-    optional = true,
-    opts_extend = { "ensure_installed" },
-    opts = { ensure_installed = { "clangd", "codelldb" } },
-  },
-
-  -- formatter
-  {
-    "stevearc/conform.nvim",
-    optional = true,
-    opts = {
-      formatters_by_ft = {
-        c = { "clang-format" },
-        cpp = { "clang-format" },
-        cuda = { "clang-format" },
-      },
-    },
-  },
-
-  {
     "mfussenegger/nvim-dap",
     ft = { "c", "cpp" },
     optional = true,

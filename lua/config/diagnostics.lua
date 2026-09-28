@@ -93,7 +93,8 @@ function M.setup_toggles()
       id = "virtual_text",
       name = "Virtual text",
       get = function()
-        return vim.diagnostic.config().virtual_text.format == virtual_text_config_enabled.format
+        local config = vim.diagnostic.config().virtual_text
+        return type(config) == "table" and config.format == virtual_text_config_enabled.format
       end,
       set = function(state)
         if state then

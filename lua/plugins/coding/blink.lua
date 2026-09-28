@@ -59,7 +59,7 @@ return {
               vim.b.blink_sources,
               { "buffer" },
               { "snippets" },
-              { "lazydev", "lsp", "path" },
+              require("config.completion").code_sources(),
             }
             local provider_index = vim.b.blink_cmp_provider_index
             if not provider_index then
@@ -85,7 +85,7 @@ return {
               vim.b.blink_sources,
               { "buffer" },
               { "snippets" },
-              { "lazydev", "lsp", "path" },
+              require("config.completion").code_sources(),
             }
             local provider_index = vim.b.blink_cmp_provider_index
             if not provider_index then
@@ -118,7 +118,7 @@ return {
         -- Default list of enabled providers defined so that you can extend it
         -- elsewhere in your config, without redefining it, due to `opts_extend`
         -- "buffer" source is used to complete words
-        default = { "lazydev", "lsp", "path", "buffer" },
+        default = { "lsp", "path", "buffer" },
         -- default = { "lazydev", "copilot", "lsp", "path", "snippets" },
 
         -- default = function()
@@ -154,12 +154,6 @@ return {
                 end, vim.api.nvim_list_bufs())
               end,
             },
-          },
-          lazydev = {
-            name = "LazyDev",
-            module = "lazydev.integrations.blink",
-            -- make lazydev completions top priority (see `:h blink.cmp`)
-            score_offset = 90,
           },
           lsp = {
             -- Default

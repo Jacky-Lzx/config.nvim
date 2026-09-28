@@ -58,7 +58,7 @@ vim.cmd([[
 vim.keymap.set(
   { "n", "x" },
   "go",
-  require("utils.utils").open_at_cursor,
+  require("util.open").open_at_cursor,
   { desc = "Open link under cursor", nowait = true }
 )
 

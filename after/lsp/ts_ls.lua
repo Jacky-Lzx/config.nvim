@@ -1,9 +1,9 @@
 -- Only takes effect if you enable `ts_ls` instead of `vtsls`.
 -- Registers the @vue/typescript-plugin with typescript-language-server.
-local vue_ls_path = require("utils.vue_lsp").server_path()
+local vue_ls_path = require("languages.vue.compatibility").server_path()
 
 local config = {
-  filetypes = require("utils.vue_lsp").filetypes,
+  filetypes = require("languages.vue.compatibility").filetypes,
 }
 
 if vue_ls_path then

@@ -1,4 +1,4 @@
-if not require("config.languages").is_enabled("latex") then
+if not require("languages").is_enabled("latex") then
   return
 end
 

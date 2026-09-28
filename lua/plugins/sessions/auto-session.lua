@@ -16,6 +16,7 @@ return {
     ---@type AutoSession.Config
     opts = {
       auto_restore = false,
+      auto_save = vim.env.NVIM_SMOKE_TEST ~= "1",
       suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" },
       -- Do not load the session if there's an error
       continue_restore_on_error = false,

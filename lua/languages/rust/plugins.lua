@@ -1,14 +1,5 @@
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
-    optional = true,
-    opts = {
-      ensure_installed = { "rust", "toml" },
-    },
-    opts_extend = { "ensure_installed" },
-  },
-
-  {
     "Saecki/crates.nvim",
     event = { "BufRead Cargo.toml" },
     opts = {
@@ -25,25 +16,6 @@ return {
       },
     },
   },
-
-  {
-    "mason-org/mason.nvim",
-    optional = true,
-    opts_extend = { "ensure_installed" },
-    opts = { ensure_installed = { "codelldb", "rust-analyzer" } },
-  },
-
-  -- formatter
-  {
-    "stevearc/conform.nvim",
-    optional = true,
-    opts = {
-      formatters_by_ft = {
-        rust = { "rustfmt", lsp_format = "fallback" },
-      },
-    },
-  },
-
   {
     "mfussenegger/nvim-dap",
     optional = true,
