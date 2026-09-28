@@ -35,9 +35,6 @@ vim.keymap.set("n", "<leader>K", "<CMD>cprev<CR>")
 vim.keymap.set("n", "<A-z>", "<CMD>set wrap!<CR>", { desc = "Toggle line wrap" })
 vim.keymap.set("n", "<A-d>", "<NOP>", { desc = "Disabled" })
 
-vim.keymap.set("v", "<M-m>", 'c\\( <c-r>" \\)')
-vim.keymap.set("i", "<M-m>", "\\(  \\)<esc>hhi")
-
 -- Add undo break-points
 vim.keymap.set("i", ",", ",<c-g>u")
 vim.keymap.set("i", ".", ".<c-g>u")

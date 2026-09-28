@@ -58,6 +58,13 @@ return {
     config = function(_, opts)
       require("catppuccin").setup(opts)
 
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        group = vim.api.nvim_create_augroup("lzx_highlights", { clear = true }),
+        pattern = "catppuccin*",
+        callback = function()
+          require("config.highlights").apply()
+        end,
+      })
       vim.cmd.colorscheme("catppuccin-nvim")
     end,
   },

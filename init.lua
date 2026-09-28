@@ -1,80 +1,14 @@
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
--- set termguicolors to enable highlight groups
-vim.opt.termguicolors = true
-
-vim.opt.number = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.hlsearch = true
-
-vim.opt.mousetime = 0
-
--- vim.opt.tabstop = 2
-vim.opt.softtabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
-vim.opt.smartindent = true
-
-vim.opt.scrolloff = 5
-vim.opt.sidescrolloff = 10
-vim.opt.startofline = false
-
-vim.opt.list = true
-vim.opt.listchars = { tab = ">-" }
-
-vim.o.signcolumn = "yes:1"
-
--- vim.opt_local.conceallevel = 2
-vim.opt.conceallevel = 2
-
-vim.opt.splitbelow = true
-vim.opt.splitright = true
-
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
-vim.wo.wrap = false
-
-vim.o.winborder = "rounded"
-
--- vim.bo.tabstop = 2
-
-vim.wo.cursorline = false
-
-vim.opt.clipboard = ""
-
-vim.o.textwidth = 120
--- Prevent auto insertion of new lines when writing a long sentence
-vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("lzx_formatoptions", { clear = true }),
-  callback = function(_)
-    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
-  end,
-})
-
--- Set block cursor with blinking in all modes
--- vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
---   .. ",a:blinkwait700-blinkoff500-blinkon500-Cursor/lCursor"
---   .. ",sm:block-blinkwait175-blinkoff150-blinkon175"
-
--- Enables project-local `.nvim.lua` configuration file
-vim.o.exrc = vim.env.NVIM_SMOKE_TEST ~= "1"
-
-local platform = require("config.platform")
-local shell = platform.shell()
-if shell then
-  vim.opt.shell = shell
-end
-
-local python_host = platform.python_host()
-if python_host then
-  vim.g.python3_host_prog = python_host
-end
+-- Keep startup order explicit; plugin-dependent work lives in plugin specs.
+require("config.options")
+require("config.profiling")
+require("config.keymaps")
+require("config.commands")
+require("config.autocmds")
+require("config.lsp")
+require("config.diagnostics")
 
 if vim.g.neovide then
-  require("third_party.neovide")
+  require("integrations.neovide")
 end
 
-require("plugin")
+require("config.lazy")

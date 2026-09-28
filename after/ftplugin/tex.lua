@@ -8,6 +8,8 @@ if not require("config.languages").is_enabled("latex") then
 end
 
 local bufnr = vim.api.nvim_get_current_buf()
+vim.keymap.set("v", "<M-m>", 'c\\( <c-r>" \\)', { buffer = bufnr })
+vim.keymap.set("i", "<M-m>", "\\(  \\)<esc>hhi", { buffer = bufnr })
 require("utils.latex_highlighting").attach(bufnr)
 
 vim.schedule(function()
