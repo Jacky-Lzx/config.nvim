@@ -44,6 +44,17 @@ vim.keymap.set("i", ";", ";<c-g>u")
 vim.keymap.set("x", "<", "<gv")
 vim.keymap.set("x", ">", ">gv")
 
+-- A bare Visual :w saves the whole buffer; other ranged commands stay intact.
+vim.keymap.set("c", "<CR>", function()
+  if vim.fn.getcmdtype() == ":" then
+    local command = vim.fn.getcmdline():match("^'<,'>%s*(.-)%s*$")
+    if command == "w" or command == "w!" or command == "write" or command == "write!" then
+      return "<C-e><C-u>" .. command .. "<CR>"
+    end
+  end
+  return "<CR>"
+end, { expr = true, desc = "Save the whole buffer with Visual :w" })
+
 -- 在命令行模式下，将 ":W" 映射为 ":w"
 -- vim.keymap.set("c", "W", "w", { noremap = true, desc = "Map :W to :w (save file)" })
 
