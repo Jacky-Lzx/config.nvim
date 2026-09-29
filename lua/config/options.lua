@@ -45,6 +45,9 @@ vim.wo.cursorline = false
 
 vim.opt.clipboard = ""
 
+-- Disable multi-click recognition while preserving single-click positioning and drag selection.
+vim.opt.mousetime = 0
+
 vim.o.textwidth = 120
 -- Set block cursor with blinking in all modes
 -- vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50"
