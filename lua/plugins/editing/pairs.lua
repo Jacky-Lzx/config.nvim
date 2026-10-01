@@ -16,7 +16,18 @@ return {
       },
     },
     -- blink.cmp composes Enter after completion confirmation.
-    opts = { treesitter = true, mappings = { cr = false } },
+    opts = {
+      treesitter = true,
+      mappings = { cr = false },
+      filetypes = {
+        python = {
+          multi_pairs = {
+            [string.rep('"', 3)] = {},
+            [string.rep("'", 3)] = {},
+          },
+        },
+      },
+    },
     config = function(_, opts)
       require("pairs").setup(opts)
     end,
