@@ -26,6 +26,8 @@ return {
       mappings = { cr = false },
       filetypes = {
         markdown = { multi_pairs = { ["```"] = {}, ["~~~"] = {} } },
+        tex = { multi_pairs = { ["$$"] = {} } },
+        plaintex = { multi_pairs = { ["$$"] = {} } },
         javascript = vim.deepcopy(template_rules),
         javascriptreact = vim.deepcopy(template_rules),
         typescript = vim.deepcopy(template_rules),
