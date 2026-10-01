@@ -25,7 +25,7 @@ return {
       treesitter = true,
       mappings = { cr = false },
       filetypes = {
-        markdown = { multi_pairs = { ["```"] = {} } },
+        markdown = { multi_pairs = { ["```"] = {}, ["~~~"] = {} } },
         javascript = vim.deepcopy(template_rules),
         javascriptreact = vim.deepcopy(template_rules),
         typescript = vim.deepcopy(template_rules),
