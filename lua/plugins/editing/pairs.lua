@@ -1,3 +1,8 @@
+local template_rules = {
+  pairs = { ["`"] = { close = "`" } },
+  multi_pairs = { ["${"] = {} },
+}
+
 return {
   { "windwp/nvim-autopairs", enabled = false },
   { "nvim-mini/mini.pairs", enabled = false },
@@ -20,6 +25,10 @@ return {
       treesitter = true,
       mappings = { cr = false },
       filetypes = {
+        javascript = vim.deepcopy(template_rules),
+        javascriptreact = vim.deepcopy(template_rules),
+        typescript = vim.deepcopy(template_rules),
+        typescriptreact = vim.deepcopy(template_rules),
         python = {
           multi_pairs = {
             [string.rep('"', 3)] = {},
