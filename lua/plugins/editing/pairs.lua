@@ -23,6 +23,7 @@ return {
     -- blink.cmp composes Enter after completion confirmation.
     opts = {
       treesitter = true,
+      tex_environments = { abstract = "text", theorem = "text", proof = "text" },
       mappings = { cr = false },
       filetypes = {
         markdown = { multi_pairs = { ["```"] = {}, ["~~~"] = {} } },
