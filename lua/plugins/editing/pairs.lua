@@ -15,7 +15,8 @@ return {
         desc = "[Pairs] Toggle pairing",
       },
     },
-    opts = {},
+    -- blink.cmp composes Enter after completion confirmation.
+    opts = { mappings = { cr = false } },
     config = function(_, opts)
       require("pairs").setup(opts)
     end,
