@@ -20,6 +20,28 @@ function M.check()
   for _, name in ipairs({ "data", "state", "cache" }) do
     vim.health.info(name .. ": " .. info.paths[name])
   end
+
+  vim.health.start("Plugins")
+  if not info.plugins.enabled then
+    vim.health.ok("Native core profile; plugin features are disabled")
+  elseif #info.plugins.missing > 0 then
+    vim.health.warn("Missing plugins: " .. table.concat(info.plugins.missing, ", "), { "Run :ConfigPluginsInstall" })
+  else
+    vim.health.ok("Selected plugins are installed at " .. info.plugins.root)
+    local pairing = require("features.input.pairing").source()
+    if pairing.available then
+      vim.health.ok("Local pairs.nvim: " .. pairing.dir)
+      if vim.fn.executable("git") == 1 then
+        local result = vim.system({ "git", "-C", pairing.dir, "rev-parse", "HEAD" }, { text = true }):wait()
+        if result.code == 0 then
+          vim.health.info("Local pairing revision: " .. vim.trim(result.stdout))
+        end
+      end
+    else
+      vim.health.warn("Local pairs.nvim is unavailable; completion and native newline remain available")
+      vim.health.info("Set NVIM_DEV_PLUGIN_ROOT to the parent directory of the pairs.nvim checkout")
+    end
+  end
 end
 
 return M

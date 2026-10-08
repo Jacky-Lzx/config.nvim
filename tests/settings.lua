@@ -1,0 +1,17 @@
+local ok, err = pcall(function()
+  local settings = require("config.settings")
+  assert(settings.resolve().features.input)
+  assert(not settings.resolve({ features = { input = false } }).features.input)
+  assert(not settings.resolve({ features = { input = true } }, "core").features.input)
+  assert(not pcall(settings.resolve, {}, "unknown"))
+  assert(not pcall(settings.resolve, { features = { unknown = true } }))
+  assert(not pcall(settings.resolve, { features = { input = "yes" } }))
+  assert(not pcall(settings.resolve, false))
+  io.stdout:write("Settings checks: 7 passed\n")
+  io.stdout:flush()
+end)
+if not ok then
+  io.stderr:write(tostring(err) .. "\n")
+  vim.cmd.cquit(1)
+end
+vim.cmd.qa({ bang = true })

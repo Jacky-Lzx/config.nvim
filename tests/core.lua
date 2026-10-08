@@ -27,7 +27,7 @@ test("startup discovers the configuration outside its working directory", functi
   assert(vim.fn.exists(":ConfigInfo") == 2)
   assert(vim.fn.getcwd() == vim.fs.joinpath(vim.env.NVIM_TEST_TMP, "work"))
   assert(require("config").info().paths.state == vim.fs.joinpath(vim.env.NVIM_TEST_TMP, "state", "nvim"))
-  assert(vim.fn.exists(":Lazy") == 0)
+  assert((vim.fn.exists(":Lazy") == 2) == require("config.plugins").status().started)
 end)
 
 test("setup can be repeated without duplicating autocommands", function()

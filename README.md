@@ -1,7 +1,7 @@
 # Neovim configuration
 
-A small native configuration for Neovim 0.12 or newer.
-It starts without external plugins, tools, or network access.
+A modular configuration for Neovim 0.12 or newer, with a small native core and optional input features.
+Normal startup does not install or update plugin repositories.
 
 ## Usage
 
@@ -12,6 +12,20 @@ All configuration and storage paths follow Neovim's `stdpath()` values.
 - `:ConfigInfo` shows the Neovim version and active paths.
 - `:checkhealth config` checks the runtime and configuration entry.
 - `:Explore` opens the native file browser.
+
+Run `:ConfigPluginsInstall` to install the selected plugins, then restart Neovim.
+Remote plugin revisions are recorded in `lazy-lock.json`.
+If a required plugin is absent, the native core remains usable and health checks report what needs installation.
+
+Use `NVIM_CONFIG_PROFILE=core nvim` to start with native editing only.
+Personal overrides can be placed in the ignored `lua/config/local.lua`:
+
+```lua
+return { features = { input = false } }
+```
+
+Settings are resolved once at startup; restart after changing them.
+The core profile disables input features even when a personal override enables them.
 
 ## Editing
 
@@ -36,13 +50,65 @@ Use `:w` to save; `:W`, `:Wq`, and `:Q` are aliases for `:w`, `:wq`, and `:q`.
 A bare Visual `:w`, `:w!`, `:write`, or `:write!` saves the entire buffer.
 Commands with arguments, such as `:w filename`, preserve the selection range.
 Substitutions and other ranged commands also retain their range.
-Insert-mode Enter and Tab use native behavior.
+
+## Input
+
+The input module configures blink.cmp and LuaSnip together, with optional local pairing.
+Completion offers LSP, path, snippet, and buffer sources; language servers are configured separately.
+Completion preselects the first item without inserting it while browsing.
+Enter and Tab confirm that selection; Shift-Enter inserts a newline without accepting it.
+Ghost text previews the selected item, and documentation opens after 200 ms.
+
+| Key                            | Behavior                                                              |
+| ------------------------------ | --------------------------------------------------------------------- |
+| `Ctrl Space`                   | Show completion or its documentation                                  |
+| `Ctrl n/p`, `Alt j/k`, Up/Down | Select the next / previous completion item                            |
+| `Alt d/u`                      | Move forward / backward by five completion items                      |
+| `Alt /`                        | Toggle the completion menu                                            |
+| `Alt n/p`                      | Cycle completion sources forward / backward                           |
+| `Ctrl e`                       | Cancel completion                                                     |
+| `Ctrl y`                       | Confirm the selected or first completion item                         |
+| `Ctrl u/d`, `Ctrl b/f`         | Scroll completion documentation                                       |
+| `Enter`                        | Confirm a selected item; otherwise expand a pair newline or use Enter |
+| `Shift Enter`                  | Close completion and insert a native newline                          |
+| `Tab`                          | Confirm a selected item; otherwise use native Tab                     |
+| `Shift Tab`                    | Move to the previous snippet field                                    |
+| `Alt j/k` with the menu closed | Move to the next / previous active snippet choice                     |
+| `Alt c`                        | Select an active snippet choice from a list                           |
+| Backtick in Visual mode        | Cut and store the selection for snippet selected-text variables       |
+| `Space tp`                     | Toggle local pairing                                                  |
+
+Path, LSP, buffer, and snippet sources have score offsets of 95, 60, 20, and 100.
+Buffer completion reads all normal buffers; LSP Text and Snippet items are excluded.
+Snippet completion is suppressed immediately after a source trigger character.
+
+Source cycling is buffer-local: all configured sources, buffer words, snippets, then LSP/path.
+Tab does not jump or expand a typed snippet trigger; accepting a snippet completion expands it.
+
+Command-line completion uses the same navigation, five-item jumps, menu toggle, and Tab confirmation.
+Enter executes the command as typed, including the whole-buffer behavior of a bare Visual `:w`.
+Terminal completion remains disabled.
+The fuzzy matcher prefers Rust, downloading its prebuilt library when needed and warning before a Lua fallback.
+Plugin installation builds LuaSnip's jsregexp component with `make install_jsregexp`.
+LuaSnip loads custom definitions from `lua/snippets/<filetype>.lua` when that directory exists.
+Automatic snippets and root/child snippet linking are enabled; Markdown also inherits TeX definitions.
+Manual expansion starts a separate undo step.
+`:LuaSnipList` lists snippets, and `:LuaSnipEdit` opens their definitions.
+
+Pairing uses the external `pairs.nvim` checkout under `NVIM_DEV_PLUGIN_ROOT`, defaulting to `~/Documents/Github/nvim_plugins`.
+Its source is maintained separately and is not included in the plugin lockfile.
+An unavailable checkout disables pairing while completion, snippets, and ordinary Enter remain available.
+`:checkhealth config` reports the local path and Git revision.
+
+Enter and Tab ownership stays with the input module; pairing contributes its newline action without overriding completion confirmation.
+The deferred pair newline mapping applies preceding typed text before inspecting the buffer.
 
 ## Structure
 
 - `init.lua` delegates startup to `config`.
-- `lua/config/` owns startup, configuration information, and health checks.
+- `lua/config/` owns startup, selection, plugin-manager bootstrap, configuration information, and health checks.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
+- `lua/features/input/` owns completion, snippets, pairing, and their key interactions.
 - `tests/` checks actual startup and editing behavior in temporary XDG directories.
 
 Modules do not configure the editor merely by being required.
@@ -54,8 +120,13 @@ Shared plugin setup and language workflows belong in their own modules when intr
 
 ```sh
 ./tests/run.sh
+./tests/run.sh --core
 stylua --check init.lua lua tests
 ```
 
 The tests isolate config, data, state, cache, logs, and fixtures, and run from an unrelated working directory.
 They do not install dependencies or use personal project files.
+Full checks copy the installed plugin repositories into temporary data storage and verify their revisions against the lockfile.
+The default source follows the configuration directory name or `NVIM_APPNAME`; `NVIM_TEST_PLUGIN_ROOT` can select another installed `lazy` directory.
+The input checks send real keys to an embedded Neovim process and observe completion menus, snippet fields, and saved files.
+Core, missing-dependency, personal-override, and missing-pairing cases are checked independently.

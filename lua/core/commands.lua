@@ -8,6 +8,10 @@ function M.setup()
   vim.api.nvim_create_user_command("ConfigInfo", function()
     vim.print(require("config").info())
   end, { desc = "Show Neovim version and configuration paths", force = true })
+
+  vim.api.nvim_create_user_command("ConfigPluginsInstall", function()
+    require("config.plugins").install()
+  end, { desc = "Install plugins for enabled features", force = true })
 end
 
 return M

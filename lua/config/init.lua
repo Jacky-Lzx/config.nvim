@@ -11,12 +11,15 @@ function M.setup()
   require("core.keymaps").setup()
   require("core.autocmds").setup()
   require("core.commands").setup()
+  require("config.plugins").setup()
 end
 
 function M.info()
   local version = vim.version()
   return {
     version = ("%d.%d.%d"):format(version.major, version.minor, version.patch),
+    features = vim.deepcopy(require("config.settings").current().features),
+    plugins = require("config.plugins").status(),
     paths = {
       config = vim.fn.stdpath("config"),
       data = vim.fn.stdpath("data"),
