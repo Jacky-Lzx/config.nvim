@@ -1,6 +1,6 @@
 # Neovim configuration
 
-A modular configuration for Neovim 0.12 or newer, with a small native core and optional input and language features.
+A modular configuration for Neovim 0.12 or newer, with a small native core and optional input, language, and picker features.
 Normal startup does not install or update plugin repositories.
 
 ## Usage
@@ -15,21 +15,22 @@ All configuration and storage paths follow Neovim's `stdpath()` values.
 
 Run `:ConfigPluginsInstall` to install the selected plugins, then restart Neovim.
 Remote plugin revisions are recorded in `lazy-lock.json`.
-If a required plugin is absent, the native core remains usable and health checks report what needs installation.
+Each plugin feature checks its own dependencies. An unavailable feature leaves the core and other installed features usable.
+Health checks report what needs installation.
 
 Use `NVIM_CONFIG_PROFILE=core nvim` to start with native editing only.
 Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { input = false, lsp = true },
+  features = { input = false, lsp = true, picker = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Input and LSP can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables input and LSP even when a personal override enables them.
+Input, LSP, and Picker can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all three features even when a personal override enables them.
 
 ## Editing
 
@@ -145,6 +146,36 @@ They update after leaving Insert mode and do not underline text.
 `Space td` toggles diagnostics, `Space tv` switches between messages and compact icons, and `Space tV` toggles diagnostic lines for the current line.
 Formatting is manual; project formatter settings remain owned by the language server.
 
+## Picker
+
+Snacks Picker provides searchable LSP results and loads on its first mapped action.
+Only the Picker module is enabled.
+It also supplies native `vim.ui.select` dialogs after loading.
+The following Normal-mode mappings are available when Picker is installed and enabled:
+
+| Key        | Behavior                          |
+| ---------- | --------------------------------- |
+| `gd`       | Definitions                       |
+| `gD`       | Declarations                      |
+| `gi`       | References                        |
+| `gI`       | Implementations                   |
+| `gy`       | Type definitions                  |
+| `gci`      | Incoming calls                    |
+| `gco`      | Outgoing calls                    |
+| `Space ss` | Symbols in the current document   |
+| `Space sS` | Workspace symbols                 |
+
+Results use a vertical layout with preview above the list and input at the bottom.
+Typing filters results; Enter confirms, and a single jump target is confirmed automatically.
+Requests use the active language server, so availability depends on its supported methods.
+
+Inside Picker, `Alt j/k` moves down/up, `Alt u/d` scrolls the list, and `Ctrl u/d` scrolls the preview.
+`Tab` selects an item and moves to the previous item; `Shift Tab` selects and moves to the next.
+`Alt Up/Down` navigates input history.
+`Ctrl y` copies selected paths or text to the clipboard; `Ctrl o` opens selected items with the system app.
+These mappings apply in both Insert and Normal modes.
+Input completion keeps its own Enter and Tab behavior outside Picker.
+
 ## Structure
 
 - `init.lua` delegates startup to `config`.
@@ -152,6 +183,7 @@ Formatting is manual; project formatter settings remain owned by the language se
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
 - `lua/features/input/` owns completion, snippets, pairing, and their key interactions.
 - `lua/features/lsp/` owns native client setup, buffer mappings, and diagnostics.
+- `lua/features/picker/` owns result selection, its mappings, and window layout.
 - `lsp/` provides native server configurations, project roots, and server settings.
 - `lua/languages/` declares language selection and associated server names.
 - `tests/` checks actual startup and editing behavior in temporary XDG directories.
@@ -174,6 +206,8 @@ The tests isolate config, data, state, cache, logs, and fixtures, and run from a
 They do not install dependencies or use personal project files.
 Full checks copy the installed plugin repositories into temporary data storage and verify their revisions against the lockfile.
 The default source follows the configuration directory name or `NVIM_APPNAME`; `NVIM_TEST_PLUGIN_ROOT` can select another installed `lazy` directory.
-The input checks send real keys to an embedded Neovim process and observe completion menus, snippet fields, and saved files.
+The input and Picker checks send real keys to embedded Neovim processes and observe menus, snippet fields, selections, jumps, and saved files.
 Core, missing-dependency, personal-override, and missing-pairing cases are checked independently.
 `--live` additionally requires `lua-language-server` on PATH and verifies actual diagnostics, hover, definition, rename, formatting, completion confirmation, client reuse, and LSP with input disabled.
+It also verifies Picker definitions, references, document/workspace symbols, and no-result feedback for call hierarchy methods unavailable in Lua Language Server.
+Missing input and Picker dependencies are checked independently.

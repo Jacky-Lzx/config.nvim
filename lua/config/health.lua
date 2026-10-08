@@ -23,11 +23,21 @@ function M.check()
 
   vim.health.start("Plugins")
   if not info.plugins.enabled then
-    vim.health.ok("Input plugins are disabled")
+    vim.health.ok("Plugin features are disabled")
   elseif #info.plugins.missing > 0 then
     vim.health.warn("Missing plugins: " .. table.concat(info.plugins.missing, ", "), { "Run :ConfigPluginsInstall" })
   else
     vim.health.ok("Selected plugins are installed at " .. info.plugins.root)
+  end
+  for _, name in ipairs({ "input", "picker" }) do
+    local feature = info.plugins.features[name]
+    if feature.available then
+      vim.health.ok(name .. " plugins are available")
+    elseif not feature.enabled then
+      vim.health.info(name .. " plugins are disabled")
+    end
+  end
+  if info.plugins.features.input.available then
     local pairing = require("features.input.pairing").source()
     if pairing.available then
       vim.health.ok("Local pairs.nvim: " .. pairing.dir)

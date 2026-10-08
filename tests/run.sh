@@ -61,9 +61,9 @@ export NVIM_CONFIG_PROFILE=core
 run_test lock
 
 mkdir -p "$XDG_DATA_HOME/$NVIM_APPNAME/lazy"
-cp -R "$installed_plugins/lazy.nvim" "$installed_plugins/blink.cmp" "$installed_plugins/LuaSnip" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
+cp -RL "$installed_plugins/lazy.nvim" "$installed_plugins/blink.cmp" "$installed_plugins/LuaSnip" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
 
-printf 'return { features = { input = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { input = false, picker = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_CONFIG_PROFILE=default
 export NVIM_TEST_MODE=disabled
 run_test isolation
@@ -81,8 +81,21 @@ run_test isolation
 mv "$test_tmp/LuaSnip" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/LuaSnip"
 
 run_test input
+export NVIM_TEST_MODE=missing-picker
+run_test picker_isolation
+cp -RL "$installed_plugins/snacks.nvim" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
+mv "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/LuaSnip" "$test_tmp/LuaSnip"
+export NVIM_TEST_MODE=missing-input
+run_test picker_isolation
+mv "$test_tmp/LuaSnip" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/LuaSnip"
+printf 'return { features = { input = false } }\n' > "$config/lua/config/local.lua"
+export NVIM_TEST_MODE=picker-only
+run_test picker_isolation
+rm "$config/lua/config/local.lua"
+run_test picker
 if [ "${1:-}" = "--live" ]; then
   run_test lsp_live
+  run_test picker_live
 fi
 export NVIM_DEV_PLUGIN_ROOT="$test_tmp/no-local-plugins"
 run_test input

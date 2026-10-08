@@ -56,7 +56,7 @@ function M.setup()
       local before_init = definition.before_init
       vim.lsp.config(record.server, {
         before_init = function(params, config)
-          if require("config.plugins").status().started then
+          if require("config.plugins").status().features.input.active then
             require("lazy").load({ plugins = { "blink.cmp" } })
             config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
             params.capabilities = config.capabilities
