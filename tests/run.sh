@@ -63,7 +63,7 @@ run_test lock
 mkdir -p "$XDG_DATA_HOME/$NVIM_APPNAME/lazy"
 cp -RL "$installed_plugins/lazy.nvim" "$installed_plugins/blink.cmp" "$installed_plugins/LuaSnip" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
 
-printf 'return { features = { input = false, picker = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_CONFIG_PROFILE=default
 export NVIM_TEST_MODE=disabled
 run_test isolation
@@ -99,9 +99,29 @@ run_test search
 export NVIM_TEST_PICKER_TOOLS=missing
 run_test search_missing
 unset NVIM_TEST_PICKER_TOOLS
+export NVIM_TEST_THEME_MODE=missing
+run_test theme
+cp -RL "$installed_plugins/catppuccin" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
+export NVIM_TEST_THEME_MODE=available
+run_test theme
+run_test input
+run_test picker
+run_test search
 if [ "${1:-}" = "--live" ]; then
   run_test lsp_live
   run_test picker_live
 fi
+printf 'return { features = { input = false, picker = false, lsp = false } }\n' > "$config/lua/config/local.lua"
+export NVIM_TEST_THEME_MODE=only
+run_test theme
+printf 'return { features = { theme = false } }\n' > "$config/lua/config/local.lua"
+export NVIM_TEST_THEME_MODE=disabled
+run_test theme
+rm "$config/lua/config/local.lua"
+export NVIM_CONFIG_PROFILE=core
+export NVIM_TEST_THEME_MODE=core
+run_test theme
+export NVIM_CONFIG_PROFILE=default
+unset NVIM_TEST_THEME_MODE
 export NVIM_DEV_PLUGIN_ROOT="$test_tmp/no-local-plugins"
 run_test input

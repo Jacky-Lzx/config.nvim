@@ -40,7 +40,9 @@ function M.setup()
   end
 
   vim.g.markdown_recommended_style = 0
-  vim.cmd.colorscheme("habamax")
+  if not vim.g.colors_name then
+    vim.cmd.colorscheme("habamax")
+  end
 end
 
 return M

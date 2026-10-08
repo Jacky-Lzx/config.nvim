@@ -1,6 +1,6 @@
 # Neovim configuration
 
-A modular configuration for Neovim 0.12 or newer, with a small native core and optional input, language, and picker features.
+A modular configuration for Neovim 0.12 or newer, with a small native core and optional theme, input, language, and picker features.
 Normal startup does not install or update plugin repositories.
 
 ## Usage
@@ -23,14 +23,26 @@ Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { input = false, lsp = true, picker = true },
+  features = { theme = true, input = false, lsp = true, picker = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Input, LSP, and Picker can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables all three features even when a personal override enables them.
+Theme, input, LSP, and Picker can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all four features even when a personal override enables them.
+
+## Theme
+
+Catppuccin Mocha loads before the input and Picker plugins, with transparent editor and floating-window backgrounds.
+The theme owns colors for completion, native LSP diagnostics, and Picker.
+Selection, search matches, line numbers, matching parentheses, signature parameters, and Picker cursor lines use custom highlights.
+Catppuccin applies these highlights when the colorscheme loads, including after switching away and back.
+The theme uses its cache under Neovim's standard cache directory.
+
+Disable it with `features.theme = false` for the native Habamax theme.
+A missing theme checkout also leaves Habamax available and does not block other installed features.
+Install selected dependencies with `:ConfigPluginsInstall` and restart Neovim.
 
 ## Editing
 
@@ -195,6 +207,7 @@ Input completion keeps its own Enter and Tab behavior outside Picker.
 - `init.lua` delegates startup to `config`.
 - `lua/config/` owns startup, selection, plugin-manager bootstrap, configuration information, and health checks.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
+- `lua/features/theme/` owns theme options, plugin integrations, and custom highlights.
 - `lua/features/input/` owns completion, snippets, pairing, and their key interactions.
 - `lua/features/lsp/` owns native client setup, buffer mappings, and diagnostics.
 - `lua/features/picker/` owns result selection, its mappings, and window layout.
@@ -227,3 +240,5 @@ It also verifies Picker definitions, references, document/workspace symbols, and
 Missing input and Picker dependencies are checked independently.
 Search checks exercise actual file enumeration and ripgrep results, previews, resume, buffer/recent-file selection, and diagnostic jumps.
 They also exercise the ripgrep file-finder fallback and missing-tool behavior.
+
+Theme checks cover Mocha colors, transparent windows, highlight restoration, completion/Picker integration, and disabled, missing, core, and theme-only configurations.

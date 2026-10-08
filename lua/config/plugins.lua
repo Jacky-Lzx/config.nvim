@@ -1,7 +1,8 @@
 local M = {}
 local started = false
 local active = {}
-local modules = { input = "features.input", picker = "features.picker" }
+local modules = { theme = "features.theme", input = "features.input", picker = "features.picker" }
+local order = { "theme", "input", "picker" }
 
 local function root()
   return vim.fs.joinpath(vim.fn.stdpath("data"), "lazy")
@@ -15,7 +16,7 @@ function M.status()
   local settings = require("config.settings").current()
   local manager = vim.fn.filereadable(vim.fs.joinpath(root(), "lazy.nvim", "lua/lazy/init.lua")) == 1
   local enabled, missing, features = false, {}, {}
-  for _, name in ipairs({ "input", "picker" }) do
+  for _, name in ipairs(order) do
     local selected = settings.features[name]
     local absent = {}
     if selected then
@@ -45,7 +46,7 @@ local function setup_manager(install)
     return
   end
   local status, specs = M.status(), {}
-  for _, name in ipairs({ "input", "picker" }) do
+  for _, name in ipairs(order) do
     local feature = status.features[name]
     if install and feature.enabled or feature.available then
       vim.list_extend(specs, require(modules[name]).specs())
