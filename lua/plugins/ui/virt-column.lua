@@ -12,7 +12,7 @@ return {
       -- char = "⋮",
       char = "",
       -- char = "󰮾",
-      virtcolumn = "+1",
+      virtcolumn = "121",
     },
   },
 }
