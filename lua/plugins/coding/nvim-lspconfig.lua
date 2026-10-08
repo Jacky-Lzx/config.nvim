@@ -2,10 +2,9 @@ return {
   {
     -- LSP Configuration & Plugins
     "neovim/nvim-lspconfig",
-    -- NOTE: This plugin cannot be lay loaded. Doing that will loose the ability of inlay hint <2026.04.28, lzx>
-    -- lazy = false,
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
+      -- Completion capabilities must be installed before any server is enabled.
       "saghen/blink.cmp",
       "mason-org/mason.nvim",
       -- Show lsp status on the bottom-left

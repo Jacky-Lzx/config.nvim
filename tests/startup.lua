@@ -6,10 +6,29 @@ local function check()
   local function opts(name)
     return require("lazy.core.plugin").values(assert(plugins[name], name), "opts", false)
   end
-  require("lazy").load({ plugins = { "nvim-lspconfig" } })
+  -- Opening a file must configure completion before LSP enable/start, without
+  -- manually loading either plugin or entering Insert mode first.
+  vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.py")
+  if vim.v.errmsg == "E31: No such mapping" then
+    vim.v.errmsg = ""
+  end
+  assert(plugins["blink.cmp"]._.loaded, "Completion loaded after LSP enable")
+  local completion = require("blink.cmp").get_lsp_capabilities().textDocument.completion
+  local function check_completion(capabilities, name)
+    local actual = capabilities.textDocument.completion
+    assert(vim.deep_equal(vim.tbl_deep_extend("force", actual, completion), actual), name)
+  end
   for _, name in ipairs(languages.servers) do
     assert(vim.lsp.is_enabled(name), name .. " is not enabled")
     assert(vim.lsp.config[name], name .. " has no native config")
+    check_completion(_G.config_test_lsp_enabled[name], name)
+  end
+  vim.api.nvim_exec_autocmds("InsertEnter", {})
+  for _, name in ipairs(languages.servers) do
+    assert(vim.deep_equal(vim.lsp.config[name].capabilities, _G.config_test_lsp_enabled[name]), name)
+  end
+  for _, config in ipairs(_G.config_test_lsp_starts) do
+    check_completion(config.capabilities, config.name)
   end
   assert(not vim.lsp.is_enabled("kdl"))
   assert(vim.fn.exists(":ConfigToolsInstall") == 2)

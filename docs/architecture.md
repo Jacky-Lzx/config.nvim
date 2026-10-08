@@ -20,6 +20,10 @@ Set options and early globals, register editor behavior and LSP attach handlers,
 initialize lazy.nvim. Plugin APIs run in their plugin's lifecycle. Register UI integrations
 on explicit events, not scheduled callbacks used as dependency ordering.
 
+LSP configuration depends on blink.cmp so its native capability registration runs before
+`vim.lsp.enable()`. Completion has one setup owner. which-key integrations run through
+declared dependencies or synchronous module loading in filetype hooks.
+
 A language definition must not register autocmds, mutate globals, run external commands, or
 install dependencies while being read. Its plugin specs may do these things in explicit
 lifecycle hooks. Tool/parser installation remains an explicit user command.

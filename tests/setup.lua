@@ -9,8 +9,19 @@ vim.notify = function(message, level, opts)
   end
   return notify(message, level, opts)
 end
-vim.lsp.start = function()
+_G.config_test_lsp_starts = {}
+vim.lsp.start = function(config)
+  table.insert(_G.config_test_lsp_starts, vim.deepcopy(config))
   return nil
+end
+
+_G.config_test_lsp_enabled = {}
+local enable = vim.lsp.enable
+vim.lsp.enable = function(names, enabled)
+  for _, name in ipairs(type(names) == "table" and names or { names }) do
+    _G.config_test_lsp_enabled[name] = vim.deepcopy(vim.lsp.config[name].capabilities)
+  end
+  return enable(names, enabled)
 end
 
 local scenario = vim.env.NVIM_TEST_SCENARIO

@@ -4,16 +4,11 @@ function M.setup(bufnr)
   vim.keymap.set("i", "<M-m>", "\\(  \\)<esc>hhi", { buffer = bufnr })
   require("utils.latex_highlighting").attach(bufnr)
 
-  vim.schedule(function()
-    if not vim.api.nvim_buf_is_valid(bufnr) then
-      return
-    end
+  vim.keymap.set("n", "<leader>lb", "<CMD>LspTexlabBuild<CR>", { buffer = bufnr, desc = "[Texlab] Compile" })
 
-    vim.keymap.set("n", "<leader>lb", "<CMD>LspTexlabBuild<CR>", { buffer = bufnr, desc = "[Texlab] Compile" })
-
-    local wk = require("which-key")
-    wk.add({
-      buffer = bufnr,
+  local wk = require("which-key")
+  wk.add({
+    buffer = bufnr,
       -- stylua: ignore start
       { "<localleader>l", group = "[VimTeX]", icon = { icon = "", color = "green" }, mode = "nx" },
       {
@@ -106,8 +101,7 @@ function M.setup(bufnr)
         { "[*", "<plug>(vimtex-[star)", desc = "Previous end of a comment",           icon = { icon = "", color = "cyan" }, },
       },
       { "K", "<plug>(vimtex-doc-package)", desc = "See package documentation", icon = { icon = "󱔗", color = "azure" }, },
-      -- stylua: ignore end
-    })
-  end)
+    -- stylua: ignore end
+  })
 end
 return M
