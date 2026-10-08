@@ -1,5 +1,3 @@
-local html_beautify = require("config.platform").executable("html_beautify")
-
 return {
   servers = { "superhtml" },
   tools = {
@@ -9,6 +7,7 @@ return {
   parsers = { "html" },
   formatters = {
     -- Should install js-beautify first `https://github.com/beautifier/js-beautify`
-    html = html_beautify and { "html_beautify" } or nil,
+    html = { "html_beautify" },
   },
+  requires = { formatters = { html = "html_beautify" } },
 }

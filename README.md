@@ -59,6 +59,9 @@ Language `tools` entries distinguish Mason package names from executable names. 
 for system-managed tools; use `resolve` for non-PATH tools such as debugpy's Python interpreter.
 Installation and health checks consume this same list. Language definitions must not install
 anything or register editor behavior while being read; use plugin lifecycle hooks instead.
+Declarations are schema-checked, and conflicting definitions of the same tool fail explicitly.
+For optional formatter/linter bindings, declare executable requirements in `requires`;
+the resolver checks availability rather than freezing it when the language module is loaded.
 
 ## Platform configuration
 

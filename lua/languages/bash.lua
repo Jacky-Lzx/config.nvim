@@ -1,5 +1,3 @@
-local has_fish = require("config.platform").executable("fish") ~= nil
-
 return {
   servers = { "bashls" },
   tools = {
@@ -10,10 +8,11 @@ return {
   parsers = { "bash" },
   formatters = {
     sh = { "shfmt" },
-    fish = has_fish and { "fish_indent" } or nil,
+    fish = { "fish_indent" },
   },
   linters = {
-    fish = has_fish and { "fish" } or nil,
+    fish = { "fish" },
     bash = { "bash" },
   },
+  requires = { formatters = { fish = "fish" }, linters = { fish = "fish" } },
 }

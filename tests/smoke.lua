@@ -76,6 +76,68 @@ local isolated = languages.resolve(selection({ "data" }))
 isolated.formatters.python[1] = "changed"
 assert(languages.resolve(selection({ "data" })).formatters.python[1] == "ruff_fix")
 
+-- Availability belongs to resolution, not Lua's module cache. Resolve the same
+-- already-loaded declarations against opposite machine capability snapshots.
+local calls = {}
+local capable = languages.resolve(selection({ "base", "web" }), {
+  executable = function(name)
+    calls[name] = (calls[name] or 0) + 1
+    return "/fixture/bin/" .. name
+  end,
+})
+local absent = languages.resolve(selection({ "base", "web" }), {
+  executable = function()
+    return nil
+  end,
+})
+assert(vim.deep_equal(capable.formatters.fish, { "fish_indent" }))
+assert(vim.deep_equal(capable.linters.fish, { "fish" }))
+assert(vim.deep_equal(capable.formatters.html, { "html_beautify" }))
+assert(absent.formatters.fish == nil and absent.linters.fish == nil and absent.formatters.html == nil)
+assert(calls.fish == 1 and calls.html_beautify == 1)
+
+local function rejects(run, message)
+  local success, failure = pcall(run)
+  assert(not success and tostring(failure):find(message, 1, true), tostring(failure))
+end
+local schema = require("languages.schema")
+for _, bad in ipairs({
+  { definition = { serverz = {} }, message = "languages.fixture.serverz: unknown field" },
+  { definition = { servers = false }, message = "languages.fixture.servers: expected a list" },
+  { definition = { parsers = { false } }, message = "languages.fixture.parsers[1]" },
+  { definition = { formatters = { lua = "stylua" } }, message = "languages.fixture.formatters.lua" },
+  { definition = { tools = { { executable = "tool", feature = "typo" } } }, message = ".feature: unknown feature" },
+  {
+    definition = { tools = { { resolve = function() end } } },
+    message = "resolver-only tools need a Mason package name",
+  },
+  { definition = { requires = { formatters = { lua = "stylua" } } }, message = "has no binding" },
+}) do
+  rejects(function()
+    schema.validate("fixture", bad.definition)
+  end, bad.message)
+end
+
+local cpp = require("languages.cpp")
+local conflicting = vim.deepcopy(cpp)
+conflicting.tools[2].executable = "another-codelldb"
+package.loaded["languages.cpp"] = conflicting
+local conflict_ok, conflict_err = pcall(languages.resolve, selection({ "native" }, true))
+package.loaded["languages.cpp"] = cpp
+assert(
+  not conflict_ok and tostring(conflict_err):find("Conflicting tool mason:codelldb in languages cpp and rust", 1, true)
+)
+
+rejects(function()
+  require("config.context").resolve({ profiles = {}, features = {}, typo = true })
+end, "Unknown selection field: typo")
+rejects(function()
+  languages.resolve({ profiles = { false }, features = {} })
+end, "Profile names must be non-empty strings")
+rejects(function()
+  languages.resolve({ profiles = {}, features = { ai = "yes" } })
+end, "Feature must be boolean: ai")
+
 local specs = require("config.specs")
 local ok_feature, feature_err = pcall(specs.build, { profiles = {}, features = { typo = true } })
 assert(not ok_feature and tostring(feature_err):find("Unknown feature: typo", 1, true))

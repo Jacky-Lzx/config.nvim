@@ -76,6 +76,7 @@ A language may declare:
 | `formatters`, `formatter_options` | Conform filetype assignments and custom formatter settings |
 | `linters`, `linter_options` | nvim-lint assignments and static custom linter settings |
 | `plugins` | Native lazy.nvim specs or targeted imports for complex integrations |
+| `requires` | Optional executable requirements for filetype formatter/linter bindings |
 
 A tool has a `mason` package name (optional), an `executable` name or a `resolve` function,
 an optional `feature` requirement, and an optional `post_install` callback. System requirements
@@ -85,6 +86,13 @@ later language's package installation. Health checks deduplicate executable chec
 Conflicting filetype formatter/linter definitions fail explicitly. Shared plugin setup runs
 once in `plugins/coding/`; language contributions never call the same plugin's setup again.
 A custom linter needing plugin APIs (Verilog's parser) can use a language plugin `opts` hook.
+
+`languages/schema.lua` checks declaration fields, types, feature names, and tool identity.
+Duplicate tools must have identical definitions; conflicts report both language owners.
+Optional bindings use `requires = { formatters = { html = "html_beautify" } }` rather than
+probing the machine while requiring a definition. `languages.resolve(selection, capabilities)`
+accepts an executable resolver for deterministic availability tests; production uses the
+platform resolver and probes each requirement once per resolution.
 
 ## Preserved defaults and deliberate corrections
 
