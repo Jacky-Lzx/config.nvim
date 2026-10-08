@@ -1,5 +1,5 @@
 local root = vim.fn.getcwd()
-dofile(root .. "/after/plugin/commands.lua")
+dofile(root .. "/lua/config/commands.lua")
 assert(vim.wait(1000, function()
   return vim.fn.exists(":Titlecase") == 2
 end))

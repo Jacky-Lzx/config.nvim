@@ -60,6 +60,12 @@ same context. A later different selection fails explicitly; restart after changi
 Resource paths use `config.paths.config(...)`, anchored to the checkout containing that
 module instead of an unrelated default `stdpath("config")` when using an explicit init file.
 
+Large plugin collections retain native lazy.nvim imports: completion core, menu, and source
+contributions live in `plugins/coding/completion/`; Markdown integrations live in
+`languages/markdown/specs/`. Mini plugins have individual feature-owned specs. Shared
+completion source cycling/toggling lives in `config/completion.lua` and keeps buffer state
+separate from global provider defaults.
+
 A language may declare:
 
 | Field | Consumer |

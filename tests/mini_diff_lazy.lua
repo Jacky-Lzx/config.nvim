@@ -8,7 +8,7 @@ vim.o.swapfile = false
 vim.g.mapleader = " "
 
 local spec
-for _, plugin in ipairs(dofile(root .. "/lua/plugins/core/mini.lua")) do
+for _, plugin in ipairs(dofile(root .. "/lua/plugins/git/mini-diff.lua")) do
   if plugin[1] == "echasnovski/mini.diff" then
     spec = plugin
   end

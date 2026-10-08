@@ -16,9 +16,9 @@ package.loaded.snacks = { toggle = {
     return { map = function() end }
   end,
 } }
-local conform = require("plugins.core.conform")[1]
+local conform = require("plugins.coding.conform")[1]
 vim.g.enable_autoformat = false
-conform.config(nil, {})
+conform.config(nil, vim.deepcopy(conform.opts))
 assert(vim.g.enable_autoformat == false, "preserve explicit autoformat preference")
 vim.g.enable_autoformat = nil
 conform.config(nil, vim.deepcopy(conform.opts))
@@ -35,7 +35,7 @@ conform.keys[1][2]()
 assert(formatted.lsp_format == "fallback")
 local schedule = vim.schedule
 vim.schedule = function() end
-dofile(root .. "/after/plugin/lsp.lua")
+dofile(root .. "/lua/config/lsp.lua")
 vim.schedule = schedule
 vim.api.nvim_exec_autocmds("LspAttach", { buffer = buf, data = { client_id = 1 } })
 vim.api.nvim_buf_call(buf, function()
@@ -56,7 +56,7 @@ local huge = buffer("lua", string.rep("x", 1024 * 1024 + 1))
 local special = buffer("lua", nil, true)
 local unloaded = buffer("lua")
 vim.api.nvim_buf_delete(unloaded, { unload = true, force = true })
-local selected = require("plugins.core.blink")[1].opts.sources.providers.buffer.opts.get_bufnrs()
+local selected = require("plugins.coding.completion.core")[1].opts.sources.providers.buffer.opts.get_bufnrs()
 assert(vim.list_contains(selected, buf) and vim.list_contains(selected, relevant))
 for _, b in ipairs({ unrelated, huge, special, unloaded }) do
   assert(not vim.list_contains(selected, b), "exclude irrelevant, huge, special, and unloaded buffers")
@@ -78,7 +78,7 @@ vim.lsp.get_clients = function(opts)
   assert(opts.name == "typos_lsp" and opts.bufnr == relevant)
   return typos and { {} } or {}
 end
-local lint = require("plugins.core.nvim-lint")[1]
+local lint = require("plugins.coding.nvim-lint")[1]
 lint.config(nil, lint.opts)
 local function lint_buffer(b)
   calls = {}
@@ -94,39 +94,37 @@ assert(lint_buffer(huge) == 0 and lint_buffer(special) == 0)
 assert(lint_buffer(buffer("")) == 0)
 vim.fn.executable, vim.lsp.get_clients = executable, clients
 
-local function spec(language, plugin)
-  for _, entry in ipairs(require("plugins.languages." .. language)) do
-    if entry[1] == plugin then
-      return entry
+local function definition(language)
+  return require("languages." .. language)
+end
+local function has_tool(language, mason)
+  for _, tool in ipairs(definition(language).tools) do
+    if tool.mason == mason then
+      return true
     end
   end
-  error("missing " .. plugin .. " in " .. language)
+  return false
 end
 for _, language in ipairs({ "vue", "yaml" }) do
-  assert(vim.list_contains(spec(language, "mason-org/mason.nvim").opts.ensure_installed, "prettierd"))
+  assert(has_tool(language, "prettierd"))
 end
-assert(vim.list_contains(spec("toml", "nvim-treesitter/nvim-treesitter").opts.ensure_installed, "toml"))
-assert(vim.list_contains(spec("swift", "nvim-treesitter/nvim-treesitter").opts.ensure_installed, "swift"))
-assert(vim.deep_equal(spec("swift", "stevearc/conform.nvim").opts.formatters_by_ft.swift, { "swift" }))
-assert(vim.deep_equal(spec("swift", "mfussenegger/nvim-lint").opts.linters_by_ft.swift, { "swiftlint" }))
-local swift_dap = spec("swift", "mfussenegger/nvim-dap").opts
+assert(vim.list_contains(definition("toml").parsers, "toml"))
+assert(vim.list_contains(definition("swift").parsers, "swift"))
+assert(vim.deep_equal(definition("swift").formatters.swift, { "swift" }))
+assert(vim.deep_equal(definition("swift").linters.swift, { "swiftlint" }))
+local swift_dap = require("languages.swift.plugins")[1].opts
 assert(swift_dap.configurations.swift[1].type == "lldb")
 assert(swift_dap.adapters.lldb.command == (vim.fn.has("mac") == 1 and "xcrun" or "lldb-dap"))
-assert(not vim.list_contains(spec("python", "mason-org/mason.nvim").opts.ensure_installed, "pyright"))
-assert(not vim.list_contains(spec("vue", "mason-org/mason.nvim").opts.ensure_installed, "typescript-language-server"))
-local formats = spec("verilog", "stevearc/conform.nvim").opts.formatters_by_ft
+assert(not has_tool("python", "pyright"))
+assert(not has_tool("vue", "typescript-language-server"))
+local formats = definition("verilog").formatters
 assert(vim.deep_equal(formats.verilog, formats.systemverilog))
-package.loaded["lint.parser"] = {
-  from_pattern = function()
-    return function() end
-  end,
-}
-local linters = spec("verilog", "mfussenegger/nvim-lint").opts(nil, {}).linters_by_ft
+local linters = definition("verilog").linters
 assert(vim.deep_equal(linters.verilog, linters.systemverilog))
 dofile(root .. "/filetype.lua")
 for _, filename in ipairs({ "test.zsh", ".zshrc", ".zshenv" }) do
   assert(vim.filetype.match({ filename = filename }) == "zsh")
 end
 assert(vim.filetype.match({ filename = "test.sh", buf = buffer("", "#!/bin/zsh") }) == "zsh")
-assert(spec("bash", "stevearc/conform.nvim").opts.formatters_by_ft.zsh == nil)
+assert(definition("bash").formatters.zsh == nil)
 print("Tooling regression tests passed")

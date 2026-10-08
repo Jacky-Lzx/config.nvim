@@ -51,6 +51,31 @@ local function check()
     input("(<CR>x", { "(", "x" })
   end
   input("x<CR>y", { "x", "y" })
+
+  local completion = require("config.completion")
+  local defaults = vim.deepcopy(require("blink.cmp.config").sources.default)
+  local shown
+  local cmp = {
+    show = function(opts)
+      shown = opts.providers
+    end,
+  }
+  vim.cmd("enew!")
+  completion.cycle(cmp, 1)
+  assert(vim.deep_equal(shown, { "buffer" }))
+  completion.cycle(cmp, 1)
+  assert(vim.deep_equal(shown, { "snippets" }))
+  completion.cycle(cmp, 1)
+  assert(vim.deep_equal(shown, completion.code_sources()))
+  completion.cycle(cmp, 1)
+  assert(vim.deep_equal(shown, defaults))
+  completion.toggle_source(cmp, "buffer")
+  completion.toggle_source(cmp, "buffer")
+  assert(vim.deep_equal(require("blink.cmp.config").sources.default, defaults), "Buffer toggle mutated global defaults")
+  vim.cmd("enew!")
+  assert(vim.deep_equal(completion.sources(), defaults), "Completion state leaked into another buffer")
+  completion.cycle(cmp, -1)
+  assert(vim.deep_equal(shown, completion.code_sources()))
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
 

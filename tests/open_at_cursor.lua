@@ -1,4 +1,4 @@
-local utils = dofile(vim.fn.getcwd() .. "/lua/utils/utils.lua")
+local utils = dofile(vim.fn.getcwd() .. "/lua/util/open.lua")
 local calls = {}
 utils.process_open = function(path)
   calls[#calls + 1] = { path = path, mode = vim.api.nvim_get_mode().mode }
@@ -44,5 +44,5 @@ check("reverse blockwise", { "xx hello zz", "yy world zz" }, "G07l<C-v>k4h", "he
 check("exclusive blockwise", { "xx hello zz", "yy world zz" }, "gg03l<C-v>j5l", "hello\nworld", "exclusive")
 check("reverse exclusive blockwise", { "xx hello zz", "yy world zz" }, "G08l<C-v>k5h", "hello\nworld", "exclusive")
 check("short block line", { "xx hello zz", "", "yy world zz" }, "gg03l<C-v>2j4l", "hello\n     \nworld")
-check("normal cfile", { "see lua/utils/utils.lua here" }, "gg08l", "lua/utils/utils.lua")
+check("normal cfile", { "see lua/util/open.lua here" }, "gg08l", "lua/util/open.lua")
 print("open_at_cursor: " .. count .. " tests passed")

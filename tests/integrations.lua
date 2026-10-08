@@ -12,7 +12,7 @@ local expected = "/npm/vue-language-server/node_modules/@vue/language-server"
 vim.uv.fs_stat = function(path)
   return path == expected and {} or nil
 end
-assert(require("utils.vue_lsp").server_path() == expected)
+assert(require("languages.vue.compatibility").server_path() == expected)
 vim.fn.exepath, vim.fn.resolve, vim.uv.fs_stat = exepath, resolve, stat
 
 local cpp = require("overseer.template.user.cpp.run")
@@ -23,7 +23,7 @@ end
 local pdf = require("overseer.template.user.convert_md_to_pdf").builder()
 assert(pdf.args[6] == "CJKmainfont=华文黑体")
 
-dofile(root .. "/lua/third_party/neovide.lua")
+dofile(root .. "/lua/integrations/neovide.lua")
 for mode, rhs in pairs({ n = '"+p', x = '"+P', i = "<C-R><C-O>+", c = "<C-R>+" }) do
   assert(vim.fn.maparg("<D-v>", mode) == rhs)
 end
@@ -42,11 +42,11 @@ vim.fn.maparg("<D-v>", "t", false, true).callback()
 assert(pasted)
 vim.api.nvim_paste, vim.fn.getreg = paste, getreg
 
-package.loaded["utils.utils"] = { open_at_cursor = function() end }
+package.loaded["util.open"] = { open_at_cursor = function() end }
 for _, key in ipairs({ "]a", "]A", "[a", "[A" }) do
   vim.keymap.set("n", key, "<Nop>")
 end
-dofile(root .. "/after/plugin/keymaps.lua")
+dofile(root .. "/lua/config/keymaps.lua")
 local defer, cleanup = vim.defer_fn
 vim.defer_fn = function(cb)
   cleanup = cb
@@ -83,7 +83,7 @@ setmetatable(package.loaded.gitsigns, {
     return function() end
   end,
 })
-require("plugins.core.gitsigns")[1].opts.on_attach(vim.api.nvim_get_current_buf())
+require("plugins.git.gitsigns")[1].opts.on_attach(vim.api.nvim_get_current_buf())
 local maps = {}
 for key, direction in pairs({ ["]h"] = "next", ["[h"] = "prev", ["]H"] = "last", ["[H"] = "first" }) do
   maps[key] = vim.fn.maparg(key, "n", false, true).callback

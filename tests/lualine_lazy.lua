@@ -73,8 +73,10 @@ local function load_providers()
   end
 end
 
-local spec = dofile("lua/plugins/core/lualine.lua")[1]
-assert(vim.deep_equal(spec.dependencies, { "nvim-tree/nvim-web-devicons", "AndreM222/copilot-lualine" }))
+local spec = dofile("lua/plugins/ui/lualine.lua")[1]
+assert(
+  vim.deep_equal(spec.dependencies, { "nvim-tree/nvim-web-devicons", { "AndreM222/copilot-lualine", enabled = true } })
+)
 if vim.env.LUALINE_TEST == "before" then
   load_providers()
   assert(not package.loaded.lualine, "Providers should load before lualine")

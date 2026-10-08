@@ -2,7 +2,7 @@ vim.opt.runtimepath:prepend(vim.fn.getcwd())
 vim.opt.runtimepath:prepend(vim.fn.stdpath("data") .. "/lazy/nvim-dap")
 local dap = require("dap")
 local abort = dap.ABORT
-local program = require("plugins.languages.rust")[5].opts.configurations.rust[1].program
+local program = require("languages.rust.plugins")[2].opts.configurations.rust[1].program
 local notices, callback, selection, result, resumed
 vim.notify = function(message)
   notices[#notices + 1] = message

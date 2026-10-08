@@ -16,7 +16,6 @@ return {
     "mfussenegger/nvim-dap",
     ft = "swift",
     optional = true,
-    enabled = require("config.selection").features.debugging == true,
     opts = {
       adapters = {
         lldb = lldb_adapter,

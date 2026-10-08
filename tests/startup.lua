@@ -85,7 +85,7 @@ local function check()
     vim.v.errmsg = ""
   end
   assert(vim.fn.maparg("<M-m>", "i") == "")
-  assert(vim.bo.makeprg:find("python", 1, true))
+  assert(vim.bo.makeprg == [["$NVIM_PYTHON_MAKE" %:p:S]])
   if require("languages").is_enabled("vue") then
     vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.vue")
     assert(vim.bo.filetype == "vue")

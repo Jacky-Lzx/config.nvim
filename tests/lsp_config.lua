@@ -1,9 +1,9 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT, "NVIM_CONFIG_ROOT is required")
 vim.opt.runtimepath:prepend(root)
 
-local lsp = require("plugins.core.nvim-lspconfig")[1]
+local lsp = require("plugins.coding.nvim-lspconfig")[1]
 assert(vim.list_contains(lsp.dependencies, "saghen/blink.cmp"))
-local blink = require("plugins.core.blink")[1]
+local blink = require("plugins.coding.completion.core")[1]
 local original_blink = package.loaded["blink.cmp"]
 local original_config, original_enable = vim.lsp.config, vim.lsp.enable
 local configured, setup, enabled = false, false, false
@@ -28,18 +28,20 @@ vim.lsp.enable = function(servers)
   assert(servers == lsp.opts.servers)
   enabled = true
 end
-blink.config(nil, blink.opts)
+(blink.config or function(_, opts)
+  require("blink.cmp").setup(opts)
+end)(nil, blink.opts)
 assert(not configured, "Blink setup must not separately configure capabilities")
 lsp.config(nil, lsp.opts)
 assert(configured and enabled)
 
--- Exercise the after/plugin file without running its scheduled UI setup.
+-- Editor mappings must not overwrite completion capabilities.
 local original_schedule = vim.schedule
 vim.schedule = function() end
 vim.lsp.config = function()
-  error("after/plugin/lsp.lua must not overwrite capabilities")
+  error("lua/config/lsp.lua must not overwrite capabilities")
 end
-dofile(root .. "/after/plugin/lsp.lua")
+dofile(root .. "/lua/config/lsp.lua")
 vim.schedule = original_schedule
 vim.lsp.config, vim.lsp.enable = original_config, original_enable
 package.loaded["blink.cmp"] = original_blink
@@ -53,7 +55,7 @@ package.loaded["trouble.sources.snacks"] = {
     opened = true
   end,
 }
-local snacks = require("plugins.core.trouble")[2].specs
+local snacks = require("plugins.navigation.trouble")[2].specs
 local opts = snacks.opts(nil, { picker = { enabled = true } })
 assert(not opened, "configuring Snacks must not open Trouble")
 assert(opts.picker.enabled)
@@ -62,5 +64,5 @@ opts.picker.actions.trouble_open.action(picker)
 assert(opened, "picker action must open Trouble, not just create a wrapper")
 package.loaded["trouble.sources.snacks"] = original_snacks
 
-local mini = require("plugins.core.mini")[1]
+local mini = require("plugins.editing.mini-ai")[1]
 assert(vim.list_contains(mini.dependencies, "nvim-treesitter/nvim-treesitter-textobjects"))
