@@ -23,7 +23,7 @@ function M.check()
 
   vim.health.start("Plugins")
   if not info.plugins.enabled then
-    vim.health.ok("Native core profile; plugin features are disabled")
+    vim.health.ok("Input plugins are disabled")
   elseif #info.plugins.missing > 0 then
     vim.health.warn("Missing plugins: " .. table.concat(info.plugins.missing, ", "), { "Run :ConfigPluginsInstall" })
   else
@@ -40,6 +40,21 @@ function M.check()
     else
       vim.health.warn("Local pairs.nvim is unavailable; completion and native newline remain available")
       vim.health.info("Set NVIM_DEV_PLUGIN_ROOT to the parent directory of the pairs.nvim checkout")
+    end
+  end
+
+  vim.health.start("Language servers")
+  if not info.lsp.enabled then
+    vim.health.ok("Language features are disabled")
+  elseif #info.lsp.servers == 0 then
+    vim.health.info("No languages selected")
+  else
+    for _, server in ipairs(info.lsp.servers) do
+      if server.available then
+        vim.health.ok(server.name .. ": " .. vim.fn.exepath(server.executable))
+      else
+        vim.health.warn(server.name .. " is unavailable", { "Install " .. server.executable .. " and restart Neovim" })
+      end
     end
   end
 end

@@ -18,7 +18,7 @@ end
 local function wait_for(code, message)
   assert(
     vim.wait(2000, function()
-      return remote(code)
+      return remote(code) == true
     end, 10),
     message or code
   )
@@ -85,7 +85,9 @@ end
 local function select_item(label)
   local size = remote("return #require('blink.cmp').get_items()")
   for _ = 1, size do
-    if remote("local item = require('blink.cmp').get_selected_item(); return item and item.label == ...", label) then
+    if
+      remote("local item = require('blink.cmp').get_selected_item(); return item and item.label == ...", label) == true
+    then
       return
     end
     feed("<C-n>")
@@ -111,6 +113,7 @@ local function run()
   end)
   feed("i<Esc>")
   wait_for("return package.loaded['blink.cmp.completion'] ~= nil", "Completion setup did not finish")
+  wait_for("return require('blink.cmp.fuzzy').implementation_type == 'rust'", "Rust matcher did not initialize")
   assert(
     remote("return require('blink.cmp.fuzzy').implementation_type == 'rust'"),
     "The installed Rust matcher was not used"

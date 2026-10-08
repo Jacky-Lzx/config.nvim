@@ -2,8 +2,8 @@
 set -eu
 
 case "${1:-}" in
-  ""|--core) ;;
-  *) printf 'Usage: %s [--core]\n' "$0" >&2; exit 2 ;;
+  ""|--core|--live) ;;
+  *) printf 'Usage: %s [--core|--live]\n' "$0" >&2; exit 2 ;;
 esac
 
 root=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
@@ -25,7 +25,7 @@ export NVIM_TEST_PLUGIN_ROOT="$installed_plugins"
 
 config="$XDG_CONFIG_HOME/$NVIM_APPNAME"
 mkdir -p "$config" "$test_tmp/work"
-cp -R "$root/init.lua" "$root/lua" "$root/tests" "$root/lazy-lock.json" "$config/"
+cp -R "$root/init.lua" "$root/lua" "$root/lsp" "$root/tests" "$root/lazy-lock.json" "$config/"
 cd "$test_tmp/work"
 
 run_test() {
@@ -37,7 +37,7 @@ run_test() {
     cat "$log"
     exit 1
   fi
-  summary=$(sed -n '/^[A-Za-z]* checks:/p; /^PASS: undo history/p' "$log")
+  summary=$(sed -n '/^[A-Za-z ]* checks:/p; /^PASS: undo history/p' "$log")
   if [ -z "$summary" ]; then
     cat "$log"
     exit 1
@@ -49,6 +49,7 @@ export NVIM_CONFIG_PROFILE=core
 run_test core
 run_test persistence
 run_test settings
+run_test lsp_roots
 if [ "${1:-}" = "--core" ]; then
   exit 0
 fi
@@ -66,6 +67,12 @@ printf 'return { features = { input = false } }\n' > "$config/lua/config/local.l
 export NVIM_CONFIG_PROFILE=default
 export NVIM_TEST_MODE=disabled
 run_test isolation
+export NVIM_TEST_LSP_MODE=missing
+run_test lsp_isolation
+unset NVIM_TEST_LSP_MODE
+if [ "${1:-}" = "--live" ]; then
+  run_test lsp_isolation
+fi
 rm "$config/lua/config/local.lua"
 
 mv "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/LuaSnip" "$test_tmp/LuaSnip"
@@ -74,5 +81,8 @@ run_test isolation
 mv "$test_tmp/LuaSnip" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/LuaSnip"
 
 run_test input
+if [ "${1:-}" = "--live" ]; then
+  run_test lsp_live
+fi
 export NVIM_DEV_PLUGIN_ROOT="$test_tmp/no-local-plugins"
 run_test input

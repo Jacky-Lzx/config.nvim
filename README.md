@@ -1,6 +1,6 @@
 # Neovim configuration
 
-A modular configuration for Neovim 0.12 or newer, with a small native core and optional input features.
+A modular configuration for Neovim 0.12 or newer, with a small native core and optional input and language features.
 Normal startup does not install or update plugin repositories.
 
 ## Usage
@@ -21,11 +21,15 @@ Use `NVIM_CONFIG_PROFILE=core nvim` to start with native editing only.
 Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
-return { features = { input = false } }
+return {
+  features = { input = false, lsp = true },
+  languages = { lua = true },
+}
 ```
 
 Settings are resolved once at startup; restart after changing them.
-The core profile disables input features even when a personal override enables them.
+Input and LSP can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables input and LSP even when a personal override enables them.
 
 ## Editing
 
@@ -103,25 +107,67 @@ An unavailable checkout disables pairing while completion, snippets, and ordinar
 Enter and Tab ownership stays with the input module; pairing contributes its newline action without overriding completion confirmation.
 The deferred pair newline mapping applies preceding typed text before inspecting the buffer.
 
+## Languages
+
+Language selection lives in `lua/languages/`; the first supported language is Lua.
+Native server configurations live in `lsp/<server>.lua`, with Lua configured in `lsp/lua_ls.lua`.
+Neovim discovers these files through its runtime path; the LSP feature enables selected servers and adds completion capabilities while preserving server initialization hooks.
+Neovim's native LSP client starts `lua-language-server` when an existing or newly named Lua buffer is opened.
+Install that executable separately and make it available on PATH; startup does not download language tools.
+A missing executable leaves editing available and is reported by `:checkhealth config`.
+`:ConfigLspInfo` shows selected servers and clients attached to the current buffer.
+
+Lua projects use the nearest `.luarc.json` or `.luarc.jsonc` as their root, followed by a Git root, then the file's directory.
+Unnamed and special buffers do not start a server.
+Files in the same root share a client.
+The configuration's own Lua files receive LuaJIT, the `vim` global, and Neovim's runtime library unless a project `.luarc` file is present.
+Other Lua projects retain their own runtime and library settings.
+Lua server logs and generated metadata use Neovim's standard state and cache directories.
+
+When input features are enabled, Blink supplies completion capabilities to the server.
+Native LSP also works with input plugins disabled or unavailable.
+The following mappings are installed only in buffers with an attached client:
+
+| Key        | Behavior                         |
+| ---------- | -------------------------------- |
+| `Space d`  | Show diagnostics in a float      |
+| `Space gk` | Show signature help              |
+| `Space gf` | Format the buffer                |
+| `Space rn` | Rename the symbol                |
+| `Space gr` | List references                  |
+| `Space gt` | Go to the type definition        |
+| `Space wa` | Add a workspace folder           |
+| `Space wr` | Remove a workspace folder        |
+| `Space wl` | List workspace folders           |
+
+Diagnostics show severity icons and virtual text, with severity sorting and rounded floats.
+They update after leaving Insert mode and do not underline text.
+`Space td` toggles diagnostics, `Space tv` switches between messages and compact icons, and `Space tV` toggles diagnostic lines for the current line.
+Formatting is manual; project formatter settings remain owned by the language server.
+
 ## Structure
 
 - `init.lua` delegates startup to `config`.
 - `lua/config/` owns startup, selection, plugin-manager bootstrap, configuration information, and health checks.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
 - `lua/features/input/` owns completion, snippets, pairing, and their key interactions.
+- `lua/features/lsp/` owns native client setup, buffer mappings, and diagnostics.
+- `lsp/` provides native server configurations, project roots, and server settings.
+- `lua/languages/` declares language selection and associated server names.
 - `tests/` checks actual startup and editing behavior in temporary XDG directories.
 
 Modules do not configure the editor merely by being required.
 Startup invokes their `setup()` functions explicitly.
 Core code depends only on Neovim's APIs.
-Shared plugin setup and language workflows belong in their own modules when introduced.
+Language declarations do not configure the editor merely by being required.
 
 ## Validation
 
 ```sh
 ./tests/run.sh
 ./tests/run.sh --core
-stylua --check init.lua lua tests
+./tests/run.sh --live
+stylua --check init.lua lua lsp tests
 ```
 
 The tests isolate config, data, state, cache, logs, and fixtures, and run from an unrelated working directory.
@@ -130,3 +176,4 @@ Full checks copy the installed plugin repositories into temporary data storage a
 The default source follows the configuration directory name or `NVIM_APPNAME`; `NVIM_TEST_PLUGIN_ROOT` can select another installed `lazy` directory.
 The input checks send real keys to an embedded Neovim process and observe completion menus, snippet fields, and saved files.
 Core, missing-dependency, personal-override, and missing-pairing cases are checked independently.
+`--live` additionally requires `lua-language-server` on PATH and verifies actual diagnostics, hover, definition, rename, formatting, completion confirmation, client reuse, and LSP with input disabled.

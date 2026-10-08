@@ -7,21 +7,28 @@ function M.resolve(overrides, profile)
   end
   assert(type(overrides) == "table", "Configuration overrides must be a table")
   for key in pairs(overrides) do
-    assert(key == "features", "Unknown configuration setting: " .. tostring(key))
+    assert(key == "features" or key == "languages", "Unknown configuration setting: " .. tostring(key))
   end
   assert(overrides.features == nil or type(overrides.features) == "table", "features must be a table")
   for key, value in pairs(overrides.features or {}) do
-    assert(key == "input", "Unknown feature: " .. tostring(key))
+    assert(key == "input" or key == "lsp", "Unknown feature: " .. tostring(key))
     assert(type(value) == "boolean", "Feature must be boolean: " .. key)
+  end
+  assert(overrides.languages == nil or type(overrides.languages) == "table", "languages must be a table")
+  for key, value in pairs(overrides.languages or {}) do
+    assert(key == "lua", "Unknown language: " .. tostring(key))
+    assert(type(value) == "boolean", "Language must be boolean: " .. key)
   end
   assert(
     profile == nil or profile == "default" or profile == "core",
     "Unknown configuration profile: " .. tostring(profile)
   )
 
-  local settings = vim.tbl_deep_extend("force", { features = { input = true } }, overrides)
+  local settings =
+    vim.tbl_deep_extend("force", { features = { input = true, lsp = true }, languages = { lua = true } }, overrides)
   if profile == "core" then
     settings.features.input = false
+    settings.features.lsp = false
   end
   return settings
 end
