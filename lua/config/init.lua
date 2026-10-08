@@ -12,6 +12,7 @@ function M.setup()
   require("core.autocmds").setup()
   require("core.commands").setup()
   require("config.plugins").setup()
+  require("features.treesitter").setup()
   require("features.lsp").setup()
 end
 
@@ -22,6 +23,7 @@ function M.info()
     features = vim.deepcopy(require("config.settings").current().features),
     languages = vim.deepcopy(require("config.settings").current().languages),
     lsp = require("features.lsp").status(),
+    treesitter = require("features.treesitter").status(),
     plugins = require("config.plugins").status(),
     paths = {
       config = vim.fn.stdpath("config"),

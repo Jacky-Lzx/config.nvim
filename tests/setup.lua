@@ -1,4 +1,10 @@
 _G.config_test_errors = {}
+if vim.env.NVIM_TEST_TS_TOOLS == "missing" then
+  local executable = vim.fn.executable
+  vim.fn.executable = function(name)
+    return name == "tree-sitter" and 0 or executable(name)
+  end
+end
 if vim.env.NVIM_TEST_PICKER_TOOLS then
   local executable = vim.fn.executable
   local mode = vim.env.NVIM_TEST_PICKER_TOOLS

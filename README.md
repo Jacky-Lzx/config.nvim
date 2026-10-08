@@ -1,6 +1,6 @@
 # Neovim configuration
 
-A modular configuration for Neovim 0.12 or newer, with a small native core and optional theme, input, language, and picker features.
+A modular configuration for Neovim 0.12 or newer, with a small native core and optional theme, input, language, picker, and Tree-sitter features.
 Normal startup does not install or update plugin repositories.
 
 ## Usage
@@ -23,14 +23,14 @@ Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { theme = true, input = false, lsp = true, picker = true },
+  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Theme, input, LSP, and Picker can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables all four features even when a personal override enables them.
+Theme, input, LSP, Picker, and managed Tree-sitter can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all five features even when a personal override enables them.
 
 ## Theme
 
@@ -158,6 +158,30 @@ They update after leaving Insert mode and do not underline text.
 `Space td` toggles diagnostics, `Space tv` switches between messages and compact icons, and `Space tV` toggles diagnostic lines for the current line.
 Formatting is manual; project formatter settings remain owned by the language server.
 
+## Syntax highlighting
+
+Neovim 0.12 already provides a Lua parser and native Lua highlighting.
+The Tree-sitter feature manages parser and query versions for selected languages and enables highlighting through Neovim's native highlighting API.
+Lua declares its parser and filetypes in `lua/languages/lua.lua`, independently of its language server.
+Catppuccin supplies Tree-sitter capture colors through its standard highlights.
+
+Run `:ConfigPluginsInstall` and restart to install the selected plugin repositories.
+Then run `:TSInstallConfigured` to compile missing or outdated parsers for selected languages, and restart to use those versions.
+The command runs asynchronously; `:TSLog` shows installation progress and failures.
+Installation requires `curl`, `tar`, `tree-sitter-cli` 0.26.1 or newer, and a C compiler (`CC`, or `cc` by default).
+A repeated command leaves already-current parsers intact.
+Normal startup does not download or update parsers.
+
+Parser libraries, queries, and revision records live under `stdpath("data")/site`; downloads and builds use the standard cache directory.
+The locked nvim-treesitter revision supplies grammar revisions and queries.
+`:ConfigInfo` shows selected parsers and their revisions; `:checkhealth config` reports missing/outdated managed parsers and installation-tool availability.
+Missing installation tools do not prevent existing parsers from highlighting files.
+Without the plugin or a managed Lua parser, Neovim's bundled Lua highlighting remains available.
+When a declared parser cannot start, the feature falls back to Vim syntax highlighting.
+
+`features.treesitter = false` disables managed Tree-sitter support; `languages.lua = false` excludes Lua from parser installation.
+Neovim's built-in filetype behavior remains available in the core profile.
+
 ## Picker
 
 Snacks Picker provides file, content, buffer, diagnostic, and LSP selection, and loads on its first mapped action.
@@ -207,6 +231,7 @@ Input completion keeps its own Enter and Tab behavior outside Picker.
 - `init.lua` delegates startup to `config`.
 - `lua/config/` owns startup, selection, plugin-manager bootstrap, configuration information, and health checks.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
+- `lua/features/treesitter/` owns native highlighting, explicit parser installation, dependency checks, and health reporting.
 - `lua/features/theme/` owns theme options, plugin integrations, and custom highlights.
 - `lua/features/input/` owns completion, snippets, pairing, and their key interactions.
 - `lua/features/lsp/` owns native client setup, buffer mappings, and diagnostics.
@@ -233,6 +258,7 @@ The tests isolate config, data, state, cache, logs, and fixtures, and run from a
 They do not install dependencies or use personal project files.
 Full checks copy the installed plugin repositories into temporary data storage and verify their revisions against the lockfile.
 The default source follows the configuration directory name or `NVIM_APPNAME`; `NVIM_TEST_PLUGIN_ROOT` can select another installed `lazy` directory.
+Tree-sitter checks also copy the installed Lua parser, queries, and revision record from the adjacent `site` directory; `NVIM_TEST_PARSER_ROOT` can select a different parser source.
 The input and Picker checks send real keys to embedded Neovim processes and observe menus, snippet fields, selections, jumps, and saved files.
 Core, missing-dependency, personal-override, and missing-pairing cases are checked independently.
 `--live` additionally requires `lua-language-server` on PATH and verifies actual diagnostics, hover, definition, rename, formatting, completion confirmation, client reuse, and LSP with input disabled.
@@ -242,3 +268,5 @@ Search checks exercise actual file enumeration and ripgrep results, previews, re
 They also exercise the ripgrep file-finder fallback and missing-tool behavior.
 
 Theme checks cover Mocha colors, transparent windows, highlight restoration, completion/Picker integration, and disabled, missing, core, and theme-only configurations.
+
+Tree-sitter checks verify real Lua parsing and capture colors, editing, native/Vim-syntax fallback, dependency notices, idempotent installation, and disabled, core, language-disabled, and standalone configurations.
