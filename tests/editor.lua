@@ -22,7 +22,7 @@ function M.wait(code, timeout)
   if not ok then
     print(
       M.remote(
-        "return vim.inspect({ mode = vim.fn.mode(), cursor = vim.api.nvim_win_get_cursor(0), file = vim.api.nvim_buf_get_name(0), messages = vim.api.nvim_exec2('messages', {output = true}).output })"
+        "local p = package.loaded['snacks.picker'] and require('snacks').picker.get()[1]; return vim.inspect({ mode = vim.fn.mode(), cursor = vim.api.nvim_win_get_cursor(0), file = vim.api.nvim_buf_get_name(0), messages = vim.api.nvim_exec2('messages', {output = true}).output, picker = p and { source = p.opts.source, input = p.input:get(), count = p.list:count(), current = p:current() } })"
       )
     )
   end

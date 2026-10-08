@@ -53,6 +53,10 @@ function M.check()
     end
   end
 
+  if info.plugins.features.picker.enabled then
+    require("features.picker.tools").check()
+  end
+
   vim.health.start("Language servers")
   if not info.lsp.enabled then
     vim.health.ok("Language features are disabled")

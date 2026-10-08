@@ -93,6 +93,12 @@ export NVIM_TEST_MODE=picker-only
 run_test picker_isolation
 rm "$config/lua/config/local.lua"
 run_test picker
+run_test search
+export NVIM_TEST_PICKER_TOOLS=rg-only
+run_test search
+export NVIM_TEST_PICKER_TOOLS=missing
+run_test search_missing
+unset NVIM_TEST_PICKER_TOOLS
 if [ "${1:-}" = "--live" ]; then
   run_test lsp_live
   run_test picker_live

@@ -148,13 +148,20 @@ Formatting is manual; project formatter settings remain owned by the language se
 
 ## Picker
 
-Snacks Picker provides searchable LSP results and loads on its first mapped action.
+Snacks Picker provides file, content, buffer, diagnostic, and LSP selection, and loads on its first mapped action.
 Only the Picker module is enabled.
 It also supplies native `vim.ui.select` dialogs after loading.
 The following Normal-mode mappings are available when Picker is installed and enabled:
 
 | Key        | Behavior                          |
 | ---------- | --------------------------------- |
+| `Space sf` | Find files                        |
+| `Space sg` | Search file contents              |
+| `Space sb` / `Space ,` | Switch buffers          |
+| `Space sR` | Recent files                      |
+| `Space sr` | Resume the last picker            |
+| `Space sd` | Diagnostics under the current directory |
+| `Space sD` | Current-buffer diagnostics         |
 | `gd`       | Definitions                       |
 | `gD`       | Declarations                      |
 | `gi`       | References                        |
@@ -168,6 +175,13 @@ The following Normal-mode mappings are available when Picker is installed and en
 Results use a vertical layout with preview above the list and input at the bottom.
 Typing filters results; Enter confirms, and a single jump target is confirmed automatically.
 Requests use the active language server, so availability depends on its supported methods.
+
+File and content search use the current working directory, including changes made with `:cd` or `:lcd`.
+File search prefers `fd`/`fdfind`, then `rg --files`, then `find` on Unix.
+Content search requires `rg` (ripgrep).
+The `fd` and `rg` backends respect Git ignore rules; the basic `find` fallback does not.
+Missing search tools produce a notice while buffer, recent-file, diagnostic, and LSP pickers remain available.
+`:checkhealth config` reports the active file finder and content-search executable.
 
 Inside Picker, `Alt j/k` moves down/up, `Alt u/d` scrolls the list, and `Ctrl u/d` scrolls the preview.
 `Tab` selects an item and moves to the previous item; `Shift Tab` selects and moves to the next.
@@ -211,3 +225,5 @@ Core, missing-dependency, personal-override, and missing-pairing cases are check
 `--live` additionally requires `lua-language-server` on PATH and verifies actual diagnostics, hover, definition, rename, formatting, completion confirmation, client reuse, and LSP with input disabled.
 It also verifies Picker definitions, references, document/workspace symbols, and no-result feedback for call hierarchy methods unavailable in Lua Language Server.
 Missing input and Picker dependencies are checked independently.
+Search checks exercise actual file enumeration and ripgrep results, previews, resume, buffer/recent-file selection, and diagnostic jumps.
+They also exercise the ripgrep file-finder fallback and missing-tool behavior.

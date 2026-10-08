@@ -1,4 +1,13 @@
 _G.config_test_errors = {}
+if vim.env.NVIM_TEST_PICKER_TOOLS then
+  local executable = vim.fn.executable
+  local mode = vim.env.NVIM_TEST_PICKER_TOOLS
+  vim.fn.executable = function(name)
+    local masked = mode == "rg-only" and (name == "fd" or name == "fdfind")
+      or mode == "missing" and vim.list_contains({ "fd", "fdfind", "rg", "find" }, name)
+    return masked and 0 or executable(name)
+  end
+end
 if vim.env.NVIM_TEST_LSP_MODE == "missing" then
   local executable = vim.fn.executable
   vim.fn.executable = function(name)

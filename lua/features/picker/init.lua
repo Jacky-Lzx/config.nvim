@@ -1,5 +1,13 @@
 local M = {}
 local mappings = {
+  { "<leader>sf", "files", "Find files" },
+  { "<leader>sg", "grep", "Grep" },
+  { "<leader>sb", "buffers", "Buffers" },
+  { "<leader>,", "buffers", "Buffers" },
+  { "<leader>sR", "recent", "Recent" },
+  { "<leader>sr", "resume", "Resume" },
+  { "<leader>sd", "diagnostics", "Diagnostics" },
+  { "<leader>sD", "diagnostics_buffer", "Diagnostics buffer" },
   { "gd", "lsp_definitions", "Goto definition" },
   { "gD", "lsp_declarations", "Goto declaration" },
   { "gi", "lsp_references", "References" },
@@ -22,7 +30,9 @@ function M.specs()
     keys[#keys + 1] = {
       mapping[1],
       function()
-        require("snacks").picker[source]()
+        if require("features.picker.tools").usable(source) then
+          require("snacks").picker[source]()
+        end
       end,
       mode = "n",
       desc = "[Snacks] " .. mapping[3],
