@@ -75,8 +75,12 @@ The following environment variables override local paths or commands:
 - `NVIM_OBSIDIAN_WORKSPACE`
 
 macOS uses `open` and optionally Skim. Linux uses `xdg-open` and optionally Zathura. Missing
-Delta, Kitty, Yazi, Skim, and local development plugins degrade to built-in behavior or disable
-their integration.
+Delta, Kitty, Yazi, and Skim degrade to built-in behavior or disable their integration.
+
+Pairing currently loads the external `pairs.nvim` checkout under `NVIM_DEV_PLUGIN_ROOT`.
+Its source stays in that separate project. If the checkout is absent, pairing is disabled
+and completion/normal newline remain available. `:checkhealth config` reports its path,
+availability, and Git revision. A remote source and lock entry can be added after publication.
 
 ## Dependencies
 

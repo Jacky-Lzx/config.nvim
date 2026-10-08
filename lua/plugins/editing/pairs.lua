@@ -7,7 +7,8 @@ return {
   { "windwp/nvim-autopairs", enabled = false },
   { "nvim-mini/mini.pairs", enabled = false },
   {
-    dir = vim.fs.joinpath(require("config.platform").dev_plugin_root(), "pairs.nvim"),
+    dir = require("config.pairing").source().dir,
+    enabled = require("config.pairing").source().available,
     name = "pairs.nvim",
     event = "InsertEnter",
     cmd = { "PairsToggle", "PairsInspect" },

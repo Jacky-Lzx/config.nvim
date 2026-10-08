@@ -24,6 +24,10 @@ LSP configuration depends on blink.cmp so its native capability registration run
 `vim.lsp.enable()`. Completion has one setup owner. which-key integrations run through
 declared dependencies or synchronous module loading in filetype hooks.
 
+Pairing uses an external local plugin checkout, with one availability check shared by
+the lazy spec, completion integration, and health report. Missing pairing must not
+prevent completion loading or ordinary Enter. Plugin source is not copied into this repo.
+
 A language definition must not register autocmds, mutate globals, run external commands, or
 install dependencies while being read. Its plugin specs may do these things in explicit
 lifecycle hooks. Tool/parser installation remains an explicit user command.

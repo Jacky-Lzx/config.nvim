@@ -1,6 +1,7 @@
 return {
   {
     "saghen/blink.cmp",
+    dependencies = require("config.pairing").source().available and { "pairs.nvim" } or {},
 
     event = { "InsertEnter", "CmdlineEnter" },
 
@@ -41,7 +42,7 @@ return {
         ["<C-d>"] = { "scroll_documentation_down", "fallback" },
 
         ["<Tab>"] = { function(cmp) return cmp.accept() end, "fallback", },
-        ["<CR>"] = { function(cmp) return cmp.accept() end, function() return require("pairs").expr("<CR>") end, "fallback", },
+        ["<CR>"] = { function(cmp) return cmp.accept() end, function() return require("config.pairing").newline() end, "fallback", },
         -- Close current completion and insert a newline
         ["<S-CR>"] = { function(cmp) cmp.hide() return false end, "fallback", },
 

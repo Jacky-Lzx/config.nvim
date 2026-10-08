@@ -56,12 +56,7 @@ function M.check()
     check_executable("zathura", false)
   end
 
-  local dev_root = platform.dev_plugin_root()
-  if vim.uv.fs_stat(dev_root) then
-    vim.health.ok('Local plugin root: "' .. dev_root .. '"')
-  else
-    vim.health.info('Local plugin root is absent; lazy.nvim will use Git fallback: "' .. dev_root .. '"')
-  end
+  require("config.pairing").check()
 
   vim.health.start("Enabled language tools")
   local seen = {}
