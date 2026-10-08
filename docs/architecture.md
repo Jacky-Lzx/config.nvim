@@ -51,9 +51,14 @@ filetypes with installed plugins, without installing or updating dependencies.
 ## Language metadata API
 
 `languages.resolve(selection)` returns a fresh aggregate for a fixed selection;
-`languages.current()` caches the active personal selection for the process. Restart after
-changing profiles. `config/specs.lua` imports shared feature groups and appends the selected
-languages' native lazy.nvim specs.
+`config.context.initialize(selection)` resolves the active selection and language data once,
+before lazy.nvim imports specs. Every consumer, including `languages.current()`, reads this
+same context. A later different selection fails explicitly; restart after changing profiles.
+`config.context.resolve(selection)` produces independent contexts for validation.
+`config/specs.lua` imports shared feature groups and appends the active language specs.
+
+Resource paths use `config.paths.config(...)`, anchored to the checkout containing that
+module instead of an unrelated default `stdpath("config")` when using an explicit init file.
 
 A language may declare:
 

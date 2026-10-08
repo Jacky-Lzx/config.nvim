@@ -80,5 +80,21 @@ local specs = require("config.specs")
 local ok_feature, feature_err = pcall(specs.build, { profiles = {}, features = { typo = true } })
 assert(not ok_feature and tostring(feature_err):find("Unknown feature: typo", 1, true))
 assert(not package.loaded.lazy, "Registry tests unexpectedly loaded lazy.nvim")
+
+local context = require("config.context")
+local fixture = selection({ "data" })
+local resolved = context.resolve(fixture)
+fixture.profiles[1] = "writing"
+assert(vim.deep_equal(resolved.selection.profiles, { "data" }))
+assert(not resolved.selection.features.ai and not resolved.selection.features.sessions)
+assert(vim.deep_equal(resolved.languages.servers, { "basedpyright" }))
+context.initialize(resolved.selection)
+assert(languages.current() == context.current().languages)
+local selected_specs = specs.build(resolved.selection)
+for _, spec in ipairs(selected_specs) do
+  assert(spec.import ~= "plugins.ai")
+end
+local changed, changed_err = pcall(specs.build, selection({ "writing" }))
+assert(not changed and tostring(changed_err):find("Configuration already resolved", 1, true))
 print("Syntax and language profile checks passed")
 vim.cmd("quitall!")

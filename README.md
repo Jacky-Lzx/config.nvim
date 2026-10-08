@@ -118,9 +118,10 @@ Run the smoke runner with:
 ```
 
 The syntax/profile pass uses `-u NONE` and fixed profile selections. The startup passes cover
-the personal defaults, no languages/workflows, and Python with debugging. They load the installed
+the personal defaults, no languages/workflows, Python with debugging, and writing with tasks. They load the installed
 plugins and exercise TeX/Python/Vue filetype hooks, completion, formatting/lint configuration,
-DAP configuration, feature isolation, and colorscheme reloads.
+DAP configuration, feature isolation, and colorscheme reloads. Actual input checks cover
+command-line-first completion loading, paired Enter/Backspace, and missing-local-plugin fallback.
 
 Tests isolate cache/state/log files, disable session saving and WakaTime, stub external LSP
 startup, and set `NVIM_SMOKE_TEST=1` to disable project-local configuration and dependency

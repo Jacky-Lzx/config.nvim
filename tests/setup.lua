@@ -25,14 +25,22 @@ vim.lsp.enable = function(names, enabled)
 end
 
 local scenario = vim.env.NVIM_TEST_SCENARIO
+local selection
 if scenario == "minimal" then
-  package.loaded["config.selection"] = {
+  selection = {
     profiles = {},
     features = {},
   }
 elseif scenario == "python" then
-  package.loaded["config.selection"] = {
+  selection = {
     profiles = { "data" },
     features = { ai = false, debugging = true, tasks = false, sessions = false },
   }
+elseif scenario == "writing" then
+  selection = {
+    profiles = { "writing" },
+    features = { tasks = true },
+  }
 end
+vim.opt.runtimepath:prepend(vim.env.NVIM_CONFIG_ROOT)
+require("config.context").initialize(selection)

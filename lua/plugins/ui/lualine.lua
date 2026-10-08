@@ -1,4 +1,4 @@
-local features = require("config.selection").features
+local features = require("config.context").current().selection.features
 
 return {
   {

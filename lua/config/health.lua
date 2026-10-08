@@ -17,7 +17,7 @@ end
 function M.check()
   vim.health.start("Neovim config")
   vim.health.info("Platform: " .. platform.os)
-  vim.health.info("Enabled profiles: " .. table.concat(require("config.selection").profiles, ", "))
+  vim.health.info("Enabled profiles: " .. table.concat(require("config.context").current().selection.profiles, ", "))
 
   check_executable("git", true)
 

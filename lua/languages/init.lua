@@ -61,12 +61,8 @@ function M.resolve(selection)
   return result
 end
 
-local current
 function M.current()
-  if not current then
-    current = M.resolve()
-  end
-  return current
+  return require("config.context").current().languages
 end
 
 function M.is_enabled(name)

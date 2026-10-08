@@ -98,7 +98,7 @@ return {
         markdown = {
           -- Path to your markdown prompts directory
           dirs = {
-            vim.fn.stdpath("config") .. "/configs/codecompanion_prompts",
+            require("config.paths").config("configs", "codecompanion_prompts"),
           },
         },
       },

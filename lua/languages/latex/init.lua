@@ -16,10 +16,10 @@ return {
   },
   formatter_options = {
     ["tex-fmt"] = {
-      prepend_args = { "--config", vim.fn.stdpath("config") .. "/configs/tex-fmt.toml" },
+      prepend_args = { "--config", require("config.paths").config("configs", "tex-fmt.toml") },
     },
     latexindent = {
-      prepend_args = { "--local", vim.fn.stdpath("config") .. "/configs/latexindent.yaml" },
+      prepend_args = { "--local", require("config.paths").config("configs", "latexindent.yaml") },
     },
   },
   linters = { tex = { "chktex" } },

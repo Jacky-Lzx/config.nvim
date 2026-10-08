@@ -31,7 +31,7 @@ nvim --headless -u NONE -i NONE -l "$root/tests/smoke.lua"
   MINI_DIFF_TEST=direct nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/mini_diff_lazy.lua"
 )
 
-for scenario in default minimal python; do
+for scenario in default minimal python writing; do
   NVIM_TEST_SCENARIO="$scenario" nvim --headless -i NONE \
     --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
     -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/startup.lua')"

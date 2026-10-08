@@ -2,7 +2,7 @@ local function check()
   assert(vim.v.errmsg == "", vim.v.errmsg)
   local plugins = require("lazy.core.config").plugins
   local languages = require("languages").current()
-  local features = require("config.selection").features
+  local features = require("config.context").current().selection.features
   local function opts(name)
     return require("lazy.core.plugin").values(assert(plugins[name], name), "opts", false)
   end
