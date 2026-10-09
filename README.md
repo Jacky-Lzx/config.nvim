@@ -86,9 +86,11 @@ The following environment variables override local paths or commands:
 macOS uses `open` and optionally Skim. Linux uses `xdg-open` and optionally Zathura. Missing
 Delta, Kitty, Yazi, and Skim degrade to built-in behavior or disable their integration.
 
-Pairing uses [Jacky-Lzx/pairs.nvim](https://github.com/Jacky-Lzx/pairs.nvim), installed and
-locked by lazy.nvim. Blink depends on it and composes Enter after completion confirmation.
-Pairing does not depend on a local development checkout; use `:checkhealth pairs` for plugin diagnostics.
+Pairing uses [Jacky-Lzx/pairs.nvim](https://github.com/Jacky-Lzx/pairs.nvim) with lazy.nvim's
+`dev = true` and `dev.fallback = true`. It prefers `NVIM_DEV_PLUGIN_ROOT/pairs.nvim`
+(default `~/Documents/Github/nvim_plugins/pairs.nvim`); when that directory is absent,
+lazy.nvim installs the GitHub version pinned in `lazy-lock.json`. Blink depends on it and
+composes Enter after completion confirmation. Use `:checkhealth pairs` for plugin diagnostics.
 
 ## Dependencies
 
@@ -134,7 +136,8 @@ The syntax/profile pass uses `-u NONE` and fixed profile selections. The startup
 the personal defaults, no languages/workflows, Python with debugging, and writing with tasks. They load the installed
 plugins and exercise TeX/Python/Vue filetype hooks, completion, formatting/lint configuration,
 DAP configuration, feature isolation, and colorscheme reloads. Actual input checks cover
-command-line-first completion loading, paired Enter/Backspace, and the GitHub-managed pairing source.
+command-line-first completion loading, paired Enter/Backspace, development checkout selection,
+and GitHub fallback when the development directory is absent.
 
 Tests isolate cache/state/log files, disable session saving and WakaTime, stub external LSP
 startup, and set `NVIM_SMOKE_TEST=1` to disable project-local configuration and dependency

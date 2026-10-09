@@ -39,10 +39,13 @@ LSP configuration depends on blink.cmp so its native capability registration run
 `vim.lsp.enable()`. Completion has one setup owner. which-key integrations run through
 declared dependencies or synchronous module loading in filetype hooks.
 
-Pairing is a normal GitHub dependency (`Jacky-Lzx/pairs.nvim`), installed and locked by
-lazy.nvim. Blink declares it as a dependency, and `integrations/blink_pairs.lua` composes
-Enter after completion confirmation. Pairing has no local checkout availability gate;
-`:checkhealth pairs` provides the plugin's own diagnostics. Plugin source is not copied into this repo.
+Pairing declares `Jacky-Lzx/pairs.nvim` with lazy.nvim's `dev = true`. The shared `dev.path`
+comes from `NVIM_DEV_PLUGIN_ROOT` (default `~/Documents/Github/nvim_plugins`), and
+`dev.fallback = true` selects the GitHub version pinned in `lazy-lock.json` when the local
+`pairs.nvim` directory is absent. Blink declares it as a dependency, and
+`integrations/blink_pairs.lua` composes Enter after completion confirmation. lazy.nvim owns
+source selection; `:checkhealth pairs` provides the plugin's own diagnostics. Plugin source
+is not copied into this repo.
 
 A language definition must not register autocmds, mutate globals, run external commands, or
 install dependencies while being read. Its plugin specs may do these things in explicit

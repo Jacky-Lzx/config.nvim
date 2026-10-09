@@ -5,9 +5,13 @@ end
 local function check()
   local plugins = require("lazy.core.config").plugins
   local pairing = assert(plugins["pairs.nvim"])
+  local dev_dir = vim.fs.joinpath(require("config.platform").dev_plugin_root(), "pairs.nvim")
+  local local_pairing = vim.fn.isdirectory(dev_dir) == 1
+  local expected_dir = local_pairing and dev_dir or vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "pairs.nvim")
   assert(pairing.url == "https://github.com/Jacky-Lzx/pairs.nvim.git")
-  assert(pairing.dev == false and not pairing._.is_local)
-  assert(pairing.dir == vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "pairs.nvim"))
+  assert(pairing.dev == local_pairing, "Pairing did not select the expected development/fallback mode")
+  assert((pairing._.is_local == true) == local_pairing)
+  assert(pairing.dir == expected_dir, "Pairing did not select the expected checkout")
   assert(not plugins["nvim-autopairs"] and not plugins["mini.pairs"])
 
   -- CmdlineEnter can load completion before the first InsertEnter.
@@ -23,7 +27,7 @@ local function check()
   )
   assert(require("pairs").status().initialized)
   local module = debug.getinfo(require("pairs").setup, "S").source
-  assert(module == "@" .. pairing.dir .. "/lua/pairs/init.lua", "Pairing loaded from an unmanaged checkout")
+  assert(module == "@" .. expected_dir .. "/lua/pairs/init.lua", "Pairing loaded from an unexpected checkout")
 
   local function input(keys, expected)
     vim.cmd("enew!")
@@ -71,15 +75,16 @@ local function check()
   completion.cycle(cmp, -1)
   assert(vim.deep_equal(shown, behavior.code_sources(config)))
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
+  return local_pairing and "local development pairing" or "GitHub fallback pairing"
 end
 
 vim.defer_fn(function()
-  local ok, err = xpcall(check, debug.traceback)
+  local ok, result = xpcall(check, debug.traceback)
   if ok then
-    print("Actual input checks passed (GitHub-managed pairing)")
+    print("Actual input checks passed (" .. result .. ")")
     vim.cmd("quitall!")
   else
-    io.stderr:write(err .. "\n")
+    io.stderr:write(result .. "\n")
     vim.cmd("cquit 1")
   end
 end, 100)

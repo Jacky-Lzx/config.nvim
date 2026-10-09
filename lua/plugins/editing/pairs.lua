@@ -8,7 +8,7 @@ return {
   { "nvim-mini/mini.pairs", enabled = false },
   {
     "Jacky-Lzx/pairs.nvim",
-    dev = false,
+    dev = true,
     event = "InsertEnter",
     cmd = { "PairsToggle", "PairsInspect" },
     keys = {
