@@ -1,4 +1,4 @@
-local displayline = require("config.platform").skim_displayline()
+local displayline = require("utils.platform").skim_displayline()
 
 return {
   settings = {

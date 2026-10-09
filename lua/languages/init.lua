@@ -5,7 +5,7 @@ local M = {}
 -- of the user's personal defaults.
 function M.resolve(selection, capabilities)
   selection = require("config.context").normalize(selection or require("config.selection"))
-  capabilities = capabilities or { executable = require("config.platform").executable }
+  capabilities = capabilities or { executable = require("utils.platform").executable }
   assert(type(capabilities.executable) == "function", "Capabilities.executable must be a function")
   local profiles = require("config.profiles")
   local schema = require("languages.schema")

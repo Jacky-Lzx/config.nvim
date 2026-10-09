@@ -98,7 +98,7 @@ return {
         markdown = {
           -- Path to your markdown prompts directory
           dirs = {
-            require("config.paths").config("configs", "codecompanion_prompts"),
+            require("utils.paths").config("configs", "codecompanion_prompts"),
           },
         },
       },

@@ -1,7 +1,11 @@
 return {
   {
     "obsidian-nvim/obsidian.nvim",
-    enabled = vim.uv.fs_stat(require("config.platform").obsidian_workspace()) ~= nil,
+    -- Workspaces are supplied by the vault's .lazy.lua after shared opts are merged.
+    cond = function(plugin)
+      local opts = require("lazy.core.plugin").values(plugin, "opts", false)
+      return type(opts.workspaces) == "table" and #opts.workspaces > 0
+    end,
     version = "*", -- Recommended, use latest release instead of latest commit
     dependencies = {
       -- Modified img-clip configs for obsidian vaults
@@ -48,13 +52,6 @@ return {
     ---@module 'obsidian'
     ---@type obsidian.config
     opts = {
-      workspaces = {
-        {
-          name = "Research Workspace",
-          path = require("config.platform").obsidian_workspace(),
-        },
-      },
-
       -- Keep notes in a specific subdirectory of the vault.
       notes_subdir = "notes",
       -- Where to put new notes. Valid options are

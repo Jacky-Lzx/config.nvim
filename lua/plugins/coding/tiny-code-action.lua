@@ -1,4 +1,4 @@
-local has_delta = require("config.platform").executable("delta") ~= nil
+local has_delta = require("utils.platform").executable("delta") ~= nil
 
 return {
   {

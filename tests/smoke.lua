@@ -7,7 +7,7 @@ for name, kind in vim.fs.dir(root, { depth = math.huge }) do
   end
 end
 
-local platform = require("config.platform")
+local platform = require("utils.platform")
 assert(platform.os == "macos" or platform.os == "linux" or platform.os == "other")
 assert(type(platform.open) == "function")
 

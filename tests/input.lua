@@ -5,7 +5,7 @@ end
 local function check()
   local plugins = require("lazy.core.config").plugins
   local pairing = assert(plugins["pairs.nvim"])
-  local dev_dir = vim.fs.joinpath(require("config.platform").dev_plugin_root(), "pairs.nvim")
+  local dev_dir = vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "pairs.nvim")
   local local_pairing = vim.fn.isdirectory(dev_dir) == 1
   local expected_dir = local_pairing and dev_dir or vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "pairs.nvim")
   assert(pairing.url == "https://github.com/Jacky-Lzx/pairs.nvim.git")

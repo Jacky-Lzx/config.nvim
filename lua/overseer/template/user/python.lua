@@ -13,7 +13,7 @@ return {
     local args = vim.list_extend({ file }, params.args)
 
     return {
-      cmd = { require("config.platform").python() },
+      cmd = { require("utils.platform").python() },
       args = args,
     }
   end,

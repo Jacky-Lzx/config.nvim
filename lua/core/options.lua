@@ -62,7 +62,7 @@ function M.setup()
   -- Do not show strikethroughs in the diff view
   vim.opt.fillchars:append({ diff = " " })
 
-  local platform = require("config.platform")
+  local platform = require("utils.platform")
   local shell = platform.shell()
   if shell then
     vim.opt.shell = shell

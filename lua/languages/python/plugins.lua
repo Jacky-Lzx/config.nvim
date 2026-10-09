@@ -31,7 +31,7 @@ return {
               options = { source_filetype = "python" },
             })
           else
-            local python = require("config.platform").debugpy_python()
+            local python = require("utils.platform").debugpy_python()
             if not python then
               vim.notify("debugpy is not installed; run :MasonToolsInstall", vim.log.levels.ERROR)
               return

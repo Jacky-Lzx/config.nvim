@@ -1,7 +1,7 @@
 return {
   {
     "toppair/peek.nvim",
-    enabled = require("config.platform").executable("deno") ~= nil,
+    enabled = require("utils.platform").executable("deno") ~= nil,
     cmd = { "MarkdownPreview" },
     build = "deno task --quiet build:fast",
     opts = {},

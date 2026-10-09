@@ -1,6 +1,6 @@
 local M = {}
 
-local platform = require("config.platform")
+local platform = require("utils.platform")
 local languages = require("languages")
 
 local function check_executable(name, required)

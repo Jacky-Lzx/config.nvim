@@ -3,7 +3,7 @@
 ## Ownership
 
 - `init.lua` invokes `config.setup()`. `config/` owns startup composition, platform
-  discovery, selection, and plugin-manager bootstrap.
+  settings, selection, and plugin-manager bootstrap.
 - `core/` owns editor options, general mappings, commands, and autocmds.
 - `features/` owns capability behavior and state. Native LSP/diagnostic behavior,
   completion source selection can run without plugin APIs.
@@ -16,7 +16,10 @@
 - `after/lsp/` owns native server overrides. The language registry only selects servers.
 - `after/ftplugin/` owns buffer options and buffer-local mappings. Files that must run
   before runtime ftplugins should be retained explicitly and documented.
-- `config/platform.lua` owns environment overrides and capability discovery.
+- `config/platform.lua` declares shared defaults and per-platform settings as a data table.
+- `utils/` holds shared helpers: `utils/paths.lua` locates checkout-relative resources;
+  `utils/platform.lua` selects platform settings, resolves environment overrides and
+  executable availability, and runs system commands.
 - Snippets, Tree-sitter queries, and Overseer templates keep their native discovery paths.
 
 ## Lifecycle
@@ -29,6 +32,16 @@ Requiring a feature or its adapter must not start plugins or register behavior. 
 behavior is installed through `setup()` or an attach handler. Adapters are invoked by
 plugin lifecycle hooks or user actions; Snacks is passed explicitly to its diagnostic
 adapter, while Blink configuration is read only when a completion action runs.
+
+Platform settings remain declarative: loading `config.platform` does not inspect the machine
+or start jobs. `utils.platform` matches each platform's `sysname`, falls back to `other`, and
+overlays its fields on `defaults`. Lists are replaced as a whole. Environment overrides and
+executable availability are evaluated when an accessor is called; changing the configuration
+table requires a Neovim restart. Python project interpreter selection remains dynamic.
+
+Obsidian workspace paths belong to the vault's `.lazy.lua`, not platform settings. The
+shared spec provides plugin behavior and checks `opts.workspaces` after lazy.nvim merges
+the local spec. Without a configured workspace, Obsidian remains disabled.
 
 Conform owns `<leader>gf` globally and uses configured formatters with LSP fallback.
 LSP attachment must not replace this mapping with a buffer-local native formatting action.
@@ -76,7 +89,7 @@ same context. A later different selection fails explicitly; restart after changi
 `config.context.resolve(selection)` produces independent contexts for validation.
 `config/specs.lua` imports shared feature groups and appends the active language specs.
 
-Resource paths use `config.paths.config(...)`, anchored to the checkout containing that
+Resource paths use `utils.paths.config(...)`, anchored to the checkout containing that
 module instead of an unrelated default `stdpath("config")` when using an explicit init file.
 
 Large plugin collections retain native lazy.nvim imports: completion core, menu, and source

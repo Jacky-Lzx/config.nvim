@@ -23,7 +23,7 @@ return {
             max_items = 10,
             opts = {
               -- options for blink-cmp-dictionary
-              dictionary_files = { require("config.paths").config("configs", "dictionary.txt") },
+              dictionary_files = { require("utils.paths").config("configs", "dictionary.txt") },
             },
           },
         },

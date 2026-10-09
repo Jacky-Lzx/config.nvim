@@ -1,4 +1,4 @@
-local platform = require("config.platform")
+local platform = require("utils.platform")
 
 local lldb_adapter = {
   name = "lldb-dap",

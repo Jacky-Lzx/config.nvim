@@ -6,7 +6,7 @@ return {
     {
       mason = "debugpy",
       resolve = function()
-        return require("config.platform").debugpy_python()
+        return require("utils.platform").debugpy_python()
       end,
       feature = "debugging",
     },

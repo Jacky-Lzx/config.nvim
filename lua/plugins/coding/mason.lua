@@ -26,7 +26,7 @@ return {
               local post_install = opts.post_install[tool]
               local definition = opts.tools[tool] or { executable = tool }
               local executable = definition.resolve and definition.resolve()
-                or (definition.executable and require("config.platform").executable(definition.executable))
+                or (definition.executable and require("utils.platform").executable(definition.executable))
               if package:is_installed() or executable then
                 if package:is_installed() and post_install then
                   post_install(package)

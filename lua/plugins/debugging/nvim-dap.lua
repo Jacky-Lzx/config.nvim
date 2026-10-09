@@ -80,7 +80,7 @@ return {
         dap.configurations[filetype] = dap.configurations[source]
       end
 
-      local terminal = require("config.platform").external_terminal()
+      local terminal = require("utils.platform").external_terminal()
       if terminal then
         dap.defaults.fallback.external_terminal = { command = terminal }
       end

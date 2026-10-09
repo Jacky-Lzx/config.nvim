@@ -66,7 +66,7 @@ function M.process_open(path)
     end
   end
 
-  local ok, err = require("config.platform").open(path)
+  local ok, err = require("utils.platform").open(path)
   if not ok then
     vim.notify(err, vim.log.levels.ERROR)
   end

@@ -73,7 +73,7 @@ return {
       ls.filetype_extend("markdown", { "tex" })
       ls.filetype_extend("markdown_inline", { "markdown", "tex" })
 
-      require("luasnip.loaders.from_lua").lazy_load({ paths = { require("config.paths").config("lua", "snippets") } })
+      require("luasnip.loaders.from_lua").lazy_load({ paths = { require("utils.paths").config("lua", "snippets") } })
 
       -- NOTE: Adding undo point in `expand_auto` will lead to neovim recording every character you type in an expansion trigger.
       --       (https://github.com/L3MON4D3/LuaSnip/issues/830#issuecomment-1489967687) <2026.04.28, lzx>

@@ -14,7 +14,7 @@ vim.env.VIRTUAL_ENV = nil
 vim.env.CONDA_PREFIX = nil
 vim.env.NVIM_PYTHON3_HOST_PROG = "/provider/python"
 executables["/provider/python"] = true
-local platform = require("config.platform")
+local platform = require("utils.platform")
 local count = 0
 local function check(expected)
   assert(platform.python() == expected, vim.inspect({ expected = expected, actual = platform.python() }))

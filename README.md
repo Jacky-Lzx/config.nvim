@@ -6,12 +6,13 @@ Personal Neovim configuration for macOS and Linux. It targets Neovim 0.12 and us
 ## Configuration layout
 
 - `init.lua`: delegates startup to `config.setup()`.
-- `lua/config/`: startup composition, platform discovery, selection, and lazy.nvim bootstrap.
+- `lua/config/`: startup composition, platform settings, selection, and lazy.nvim bootstrap.
 - `lua/core/`: editor options, general mappings, commands, and autocmds.
 - `lua/features/`: native LSP/diagnostic behavior and completion source state.
 - `lua/plugins/`: lazy.nvim specs, dependencies, loading conditions, and plugin-specific configuration.
 - `lua/integrations/`: adapters connecting features to Snacks/Blink and other plugin integrations.
 - `lua/languages/`: language metadata and dedicated plugin specs.
+- `lua/utils/`: shared helpers for resource paths, platform discovery, and system commands.
 - `after/ftplugin/`: buffer-local settings; `after/lsp/`: native server overrides.
 - `lua/snippets/`, `queries/`, and `lua/overseer/template/`: native discovery paths.
 
@@ -71,7 +72,24 @@ the resolver checks availability rather than freezing it when the language modul
 
 ## Platform configuration
 
-`lua/config/platform.lua` detects macOS and Linux and provides capability-based fallbacks.
+`lua/config/platform.lua` returns a configuration table with `defaults`, `macos`, `linux`,
+and `other` entries. Edit a platform entry to override shared defaults, for example:
+
+```lua
+linux = {
+  sysname = "Linux",
+  shell = { "bash", "fish" },
+  opener = { "xdg-open" },
+  dev_plugin_root = "~/code/nvim_plugins",
+},
+```
+
+Overrides replace entire fields, including command lists. `sysname` matches the operating
+system name reported by libuv. `mason_bin` and `debugpy_python` are relative to Neovim's data
+directory; user paths support `~`. Restart Neovim after changing these settings.
+
+`lua/utils/platform.lua` selects the platform, resolves executables, and runs system commands.
+Consumers use `require("utils.platform")`. Unknown operating systems use `other` and the shared defaults.
 The following environment variables override local paths or commands:
 
 - `NVIM_SHELL`
@@ -81,10 +99,14 @@ The following environment variables override local paths or commands:
 - `NVIM_EXTERNAL_TERMINAL`
 - `NVIM_SKIM_DISPLAYLINE`
 - `NVIM_DEV_PLUGIN_ROOT`
-- `NVIM_OBSIDIAN_WORKSPACE`
 
 macOS uses `open` and optionally Skim. Linux uses `xdg-open` and optionally Zathura. Missing
 Delta, Kitty, Yazi, and Skim degrade to built-in behavior or disable their integration.
+
+Obsidian workspaces belong to the vault's `.lazy.lua`, in the Obsidian spec's
+`opts.workspaces`. The shared spec keeps plugin behavior and mappings, and only enables
+Obsidian when the merged options contain a workspace. Start Neovim inside the vault or one
+of its subdirectories so lazy.nvim can discover that local spec.
 
 Pairing uses [Jacky-Lzx/pairs.nvim](https://github.com/Jacky-Lzx/pairs.nvim) with lazy.nvim's
 `dev = true` and `dev.fallback = true`. It prefers `NVIM_DEV_PLUGIN_ROOT/pairs.nvim`

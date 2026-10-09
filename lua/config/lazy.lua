@@ -76,7 +76,7 @@ local opts = {
     -- Directory where you store your local plugin projects. If a function is used,
     -- the plugin directory (e.g. `~/projects/plugin-name`) must be returned.
     ---@type string | fun(plugin: LazyPlugin): string
-    path = require("config.platform").dev_plugin_root(),
+    path = require("utils.platform").dev_plugin_root(),
     fallback = true, -- Fallback to git when local plugin doesn't exist
   },
 }
