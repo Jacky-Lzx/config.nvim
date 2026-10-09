@@ -13,56 +13,29 @@ local compact = {
   end,
 }
 
-local toggles = {
-  {
-    key = "<leader>tV",
-    opts = {
-      id = "virtual_lines",
-      name = "Diagnostic virtual lines",
-      get = function()
-        return not not vim.diagnostic.config().virtual_lines
-      end,
-      set = function(state)
-        vim.diagnostic.config({ virtual_lines = state and { current_line = true } or false })
-      end,
-    },
-  },
-  {
-    key = "<leader>tv",
-    opts = {
-      id = "virtual_text",
-      name = "Diagnostic text",
-      get = function()
-        local current = vim.diagnostic.config().virtual_text
-        return type(current) == "table" and current.format == text.format
-      end,
-      set = function(state)
-        vim.diagnostic.config({ virtual_text = state and text or compact })
-      end,
-    },
-  },
-}
+function M.enabled()
+  return vim.diagnostic.is_enabled()
+end
 
-function M.setup_toggles()
-  -- Inspect the loaded module so diagnostics never forces Snacks to load.
-  local snacks = package.loaded.snacks
-  if snacks then
-    snacks.toggle.diagnostics():map("<leader>td")
-  else
-    vim.keymap.set("n", "<leader>td", function()
-      vim.diagnostic.enable(not vim.diagnostic.is_enabled())
-    end, { desc = "Toggle diagnostics" })
-  end
+function M.set_enabled(state)
+  vim.diagnostic.enable(state)
+end
 
-  for _, toggle in ipairs(toggles) do
-    if snacks then
-      snacks.toggle.new(toggle.opts):map(toggle.key)
-    else
-      vim.keymap.set("n", toggle.key, function()
-        toggle.opts.set(not toggle.opts.get())
-      end, { desc = "Toggle " .. toggle.opts.name })
-    end
-  end
+function M.virtual_lines_enabled()
+  return not not vim.diagnostic.config().virtual_lines
+end
+
+function M.set_virtual_lines(state)
+  vim.diagnostic.config({ virtual_lines = state and { current_line = true } or false })
+end
+
+function M.virtual_text_enabled()
+  local current = vim.diagnostic.config().virtual_text
+  return type(current) == "table" and current.format == text.format
+end
+
+function M.set_virtual_text(state)
+  vim.diagnostic.config({ virtual_text = state and text or compact })
 end
 
 function M.setup()
@@ -76,7 +49,15 @@ function M.setup()
     float = { border = "rounded" },
   })
 
-  M.setup_toggles()
+  vim.keymap.set("n", "<leader>td", function()
+    M.set_enabled(not M.enabled())
+  end, { desc = "Toggle diagnostics" })
+  vim.keymap.set("n", "<leader>tV", function()
+    M.set_virtual_lines(not M.virtual_lines_enabled())
+  end, { desc = "Toggle Diagnostic virtual lines" })
+  vim.keymap.set("n", "<leader>tv", function()
+    M.set_virtual_text(not M.virtual_text_enabled())
+  end, { desc = "Toggle Diagnostic text" })
 end
 
 return M

@@ -6,7 +6,6 @@ function M.attach(buffer)
   end
   map("<leader>d", vim.diagnostic.open_float, "Show diagnostic")
   map("<leader>gk", vim.lsp.buf.signature_help, "Signature help")
-  map("<leader>gf", vim.lsp.buf.format, "Format")
   map("<leader>rn", vim.lsp.buf.rename, "Rename")
   map("<leader>gr", vim.lsp.buf.references, "References")
   map("<leader>gt", vim.lsp.buf.type_definition, "Type definition")

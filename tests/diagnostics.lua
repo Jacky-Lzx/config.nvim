@@ -7,6 +7,7 @@ end
 
 local before = vim.deepcopy(vim.diagnostic.config())
 local diagnostics = require("features.lsp.diagnostics")
+local integration = require("integrations.snacks_diagnostics")
 assert(vim.deep_equal(vim.diagnostic.config(), before), "Requiring diagnostics must not apply settings")
 assert(vim.fn.maparg("<leader>td", "n") == "")
 diagnostics.setup()
@@ -43,15 +44,8 @@ assert(not package.loaded.snacks)
 toggle("<leader>tV")
 toggle("<leader>tv")
 local toggles, mapped = {}, {}
-package.loaded.snacks = {
+local snacks = {
   toggle = {
-    diagnostics = function()
-      return {
-        map = function(_, key)
-          mapped[key] = true
-        end,
-      }
-    end,
     new = function(opts)
       toggles[opts.id] = opts
       return {
@@ -62,8 +56,13 @@ package.loaded.snacks = {
     end,
   },
 }
-diagnostics.setup_toggles()
+integration.setup(snacks)
 assert(mapped["<leader>td"] and mapped["<leader>tV"] and mapped["<leader>tv"])
+assert(toggles.diagnostics.get())
+toggles.diagnostics.set(false)
+assert(not diagnostics.enabled())
+toggles.diagnostics.set(true)
+assert(diagnostics.enabled())
 assert(toggles.virtual_lines.get() and not toggles.virtual_text.get(), "Snacks reset the fallback toggle state")
 toggles.virtual_lines.set(false)
 assert(not toggles.virtual_lines.get())
@@ -74,4 +73,5 @@ assert(toggles.virtual_text.get())
 toggles.virtual_text.set(false)
 assert(not toggles.virtual_text.get())
 assert(vim.diagnostic.config().virtual_text.format({ message = "hidden" }) == "")
+assert(not package.loaded.snacks, "The integration must use its injected Snacks instance")
 print("Diagnostic defaults, fallback mappings and Snacks toggle checks passed")

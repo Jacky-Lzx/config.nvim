@@ -7,7 +7,7 @@ local config = require("config")
 assert(type(config.setup) == "function" and type(config.info) == "function")
 assert(#vim.api.nvim_get_autocmds({}) == before, "Requiring config must not register editor behavior")
 assert(vim.fn.exists(":ConfigInfo") == 0, "Commands belong to setup, not module loading")
-assert(not package.loaded["core.options"] and not package.loaded["features.lsp.init"])
+assert(not package.loaded["core.options"] and not package.loaded["features.lsp"])
 assert(not package.loaded.lazy and not package.loaded["snacks.profiler"])
 
 local version = vim.version()

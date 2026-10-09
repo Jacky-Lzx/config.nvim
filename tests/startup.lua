@@ -70,6 +70,30 @@ local function check()
   require("lazy").load({ plugins = { "conform.nvim", "nvim-lint", "blink.cmp" } })
   assert(vim.deep_equal(require("conform").formatters_by_ft, opts("conform.nvim").formatters_by_ft))
   assert(vim.deep_equal(require("lint").linters_by_ft, opts("nvim-lint").linters_by_ft))
+  -- The same physical format key must use Conform in attached and unattached buffers.
+  local conform = require("conform")
+  local original_format, original_lsp_format = conform.format, vim.lsp.buf.format
+  local formatted
+  conform.format = function(options)
+    assert(options.lsp_format == "fallback")
+    formatted = vim.api.nvim_get_current_buf()
+  end
+  vim.lsp.buf.format = function()
+    error("The shared format key bypassed Conform")
+  end
+  local unattached = vim.api.nvim_create_buf(true, false)
+  local attached = vim.api.nvim_get_current_buf()
+  vim.api.nvim_exec_autocmds("LspAttach", { group = "ConfigLsp", buffer = attached, data = { client_id = 1 } })
+  for _, buffer in ipairs({ attached, unattached }) do
+    vim.api.nvim_set_current_buf(buffer)
+    local mapping = vim.fn.maparg("<leader>gf", "n", false, true)
+    assert(mapping.buffer == 0, "LSP attach installed a competing format key")
+    local keys = vim.api.nvim_replace_termcodes(vim.g.mapleader .. "gf", true, true, true)
+    vim.api.nvim_feedkeys(keys, "xt", false)
+    assert(formatted == buffer, "The format key did not operate on the current buffer")
+  end
+  vim.api.nvim_set_current_buf(attached)
+  conform.format, vim.lsp.buf.format = original_format, original_lsp_format
   if features.debugging then
     require("lazy").load({ plugins = { "nvim-dap" } })
     if require("languages").is_enabled("python") then

@@ -302,7 +302,7 @@ return {
           _G.dd = function(...)
             Snacks.debug.inspect(...)
           end
-          require("features.lsp.diagnostics").setup_toggles()
+          require("integrations.snacks_diagnostics").setup(Snacks)
 
           _G.bt = function()
             Snacks.debug.backtrace()

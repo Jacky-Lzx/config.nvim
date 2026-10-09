@@ -42,7 +42,7 @@ end
 vim.lsp.enable = function()
   error("features.lsp must leave server activation to the plugin configuration")
 end
-local mappings = require("features.lsp.init")
+local mappings = require("features.lsp")
 mappings.setup()
 mappings.setup()
 assert(#vim.api.nvim_get_autocmds({ group = "ConfigLsp", event = "LspAttach" }) == 1)
@@ -50,24 +50,23 @@ assert(not package.loaded.conform, "LSP setup must not load formatters")
 
 local attached = vim.api.nvim_create_buf(true, false)
 local unrelated = vim.api.nvim_get_current_buf()
-local original_format = vim.lsp.buf.format
 local formatted
-vim.lsp.buf.format = function()
+local format = function()
   formatted = vim.api.nvim_get_current_buf()
 end
+vim.keymap.set("n", "<leader>gf", format, { desc = "Format" })
 vim.api.nvim_exec_autocmds("LspAttach", { buffer = attached, data = { client_id = 1 } })
 vim.api.nvim_buf_call(attached, function()
-  local format = vim.fn.maparg("<leader>gf", "n", false, true)
-  assert(format.buffer == 1 and format.desc == "[LSP] Format")
-  format.callback()
+  local mapping = vim.fn.maparg("<leader>gf", "n", false, true)
+  assert(mapping.buffer == 0 and mapping.callback == format, "LSP attach replaced the shared format mapping")
+  mapping.callback()
   assert(vim.fn.maparg("<leader>rn", "n", false, true).buffer == 1)
 end)
-assert(formatted == attached, "LSP format mapping must operate on the attached buffer")
+assert(formatted == attached)
 vim.api.nvim_buf_call(unrelated, function()
-  assert(vim.fn.maparg("<leader>gf", "n") == "", "LSP mappings leaked into an unattached buffer")
+  assert(vim.fn.maparg("<leader>gf", "n", false, true).callback == format)
   assert(vim.fn.maparg("<leader>rn", "n") == "")
 end)
-vim.lsp.buf.format = original_format
 vim.lsp.config, vim.lsp.enable = original_config, original_enable
 package.loaded["blink.cmp"] = original_blink
 vim.api.nvim_del_augroup_by_name("ConfigLsp")

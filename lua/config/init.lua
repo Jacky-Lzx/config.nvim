@@ -20,13 +20,7 @@ function M.setup()
 
   require("extra.profiling").setup()
 
-  require("features.lsp.init").setup()
-
-  -- require("config.keymaps")
-  -- require("config.commands")
-  -- require("config.autocmds")
-  -- require("config.lsp")
-  -- require("config.diagnostics")
+  require("features.lsp").setup()
 
   if vim.g.neovide then
     require("integrations.neovide")

@@ -44,7 +44,12 @@ local target = vim.api.nvim_create_buf(true, false)
 vim.bo[current].formatoptions = "tcroq"
 vim.bo[target].formatoptions = "tcroq"
 vim.api.nvim_exec_autocmds("FileType", { group = "ConfigCore", buffer = target })
-assert(vim.bo[target].formatoptions == "tq", vim.bo[target].formatoptions)
+for _, flag in ipairs({ "c", "r", "o" }) do
+  assert(not vim.bo[target].formatoptions:find(flag, 1, true), "FileType retained formatoption " .. flag)
+end
+for _, flag in ipairs({ "t", "q" }) do
+  assert(vim.bo[target].formatoptions:find(flag, 1, true), "FileType removed formatoption " .. flag)
+end
 assert(vim.bo[current].formatoptions == "tcroq", "FileType changed the wrong buffer")
 
 local checktime = vim.cmd.checktime

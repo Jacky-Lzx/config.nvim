@@ -56,7 +56,7 @@ function M.check()
     check_executable("zathura", false)
   end
 
-  require("config.pairing").check()
+  require("features.pairing.health").check()
 
   vim.health.start("Enabled language tools")
   local seen = {}

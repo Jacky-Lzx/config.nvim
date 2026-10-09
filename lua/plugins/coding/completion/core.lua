@@ -1,7 +1,7 @@
 return {
   {
     "saghen/blink.cmp",
-    dependencies = require("config.pairing").source().available and { "pairs.nvim" } or {},
+    dependencies = require("features.pairing").source().available and { "pairs.nvim" } or {},
 
     event = { "InsertEnter", "CmdlineEnter" },
 
@@ -42,7 +42,7 @@ return {
         ["<C-d>"] = { "scroll_documentation_down", "fallback" },
 
         ["<Tab>"] = { function(cmp) return cmp.accept() end, "fallback", },
-        ["<CR>"] = { function(cmp) return cmp.accept() end, function() return require("config.pairing").newline() end, "fallback", },
+        ["<CR>"] = { function(cmp) return cmp.accept() end, function() return require("integrations.blink_pairs").newline() end, "fallback", },
         -- Close current completion and insert a newline
         ["<S-CR>"] = { function(cmp) cmp.hide() return false end, "fallback", },
 
@@ -52,12 +52,12 @@ return {
 
         ["<A-n>"] = {
           function(cmp)
-            return require("config.completion").cycle(cmp, 1)
+            return require("integrations.blink_completion").cycle(cmp, 1)
           end,
         },
         ["<A-p>"] = {
           function(cmp)
-            return require("config.completion").cycle(cmp, -1)
+            return require("integrations.blink_completion").cycle(cmp, -1)
           end,
         },
       },

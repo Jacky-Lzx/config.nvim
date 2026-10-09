@@ -5,14 +5,20 @@ Personal Neovim configuration for macOS and Linux. It targets Neovim 0.12 and us
 
 ## Configuration layout
 
-- `init.lua`: explicit startup order.
-- `lua/config/`: editor behavior, platform discovery, selection, and lazy.nvim bootstrap.
-- `lua/plugins/`: shared plugins grouped by UI, editing, navigation, coding, Git, and workflows.
+- `init.lua`: delegates startup to `config.setup()`.
+- `lua/config/`: startup composition, platform discovery, selection, and lazy.nvim bootstrap.
+- `lua/core/`: editor options, general mappings, commands, and autocmds.
+- `lua/features/`: native LSP/diagnostic behavior, completion source state, and pairing availability.
+- `lua/plugins/`: lazy.nvim specs, dependencies, loading conditions, and plugin-specific configuration.
+- `lua/integrations/`: adapters connecting features to Snacks/Blink and other plugin integrations.
 - `lua/languages/`: language metadata and dedicated plugin specs.
 - `after/ftplugin/`: buffer-local settings; `after/lsp/`: native server overrides.
 - `lua/snippets/`, `queries/`, and `lua/overseer/template/`: native discovery paths.
 
 See [the architecture guide](docs/architecture.md) for ownership and lifecycle rules.
+
+`<leader>gf` uses Conform's configured formatters with LSP fallback in all buffers.
+LSP attachment adds navigation/refactoring mappings without replacing the shared format key.
 
 ## Profiles and features
 

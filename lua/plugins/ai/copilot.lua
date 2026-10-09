@@ -25,7 +25,7 @@ return {
       keymap = {
         ["<A-i>"] = {
           function(cmp)
-            return require("config.completion").toggle_source(cmp, "copilot")
+            return require("integrations.blink_completion").toggle_source(cmp, "copilot")
           end,
         },
       },

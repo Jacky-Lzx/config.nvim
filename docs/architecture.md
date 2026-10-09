@@ -2,10 +2,15 @@
 
 ## Ownership
 
-- `init.lua` expresses startup order. `config/` owns editor options, global behavior,
-  platform discovery, selection, and plugin-manager bootstrap.
-- `plugins/` owns shared plugin mechanisms, grouped by feature. Specs use lazy.nvim's
-  native `opts`, `keys`, dependencies, and lifecycle hooks.
+- `init.lua` invokes `config.setup()`. `config/` owns startup composition, platform
+  discovery, selection, and plugin-manager bootstrap.
+- `core/` owns editor options, general mappings, commands, and autocmds.
+- `features/` owns capability behavior and state. Native LSP/diagnostic behavior,
+  completion source selection, and pairing availability can run without plugin APIs.
+- `plugins/` owns lazy.nvim specs, dependencies, loading conditions, and plugin-specific
+  configuration. Small callbacks used by only one plugin remain with that spec.
+- `integrations/` connects feature behavior to plugin APIs. Snacks diagnostic toggles,
+  Blink completion actions, and Blink/pairing Enter composition live here.
 - `languages/` owns language metadata and language-specific plugin contributions.
   Selection, installation, and health checks must consume the same metadata.
 - `after/lsp/` owns native server overrides. The language registry only selects servers.
@@ -20,13 +25,25 @@ Set options and early globals, register editor behavior and LSP attach handlers,
 initialize lazy.nvim. Plugin APIs run in their plugin's lifecycle. Register UI integrations
 on explicit events, not scheduled callbacks used as dependency ordering.
 
+Requiring a feature or its adapter must not start plugins or register behavior. Native
+behavior is installed through `setup()` or an attach handler. Adapters are invoked by
+plugin lifecycle hooks or user actions; Snacks is passed explicitly to its diagnostic
+adapter, while Blink configuration is read only when a completion action runs.
+
+Conform owns `<leader>gf` globally and uses configured formatters with LSP fallback.
+LSP attachment must not replace this mapping with a buffer-local native formatting action.
+Diagnostic getters/setters are shared by native mappings and Snacks toggles, so connecting
+Snacks preserves the current diagnostic state.
+
 LSP configuration depends on blink.cmp so its native capability registration runs before
 `vim.lsp.enable()`. Completion has one setup owner. which-key integrations run through
 declared dependencies or synchronous module loading in filetype hooks.
 
-Pairing uses an external local plugin checkout, with one availability check shared by
-the lazy spec, completion integration, and health report. Missing pairing must not
-prevent completion loading or ordinary Enter. Plugin source is not copied into this repo.
+Pairing uses an external local plugin checkout. `features/pairing/init.lua` owns one
+availability check shared by the lazy spec, completion integration, and health report;
+`features/pairing/health.lua` reports it, and `integrations/blink_pairs.lua` composes Enter.
+Missing pairing must not prevent completion loading or ordinary Enter. Plugin source is not
+copied into this repo.
 
 A language definition must not register autocmds, mutate globals, run external commands, or
 install dependencies while being read. Its plugin specs may do these things in explicit
@@ -63,8 +80,9 @@ module instead of an unrelated default `stdpath("config")` when using an explici
 Large plugin collections retain native lazy.nvim imports: completion core, menu, and source
 contributions live in `plugins/coding/completion/`; Markdown integrations live in
 `languages/markdown/specs/`. Mini plugins have individual feature-owned specs. Shared
-completion source cycling/toggling lives in `config/completion.lua` and keeps buffer state
-separate from global provider defaults.
+completion source cycling/toggling lives in `features/completion/init.lua` and accepts
+provider configuration as data, keeping buffer state separate from global provider defaults.
+`integrations/blink_completion.lua` reads Blink's configuration and displays the selected sources.
 
 A language may declare:
 
