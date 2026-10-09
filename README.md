@@ -23,14 +23,14 @@ Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true, statusline = true, buffers = true, comments = true, surround = true, operators = true },
+  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true, statusline = true, buffers = true, comments = true, surround = true, operators = true, align = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Theme, input, LSP, Picker, managed Tree-sitter, textobjects, Git, statusline, buffer tabs, comments, surround, and operators can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables all twelve features even when a personal override enables them.
+Theme, input, LSP, Picker, managed Tree-sitter, textobjects, Git, statusline, buffer tabs, comments, surround, operators, and align can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all thirteen features even when a personal override enables them.
 
 ## Theme
 
@@ -157,6 +157,32 @@ Diagnostics show severity icons and virtual text, with severity sorting and roun
 They update after leaving Insert mode and do not underline text.
 `Space td` toggles diagnostics, `Space tv` switches between messages and compact icons, and `Space tV` toggles diagnostic lines for the current line.
 Formatting is manual; project formatter settings remain owned by the language server.
+
+## Alignment
+
+mini.align aligns an explicitly selected region or the range of a motion or textobject.
+
+| Key | Behavior |
+| --- | -------- |
+| `ga` followed by a motion or textobject | Start alignment with live preview |
+| `ga` in Visual mode | Preview alignment of the selection |
+| `gA` followed by a motion or textobject | Align once a split pattern is entered |
+| `gA` in Visual mode | Align the selection without preview |
+
+For example, `gAip=` aligns a paragraph by assignment operators.
+Select lines and type `ga=` to preview the same operation; `Enter` accepts it, and `Esc` or `Ctrl-c` cancels and restores the original text.
+Normal-mode alignment supports dot-repeat; accepted edits can be undone with `u`.
+Characterwise, linewise, and blockwise regions are supported.
+
+During alignment, `=` provides assignment alignment, `,` aligns comma-separated items, and `|` aligns table columns.
+An unassigned modifier key is used as a literal delimiter, for example `:`.
+Use `s` to enter a Lua split pattern, `j` followed by `l`/`c`/`r`/`n` to choose justification, or `m` to enter a merge delimiter.
+Other default modifiers include `f` for filtering, `i` for ignoring split matches in strings/comments, `p` for pairing parts, `t` for trimming whitespace, and `Backspace` for removing a pre-step.
+
+With textobjects enabled, `gAaf=` aligns assignments in a function.
+Disable the module with `features.align = false`.
+When disabled or unavailable, native `ga` continues to display the character code.
+Alignment works independently of completion, comments, surround, operators, a language server, Tree-sitter, and a theme.
 
 ## Operators
 
@@ -397,6 +423,7 @@ The core profile retains Neovim's native statusline and tabline.
 - `lua/features/comments/` owns line-comment mappings and plugin setup.
 - `lua/features/surround/` owns paired-delimiter editing and its mappings.
 - `lua/features/operators/` owns register replacement, exchange, duplication, sorting, and evaluation.
+- `lua/features/align/` owns interactive alignment and its preview mappings.
 - `lua/features/statusline/` owns statusline sections, window bars, and readonly display components.
 - `lua/features/buffers/` owns buffer tabs and their Normal-mode mappings.
 - `lua/features/ui/` owns shared optional file-icon availability.
@@ -454,3 +481,5 @@ Comment checks send real Normal, Visual, and Operator-pending keys to verify tog
 Surround checks send real keys to verify adding, replacing, deleting, counts, dot-repeat, undo, reverse and multiline selections, bracket padding, function calls, tags, search suffixes, edge navigation, temporary highlights, cancellation, code textobjects, and missing/disabled/core/standalone behavior.
 
 Operator checks send real keys to verify register replacement and preservation, indentation, duplication, counts, dot-repeat, undo, Visual edits, sorting, Lua evaluation, cross-buffer exchange and cancellation, nonmodifiable buffers, code textobjects, and missing/disabled/core/standalone behavior.
+
+Alignment checks send real keys to verify preview confirmation and restoration on cancellation, visible preview text, direct alignment, motions, reverse selections, indentation, custom patterns, justification, merge delimiters, dot-repeat, undo, code textobjects, and missing/disabled/core/standalone behavior.

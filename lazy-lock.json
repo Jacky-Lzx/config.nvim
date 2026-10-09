@@ -7,6 +7,7 @@
   "lazy.nvim": { "branch": "main", "commit": "306a05526ada86a7b30af95c5cc81ffba93fef97" },
   "lualine.nvim": { "branch": "master", "commit": "221ce6b2d999187044529f49da6554a92f740a96" },
   "mini.ai": { "branch": "main", "commit": "d73c36349aa7b0bab5f77ad71701a1d42211a1df" },
+  "mini.align": { "branch": "main", "commit": "8cebe89d82f20e6d21b27346bcde4b4b6244a9f1" },
   "mini.comment": { "branch": "main", "commit": "27a29d6b949b9497f80a0a03421e89fed71d8c37" },
   "mini.operators": { "branch": "main", "commit": "59c7f7362461a5db830a5752b22ce9f5cd25a966" },
   "mini.surround": { "branch": "main", "commit": "580e4cb98c5900d9fe743865fb5a5b2178b4ab18" },

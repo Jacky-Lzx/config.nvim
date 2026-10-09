@@ -13,6 +13,7 @@ local modules = {
   comments = "features.comments",
   surround = "features.surround",
   operators = "features.operators",
+  align = "features.align",
 }
 local order = {
   "theme",
@@ -26,6 +27,7 @@ local order = {
   "comments",
   "surround",
   "operators",
+  "align",
 }
 
 local function root()

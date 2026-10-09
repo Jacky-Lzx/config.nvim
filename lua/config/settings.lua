@@ -23,7 +23,8 @@ function M.resolve(overrides, profile)
         or key == "buffers"
         or key == "comments"
         or key == "surround"
-        or key == "operators",
+        or key == "operators"
+        or key == "align",
       "Unknown feature: " .. tostring(key)
     )
     assert(type(value) == "boolean", "Feature must be boolean: " .. key)
@@ -52,6 +53,7 @@ function M.resolve(overrides, profile)
       comments = true,
       surround = true,
       operators = true,
+      align = true,
     },
     languages = { lua = true },
   }, overrides)
@@ -68,6 +70,7 @@ function M.resolve(overrides, profile)
     settings.features.comments = false
     settings.features.surround = false
     settings.features.operators = false
+    settings.features.align = false
   end
   return settings
 end

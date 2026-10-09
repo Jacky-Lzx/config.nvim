@@ -41,6 +41,7 @@ function M.check()
     "comments",
     "surround",
     "operators",
+    "align",
   }) do
     local feature = info.plugins.features[name]
     if feature.available then
