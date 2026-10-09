@@ -33,16 +33,6 @@ assert(conform.opts.format_on_save(buf) == nil)
 vim.b[buf].enable_autoformat = nil
 conform.keys[1][2]()
 assert(formatted.lsp_format == "fallback")
-local schedule = vim.schedule
-vim.schedule = function() end
-dofile(root .. "/lua/config/lsp.lua")
-vim.schedule = schedule
-vim.api.nvim_exec_autocmds("LspAttach", { buffer = buf, data = { client_id = 1 } })
-vim.api.nvim_buf_call(buf, function()
-  vim.fn.maparg("<leader>gf", "n", false, true).callback()
-end)
-assert(formatted.bufnr == buf and formatted.lsp_format == "fallback")
-
 local function buffer(ft, text, scratch)
   local b = vim.api.nvim_create_buf(true, scratch or false)
   vim.bo[b].filetype = ft

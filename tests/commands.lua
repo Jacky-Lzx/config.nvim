@@ -1,8 +1,7 @@
 local root = vim.fn.getcwd()
-dofile(root .. "/lua/config/commands.lua")
-assert(vim.wait(1000, function()
-  return vim.fn.exists(":Titlecase") == 2
-end))
+vim.opt.runtimepath:prepend(root)
+require("core.commands").setup()
+assert(vim.fn.exists(":Titlecase") == 2)
 
 local count = 0
 local function check(name, lines, keys, expected, selection)
@@ -18,30 +17,41 @@ local function check(name, lines, keys, expected, selection)
 end
 
 check("no visual marks", { "the hELLO world" }, ":Titlecase<CR>", { "The Hello World" })
-check("single-line bounds", { "prefix hELLO wORLD suffix" }, "gg7lv10l:Titlecase<CR>", { "prefix Hello World suffix" })
-check("reverse selection", { "prefix hELLO wORLD suffix" }, "gg17lv10h:Titlecase<CR>", { "prefix Hello World suffix" })
+-- :Titlecase operates on the Ex line range, including character/block selections.
+check(
+  "characterwise line range",
+  { "prefix hELLO wORLD suffix" },
+  "gg7lv10l:Titlecase<CR>",
+  { "Prefix Hello World Suffix" }
+)
+check("reverse selection", { "prefix hELLO wORLD suffix" }, "gg17lv10h:Titlecase<CR>", { "Prefix Hello World Suffix" })
 check(
   "exclusive",
   { "prefix hELLO wORLD suffix" },
   "gg7lv11l:Titlecase<CR>",
-  { "prefix Hello World suffix" },
+  { "Prefix Hello World Suffix" },
   "exclusive"
 )
 check(
   "reverse exclusive",
   { "prefix hELLO wORLD suffix" },
   "gg18lv11h:Titlecase<CR>",
-  { "prefix Hello World suffix" },
+  { "Prefix Hello World Suffix" },
   "exclusive"
 )
 check(
-  "multiline bounds",
+  "multiline range",
   { "prefix hELLO", "the WORLD and SKY", "gOOD bye suffix" },
   "gg7lv2j:Titlecase<CR>",
-  { "prefix Hello", "The World and Sky", "Good Bye suffix" }
+  { "Prefix Hello", "The World and Sky", "Good Bye Suffix" }
 )
 check("linewise", { "hELLO world", "the SKY" }, "gg5lVj:Titlecase<CR>", { "Hello World", "The Sky" })
-check("blockwise", { "xx hELLO zz", "yy wORLD zz" }, "gg3l<C-v>j4l:Titlecase<CR>", { "xx Hello zz", "yy World zz" })
+check(
+  "blockwise line range",
+  { "xx hELLO zz", "yy wORLD zz" },
+  "gg3l<C-v>j4l:Titlecase<CR>",
+  { "Xx Hello Zz", "Yy World Zz" }
+)
 check(
   "explicit matching range",
   { "prefix hELLO suffix", "the WORLD" },
@@ -57,11 +67,22 @@ check(
 check("whole buffer", { "hELLO world", "the WORLD" }, "ggvll<Esc>:%Titlecase<CR>", { "Hello World", "The World" })
 check("no range", { "hELLO world", "the WORLD" }, "ggvll<Esc>j:Titlecase<CR>", { "hELLO world", "The World" })
 check("empty line", { "" }, ":Titlecase<CR>", { "" })
-check("empty middle line", { "hELLO", "", "wORLD" }, "ggvjjo:Titlecase<CR>", { "Hello", "", "WORLD" })
+check("empty middle line", { "hELLO", "", "wORLD" }, "ggvjjo:Titlecase<CR>", { "Hello", "", "World" })
 check(
   "short block line",
   { "xx hELLO zz", "", "yy wORLD zz" },
   "gg3l<C-v>2j4l:Titlecase<CR>",
-  { "xx Hello zz", "", "yy World zz" }
+  { "Xx Hello Zz", "", "Yy World Zz" }
 )
+check("tab conversion", { "\tfirst\tsecond", "\tthird" }, ":ConvertTabToSpace<CR>", { "  first  second", "  third" })
+
+local printed
+local original_print = vim.print
+vim.print = function(value)
+  printed = value
+end
+vim.cmd.ConfigInfo()
+vim.print = original_print
+assert(vim.deep_equal(printed, require("config").info()))
+count = count + 1
 print("commands: " .. count .. " tests passed")

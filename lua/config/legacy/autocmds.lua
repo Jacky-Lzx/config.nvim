@@ -13,11 +13,3 @@ vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
     end
   end,
 })
-
--- Prevent auto insertion of new lines when writing a long sentence
-vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("lzx_formatoptions", { clear = true }),
-  callback = function(_)
-    vim.opt_local.formatoptions:remove({ "c", "r", "o" })
-  end,
-})

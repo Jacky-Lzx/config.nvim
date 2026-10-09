@@ -42,11 +42,12 @@ vim.fn.maparg("<D-v>", "t", false, true).callback()
 assert(pasted)
 vim.api.nvim_paste, vim.fn.getreg = paste, getreg
 
-package.loaded["util.open"] = { open_at_cursor = function() end }
+package.loaded["utils.open"] = { open_at_cursor = function() end }
 for _, key in ipairs({ "]a", "]A", "[a", "[A" }) do
   vim.keymap.set("n", key, "<Nop>")
 end
-dofile(root .. "/lua/config/keymaps.lua")
+vim.g.mapleader = " "
+require("core.keymaps").setup()
 local defer, cleanup = vim.defer_fn
 vim.defer_fn = function(cb)
   cleanup = cb

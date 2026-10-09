@@ -67,5 +67,3 @@ vim.api.nvim_create_user_command("Titlecase", function(opts)
   end
   vim.api.nvim_buf_set_lines(0, opts.line1 - 1, opts.line2, false, lines)
 end, { range = true })
-
-vim.api.nvim_create_user_command("ConvertTabToSpace", "%s/\t/  /g", {})

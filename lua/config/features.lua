@@ -1,4 +1,6 @@
-local M = { names = { "ai", "debugging", "tasks", "sessions" } }
+local M = {
+  names = { "ai", "debugging", "tasks", "sessions" },
+}
 
 function M.normalize(features)
   assert(type(features) == "table", "Selection.features must be a table")

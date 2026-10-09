@@ -1,5 +1,19 @@
 local function check()
   assert(vim.v.errmsg == "", vim.v.errmsg)
+  assert(vim.fn.exists(":ConfigInfo") == 2)
+  assert(vim.fn.exists(":Titlecase") == 2)
+  local info = require("config").info()
+  assert(info.paths.config == vim.fn.stdpath("config"))
+  assert(info.paths.state == vim.fn.stdpath("state"))
+  assert(vim.g.mapleader == " " and vim.g.maplocalleader == " ")
+  assert(vim.g.loaded_netrw == 1 and vim.g.loaded_netrwPlugin == 1)
+  assert(vim.bo.textwidth == 0 and vim.bo.softtabstop == -1)
+  assert(vim.o.autoread and vim.o.undofile and vim.o.confirm)
+  assert(#vim.api.nvim_get_autocmds({ group = "ConfigLsp", event = "LspAttach" }) == 1)
+  assert(#vim.api.nvim_get_autocmds({ group = "ConfigCore", event = "FileType" }) == 1)
+  for name in pairs(package.loaded) do
+    assert(not name:match("^config%.legacy[%.]?"), "Startup loaded an archived module: " .. name)
+  end
   local plugins = require("lazy.core.config").plugins
   local languages = require("languages").current()
   local features = require("config.context").current().selection.features
