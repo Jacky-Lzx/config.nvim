@@ -23,14 +23,14 @@ Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true, statusline = true, buffers = true, comments = true },
+  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true, statusline = true, buffers = true, comments = true, surround = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Theme, input, LSP, Picker, managed Tree-sitter, textobjects, Git, statusline, buffer tabs, and comments can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables all ten features even when a personal override enables them.
+Theme, input, LSP, Picker, managed Tree-sitter, textobjects, Git, statusline, buffer tabs, comments, and surround can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all eleven features even when a personal override enables them.
 
 ## Theme
 
@@ -157,6 +157,32 @@ Diagnostics show severity icons and virtual text, with severity sorting and roun
 They update after leaving Insert mode and do not underline text.
 `Space td` toggles diagnostics, `Space tv` switches between messages and compact icons, and `Space tV` toggles diagnostic lines for the current line.
 Formatting is manual; project formatter settings remain owned by the language server.
+
+## Surround
+
+mini.surround adds, replaces, and removes paired brackets, quotes, function calls, and tags.
+It uses the default search behavior: find a surrounding that covers the cursor, searching the current line first and then up to 20 neighboring lines.
+
+| Key | Behavior |
+| --- | -------- |
+| `sa` followed by a motion or textobject and an identifier | Add surrounding, for example `saiw)` wraps a word in parentheses |
+| `sa` in Visual mode followed by an identifier | Wrap the selection |
+| `sd` followed by an identifier | Delete surrounding, for example `sd)` |
+| `sr` followed by old and new identifiers | Replace surrounding, for example `sr)]` |
+| `sf` / `sF` followed by an identifier | Find the right / left surrounding edge |
+| `sh` followed by an identifier | Highlight surrounding for 500 ms |
+
+Append `n` or `l` to a search action to target the next or previous surrounding, for example `sdn)` or `sdl)`.
+Closing bracket identifiers such as `)` add unpadded pairs; opening identifiers such as `(` add pairs with spaces and remove those spaces when deleting.
+`f` identifies a function call and prompts for a name when adding; `t` identifies a tag and prompts for a tag name when adding.
+Other characters, such as quotes, create identical left and right delimiters.
+Edits support counts, dot-repeat, and undo.
+Selections are wrapped as one region, including linewise selections; delimiters are placed at the selection edges.
+With textobjects enabled, `saaf)` wraps a function.
+
+The plain `s` key is disabled in Normal, Visual, and Operator-pending modes while this feature is active.
+Disable it with `features.surround = false`; disabling it or starting without the plugin preserves native `s` behavior.
+Surround works independently of completion, comments, a language server, Tree-sitter, and a theme.
 
 ## Comments
 
@@ -340,6 +366,7 @@ The core profile retains Neovim's native statusline and tabline.
 - `lua/config/` owns startup, selection, plugin-manager bootstrap, configuration information, and health checks.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
 - `lua/features/comments/` owns line-comment mappings and plugin setup.
+- `lua/features/surround/` owns paired-delimiter editing and its mappings.
 - `lua/features/statusline/` owns statusline sections, window bars, and readonly display components.
 - `lua/features/buffers/` owns buffer tabs and their Normal-mode mappings.
 - `lua/features/ui/` owns shared optional file-icon availability.
@@ -393,3 +420,5 @@ Git checks use temporary repositories and real keys to verify signs, hunk naviga
 UI checks render the statusline, window bar, and buffer tabs through Neovim and send real keys for mode changes, macro recording, switching, reordering, closing, and restoration. They cover Git changes, diagnostics, theme restoration, missing plugins/icons, standalone features, disabled features, and the core profile; `--live` also checks the window bar with an actual Lua language server.
 
 Comment checks send real Normal, Visual, and Operator-pending keys to verify toggling, counts, reverse selections, indentation, blank lines, dot-repeat, undo, comment-block selection/deletion, filetype and buffer comment formats, code textobjects, and missing/disabled/core/standalone behavior.
+
+Surround checks send real keys to verify adding, replacing, deleting, counts, dot-repeat, undo, reverse and multiline selections, bracket padding, function calls, tags, search suffixes, edge navigation, temporary highlights, cancellation, code textobjects, and missing/disabled/core/standalone behavior.

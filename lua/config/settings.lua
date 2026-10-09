@@ -21,7 +21,8 @@ function M.resolve(overrides, profile)
         or key == "git"
         or key == "statusline"
         or key == "buffers"
-        or key == "comments",
+        or key == "comments"
+        or key == "surround",
       "Unknown feature: " .. tostring(key)
     )
     assert(type(value) == "boolean", "Feature must be boolean: " .. key)
@@ -48,6 +49,7 @@ function M.resolve(overrides, profile)
       statusline = true,
       buffers = true,
       comments = true,
+      surround = true,
     },
     languages = { lua = true },
   }, overrides)
@@ -62,6 +64,7 @@ function M.resolve(overrides, profile)
     settings.features.statusline = false
     settings.features.buffers = false
     settings.features.comments = false
+    settings.features.surround = false
   end
   return settings
 end

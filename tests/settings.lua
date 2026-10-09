@@ -33,13 +33,13 @@ local ok, err = pcall(function()
   assert(not settings.resolve({ features = { git = false } }).features.git)
   assert(not settings.resolve({ features = { git = true } }, "core").features.git)
   assert(not pcall(settings.resolve, { features = { git = "yes" } }))
-  for _, name in ipairs({ "statusline", "buffers", "comments" }) do
+  for _, name in ipairs({ "statusline", "buffers", "comments", "surround" }) do
     assert(settings.resolve().features[name])
     assert(not settings.resolve({ features = { [name] = false } }).features[name])
     assert(not settings.resolve({ features = { [name] = true } }, "core").features[name])
     assert(not pcall(settings.resolve, { features = { [name] = "yes" } }))
   end
-  io.stdout:write("Settings checks: 45 passed\n")
+  io.stdout:write("Settings checks: 49 passed\n")
   io.stdout:flush()
 end)
 if not ok then

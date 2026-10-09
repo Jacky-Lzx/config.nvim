@@ -11,8 +11,10 @@ local modules = {
   statusline = "features.statusline",
   buffers = "features.buffers",
   comments = "features.comments",
+  surround = "features.surround",
 }
-local order = { "theme", "input", "picker", "treesitter", "textobjects", "git", "statusline", "buffers", "comments" }
+local order =
+  { "theme", "input", "picker", "treesitter", "textobjects", "git", "statusline", "buffers", "comments", "surround" }
 
 local function root()
   return vim.fs.joinpath(vim.fn.stdpath("data"), "lazy")

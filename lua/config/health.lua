@@ -39,6 +39,7 @@ function M.check()
     "statusline",
     "buffers",
     "comments",
+    "surround",
   }) do
     local feature = info.plugins.features[name]
     if feature.available then
