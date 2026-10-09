@@ -6,7 +6,7 @@
   discovery, selection, and plugin-manager bootstrap.
 - `core/` owns editor options, general mappings, commands, and autocmds.
 - `features/` owns capability behavior and state. Native LSP/diagnostic behavior,
-  completion source selection, and pairing availability can run without plugin APIs.
+  completion source selection can run without plugin APIs.
 - `plugins/` owns lazy.nvim specs, dependencies, loading conditions, and plugin-specific
   configuration. Small callbacks used by only one plugin remain with that spec.
 - `integrations/` connects feature behavior to plugin APIs. Snacks diagnostic toggles,
@@ -39,11 +39,10 @@ LSP configuration depends on blink.cmp so its native capability registration run
 `vim.lsp.enable()`. Completion has one setup owner. which-key integrations run through
 declared dependencies or synchronous module loading in filetype hooks.
 
-Pairing uses an external local plugin checkout. `features/pairing/init.lua` owns one
-availability check shared by the lazy spec, completion integration, and health report;
-`features/pairing/health.lua` reports it, and `integrations/blink_pairs.lua` composes Enter.
-Missing pairing must not prevent completion loading or ordinary Enter. Plugin source is not
-copied into this repo.
+Pairing is a normal GitHub dependency (`Jacky-Lzx/pairs.nvim`), installed and locked by
+lazy.nvim. Blink declares it as a dependency, and `integrations/blink_pairs.lua` composes
+Enter after completion confirmation. Pairing has no local checkout availability gate;
+`:checkhealth pairs` provides the plugin's own diagnostics. Plugin source is not copied into this repo.
 
 A language definition must not register autocmds, mutate globals, run external commands, or
 install dependencies while being read. Its plugin specs may do these things in explicit

@@ -1,10 +1,8 @@
 local M = {}
 
--- Blink owns Enter; returning nil keeps its normal newline fallback available.
+-- Blink accepts completion first, then delegates newline handling to pairs.nvim.
 function M.newline()
-  if require("features.pairing").source().available then
-    return require("pairs").expr("<CR>")
-  end
+  return require("pairs").expr("<CR>")
 end
 
 return M

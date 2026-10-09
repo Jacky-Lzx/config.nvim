@@ -40,11 +40,6 @@ done
 NVIM_TEST_SCENARIO=minimal nvim --headless -i NONE \
   --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
   -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/input.lua')"
-NVIM_TEST_SCENARIO=minimal NVIM_TEST_PAIRING=missing NVIM_DEV_PLUGIN_ROOT="$test_tmp/absent-plugins" \
-  nvim --headless -i NONE \
-  --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
-  -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/input.lua')"
-
 NVIM_TEST_SCENARIO=writing nvim --headless -i NONE \
   --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
   -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_highlighting.lua')"

@@ -8,7 +8,7 @@ Personal Neovim configuration for macOS and Linux. It targets Neovim 0.12 and us
 - `init.lua`: delegates startup to `config.setup()`.
 - `lua/config/`: startup composition, platform discovery, selection, and lazy.nvim bootstrap.
 - `lua/core/`: editor options, general mappings, commands, and autocmds.
-- `lua/features/`: native LSP/diagnostic behavior, completion source state, and pairing availability.
+- `lua/features/`: native LSP/diagnostic behavior and completion source state.
 - `lua/plugins/`: lazy.nvim specs, dependencies, loading conditions, and plugin-specific configuration.
 - `lua/integrations/`: adapters connecting features to Snacks/Blink and other plugin integrations.
 - `lua/languages/`: language metadata and dedicated plugin specs.
@@ -86,10 +86,9 @@ The following environment variables override local paths or commands:
 macOS uses `open` and optionally Skim. Linux uses `xdg-open` and optionally Zathura. Missing
 Delta, Kitty, Yazi, and Skim degrade to built-in behavior or disable their integration.
 
-Pairing currently loads the external `pairs.nvim` checkout under `NVIM_DEV_PLUGIN_ROOT`.
-Its source stays in that separate project. If the checkout is absent, pairing is disabled
-and completion/normal newline remain available. `:checkhealth config` reports its path,
-availability, and Git revision. A remote source and lock entry can be added after publication.
+Pairing uses [Jacky-Lzx/pairs.nvim](https://github.com/Jacky-Lzx/pairs.nvim), installed and
+locked by lazy.nvim. Blink depends on it and composes Enter after completion confirmation.
+Pairing does not depend on a local development checkout; use `:checkhealth pairs` for plugin diagnostics.
 
 ## Dependencies
 
@@ -135,7 +134,7 @@ The syntax/profile pass uses `-u NONE` and fixed profile selections. The startup
 the personal defaults, no languages/workflows, Python with debugging, and writing with tasks. They load the installed
 plugins and exercise TeX/Python/Vue filetype hooks, completion, formatting/lint configuration,
 DAP configuration, feature isolation, and colorscheme reloads. Actual input checks cover
-command-line-first completion loading, paired Enter/Backspace, and missing-local-plugin fallback.
+command-line-first completion loading, paired Enter/Backspace, and the GitHub-managed pairing source.
 
 Tests isolate cache/state/log files, disable session saving and WakaTime, stub external LSP
 startup, and set `NVIM_SMOKE_TEST=1` to disable project-local configuration and dependency

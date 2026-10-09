@@ -1,7 +1,7 @@
 return {
   {
     "saghen/blink.cmp",
-    dependencies = require("features.pairing").source().available and { "pairs.nvim" } or {},
+    dependencies = { "Jacky-Lzx/pairs.nvim" },
 
     event = { "InsertEnter", "CmdlineEnter" },
 
