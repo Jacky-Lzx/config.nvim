@@ -29,7 +29,7 @@ function M.check()
   else
     vim.health.ok("Selected plugins are installed at " .. info.plugins.root)
   end
-  for _, name in ipairs({ "theme", "input", "picker", "treesitter", "textobjects" }) do
+  for _, name in ipairs({ "theme", "input", "picker", "treesitter", "textobjects", "git" }) do
     local feature = info.plugins.features[name]
     if feature.available then
       vim.health.ok(name .. " plugins are available")
@@ -59,6 +59,7 @@ function M.check()
 
   require("features.treesitter.health").check()
   require("features.textobjects").check()
+  require("features.git").check()
 
   vim.health.start("Language servers")
   if not info.lsp.enabled then

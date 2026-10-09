@@ -1,3 +1,9 @@
+if vim.env.NVIM_TEST_GIT_MODE == "missing-executable" then
+  local executable = vim.fn.executable
+  vim.fn.executable = function(name)
+    return name == "git" and 0 or executable(name)
+  end
+end
 _G.config_test_errors = {}
 if vim.env.NVIM_TEST_TS_TOOLS == "missing" then
   local executable = vim.fn.executable

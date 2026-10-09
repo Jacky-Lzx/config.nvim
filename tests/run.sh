@@ -65,7 +65,7 @@ run_test lock
 mkdir -p "$XDG_DATA_HOME/$NVIM_APPNAME/lazy"
 cp -RL "$installed_plugins/lazy.nvim" "$installed_plugins/blink.cmp" "$installed_plugins/LuaSnip" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
 
-printf 'return { features = { theme = false, input = false, picker = false, treesitter = false, textobjects = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false, treesitter = false, textobjects = false, git = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_CONFIG_PROFILE=default
 export NVIM_TEST_MODE=disabled
 run_test isolation
@@ -136,6 +136,14 @@ mv "$test_tmp/textobjects.scm" "$config/queries/lua/textobjects.scm"
 export NVIM_TEST_TEXTOBJECTS_MODE=available
 run_test textobjects
 unset NVIM_TEST_TEXTOBJECTS_MODE
+export NVIM_TEST_GIT_MODE=missing
+run_test git
+cp -RL "$installed_plugins/gitsigns.nvim" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
+export NVIM_TEST_GIT_MODE=missing-executable
+run_test git
+export NVIM_TEST_GIT_MODE=available
+run_test git
+unset NVIM_TEST_GIT_MODE
 run_test input
 run_test picker
 run_test search
@@ -143,7 +151,7 @@ if [ "${1:-}" = "--live" ]; then
   run_test lsp_live
   run_test picker_live
 fi
-printf 'return { features = { input = false, picker = false, lsp = false, treesitter = false, textobjects = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { input = false, picker = false, lsp = false, treesitter = false, textobjects = false, git = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_THEME_MODE=only
 run_test theme
 printf 'return { features = { theme = false } }\n' > "$config/lua/config/local.lua"
@@ -154,7 +162,7 @@ export NVIM_CONFIG_PROFILE=core
 export NVIM_TEST_THEME_MODE=core
 run_test theme
 export NVIM_CONFIG_PROFILE=default
-printf 'return { features = { theme = false, input = false, picker = false, lsp = false, textobjects = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false, lsp = false, textobjects = false, git = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_TREESITTER_MODE=only
 run_test treesitter
 printf 'return { languages = { lua = false } }\n' > "$config/lua/config/local.lua"
@@ -170,10 +178,10 @@ run_test treesitter
 export NVIM_CONFIG_PROFILE=default
 unset NVIM_TEST_TREESITTER_MODE
 unset NVIM_TEST_THEME_MODE
-printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, git = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_TEXTOBJECTS_MODE=only
 run_test textobjects
-printf 'return { features = { textobjects = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { textobjects = false, git = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_TEXTOBJECTS_MODE=disabled
 run_test textobjects
 rm "$config/lua/config/local.lua"
@@ -182,5 +190,17 @@ export NVIM_TEST_TEXTOBJECTS_MODE=core
 run_test textobjects
 export NVIM_CONFIG_PROFILE=default
 unset NVIM_TEST_TEXTOBJECTS_MODE
+printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, textobjects = false } }\n' > "$config/lua/config/local.lua"
+export NVIM_TEST_GIT_MODE=only
+run_test git
+printf 'return { features = { git = false } }\n' > "$config/lua/config/local.lua"
+export NVIM_TEST_GIT_MODE=disabled
+run_test git
+rm "$config/lua/config/local.lua"
+export NVIM_CONFIG_PROFILE=core
+export NVIM_TEST_GIT_MODE=core
+run_test git
+export NVIM_CONFIG_PROFILE=default
+unset NVIM_TEST_GIT_MODE
 export NVIM_DEV_PLUGIN_ROOT="$test_tmp/no-local-plugins"
 run_test input

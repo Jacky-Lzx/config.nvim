@@ -23,19 +23,19 @@ Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true },
+  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Theme, input, LSP, Picker, managed Tree-sitter, and textobjects can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables all six features even when a personal override enables them.
+Theme, input, LSP, Picker, managed Tree-sitter, textobjects, and Git can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all seven features even when a personal override enables them.
 
 ## Theme
 
 Catppuccin Mocha loads before the input and Picker plugins, with transparent editor and floating-window backgrounds.
-The theme owns colors for completion, native LSP diagnostics, and Picker.
+The theme owns colors for completion, native LSP diagnostics, Picker, and Git differences.
 Selection, search matches, line numbers, matching parentheses, signature parameters, and Picker cursor lines use custom highlights.
 Catppuccin applies these highlights when the colorscheme loads, including after switching away and back.
 The theme uses its cache under Neovim's standard cache directory.
@@ -255,11 +255,40 @@ Inside Picker, `Alt j/k` moves down/up, `Alt u/d` scrolls the list, and `Ctrl u/
 These mappings apply in both Insert and Normal modes.
 Input completion keeps its own Enter and Tab behavior outside Picker.
 
+## Git
+
+Gitsigns loads when opening or creating a file and attaches to tracked and untracked files in Git repositories.
+Changes color line numbers by default; Git signs and current-line blame start disabled.
+The theme supplies Git difference colors.
+Mappings are buffer-local and available after Gitsigns attaches; the three display toggles affect all attached buffers.
+
+| Key | Behavior |
+| --- | -------- |
+| `]h` / `[h` | Next / previous hunk |
+| `]H` / `[H` | Last / first hunk |
+| `Space ggs` / `Space ggr` | Stage / reset hunk; Visual mode operates on selected lines |
+| `Space ggS` / `Space ggR` | Stage / reset all buffer changes |
+| `Space ggp` / `Space ggP` | Floating / inline hunk preview |
+| `Space ggd` / `Space ggD` | Diff against the index / previous commit |
+| `Space ggq` / `Space ggQ` | Current-buffer / repository hunks in quickfix |
+| `ih` in Visual or Operator-pending mode | Select the current hunk |
+| `Space tgb` | Toggle current-line blame |
+| `Space tgw` | Toggle word differences |
+| `Space tgs` | Toggle Git signs |
+
+Staging a staged hunk unstages it. Reset edits the buffer and can be undone with `u`; save with `:w` to update the working file.
+Use `qq` in the comparison window to close the diff view.
+In diff windows, hunk navigation passes through to the native keys.
+Staging and reset run only on explicit actions.
+Install Git separately on PATH. Missing Git or Gitsigns leaves other features usable and is reported by `:checkhealth config`.
+Disable this feature with `features.git = false`; the core profile disables it.
+
 ## Structure
 
 - `init.lua` delegates startup to `config`.
 - `lua/config/` owns startup, selection, plugin-manager bootstrap, configuration information, and health checks.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
+- `lua/features/git/` owns buffer Git differences, actions, mappings, and dependency health checks.
 - `lua/features/textobjects/` owns mini.ai specifications and query health checks.
 - `queries/` supplies native language queries for syntax-based textobjects.
 - `lua/features/treesitter/` owns native highlighting, explicit parser installation, dependency checks, and health reporting.
@@ -303,3 +332,5 @@ Theme checks cover Mocha colors, transparent windows, highlight restoration, com
 Tree-sitter checks verify real Lua parsing and capture colors, editing, native/Vim-syntax fallback, dependency notices, idempotent installation, and disabled, core, language-disabled, and standalone configurations.
 
 Textobject checks send real Visual and operator keys, verify selected text and edits, counts, next/previous selection, boundary motions, undo and dot-repeat, and exercise missing plugins/queries, unsupported parsers, disabled, core, and standalone cases.
+
+Git checks use temporary repositories and real keys to verify signs, hunk navigation and selection, partial/full staging and reset, previews, diff views, quickfix lists, display toggles, and disabled, core, missing-dependency, and standalone configurations.

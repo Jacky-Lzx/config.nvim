@@ -7,8 +7,9 @@ local modules = {
   picker = "features.picker",
   treesitter = "features.treesitter",
   textobjects = "features.textobjects",
+  git = "features.git",
 }
-local order = { "theme", "input", "picker", "treesitter", "textobjects" }
+local order = { "theme", "input", "picker", "treesitter", "textobjects", "git" }
 
 local function root()
   return vim.fs.joinpath(vim.fn.stdpath("data"), "lazy")

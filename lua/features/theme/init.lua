@@ -19,6 +19,7 @@ function M.specs()
           float = { transparent = true },
           auto_integrations = false,
           integrations = {
+            gitsigns = features.git.active,
             blink_cmp = { enabled = features.input.active, style = "bordered" },
             snacks = { enabled = features.picker.active, indent_scope_color = "flamingo" },
           },
