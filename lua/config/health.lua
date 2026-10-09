@@ -40,6 +40,7 @@ function M.check()
     "buffers",
     "comments",
     "surround",
+    "operators",
   }) do
     local feature = info.plugins.features[name]
     if feature.available then

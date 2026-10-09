@@ -65,7 +65,7 @@ run_test lock
 mkdir -p "$XDG_DATA_HOME/$NVIM_APPNAME/lazy"
 cp -RL "$installed_plugins/lazy.nvim" "$installed_plugins/blink.cmp" "$installed_plugins/LuaSnip" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
 
-printf 'return { features = { theme = false, input = false, picker = false, treesitter = false, textobjects = false, git = false, statusline = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false, treesitter = false, textobjects = false, git = false, statusline = false, buffers = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_CONFIG_PROFILE=default
 export NVIM_TEST_MODE=disabled
 run_test isolation
@@ -90,7 +90,7 @@ mv "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/LuaSnip" "$test_tmp/LuaSnip"
 export NVIM_TEST_MODE=missing-input
 run_test picker_isolation
 mv "$test_tmp/LuaSnip" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/LuaSnip"
-printf 'return { features = { input = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { input = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_MODE=picker-only
 run_test picker_isolation
 rm "$config/lua/config/local.lua"
@@ -176,6 +176,12 @@ cp -RL "$installed_plugins/mini.surround" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
 export NVIM_TEST_SURROUND_MODE=available
 run_test surround
 unset NVIM_TEST_SURROUND_MODE
+export NVIM_TEST_OPERATORS_MODE=missing
+run_test operators
+cp -RL "$installed_plugins/mini.operators" "$XDG_DATA_HOME/$NVIM_APPNAME/lazy/"
+export NVIM_TEST_OPERATORS_MODE=available
+run_test operators
+unset NVIM_TEST_OPERATORS_MODE
 run_test input
 run_test picker
 run_test search
@@ -183,10 +189,10 @@ if [ "${1:-}" = "--live" ]; then
   run_test lsp_live
   run_test picker_live
 fi
-printf 'return { features = { input = false, picker = false, lsp = false, treesitter = false, textobjects = false, git = false, statusline = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { input = false, picker = false, lsp = false, treesitter = false, textobjects = false, git = false, statusline = false, buffers = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_THEME_MODE=only
 run_test theme
-printf 'return { features = { theme = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_THEME_MODE=disabled
 run_test theme
 rm "$config/lua/config/local.lua"
@@ -194,13 +200,13 @@ export NVIM_CONFIG_PROFILE=core
 export NVIM_TEST_THEME_MODE=core
 run_test theme
 export NVIM_CONFIG_PROFILE=default
-printf 'return { features = { theme = false, input = false, picker = false, lsp = false, textobjects = false, git = false, statusline = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false, lsp = false, textobjects = false, git = false, statusline = false, buffers = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_TREESITTER_MODE=only
 run_test treesitter
 printf 'return { languages = { lua = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_TREESITTER_MODE=no-languages
 run_test treesitter
-printf 'return { features = { treesitter = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { treesitter = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_TREESITTER_MODE=disabled
 run_test treesitter
 rm "$config/lua/config/local.lua"
@@ -210,10 +216,10 @@ run_test treesitter
 export NVIM_CONFIG_PROFILE=default
 unset NVIM_TEST_TREESITTER_MODE
 unset NVIM_TEST_THEME_MODE
-printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, git = false, statusline = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, git = false, statusline = false, buffers = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_TEXTOBJECTS_MODE=only
 run_test textobjects
-printf 'return { features = { textobjects = false, git = false, statusline = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { textobjects = false, git = false, statusline = false, buffers = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_TEXTOBJECTS_MODE=disabled
 run_test textobjects
 rm "$config/lua/config/local.lua"
@@ -222,10 +228,10 @@ export NVIM_TEST_TEXTOBJECTS_MODE=core
 run_test textobjects
 export NVIM_CONFIG_PROFILE=default
 unset NVIM_TEST_TEXTOBJECTS_MODE
-printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, textobjects = false, statusline = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, textobjects = false, statusline = false, buffers = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_GIT_MODE=only
 run_test git
-printf 'return { features = { git = false, statusline = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { git = false, statusline = false, buffers = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_GIT_MODE=disabled
 run_test git
 rm "$config/lua/config/local.lua"
@@ -234,13 +240,13 @@ export NVIM_TEST_GIT_MODE=core
 run_test git
 export NVIM_CONFIG_PROFILE=default
 unset NVIM_TEST_GIT_MODE
-printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, textobjects = false, git = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, textobjects = false, git = false, buffers = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_UI_MODE=statusline-only
 run_test ui
-printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, textobjects = false, git = false, statusline = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, picker = false, lsp = false, treesitter = false, textobjects = false, git = false, statusline = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_UI_MODE=buffers-only
 run_test ui
-printf 'return { features = { statusline = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { statusline = false, buffers = false, comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_UI_MODE=disabled
 run_test ui
 rm "$config/lua/config/local.lua"
@@ -249,10 +255,10 @@ export NVIM_TEST_UI_MODE=core
 run_test ui
 export NVIM_CONFIG_PROFILE=default
 unset NVIM_TEST_UI_MODE
-printf 'return { features = { theme = false, input = false, lsp = false, picker = false, treesitter = false, textobjects = false, git = false, statusline = false, buffers = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, lsp = false, picker = false, treesitter = false, textobjects = false, git = false, statusline = false, buffers = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_COMMENTS_MODE=only
 run_test comments
-printf 'return { features = { comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { comments = false, surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_COMMENTS_MODE=disabled
 run_test comments
 rm "$config/lua/config/local.lua"
@@ -261,10 +267,10 @@ export NVIM_TEST_COMMENTS_MODE=core
 run_test comments
 export NVIM_CONFIG_PROFILE=default
 unset NVIM_TEST_COMMENTS_MODE
-printf 'return { features = { theme = false, input = false, lsp = false, picker = false, treesitter = false, textobjects = false, git = false, statusline = false, buffers = false, comments = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { theme = false, input = false, lsp = false, picker = false, treesitter = false, textobjects = false, git = false, statusline = false, buffers = false, comments = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_SURROUND_MODE=only
 run_test surround
-printf 'return { features = { surround = false } }\n' > "$config/lua/config/local.lua"
+printf 'return { features = { surround = false, operators = false } }\n' > "$config/lua/config/local.lua"
 export NVIM_TEST_SURROUND_MODE=disabled
 run_test surround
 rm "$config/lua/config/local.lua"
@@ -273,5 +279,17 @@ export NVIM_TEST_SURROUND_MODE=core
 run_test surround
 export NVIM_CONFIG_PROFILE=default
 unset NVIM_TEST_SURROUND_MODE
+printf 'return { features = { theme = false, input = false, lsp = false, picker = false, treesitter = false, textobjects = false, git = false, statusline = false, buffers = false, comments = false, surround = false } }\n' > "$config/lua/config/local.lua"
+export NVIM_TEST_OPERATORS_MODE=only
+run_test operators
+printf 'return { features = { operators = false } }\n' > "$config/lua/config/local.lua"
+export NVIM_TEST_OPERATORS_MODE=disabled
+run_test operators
+rm "$config/lua/config/local.lua"
+export NVIM_CONFIG_PROFILE=core
+export NVIM_TEST_OPERATORS_MODE=core
+run_test operators
+export NVIM_CONFIG_PROFILE=default
+unset NVIM_TEST_OPERATORS_MODE
 export NVIM_DEV_PLUGIN_ROOT="$test_tmp/no-local-plugins"
 run_test input

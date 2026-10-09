@@ -23,14 +23,14 @@ Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true, statusline = true, buffers = true, comments = true, surround = true },
+  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true, statusline = true, buffers = true, comments = true, surround = true, operators = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Theme, input, LSP, Picker, managed Tree-sitter, textobjects, Git, statusline, buffer tabs, comments, and surround can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables all eleven features even when a personal override enables them.
+Theme, input, LSP, Picker, managed Tree-sitter, textobjects, Git, statusline, buffer tabs, comments, surround, and operators can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all twelve features even when a personal override enables them.
 
 ## Theme
 
@@ -157,6 +157,35 @@ Diagnostics show severity icons and virtual text, with severity sorting and roun
 They update after leaving Insert mode and do not underline text.
 `Space td` toggles diagnostics, `Space tv` switches between messages and compact icons, and `Space tV` toggles diagnostic lines for the current line.
 Formatting is manual; project formatter settings remain owned by the language server.
+
+## Operators
+
+mini.operators adds text-edit operators that work with motions, textobjects, or Visual selections.
+Register replacement uses the `cr` prefix; the other operators use their default mappings.
+
+| Operation | Motion or textobject | Current line | Visual selection |
+| --- | --- | --- | --- |
+| Replace with a register | `cr`, for example `"acriw` | `crr` | `cr` |
+| Exchange two regions | `gx`, for example `gxiw` twice | `gxx` twice | `gx` twice |
+| Duplicate text | `gm`, for example `gmiw` | `gmm` | `gm` |
+| Sort text | `gs` | `gss` | `gs` |
+| Evaluate Lua and replace with its result | `g=` | `g==` | `g=` |
+
+Replacement uses the selected register, or the unnamed register when none is specified, and preserves the source register.
+Linewise replacements and exchanges reindent the new text to match the destination.
+Exchange highlights the first region until a second region is selected; `Ctrl-c` cancels the pending exchange.
+Regions can belong to different buffers.
+Duplication preserves registers; `2gmiw` appends two copies of the word.
+Normal-mode edits support dot-repeat and undo.
+Characterwise sorting separates items by commas, semicolons, or whitespace; linewise sorting sorts whole lines.
+Lua evaluation executes the selected code and returns the value of its last expression.
+
+The native URL-opening `gx` mapping moves to `gX`.
+Using `cr` leaves the native `gr` LSP mappings available.
+With textobjects enabled, `"acraf` replaces a function with register `a`.
+Disable the module with `features.operators = false`.
+When disabled or unavailable, its editing mappings are absent and native `gx` remains available.
+Operators work independently of completion, comments, surround, a language server, Tree-sitter, and a theme.
 
 ## Surround
 
@@ -367,6 +396,7 @@ The core profile retains Neovim's native statusline and tabline.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
 - `lua/features/comments/` owns line-comment mappings and plugin setup.
 - `lua/features/surround/` owns paired-delimiter editing and its mappings.
+- `lua/features/operators/` owns register replacement, exchange, duplication, sorting, and evaluation.
 - `lua/features/statusline/` owns statusline sections, window bars, and readonly display components.
 - `lua/features/buffers/` owns buffer tabs and their Normal-mode mappings.
 - `lua/features/ui/` owns shared optional file-icon availability.
@@ -422,3 +452,5 @@ UI checks render the statusline, window bar, and buffer tabs through Neovim and 
 Comment checks send real Normal, Visual, and Operator-pending keys to verify toggling, counts, reverse selections, indentation, blank lines, dot-repeat, undo, comment-block selection/deletion, filetype and buffer comment formats, code textobjects, and missing/disabled/core/standalone behavior.
 
 Surround checks send real keys to verify adding, replacing, deleting, counts, dot-repeat, undo, reverse and multiline selections, bracket padding, function calls, tags, search suffixes, edge navigation, temporary highlights, cancellation, code textobjects, and missing/disabled/core/standalone behavior.
+
+Operator checks send real keys to verify register replacement and preservation, indentation, duplication, counts, dot-repeat, undo, Visual edits, sorting, Lua evaluation, cross-buffer exchange and cancellation, nonmodifiable buffers, code textobjects, and missing/disabled/core/standalone behavior.
