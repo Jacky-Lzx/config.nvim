@@ -23,14 +23,14 @@ Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true },
+  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true, statusline = true, buffers = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Theme, input, LSP, Picker, managed Tree-sitter, textobjects, and Git can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables all seven features even when a personal override enables them.
+Theme, input, LSP, Picker, managed Tree-sitter, textobjects, Git, statusline, and buffer tabs can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all nine features even when a personal override enables them.
 
 ## Theme
 
@@ -283,11 +283,45 @@ Staging and reset run only on explicit actions.
 Install Git separately on PATH. Missing Git or Gitsigns leaves other features usable and is reported by `:checkhealth config`.
 Disable this feature with `features.git = false`; the core profile disables it.
 
+## Statusline and buffer tabs
+
+Lualine displays the mode, Git branch and changes, native diagnostics, filename and modified state, encoding, format, filetype, progress, and cursor location.
+Git information comes from the attached Gitsigns buffer without starting another Git process while drawing the statusline.
+The window bar shows the filename and attached language-server names and progress.
+A recording indicator shows the active macro register.
+Catppuccin supplies the statusline colors; with the theme disabled or unavailable, Lualine uses the active colorscheme.
+
+Barbar displays open buffers, hides the bar when only one buffer and one tab page remain, and disables animations.
+Closing a buffer preserves the window layout. Unsaved changes remain protected; save or explicitly discard them before closing.
+Catppuccin supplies buffer-tab colors.
+
+| Key | Behavior |
+| --- | -------- |
+| `Alt h/l`, `[b` / `]b` | Previous / next buffer |
+| `Alt 1` through `Alt 9` | Select a buffer by its tab position |
+| `Alt Shift ,/.` | Move the current buffer left / right |
+| `Alt </>` | Move left / right with legacy terminal encoding |
+| `Alt w` | Close the buffer |
+| `Alt u` | Restore the last closed file |
+
+These mappings apply in Normal mode; completion and snippets retain their Insert-mode mappings.
+Buffer positions follow the displayed order, including manual moves.
+The tabs represent buffers; Neovim tab pages remain available with native commands.
+
+Disable these features independently with `features.statusline = false` or `features.buffers = false`.
+Missing Lualine leaves Barbar usable, and missing Barbar leaves Lualine usable.
+Both use optional nvim-web-devicons; missing icons leaves text labels and navigation available.
+Run `:ConfigPluginsInstall` and restart Neovim to install the selected UI plugins and file icons.
+The core profile retains Neovim's native statusline and tabline.
+
 ## Structure
 
 - `init.lua` delegates startup to `config`.
 - `lua/config/` owns startup, selection, plugin-manager bootstrap, configuration information, and health checks.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
+- `lua/features/statusline/` owns statusline sections, window bars, and readonly display components.
+- `lua/features/buffers/` owns buffer tabs and their Normal-mode mappings.
+- `lua/features/ui/` owns shared optional file-icon availability.
 - `lua/features/git/` owns buffer Git differences, actions, mappings, and dependency health checks.
 - `lua/features/textobjects/` owns mini.ai specifications and query health checks.
 - `queries/` supplies native language queries for syntax-based textobjects.
@@ -334,3 +368,5 @@ Tree-sitter checks verify real Lua parsing and capture colors, editing, native/V
 Textobject checks send real Visual and operator keys, verify selected text and edits, counts, next/previous selection, boundary motions, undo and dot-repeat, and exercise missing plugins/queries, unsupported parsers, disabled, core, and standalone cases.
 
 Git checks use temporary repositories and real keys to verify signs, hunk navigation and selection, partial/full staging and reset, previews, diff views, quickfix lists, display toggles, and disabled, core, missing-dependency, and standalone configurations.
+
+UI checks render the statusline, window bar, and buffer tabs through Neovim and send real keys for mode changes, macro recording, switching, reordering, closing, and restoration. They cover Git changes, diagnostics, theme restoration, missing plugins/icons, standalone features, disabled features, and the core profile; `--live` also checks the window bar with an actual Lua language server.

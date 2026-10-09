@@ -1,18 +1,34 @@
 local M = {}
-local child = vim.fn.jobstart({
+local ui = vim.env.NVIM_TEST_UI_MODE and dofile(vim.fn.stdpath("config") .. "/tests/ui_client.lua") or nil
+local args = {
   vim.v.progpath,
-  "--headless",
   "--embed",
   "-i",
   "NONE",
   "--cmd",
   "lua dofile(vim.fn.stdpath('config') .. '/tests/setup.lua')",
-}, { rpc = true })
+}
+if not ui then
+  table.insert(args, 2, "--headless")
+end
+local child = vim.fn.jobstart(args, ui and { on_stdout = ui.stdout } or { rpc = true })
 assert(child > 0, "Could not start the test editor")
 local sequence = 0
+local request = ui and ui.request or vim.rpcrequest
+local notify = ui and ui.notify or vim.rpcnotify
+
+function M.attach_ui(width, height)
+  local ok, err = pcall(request, child, "nvim_ui_attach", width, height, { rgb = true, ext_linegrid = true })
+  assert(ok, vim.inspect(err))
+end
 
 function M.remote(code, ...)
-  return vim.rpcrequest(child, "nvim_exec_lua", code, { ... })
+  return request(child, "nvim_exec_lua", code, { ... })
+end
+
+function M.screen()
+  M.remote("vim.cmd.redraw()")
+  return assert(ui, "No test UI").screen()
 end
 
 function M.wait(code, timeout)
@@ -32,14 +48,17 @@ end
 function M.feed(keys)
   sequence = sequence + 1
   local input = keys .. "<Cmd>lua vim.g.config_picker_input=" .. sequence .. "<CR>"
-  assert(vim.rpcrequest(child, "nvim_input", input) == #input)
+  assert(request(child, "nvim_input", input) == #input)
   M.wait("return vim.g.config_picker_input == " .. sequence)
 end
 
 function M.run(callback, label)
   local ok, err = xpcall(function()
+    if ui then
+      M.attach_ui(240, 50)
+    end
     M.wait("return vim.fn.exists(':ConfigInfo') == 2")
-    M.remote("vim.o.lines = 50; vim.o.columns = 140")
+    M.remote("vim.o.lines = 50; vim.o.columns = ...", ui and 240 or 140)
     callback()
     local errors = M.remote("return _G.config_test_errors")
     assert(#errors == 0, table.concat(errors, "\n"))
@@ -60,7 +79,7 @@ function M.run(callback, label)
     end, 20)
   ]]
   )
-  pcall(vim.rpcnotify, child, "nvim_command", "qa!")
+  pcall(notify, child, "nvim_command", "qa!")
   if vim.fn.jobwait({ child }, 2000)[1] == -1 then
     vim.fn.jobstop(child)
   end

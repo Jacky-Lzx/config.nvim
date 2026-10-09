@@ -20,6 +20,7 @@ function M.specs()
           auto_integrations = false,
           integrations = {
             gitsigns = features.git.active,
+            barbar = features.buffers.active,
             blink_cmp = { enabled = features.input.active, style = "bordered" },
             snacks = { enabled = features.picker.active, indent_scope_color = "flamingo" },
           },

@@ -8,8 +8,10 @@ local modules = {
   treesitter = "features.treesitter",
   textobjects = "features.textobjects",
   git = "features.git",
+  statusline = "features.statusline",
+  buffers = "features.buffers",
 }
-local order = { "theme", "input", "picker", "treesitter", "textobjects", "git" }
+local order = { "theme", "input", "picker", "treesitter", "textobjects", "git", "statusline", "buffers" }
 
 local function root()
   return vim.fs.joinpath(vim.fn.stdpath("data"), "lazy")

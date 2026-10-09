@@ -18,7 +18,9 @@ function M.resolve(overrides, profile)
         or key == "picker"
         or key == "treesitter"
         or key == "textobjects"
-        or key == "git",
+        or key == "git"
+        or key == "statusline"
+        or key == "buffers",
       "Unknown feature: " .. tostring(key)
     )
     assert(type(value) == "boolean", "Feature must be boolean: " .. key)
@@ -42,6 +44,8 @@ function M.resolve(overrides, profile)
       treesitter = true,
       textobjects = true,
       git = true,
+      statusline = true,
+      buffers = true,
     },
     languages = { lua = true },
   }, overrides)
@@ -53,6 +57,8 @@ function M.resolve(overrides, profile)
     settings.features.treesitter = false
     settings.features.textobjects = false
     settings.features.git = false
+    settings.features.statusline = false
+    settings.features.buffers = false
   end
   return settings
 end
