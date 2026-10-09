@@ -1,6 +1,6 @@
 # Neovim configuration
 
-A modular configuration for Neovim 0.12 or newer, with a small native core and optional theme, input, language, picker, Tree-sitter, and textobject features.
+A modular configuration for Neovim 0.12 or newer, with a small native core and optional features for editing, languages, navigation, and display.
 Normal startup does not install or update plugin repositories.
 
 ## Usage
@@ -23,14 +23,14 @@ Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true, statusline = true, buffers = true },
+  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true, git = true, statusline = true, buffers = true, comments = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Theme, input, LSP, Picker, managed Tree-sitter, textobjects, Git, statusline, and buffer tabs can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables all nine features even when a personal override enables them.
+Theme, input, LSP, Picker, managed Tree-sitter, textobjects, Git, statusline, buffer tabs, and comments can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all ten features even when a personal override enables them.
 
 ## Theme
 
@@ -157,6 +157,26 @@ Diagnostics show severity icons and virtual text, with severity sorting and roun
 They update after leaving Insert mode and do not underline text.
 `Space td` toggles diagnostics, `Space tv` switches between messages and compact icons, and `Space tV` toggles diagnostic lines for the current line.
 Formatting is manual; project formatter settings remain owned by the language server.
+
+## Comments
+
+mini.comment toggles line comments using the buffer's `commentstring` or the language at the cursor in an active Tree-sitter parser.
+It respects indentation and counts, pads comment delimiters with spaces, and comments blank lines without trailing whitespace.
+
+| Key | Behavior |
+| --- | -------- |
+| `Space /` in Normal mode | Toggle the current line; a count selects consecutive lines |
+| `Space /` in Visual mode | Toggle all lines in the selection |
+| `gc` followed by a motion or textobject | Toggle the operated lines, for example `gcj`, `gcap`, or `gcaf` |
+| `gc` in Visual or Operator-pending mode | Select the contiguous comment block, for example `ygc` or `dgc` |
+
+Normal-mode toggles support dot-repeat, and edits can be undone with `u`.
+`gci` and `gco` retain the Picker mappings for LSP incoming and outgoing calls; use `gcaf` or a Visual selection when commenting a function.
+The existing native `gcc` mapping remains available.
+Files without a comment format receive a notice and remain unchanged.
+The feature works without completion, a language server, managed Tree-sitter, or a theme.
+Disable it with `features.comments = false`.
+When disabled or unavailable, Neovim's native commenting remains available; `Space /` is installed only when this feature is active.
 
 ## Textobjects
 
@@ -319,6 +339,7 @@ The core profile retains Neovim's native statusline and tabline.
 - `init.lua` delegates startup to `config`.
 - `lua/config/` owns startup, selection, plugin-manager bootstrap, configuration information, and health checks.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
+- `lua/features/comments/` owns line-comment mappings and plugin setup.
 - `lua/features/statusline/` owns statusline sections, window bars, and readonly display components.
 - `lua/features/buffers/` owns buffer tabs and their Normal-mode mappings.
 - `lua/features/ui/` owns shared optional file-icon availability.
@@ -370,3 +391,5 @@ Textobject checks send real Visual and operator keys, verify selected text and e
 Git checks use temporary repositories and real keys to verify signs, hunk navigation and selection, partial/full staging and reset, previews, diff views, quickfix lists, display toggles, and disabled, core, missing-dependency, and standalone configurations.
 
 UI checks render the statusline, window bar, and buffer tabs through Neovim and send real keys for mode changes, macro recording, switching, reordering, closing, and restoration. They cover Git changes, diagnostics, theme restoration, missing plugins/icons, standalone features, disabled features, and the core profile; `--live` also checks the window bar with an actual Lua language server.
+
+Comment checks send real Normal, Visual, and Operator-pending keys to verify toggling, counts, reverse selections, indentation, blank lines, dot-repeat, undo, comment-block selection/deletion, filetype and buffer comment formats, code textobjects, and missing/disabled/core/standalone behavior.

@@ -29,7 +29,17 @@ function M.check()
   else
     vim.health.ok("Selected plugins are installed at " .. info.plugins.root)
   end
-  for _, name in ipairs({ "theme", "input", "picker", "treesitter", "textobjects", "git", "statusline", "buffers" }) do
+  for _, name in ipairs({
+    "theme",
+    "input",
+    "picker",
+    "treesitter",
+    "textobjects",
+    "git",
+    "statusline",
+    "buffers",
+    "comments",
+  }) do
     local feature = info.plugins.features[name]
     if feature.available then
       vim.health.ok(name .. " plugins are available")
