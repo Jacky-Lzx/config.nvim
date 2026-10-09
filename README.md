@@ -1,6 +1,6 @@
 # Neovim configuration
 
-A modular configuration for Neovim 0.12 or newer, with a small native core and optional theme, input, language, picker, and Tree-sitter features.
+A modular configuration for Neovim 0.12 or newer, with a small native core and optional theme, input, language, picker, Tree-sitter, and textobject features.
 Normal startup does not install or update plugin repositories.
 
 ## Usage
@@ -23,14 +23,14 @@ Personal overrides can be placed in the ignored `lua/config/local.lua`:
 
 ```lua
 return {
-  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true },
+  features = { theme = true, input = false, lsp = true, picker = true, treesitter = true, textobjects = true },
   languages = { lua = true },
 }
 ```
 
 Settings are resolved once at startup; restart after changing them.
-Theme, input, LSP, Picker, and managed Tree-sitter can be disabled independently; `languages.lua = false` disables the Lua server.
-The core profile disables all five features even when a personal override enables them.
+Theme, input, LSP, Picker, managed Tree-sitter, and textobjects can be disabled independently; `languages.lua = false` disables the Lua server.
+The core profile disables all six features even when a personal override enables them.
 
 ## Theme
 
@@ -158,6 +158,35 @@ They update after leaving Insert mode and do not underline text.
 `Space td` toggles diagnostics, `Space tv` switches between messages and compact icons, and `Space tV` toggles diagnostic lines for the current line.
 Formatting is manual; project formatter settings remain owned by the language server.
 
+## Textobjects
+
+mini.ai extends `a`/`i` selection in Visual and Operator-pending modes, with a search neighborhood of 500 lines.
+Native objects such as `iw` remain available.
+Objects work with operators such as `y`, `d`, and `c`, counts, undo, and dot-repeat.
+
+| Object | Behavior |
+| ------ | -------- |
+| `af` / `if` | Function definition / body |
+| `ao` / `io` | Code block, conditional, or loop / body |
+| `ac` / `ic` | Class / body, when supplied by a language query |
+| `aa` / `ia` | Argument |
+| `au` / `iu` | Function call including its dotted name / arguments |
+| `aU` / `iU` | Function call excluding a dotted prefix / arguments |
+| `at` / `it` | Tag / contents |
+| `ad` / `id` | Digits |
+| `ae` / `ie` | CamelCase or snake_case component |
+
+Brackets and quotes retain mini.ai's builtin objects.
+Use `an`/`in` for the next object, `al`/`il` for the previous object, and `g[`/`g]` followed by an object identifier to move to its outer edges.
+For example, `vaf` selects a function, `dif` deletes its body, and `yinf` yanks the next function's body.
+
+Syntax-based objects use Neovim's parser and native query API.
+The configuration supplies `queries/lua/textobjects.scm` for Lua functions and code blocks; Lua has no class query.
+These objects also work with Neovim's bundled Lua parser when managed Tree-sitter is disabled.
+Missing parsers or queries leave the buffer unchanged and provide no-match feedback; pattern-based objects remain usable.
+`:checkhealth config` reports query availability for selected languages.
+Disable the feature with `features.textobjects = false`; the core profile uses native textobjects.
+
 ## Syntax highlighting
 
 Neovim 0.12 already provides a Lua parser and native Lua highlighting.
@@ -231,6 +260,8 @@ Input completion keeps its own Enter and Tab behavior outside Picker.
 - `init.lua` delegates startup to `config`.
 - `lua/config/` owns startup, selection, plugin-manager bootstrap, configuration information, and health checks.
 - `lua/core/` owns native options, keymaps, autocommands, and commands.
+- `lua/features/textobjects/` owns mini.ai specifications and query health checks.
+- `queries/` supplies native language queries for syntax-based textobjects.
 - `lua/features/treesitter/` owns native highlighting, explicit parser installation, dependency checks, and health reporting.
 - `lua/features/theme/` owns theme options, plugin integrations, and custom highlights.
 - `lua/features/input/` owns completion, snippets, pairing, and their key interactions.
@@ -270,3 +301,5 @@ They also exercise the ripgrep file-finder fallback and missing-tool behavior.
 Theme checks cover Mocha colors, transparent windows, highlight restoration, completion/Picker integration, and disabled, missing, core, and theme-only configurations.
 
 Tree-sitter checks verify real Lua parsing and capture colors, editing, native/Vim-syntax fallback, dependency notices, idempotent installation, and disabled, core, language-disabled, and standalone configurations.
+
+Textobject checks send real Visual and operator keys, verify selected text and edits, counts, next/previous selection, boundary motions, undo and dot-repeat, and exercise missing plugins/queries, unsupported parsers, disabled, core, and standalone cases.

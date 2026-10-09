@@ -1,9 +1,14 @@
 local M = {}
 local started = false
 local active = {}
-local modules =
-  { theme = "features.theme", input = "features.input", picker = "features.picker", treesitter = "features.treesitter" }
-local order = { "theme", "input", "picker", "treesitter" }
+local modules = {
+  theme = "features.theme",
+  input = "features.input",
+  picker = "features.picker",
+  treesitter = "features.treesitter",
+  textobjects = "features.textobjects",
+}
+local order = { "theme", "input", "picker", "treesitter", "textobjects" }
 
 local function root()
   return vim.fs.joinpath(vim.fn.stdpath("data"), "lazy")
