@@ -14,8 +14,11 @@
 - `languages/` owns language metadata and language-specific plugin contributions.
   Selection, installation, and health checks must consume the same metadata.
 - `after/lsp/` owns native server overrides. The language registry only selects servers.
-- `after/ftplugin/` owns buffer options and buffer-local mappings. Files that must run
-  before runtime ftplugins should be retained explicitly and documented.
+- `ftplugin/` owns settings needed before runtime ftplugins. Neovim 0.12 loads Lua
+  ftplugins after Vimscript ftplugins per runtime directory, so the configuration's
+  Lua hooks run before the built-in scripts. Markdown style and Python/Rust mapping
+  switches belong here; these hooks must not set `b:did_ftplugin` and skip the defaults.
+- `after/ftplugin/` owns buffer options and buffer-local mappings applied after runtime defaults.
 - `config/platform.lua` declares shared defaults and per-platform settings as a data table.
 - `utils/` holds shared helpers: `utils/paths.lua` locates checkout-relative resources;
   `utils/platform.lua` selects platform settings, resolves environment overrides and

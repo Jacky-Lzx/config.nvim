@@ -72,11 +72,6 @@ function M.setup()
   if python_host then
     vim.g.python3_host_prog = python_host
   end
-
-  -- TODO: Find a better place to config this <2026.10.09, lzx>
-  vim.g.markdown_recommended_style = 0
-  vim.g.no_python_maps = true
-  vim.g.no_rust_maps = true
 end
 
 return M

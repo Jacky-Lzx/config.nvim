@@ -13,6 +13,7 @@ Personal Neovim configuration for macOS and Linux. It targets Neovim 0.12 and us
 - `lua/integrations/`: adapters connecting features to Snacks/Blink and other plugin integrations.
 - `lua/languages/`: language metadata and dedicated plugin specs.
 - `lua/utils/`: shared helpers for resource paths, platform discovery, and system commands.
+- `ftplugin/`: settings needed before runtime ftplugins, such as style and mapping switches.
 - `after/ftplugin/`: buffer-local settings; `after/lsp/`: native server overrides.
 - `lua/snippets/`, `queries/`, and `lua/overseer/template/`: native discovery paths.
 
@@ -59,7 +60,8 @@ may access the network. Normal startup does not install Mason packages or Tree-s
    Complex languages can use `<name>/init.lua` and `<name>/plugins.lua`.
 2. Add the language name to a profile in `lua/config/profiles.lua`.
 3. Put server-specific overrides, if needed, in `after/lsp/<server>.lua` and buffer-local
-   behavior in `after/ftplugin/<filetype>.lua`.
+   behavior in `after/ftplugin/<filetype>.lua`. Put switches read by runtime ftplugins
+   in `ftplugin/<filetype>.lua` so they are set before the built-in scripts run.
 4. Run `./tests/smoke.sh`, restart Neovim, and explicitly install any new tools.
 
 Language `tools` entries distinguish Mason package names from executable names. Omit `mason`
