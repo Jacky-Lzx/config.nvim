@@ -9,10 +9,6 @@ return {
       { "#",  "#<CMD>lua require('hlslens').start()<CR>",   mode = "n", desc = "Previous match",  noremap = true, silent = true },
       { "g*", "g*<CMD>lua require('hlslens').start()<CR>",  mode = "n", desc = "Next match",      noremap = true, silent = true },
       { "g#", "g#<CMD>lua require('hlslens').start()<CR>",  mode = "n", desc = "Previous match",  noremap = true, silent = true },
-      -- Clear search, diff update and redraw
-      -- taken from LazyVim
-      { "//", "<CMD>nohlsearch<BAR>diffupdate<BAR>normal! <C-L><CR>", mode = "n", desc = "Clear highlight", noremap = true, silent = true },
-
       { "/" },
       { "?" },
     },

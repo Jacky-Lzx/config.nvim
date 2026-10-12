@@ -58,6 +58,10 @@ function M.setup()
   map("n", "<leader>J", "<Cmd>cnext<CR>", { desc = "Next quickfix entry" })
   map("n", "<leader>K", "<Cmd>cprevious<CR>", { desc = "Previous quickfix entry" })
   map("n", "<A-z>", "<Cmd>setlocal wrap!<CR>", { desc = "Toggle line wrap" })
+  map("n", "//", "<Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>", {
+    desc = "Clear search highlighting and redraw",
+    silent = true,
+  })
 
   -- Only a bare Visual :write loses its range; substitutions and exports retain it.
   map("c", "<CR>", command_enter, { expr = true, desc = "Confirm command; save full buffer with Visual :write" })
