@@ -8,7 +8,7 @@ Personal Neovim configuration for macOS and Linux. It targets Neovim 0.12 and us
 - `init.lua`: delegates startup to `config.setup()`.
 - `lua/config/`: startup composition, platform settings, selection, and lazy.nvim bootstrap.
 - `lua/core/`: editor options, general mappings, commands, and autocmds.
-- `lua/features/`: native LSP/diagnostic behavior and completion source state.
+- `lua/features/`: native folding, LSP/diagnostic behavior, and completion source state.
 - `lua/plugins/`: lazy.nvim specs, dependencies, loading conditions, and plugin-specific configuration.
 - `lua/integrations/`: adapters connecting features to Snacks/Blink and other plugin integrations.
 - `lua/languages/`: language metadata and dedicated plugin specs.
@@ -21,6 +21,23 @@ See [the architecture guide](docs/architecture.md) for ownership and lifecycle r
 
 `<leader>gf` uses Conform's configured formatters with LSP fallback in all buffers.
 LSP attachment adds navigation/refactoring mappings without replacing the shared format key.
+
+## Folding
+
+`lua/features/folding.lua` selects native Tree-sitter folding when a parser and folds
+query are available, otherwise indentation folding. Diff and special windows retain
+their own folding settings. VimTeX folding is disabled to keep one folding source.
+
+Files initially open all folds; native `zM`, `zR`, `zm`, `zr`, `za`, `zo`, `zc`, `zx`,
+and `zX` control them. `2zS` sets the current window's fold level to 2. Folded lines
+retain highlighting and show the number of hidden lines after the text, separated
+by two spaces.
+
+`zK` previews a closed fold without moving focus; repeat it to enter the preview.
+Use `q` or Escape there to close it. Moving the source cursor or entering Insert mode
+also closes it. Previews show at most 200 lines in a window up to 100 columns and
+20 rows; longer folds are marked in the title. `K` keeps native LSP hover or the
+filetype's documentation action (VimTeX package documentation in LaTeX).
 
 ## Profiles and features
 

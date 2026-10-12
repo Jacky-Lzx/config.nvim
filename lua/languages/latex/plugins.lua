@@ -76,7 +76,7 @@ return {
         styles = 1,
       }
 
-      vim.g.vimtex_fold_enabled = 1
+      vim.g.vimtex_fold_enabled = 0 -- Native Tree-sitter/indent folding owns this window.
     end,
   },
   {

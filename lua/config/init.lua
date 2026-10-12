@@ -22,6 +22,7 @@ function M.setup()
   require("extra.profiling").setup()
 
   require("features.lsp").setup()
+  require("features.folding").setup()
 
   if vim.g.neovide then
     require("integrations.neovide")

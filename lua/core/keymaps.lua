@@ -52,6 +52,17 @@ function M.setup()
   map("n", "<leader>/", "gcc", { remap = true, desc = "Toggle comment line" })
   map("x", "<leader>/", "gc", { remap = true, desc = "Toggle comments in selection" })
 
+  map("n", "zS", function()
+    if vim.v.count == 0 then
+      vim.notify("Use a count to set foldlevel, e.g. 2zS; zM closes all folds", vim.log.levels.WARN)
+      return
+    end
+    vim.wo.foldlevel = vim.v.count
+  end, { desc = "Set foldlevel" })
+  map("n", "zK", function()
+    require("features.folding").preview()
+  end, { desc = "Preview closed fold; repeat to focus" })
+
   map({ "n", "x" }, "Q", "<Cmd>qa<CR>", { desc = "Quit Neovim" })
   map({ "n", "x" }, "qq", "<Cmd>quit<CR>", { desc = "Close window" })
 
