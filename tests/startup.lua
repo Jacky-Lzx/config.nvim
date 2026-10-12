@@ -9,6 +9,10 @@ local function check()
   assert(vim.g.loaded_netrw == 1 and vim.g.loaded_netrwPlugin == 1)
   assert(vim.bo.textwidth == 0 and vim.bo.softtabstop == -1)
   assert(vim.o.autoread and vim.o.undofile and vim.o.confirm)
+  assert(
+    vim.fs.normalize(vim.o.undodir):gsub("/+$", "") == vim.fs.joinpath(vim.fn.stdpath("state"), "undo"),
+    "Persistent undo must use Neovim's default state directory"
+  )
   assert(#vim.api.nvim_get_autocmds({ group = "ConfigLsp", event = "LspAttach" }) == 1)
   assert(#vim.api.nvim_get_autocmds({ group = "ConfigCore", event = "FileType" }) == 1)
   for name in pairs(package.loaded) do
@@ -16,6 +20,7 @@ local function check()
   end
   local plugins = require("lazy.core.config").plugins
   assert(not plugins["mini.comment"], "Commenting must use Neovim's native implementation")
+  assert(not plugins.undotree, "Snacks undo must not depend on the Undotree plugin")
   local languages = require("languages").current()
   local features = require("config.context").current().selection.features
   local function opts(name)
