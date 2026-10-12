@@ -1,6 +1,19 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT, "NVIM_CONFIG_ROOT is required")
 vim.opt.runtimepath:prepend(root)
 vim.g.mapleader = " "
+vim.g.clipboard = {
+  name = "core-test",
+  copy = { ["+"] = function() end, ["*"] = function() end },
+  paste = {
+    ["+"] = function()
+      return { {}, "v" }
+    end,
+    ["*"] = function()
+      return { {}, "v" }
+    end,
+  },
+  cache_enabled = 0,
+}
 
 local function feed(keys)
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, true, true), "xt", false)

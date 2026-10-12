@@ -21,6 +21,7 @@ local function check()
   local plugins = require("lazy.core.config").plugins
   assert(not plugins["mini.comment"], "Commenting must use Neovim's native implementation")
   assert(not plugins.undotree, "Snacks undo must not depend on the Undotree plugin")
+  assert(not plugins["smartyank.nvim"], "Yank synchronization must use the native clipboard provider")
   local languages = require("languages").current()
   local features = require("config.context").current().selection.features
   local function opts(name)

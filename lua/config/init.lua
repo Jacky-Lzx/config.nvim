@@ -14,6 +14,7 @@ function M.setup()
 
   -- Keep startup order explicit; plugin-dependent work lives in plugin specs.
   require("core.options").setup()
+  require("core.clipboard").setup()
   require("core.keymaps").setup()
   require("core.commands").setup()
   require("core.autocmds").setup()

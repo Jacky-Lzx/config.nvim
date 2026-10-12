@@ -10,6 +10,7 @@ export NVIM_CONFIG_ROOT="$root"
 export NVIM_TEST_TMP="$test_tmp"
 export NVIM_SMOKE_TEST=1
 export NVIM_LOG_FILE="$test_tmp/nvim.log"
+export SSH_CONNECTION=
 
 cat > "$test_tmp/sample.tex" <<'EOF'
 \documentclass{article}
@@ -23,7 +24,7 @@ printf '<script setup lang="ts">const count = 1</script>\n' > "$test_tmp/sample.
 nvim --headless -u NONE -i NONE -l "$root/tests/smoke.lua"
 (
   cd -- "$root"
-  for test in config platform obsidian_local core comments diagnostics completion math_conditions commands python rust integrations open_at_cursor tooling lsp_config lualine_lazy mini_diff_lazy; do
+  for test in config platform obsidian_local core clipboard comments diagnostics completion math_conditions commands python rust integrations open_at_cursor tooling lsp_config lualine_lazy mini_diff_lazy; do
     printf '\nRunning tests/%s.lua\n' "$test"
     nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/$test.lua"
   done
