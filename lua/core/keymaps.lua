@@ -49,6 +49,9 @@ function M.setup()
   map("x", "<", "<gv", { desc = "Indent left and retain selection" })
   map("x", ">", ">gv", { desc = "Indent right and retain selection" })
 
+  map("n", "<leader>/", "gcc", { remap = true, desc = "Toggle comment line" })
+  map("x", "<leader>/", "gc", { remap = true, desc = "Toggle comments in selection" })
+
   map({ "n", "x" }, "Q", "<Cmd>qa<CR>", { desc = "Quit Neovim" })
   map({ "n", "x" }, "qq", "<Cmd>quit<CR>", { desc = "Close window" })
 

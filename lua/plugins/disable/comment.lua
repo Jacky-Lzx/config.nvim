@@ -1,5 +1,5 @@
 return {
-  -- A similar plugin "mini.comment" is used instead
+  -- Commenting uses Neovim's native gc/gcc mappings.
   {
     "numToStr/Comment.nvim",
     enabled = false,

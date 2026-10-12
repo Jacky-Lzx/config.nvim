@@ -37,8 +37,7 @@ local marks = {
 --- Get the comment string {beg,end} table
 ---@return table comment_strings {begcstring, endcstring}
 local get_cstring = function()
-  local cursor = vim.api.nvim_win_get_cursor(0) -- get the current cursor position
-  local cstring = require("mini.comment").get_commentstring({ cursor[1], cursor[2] + 1 })
+  local cstring = require("snippets.utils.commentstring").at_cursor()
 
   local left, right = cstring:match("^(.*)%%s(.*)$")
   left = vim.trim(left)

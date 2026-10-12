@@ -15,6 +15,7 @@ local function check()
     assert(not name:match("^config%.legacy[%.]?"), "Startup loaded an archived module: " .. name)
   end
   local plugins = require("lazy.core.config").plugins
+  assert(not plugins["mini.comment"], "Commenting must use Neovim's native implementation")
   local languages = require("languages").current()
   local features = require("config.context").current().selection.features
   local function opts(name)

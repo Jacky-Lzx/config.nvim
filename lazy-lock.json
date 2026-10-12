@@ -24,7 +24,6 @@
   "mini.ai": { "branch": "main", "commit": "d73c36349aa7b0bab5f77ad71701a1d42211a1df" },
   "mini.align": { "branch": "main", "commit": "8cebe89d82f20e6d21b27346bcde4b4b6244a9f1" },
   "mini.bracketed": { "branch": "main", "commit": "7662c280946faf573c4eabf307d78406ad0783e4" },
-  "mini.comment": { "branch": "main", "commit": "27a29d6b949b9497f80a0a03421e89fed71d8c37" },
   "mini.diff": { "branch": "main", "commit": "0743d26bd858ebe32efcf5c86a91a422a000f273" },
   "mini.operators": { "branch": "main", "commit": "59c7f7362461a5db830a5752b22ce9f5cd25a966" },
   "mini.surround": { "branch": "main", "commit": "580e4cb98c5900d9fe743865fb5a5b2178b4ab18" },
