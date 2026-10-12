@@ -5,8 +5,8 @@
 - `init.lua` invokes `config.setup()`. `config/` owns startup composition, platform
   settings, selection, and plugin-manager bootstrap.
 - `core/` owns editor options, general mappings, commands, and autocmds.
-- `features/` owns capability behavior and state. Native LSP/diagnostic behavior,
-  completion source selection can run without plugin APIs.
+- `features/` owns capability behavior and state. Native folding, column guide,
+  LSP/diagnostic behavior, and completion source selection can run without plugin APIs.
 - `plugins/` owns lazy.nvim specs, dependencies, loading conditions, and plugin-specific
   configuration. Small callbacks used by only one plugin remain with that spec.
 - `integrations/` connects feature behavior to plugin APIs. Snacks diagnostic toggles,

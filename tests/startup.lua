@@ -23,6 +23,7 @@ local function check()
   assert(not plugins.undotree, "Snacks undo must not depend on the Undotree plugin")
   assert(not plugins["smartyank.nvim"], "Yank synchronization must use the native clipboard provider")
   assert(not plugins["nvim-ufo"] and not plugins["promise-async"], "Folding must use the native implementation")
+  assert(not plugins["virt-column.nvim"], "Column guide must use native decorations")
   local languages = require("languages").current()
   local features = require("config.context").current().selection.features
   local function opts(name)

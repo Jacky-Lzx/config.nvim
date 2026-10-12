@@ -8,7 +8,7 @@ Personal Neovim configuration for macOS and Linux. It targets Neovim 0.12 and us
 - `init.lua`: delegates startup to `config.setup()`.
 - `lua/config/`: startup composition, platform settings, selection, and lazy.nvim bootstrap.
 - `lua/core/`: editor options, general mappings, commands, and autocmds.
-- `lua/features/`: native folding, LSP/diagnostic behavior, and completion source state.
+- `lua/features/`: native folding, column guide, LSP/diagnostic behavior, and completion source state.
 - `lua/plugins/`: lazy.nvim specs, dependencies, loading conditions, and plugin-specific configuration.
 - `lua/integrations/`: adapters connecting features to Snacks/Blink and other plugin integrations.
 - `lua/languages/`: language metadata and dedicated plugin specs.
@@ -38,6 +38,15 @@ Use `q` or Escape there to close it. Moving the source cursor or entering Insert
 also closes it. Previews show at most 200 lines in a window up to 100 columns and
 20 rows; longer folds are marked in the title. `K` keeps native LSP hover or the
 filetype's documentation action (VimTeX package documentation in LaTeX).
+
+## Column guide
+
+`lua/features/column_guide.lua` draws `` at display column 121 using native,
+temporary decorations. It follows horizontal scrolling independently in each
+window, accounts for tabs and wide characters, and avoids covering text.
+Special buffers and floating windows do not show the guide. The character uses
+the theme's `NonText` highlight. Change `column` and `char` in the module's setup
+defaults, or pass these options from `lua/config/init.lua`.
 
 ## Profiles and features
 
