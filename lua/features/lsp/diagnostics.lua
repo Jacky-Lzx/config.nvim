@@ -13,6 +13,19 @@ local compact = {
   end,
 }
 
+local function jump(direction)
+  vim.diagnostic.jump({
+    count = direction * vim.v.count1,
+    wrap = true,
+    on_jump = function(diagnostic, bufnr)
+      if not diagnostic then
+        return
+      end
+      vim.diagnostic.open_float({ bufnr = bufnr, scope = "cursor", focus = false })
+    end,
+  })
+end
+
 function M.enabled()
   return vim.diagnostic.is_enabled()
 end
@@ -48,6 +61,13 @@ function M.setup()
     virtual_lines = false,
     float = { border = "rounded" },
   })
+
+  vim.keymap.set("n", "<A-j>", function()
+    jump(1)
+  end, { desc = "Go to next diagnostic" })
+  vim.keymap.set("n", "<A-k>", function()
+    jump(-1)
+  end, { desc = "Go to previous diagnostic" })
 
   vim.keymap.set("n", "<leader>td", function()
     M.set_enabled(not M.enabled())

@@ -74,4 +74,55 @@ toggles.virtual_text.set(false)
 assert(not toggles.virtual_text.get())
 assert(vim.diagnostic.config().virtual_text.format({ message = "hidden" }) == "")
 assert(not package.loaded.snacks, "The integration must use its injected Snacks instance")
-print("Diagnostic defaults, fallback mappings and Snacks toggle checks passed")
+
+-- Diagnostics from linters must be navigable without an attached LSP or mini.bracketed.
+local buffer = vim.api.nvim_create_buf(false, true)
+vim.api.nvim_set_current_buf(buffer)
+vim.api.nvim_buf_set_lines(buffer, 0, -1, false, { "one", "two", "three", "four", "five", "six" })
+local namespace = vim.api.nvim_create_namespace("diagnostic-navigation-test")
+vim.diagnostic.set(namespace, buffer, {
+  { lnum = 1, col = 0, message = "first diagnostic", severity = vim.diagnostic.severity.WARN },
+  { lnum = 3, col = 0, message = "second diagnostic", severity = vim.diagnostic.severity.ERROR },
+})
+vim.api.nvim_buf_set_lines(buffer, 0, 0, false, { "inserted", "inserted" })
+vim.api.nvim_win_set_cursor(0, { 6, 0 })
+
+local function navigate(keys, row, message)
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.api.nvim_win_get_config(win).relative ~= "" then
+      vim.api.nvim_win_close(win, true)
+    end
+  end
+  local editing_window = vim.api.nvim_get_current_win()
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "xt", false)
+  assert(vim.api.nvim_win_get_cursor(editing_window)[1] == row, "Wrong diagnostic target for " .. keys)
+  local float
+  assert(
+    vim.wait(1000, function()
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.api.nvim_win_get_config(win).relative ~= "" then
+          float = win
+          return true
+        end
+      end
+      return false
+    end),
+    "Jump did not open a diagnostic float"
+  )
+  assert(vim.api.nvim_get_current_win() == editing_window, "Diagnostic float stole focus")
+  local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(float), 0, -1, false)
+  assert(table.concat(lines, "\n"):find(message, 1, true), "Float showed the wrong diagnostic")
+end
+
+navigate("<A-k>", 4, "first diagnostic")
+navigate("<A-k>", 6, "second diagnostic")
+navigate("<A-j>", 4, "first diagnostic")
+-- Verify count prefixes after the producer refreshes positions following edits.
+vim.diagnostic.set(namespace, buffer, {
+  { lnum = 3, col = 0, message = "first diagnostic", severity = vim.diagnostic.severity.WARN },
+  { lnum = 5, col = 0, message = "second diagnostic", severity = vim.diagnostic.severity.ERROR },
+})
+vim.api.nvim_win_set_cursor(0, { 1, 0 })
+navigate("2<A-j>", 6, "second diagnostic")
+assert(not package.loaded["mini.bracketed"], "Diagnostic navigation must not load mini.bracketed")
+print("Diagnostic defaults, native navigation, floats and Snacks toggle checks passed")

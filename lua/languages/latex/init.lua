@@ -27,7 +27,7 @@ return {
     chktex = {
           -- stylua: ignore
           args = {
-            "-wall", "-q", "-n1", "-n3", "-n8", "-n9", "-n22", "-n30", "-n24", "-n17", "-e16",
+            "-wall", "-q", "-n1", "-n3", "-n8", "-n9", "-n22", "-n30", "-n24", "-n17", "-n19", "-e16",
             "-v0", "-I0", "-s", ":", "-f", "%l%b%c%b%d%b%k%b%n%b%m%b%b%b",
           },
       ignore_exitcode = true,
