@@ -16,8 +16,16 @@ return {
       "ImagePreviewClearCache",
       "ImageInsert",
       "ImagePaste",
+      "ImagePick",
     },
     keys = {
+      {
+        "<leader>pc",
+        function()
+          require("image_tools").pick()
+        end,
+        desc = "[Image] Choose images to import",
+      },
       {
         "<leader>pI",
         function()
@@ -95,5 +103,15 @@ return {
     config = function(_, opts)
       require("image_tools").setup(opts)
     end,
+  },
+  {
+    "folke/snacks.nvim",
+    opts = {
+      picker = {
+        preview = function(ctx)
+          require("integrations.snacks_images").preview(ctx)
+        end,
+      },
+    },
   },
 }

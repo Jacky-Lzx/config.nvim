@@ -19,10 +19,10 @@ return {
         },
       },
       {
-        "Jacky-Lzx/image-insert.nvim",
+        "image-tools.nvim",
         optional = true,
         opts = {
-          dir_path = "assets/imgs",
+          insert = { directory = "assets/imgs" },
         },
       },
       {
