@@ -13,6 +13,10 @@ local available = vim.uv.fs_stat(expected .. "/lua/image_tools/init.lua") ~= nil
 if available then
   assert(spec, "Independent preview spec missing")
   assert(spec.dir == expected, "Independent preview must use the external checkout")
+  assert(
+    require("lazy.core.plugin").values(spec, "opts", false).position == "bottom_right",
+    "Preview must be configured for the bottom-right corner"
+  )
   local calls = 0
   require("lazy").load({ plugins = { "image-tools.nvim" } })
   assert(spec._.loaded, "Independent preview did not load")

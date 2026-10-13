@@ -26,7 +26,7 @@ return {
         desc = "[Image] Toggle automatic preview",
       },
     },
-    opts = { auto_preview = true, max_width = 60, max_height = 30 },
+    opts = { auto_preview = true, position = "bottom_right", max_width = 60, max_height = 30 },
     config = function(_, opts)
       require("image_tools").setup(opts)
     end,
