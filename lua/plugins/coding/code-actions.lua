@@ -29,7 +29,12 @@ return {
     },
     opts = {
       backend = "delta", -- Set "vim" to use the native diff preview.
-      delta = { args = {} },
+      delta = {
+        args = {
+          "--file-style=omit",
+          "--hunk-header-style=file line-number syntax",
+        },
+      },
     },
     config = function(_, opts)
       require("code_actions").setup(opts)
