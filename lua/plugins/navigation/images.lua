@@ -9,8 +9,15 @@ return {
       return vim.uv.fs_stat(directory .. "/lua/image_tools/init.lua") ~= nil
     end,
     event = "VeryLazy",
-    cmd = { "ImagePreview", "ImagePreviewClose", "ImagePreviewToggle", "ImagePreviewClearCache" },
+    cmd = { "ImagePreview", "ImagePreviewClose", "ImagePreviewToggle", "ImagePreviewClearCache", "ImageInsert" },
     keys = {
+      {
+        "<leader>pf",
+        function()
+          require("image_tools").insert()
+        end,
+        desc = "[Image] Import image file",
+      },
       {
         "<leader>si",
         function()
@@ -27,6 +34,7 @@ return {
       },
     },
     opts = {
+      insert = { directory = "Figures", mode = "copy" },
       auto_preview = true,
       position = "bottom_right",
       transport = "auto",
