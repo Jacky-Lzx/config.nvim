@@ -27,7 +27,10 @@ return {
         mode = "i",
       },
     },
-    opts = {},
+    opts = {
+      backend = "delta", -- Set "vim" to use the native diff preview.
+      delta = { args = {} },
+    },
     config = function(_, opts)
       require("code_actions").setup(opts)
     end,
