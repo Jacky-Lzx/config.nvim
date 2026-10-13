@@ -34,6 +34,7 @@ if available then
   assert(mapping.callback and mapping.desc == "[Image] Preview image on current line")
   mapping.callback()
   assert(calls == 1, "Preview key must call the independent plugin")
+  assert(vim.fn.exists(":ImagePaste") == 2, "Independent clipboard command missing")
   assert(vim.fn.exists(":ImageInsert") == 2, "Independent image import command missing")
   assert(vim.fn.exists(":ImagePreview") == 2, "Independent preview command missing")
   assert(vim.fn.exists(":ImagePreviewClearCache") == 2, "Terminal cache cleanup command missing")

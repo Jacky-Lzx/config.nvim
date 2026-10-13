@@ -9,8 +9,58 @@ return {
       return vim.uv.fs_stat(directory .. "/lua/image_tools/init.lua") ~= nil
     end,
     event = "VeryLazy",
-    cmd = { "ImagePreview", "ImagePreviewClose", "ImagePreviewToggle", "ImagePreviewClearCache", "ImageInsert" },
+    cmd = {
+      "ImagePreview",
+      "ImagePreviewClose",
+      "ImagePreviewToggle",
+      "ImagePreviewClearCache",
+      "ImageInsert",
+      "ImagePaste",
+    },
     keys = {
+      {
+        "<leader>pI",
+        function()
+          require("image_tools").paste({ insert_strategy = "insert_line_after" })
+        end,
+        desc = "[Image] Paste on next line",
+      },
+      {
+        "<leader>pi",
+        function()
+          require("image_tools").paste({ insert_strategy = "insert_after" })
+        end,
+        desc = "[Image] Paste after cursor",
+      },
+      {
+        "<leader>PI",
+        function()
+          require("image_tools").paste({ insert_strategy = "insert_line_before" })
+        end,
+        desc = "[Image] Paste on previous line",
+      },
+      {
+        "<leader>Pi",
+        function()
+          require("image_tools").paste({ insert_strategy = "insert_before" })
+        end,
+        desc = "[Image] Paste before cursor",
+      },
+      {
+        "<leader>pC",
+        function()
+          local insertion = require("image_tools.insert")
+          local context = insertion.capture()
+          vim.ui.select({ "png", "jpg", "webp", "avif" }, { prompt = "Clipboard image format:" }, function(format)
+            if format then
+              require("image_tools").paste({ context = context, format = format, prompt_for_file_name = true })
+            else
+              insertion.release(context)
+            end
+          end)
+        end,
+        desc = "[Image] Paste with format and filename",
+      },
       {
         "<leader>pf",
         function()

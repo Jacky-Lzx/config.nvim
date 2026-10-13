@@ -4,52 +4,6 @@ return {
     dev = true,
     keys = {
       {
-        "<leader>pI",
-        function()
-          require("image-insert").insert_image({ insert_strategy = "insert_line_after" })
-        end,
-        desc = "[image-insert] Insert next line",
-      },
-      {
-        "<leader>pi",
-        function()
-          require("image-insert").insert_image({ insert_strategy = "insert_after" })
-        end,
-        desc = "[image-insert] Insert after cursor",
-      },
-      {
-        "<leader>PI",
-        function()
-          require("image-insert").insert_image({ insert_strategy = "insert_line_before" })
-        end,
-        desc = "[image-insert] Insert prev line",
-      },
-      {
-        "<leader>Pi",
-        function()
-          require("image-insert").insert_image({ insert_strategy = "insert_before" })
-        end,
-        desc = "[image-insert] Insert before cursor",
-      },
-      {
-        "<leader>pC",
-        function()
-          require("image-insert").insert_image({
-            process = {
-              { cmd = "magick - -quality 75 png:-", extension = "png" },
-              { cmd = "magick - -quality 75 jpg:-", extension = "jpg" },
-              { cmd = "magick - -quality 75 webp:-", extension = "webp" },
-              { cmd = "magick - avif:-", extension = "avif" },
-              { cmd = "", extension = "png" },
-              { cmd = "", extension = "jpg" },
-              { cmd = "", extension = "avif" },
-            },
-            prompt_for_file_name = true,
-          })
-        end,
-        desc = "[image-insert] Paste image from system clipboard",
-      },
-      {
         "<leader>pc",
         function()
           Snacks.picker.files({
