@@ -7,6 +7,7 @@
   "blink-copilot": { "branch": "main", "commit": "7ad8209b2f880a2840c94cdcd80ab4dc511d4f39" },
   "blink.cmp": { "branch": "main", "commit": "78336bc89ee5365633bcf754d93df01678b5c08f" },
   "catppuccin": { "branch": "main", "commit": "edefef779ab08ce1a4a404713e3012b0d202bd35" },
+  "code-actions.nvim": { "branch": "main", "commit": "afa304936d642071096f1afd64e1cc3a5d1acff9" },
   "codecompanion.nvim": { "branch": "main", "commit": "3dd1ef7fa8d6aeb27020023e40293bac588de714" },
   "colorful-menu.nvim": { "branch": "master", "commit": "196ddf16d5f8fec09ba7f20e6b153aa5188e907b" },
   "conform.nvim": { "branch": "master", "commit": "016802de402556da54c36bd7359b441266b01cdd" },

@@ -1,12 +1,7 @@
-local directory = require("utils.platform").dev_plugin_root() .. "/code-actions.nvim"
-
 return {
   {
-    name = "code-actions.nvim",
-    dir = directory,
-    -- This local project has no published remote yet. Native gra remains available
-    -- on machines where the development checkout is absent.
-    enabled = vim.uv.fs_stat(directory) ~= nil,
+    "Jacky-Lzx/code-actions.nvim",
+    dev = true,
     dependencies = { "folke/snacks.nvim" },
     event = "LspAttach",
     keys = {
