@@ -17,6 +17,8 @@ if available then
     require("lazy.core.plugin").values(spec, "opts", false).position == "bottom_right",
     "Preview must be configured for the bottom-right corner"
   )
+  local options = require("lazy.core.plugin").values(spec, "opts", false)
+  assert(options.transport == "auto", "Preview should prefer file transfer with automatic direct fallback")
   local calls = 0
   require("lazy").load({ plugins = { "image-tools.nvim" } })
   assert(spec._.loaded, "Independent preview did not load")
@@ -33,6 +35,7 @@ if available then
   mapping.callback()
   assert(calls == 1, "Preview key must call the independent plugin")
   assert(vim.fn.exists(":ImagePreview") == 2, "Independent preview command missing")
+  assert(vim.fn.exists(":ImagePreviewClearCache") == 2, "Terminal cache cleanup command missing")
 else
   assert(not spec or spec.cond == false, "Missing unpublished plugin should be disabled without cloning")
 end

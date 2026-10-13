@@ -9,7 +9,7 @@ return {
       return vim.uv.fs_stat(directory .. "/lua/image_tools/init.lua") ~= nil
     end,
     event = "VeryLazy",
-    cmd = { "ImagePreview", "ImagePreviewClose", "ImagePreviewToggle" },
+    cmd = { "ImagePreview", "ImagePreviewClose", "ImagePreviewToggle", "ImagePreviewClearCache" },
     keys = {
       {
         "<leader>si",
@@ -26,7 +26,14 @@ return {
         desc = "[Image] Toggle automatic preview",
       },
     },
-    opts = { auto_preview = true, position = "bottom_right", max_width = 60, max_height = 30 },
+    opts = {
+      auto_preview = true,
+      position = "bottom_right",
+      transport = "auto",
+      terminal_cache = { max_images = 32, max_bytes = 64 * 1024 * 1024 },
+      max_width = 60,
+      max_height = 30,
+    },
     config = function(_, opts)
       require("image_tools").setup(opts)
     end,
