@@ -59,7 +59,10 @@ return {
         function()
           local insertion = require("image_tools.insert")
           local context = insertion.capture()
-          vim.ui.select({ "png", "jpg", "webp", "avif" }, { prompt = "Clipboard image format:" }, function(format)
+          local formats = vim.tbl_filter(function(format)
+            return insertion.supported(context.filetype, "clipboard." .. format)
+          end, { "png", "jpg", "webp", "avif" })
+          vim.ui.select(formats, { prompt = "Clipboard image format:" }, function(format)
             if format then
               require("image_tools").paste({ context = context, format = format, prompt_for_file_name = true })
             else
