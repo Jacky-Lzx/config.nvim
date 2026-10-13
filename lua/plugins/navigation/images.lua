@@ -16,7 +16,7 @@ return {
         function()
           require("image_tools").hover()
         end,
-        desc = "[Image] Preview image under cursor",
+        desc = "[Image] Preview image on current line",
       },
       {
         "<leader>ui",

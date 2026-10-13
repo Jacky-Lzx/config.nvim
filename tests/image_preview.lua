@@ -29,7 +29,7 @@ if available then
     calls = calls + 1
   end
   local mapping = vim.fn.maparg(vim.g.mapleader .. "si", "n", false, true)
-  assert(mapping.callback and mapping.desc == "[Image] Preview image under cursor")
+  assert(mapping.callback and mapping.desc == "[Image] Preview image on current line")
   mapping.callback()
   assert(calls == 1, "Preview key must call the independent plugin")
   assert(vim.fn.exists(":ImagePreview") == 2, "Independent preview command missing")
