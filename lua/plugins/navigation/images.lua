@@ -1,0 +1,34 @@
+local directory = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
+
+return {
+  {
+    -- Local-only until this plugin has a published remote repository.
+    dir = directory,
+    name = "image-tools.nvim",
+    cond = function()
+      return vim.uv.fs_stat(directory .. "/lua/image_tools/init.lua") ~= nil
+    end,
+    event = "VeryLazy",
+    cmd = { "ImagePreview", "ImagePreviewClose", "ImagePreviewToggle" },
+    keys = {
+      {
+        "<leader>si",
+        function()
+          require("image_tools").hover()
+        end,
+        desc = "[Image] Preview image under cursor",
+      },
+      {
+        "<leader>ui",
+        function()
+          require("image_tools").toggle()
+        end,
+        desc = "[Image] Toggle automatic preview",
+      },
+    },
+    opts = { auto_preview = true, max_width = 60, max_height = 30 },
+    config = function(_, opts)
+      require("image_tools").setup(opts)
+    end,
+  },
+}

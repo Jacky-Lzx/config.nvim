@@ -24,7 +24,7 @@ printf '<script setup lang="ts">const count = 1</script>\n' > "$test_tmp/sample.
 nvim --headless -u NONE -i NONE -l "$root/tests/smoke.lua"
 (
   cd -- "$root"
-  for test in config platform obsidian_local core clipboard comments diagnostics folding column_guide completion math_conditions commands python rust integrations open_at_cursor tooling lsp_config code_actions lualine_lazy mini_diff_lazy; do
+  for test in config platform obsidian_local core clipboard comments diagnostics folding column_guide completion math_conditions commands python rust integrations open_at_cursor tooling lsp_config code_actions image_preview lualine_lazy mini_diff_lazy; do
     printf '\nRunning tests/%s.lua\n' "$test"
     nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/$test.lua"
   done
@@ -32,6 +32,8 @@ nvim --headless -u NONE -i NONE -l "$root/tests/smoke.lua"
   MINI_DIFF_TEST=direct nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/mini_diff_lazy.lua"
   NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
     -l "$root/tests/code_actions.lua"
+  NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
+    -l "$root/tests/image_preview.lua"
 )
 
 for scenario in default minimal python writing; do

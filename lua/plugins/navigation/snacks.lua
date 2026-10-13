@@ -42,12 +42,7 @@ return {
         },
       },
       explorer = { enabled = false },
-      image = {
-        enabled = true,
-        -- Automatically show image in a floating window when mouse hovering over it
-        doc = { inline = false, float = true, max_width = 60, max_height = 30 },
-        math = { latex = { font_size = "small" } },
-      },
+      image = { enabled = false },
       indent = {
         enabled = true,
         animate = { enabled = false },
@@ -204,12 +199,6 @@ return {
           width = 0.9,
           zindex = 50,
         },
-        -- Keeps the image on the bottom right corner
-        snacks_image = {
-          relative = "editor",
-          row = 0.8,
-          col = -1,
-        },
         -- Enable line wrapping in notification history
         notification_history = {
           wo = {
@@ -229,7 +218,6 @@ return {
     -- stylua: ignore
     keys = {
       -- { "<A-w>", function() require("snacks").bufdelete() end, desc = "[Snacks] Delete buffer", },
-      { "<leader>si", function() require("snacks").image.hover() end, desc = "[Snacks] Display image", },
       { "<A-i>", function() require("snacks").terminal() end, desc = "[Snacks] Toggle terminal", mode = { "n", "t" }, },
       -- Notification
       { "<leader>sn", function() require("snacks").picker.notifications() end, desc = "[Snacks] Notification history", },
