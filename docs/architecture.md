@@ -98,6 +98,11 @@ filetypes with installed plugins, without installing or updating dependencies.
 
 ## Language metadata API
 
+`config/inspect.lua` builds fresh diagnostic snapshots for `config.info()` and health checks.
+Selected servers and enabled servers are separate fields. Tool paths are resolved live;
+plugin sources/directories/loading states come from the already-loaded lazy.nvim registry.
+Inspection never starts a plugin, installs dependencies, or mutates the active context.
+
 `languages.resolve(selection)` returns a fresh aggregate for a fixed selection;
 `config/selection_schema.lua` validates selection without loading languages or the
 active context. Both independent language resolution and context composition use it.

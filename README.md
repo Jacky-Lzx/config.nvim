@@ -170,6 +170,10 @@ after an explicit `:ConfigToolsInstall` or `:MasonToolsInstall`.
 
 Run `:checkhealth config` to inspect platform capabilities, optional integrations, and tools for
 the enabled language profiles.
+`:ConfigInfo` shows the active profiles/workflows, selected language capabilities, currently
+enabled LSP servers, live tool paths, and resolved plugin directories/sources/loading states.
+`paths.checkout` identifies the actual configuration checkout, including explicit `-u` starts;
+`paths.config` remains Neovim's standard config directory. Inspection does not load plugins.
 
 Run the smoke runner with:
 

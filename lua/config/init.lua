@@ -35,16 +35,7 @@ function M.setup()
 end
 
 function M.info()
-  local version = vim.version()
-  return {
-    version = ("%d.%d.%d"):format(version.major, version.minor, version.patch),
-    paths = {
-      config = vim.fn.stdpath("config"),
-      data = vim.fn.stdpath("data"),
-      state = vim.fn.stdpath("state"),
-      cache = vim.fn.stdpath("cache"),
-    },
-  }
+  return require("config.inspect").snapshot()
 end
 
 return M

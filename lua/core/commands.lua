@@ -8,7 +8,7 @@ function M.setup()
 
   create("ConfigInfo", function()
     vim.print(require("config").info())
-  end, { desc = "Show Neovim version and configuration paths", force = true })
+  end, { desc = "Show active selection, tool paths and resolved plugin sources", force = true })
 
   create("ConvertTabToSpace", "%s/\t/  /g", {})
 

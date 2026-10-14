@@ -19,6 +19,12 @@ local function check()
     assert(not name:match("^config%.legacy[%.]?"), "Startup loaded an archived module: " .. name)
   end
   local plugins = require("lazy.core.config").plugins
+  assert(info.plugins.initialized)
+  for _, entry in ipairs(info.plugins.entries) do
+    local plugin = assert(plugins[entry.name])
+    assert(entry.directory == plugin.dir and entry.loaded == not not plugin._.loaded)
+    assert(entry.source == (plugin._.is_local and "local" or "git"))
+  end
   assert(not plugins["mini.comment"], "Commenting must use Neovim's native implementation")
   assert(not plugins.undotree, "Snacks undo must not depend on the Undotree plugin")
   assert(not plugins["smartyank.nvim"], "Yank synchronization must use the native clipboard provider")
@@ -46,6 +52,9 @@ local function check()
     assert(vim.lsp.config[name], name .. " has no native config")
     check_completion(_G.config_test_lsp_enabled[name], name)
   end
+  local active_info = require("config").info()
+  assert(vim.deep_equal(active_info.languages.servers, languages.servers))
+  assert(vim.deep_equal(active_info.lsp.enabled_servers, languages.servers))
   vim.api.nvim_exec_autocmds("InsertEnter", {})
   for _, name in ipairs(languages.servers) do
     assert(vim.deep_equal(vim.lsp.config[name].capabilities, _G.config_test_lsp_enabled[name]), name)
