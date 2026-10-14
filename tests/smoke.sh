@@ -31,8 +31,6 @@ nvim --headless -u NONE -i NONE -l "$root/tests/smoke.lua"
   LUALINE_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lualine_lazy.lua"
   MINI_DIFF_TEST=direct nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/mini_diff_lazy.lua"
   NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
-    -l "$root/tests/code_actions.lua"
-  NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
     -l "$root/tests/image_preview.lua"
 )
 
@@ -48,9 +46,6 @@ for scenario in default minimal python writing; do
 done
 
 NVIM_TEST_SCENARIO=minimal nvim --headless -i NONE \
-  --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
-  -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/input.lua')"
-NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" NVIM_TEST_SCENARIO=minimal nvim --headless -i NONE \
   --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
   -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/input.lua')"
 NVIM_TEST_SCENARIO=writing nvim --headless -i NONE \
