@@ -352,7 +352,6 @@ return {
           require("which-key").add({
             { "<leader>tP", group = "[profiler]" },
           })
-
         end,
       })
     end,

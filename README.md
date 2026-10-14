@@ -178,15 +178,23 @@ enabled LSP servers, live tool paths, and resolved plugin directories/sources/lo
 Run the smoke runner with:
 
 ```sh
-./tests/smoke.sh
+./tests/smoke.sh native       # Native behavior and configuration, no installed plugins
+./tests/smoke.sh integration  # Installed plugins, parsers, startup and actual input
+./tests/smoke.sh              # Both suites; equivalent to ./tests/smoke.sh all
 ```
 
-The runner also preserves the command, snippet math, Python/Rust task, integration, link-opening,
-tooling, LaTeX highlighting, statusline, and Mini.diff regressions from `dev`. Each runs in a
-separate Neovim process with `-u NONE -i NONE --noplugin`. The statusline and Mini.diff tests
-exercise the installed plugins and both provider load orders or first-invocation paths.
+The native suite isolates the data and development-plugin directories as well as cache/state,
+so it can run on a fresh machine without lazy.nvim, other plugins, or extra parsers installed.
+It covers syntax/profile resolution, declaration validation, diagnostic snapshots, core behavior,
+clipboard, diagnostics, column guide rendering, completion policy, snippet math, commands,
+Python tasks, mocked integrations, links, tooling, and LSP setup contracts.
 
-The syntax/profile pass uses `-u NONE` and fixed profile selections. The startup passes cover
+The integration suite preserves real plugin checks for vault-local options, commenting and
+LuaSnip, folding queries, Rust DAP, code actions, image preview, statusline, and Mini.diff.
+Individual tests run in separate Neovim processes with `-u NONE -i NONE --noplugin`.
+Statusline and Mini.diff tests exercise both provider load orders or first-invocation paths.
+
+The syntax/profile pass uses fixed profile selections. The integration startup passes cover
 the personal defaults, no languages/workflows, Python with debugging, and writing with tasks. They load the installed
 plugins and exercise TeX/Python/Vue filetype hooks, completion, formatting/lint configuration,
 DAP configuration, feature isolation, and colorscheme reloads. Actual input checks cover

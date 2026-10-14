@@ -95,6 +95,9 @@ Reintroduce a chosen plugin in its current capability group with explicit lifecy
 Use fixed profile fixtures for registry tests. Compare resolved plugin/tool/formatter
 configuration against the pre-migration baseline. Check real startup and representative
 filetypes with installed plugins, without installing or updating dependencies.
+`tests/smoke.sh native` isolates plugin data and development roots, exercising native behavior
+and contracts with plugin APIs mocked. `tests/smoke.sh integration` exercises installed plugins,
+parser queries, startup profiles, and actual input. The default `all` entry runs both suites.
 
 ## Language metadata API
 
