@@ -79,6 +79,14 @@ may remain.
 
 ## Migration and validation
 
+Runtime directories contain active configuration only. The former `config/legacy/`
+modules and unimported `plugins/disable/` collection were removed after migration;
+their exact previous contents remain in Git commit `f68a371`. To inspect an old spec,
+use `git show f68a371:lua/plugins/disable/<name>.lua` rather than restoring an entire
+inactive import tree. Candidates included Avante, Bufferline, Comment.nvim, copilot-lsp,
+im-select, llm.nvim, Minuet, Neo-tree, neoconf, Sidekick, smear-cursor, and treesitter-context.
+Reintroduce a chosen plugin in its current capability group with explicit lifecycle rules.
+
 1. Make startup and editor behavior explicit.
 2. Group plugin specs by purpose and introduce feature selection.
 3. Consolidate language metadata; share it with tool installation and health checks.
