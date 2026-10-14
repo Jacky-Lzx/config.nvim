@@ -12,3 +12,9 @@
 ((math_environment
   (_) @markup.math.background)
   (#set! priority 90))
+
+; Path captures include the braces at priority 100. Give the delimiters a
+; distinct priority so incremental redraws cannot switch them to path colors.
+((curly_group_path
+  ["{" "}"] @punctuation.bracket)
+  (#set! priority 110))

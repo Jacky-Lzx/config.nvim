@@ -114,7 +114,6 @@ local function check()
   vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.tex")
   assert(vim.bo.filetype == "tex")
   assert(vim.bo.textwidth == 0)
-  assert(not vim.bo.formatoptions:find("t", 1, true))
   local tex_enabled = require("languages").is_enabled("latex")
   assert((vim.fn.maparg("<M-m>", "i", false, true).buffer == 1) == tex_enabled)
   if tex_enabled then

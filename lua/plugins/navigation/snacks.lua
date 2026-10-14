@@ -42,7 +42,12 @@ return {
         },
       },
       explorer = { enabled = false },
-      image = { enabled = false },
+      image = {
+        enabled = false,
+        -- Automatically show image in a floating window when mouse hovering over it
+        doc = { inline = false, float = false, max_width = 60, max_height = 30 },
+        math = { latex = { font_size = "small" } },
+      },
       indent = {
         enabled = true,
         animate = { enabled = false },
