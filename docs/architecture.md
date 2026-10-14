@@ -91,8 +91,11 @@ filetypes with installed plugins, without installing or updating dependencies.
 ## Language metadata API
 
 `languages.resolve(selection)` returns a fresh aggregate for a fixed selection;
-`config.context.initialize(selection)` resolves the active selection and language data once,
-before lazy.nvim imports specs. Every consumer, including `languages.current()`, reads this
+`config/selection_schema.lua` validates selection without loading languages or the
+active context. Both independent language resolution and context composition use it.
+`config.context.initialize(selection)` resolves the active selection and language data once.
+`config.setup()` obtains this context before editor behavior or lazy.nvim imports, reusing
+an explicitly initialized selection when present. Every consumer, including `languages.current()`, reads this
 same context. A later different selection fails explicitly; restart after changing profiles.
 `config.context.resolve(selection)` produces independent contexts for validation.
 `config/specs.lua` imports shared feature groups and appends the active language specs.

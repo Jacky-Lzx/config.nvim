@@ -11,6 +11,8 @@ function M.setup()
   vim.g.maplocalleader = " "
 
   vim.loader.enable()
+  -- Resolve personal defaults, or reuse an explicitly initialized startup fixture.
+  require("config.context").current()
 
   -- Keep startup order explicit; plugin-dependent work lives in plugin specs.
   require("core.options").setup()

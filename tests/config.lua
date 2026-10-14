@@ -33,6 +33,8 @@ assert(not package.loaded["core.options"] and not package.loaded["config.lazy"])
 -- Exercise the actual entry point while keeping plugin bootstrap out of this test.
 local bootstrapped = false
 package.preload["config.lazy"] = function()
+  assert(package.loaded["config.context"] and package.loaded.languages)
+  assert(require("config.context").current().languages == require("languages").current())
   assert(vim.g.mapleader == " " and vim.g.maplocalleader == " ")
   assert(vim.g.loaded_netrw == 1 and vim.g.loaded_netrwPlugin == 1)
   assert(vim.fn.exists(":ConfigInfo") == 2 and vim.fn.exists(":Titlecase") == 2)

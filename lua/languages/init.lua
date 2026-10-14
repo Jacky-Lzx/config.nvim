@@ -4,7 +4,7 @@ local M = {}
 -- plugin hooks are executed later by lazy.nvim. Explicit selections make tests independent
 -- of the user's personal defaults.
 function M.resolve(selection, capabilities)
-  selection = require("config.context").normalize(selection or require("config.selection"))
+  selection = require("config.selection_schema").normalize(selection or require("config.selection"))
   capabilities = capabilities or { executable = require("utils.platform").executable }
   assert(type(capabilities.executable) == "function", "Capabilities.executable must be a function")
   local profiles = require("config.profiles")
@@ -40,7 +40,6 @@ function M.resolve(selection, capabilities)
     end
   end
   for _, profile in ipairs(selection.profiles) do
-    assert(profiles[profile], "Unknown language profile: " .. profile)
     for _, name in ipairs(profiles[profile]) do
       if not seen.names[name] then
         assert(type(name) == "string" and name:match("^[a-z][a-z0-9_]*$"), "Invalid language name: " .. tostring(name))
