@@ -1,5 +1,4 @@
 local directory = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
-local pdf_reader = require("utils.platform").dev_plugin_root() .. "/pdf-view.nvim/lua/pdf_view/init.lua"
 
 return {
   {
@@ -101,11 +100,6 @@ return {
       },
     },
     opts = {
-      -- A single plugin owns PDF BufReadCmd. Keep image-tools' PDF viewer as a
-      -- fallback when the separate local reader is unavailable.
-      buffer = vim.uv.fs_stat(pdf_reader) and {
-        formats = { "png", "jpg", "jpeg", "webp", "avif", "heic", "gif", "bmp", "tif", "tiff" },
-      } or nil,
       insert = { directory = "Figures", mode = "copy" },
       auto_preview = true,
       position = "bottom_right",
