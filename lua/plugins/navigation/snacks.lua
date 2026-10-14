@@ -353,10 +353,6 @@ return {
             { "<leader>tP", group = "[profiler]" },
           })
 
-          vim.keymap.del("n", "grn")
-          vim.keymap.del("n", "gra")
-          vim.keymap.del("n", "grr")
-          vim.keymap.del("n", "gri")
         end,
       })
     end,

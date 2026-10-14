@@ -12,6 +12,11 @@ return {
         },
       },
     },
+    config = function(_, opts)
+      local selector = require("venv-selector")
+      selector.setup(opts)
+      require("integrations.python_environment").setup(selector)
+    end,
   },
   {
     "mfussenegger/nvim-dap",

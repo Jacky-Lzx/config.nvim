@@ -43,8 +43,15 @@ vim.lsp.enable = function()
   error("features.lsp must leave server activation to the plugin configuration")
 end
 local mappings = require("features.lsp")
+for _, key in ipairs({ "grn", "gra", "grr", "gri" }) do
+  vim.keymap.set("n", key, "<Nop>")
+end
 mappings.setup()
 mappings.setup()
+for _, key in ipairs({ "grn", "gra", "grr", "gri" }) do
+  assert(vim.fn.maparg(key, "n") == "", "Native LSP mapping policy must run without Snacks")
+end
+assert(not package.loaded.snacks)
 assert(#vim.api.nvim_get_autocmds({ group = "ConfigLsp", event = "LspAttach" }) == 1)
 assert(not package.loaded.conform, "LSP setup must not load formatters")
 

@@ -41,6 +41,11 @@ or start jobs. `utils.platform` matches each platform's `sysname`, falls back to
 overlays its fields on `defaults`. Lists are replaced as a whole. Environment overrides and
 executable availability are evaluated when an accessor is called; changing the configuration
 table requires a Neovim restart. Python project interpreter selection remains dynamic.
+`languages/python/interpreter.lua` owns the live project interpreter provider; the
+venv-selector lifecycle connects it through `integrations/python_environment.lua`.
+Platform discovery accepts the selected path as data and handles executable/environment
+fallbacks without inspecting plugin state. Tasks and `:make` use the language accessor.
+Native LSP mapping removal runs in `features.lsp.setup()`, independent of Snacks events.
 
 Obsidian workspace paths belong to the vault's `.lazy.lua`, not platform settings. The
 shared spec provides plugin behavior and checks `opts.workspaces` after lazy.nvim merges

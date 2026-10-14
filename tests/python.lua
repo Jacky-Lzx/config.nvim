@@ -15,9 +15,14 @@ vim.env.CONDA_PREFIX = nil
 vim.env.NVIM_PYTHON3_HOST_PROG = "/provider/python"
 executables["/provider/python"] = true
 local platform = require("utils.platform")
+local before = #vim.api.nvim_get_autocmds({})
+local interpreter = require("languages.python.interpreter")
+local integration = require("integrations.python_environment")
+assert(#vim.api.nvim_get_autocmds({}) == before)
+assert(not package.loaded["venv-selector"] and not package.loaded.lazy)
 local count = 0
 local function check(expected)
-  assert(platform.python() == expected, vim.inspect({ expected = expected, actual = platform.python() }))
+  assert(interpreter.current() == expected, vim.inspect({ expected = expected, actual = interpreter.current() }))
   count = count + 1
 end
 
@@ -40,6 +45,15 @@ package.loaded["venv-selector"] = {
     return selected
   end,
 }
+assert(platform.python() == "/project/.venv/bin/python", "Platform discovery must ignore plugin state")
+local configured = false
+package.loaded["venv-selector"].setup = function(opts)
+  assert(opts.settings.options.notify_user_on_venv_activation)
+  configured = true
+end
+local spec = require("languages.python.plugins")[1]
+spec.config(nil, spec.opts)
+assert(configured, "Plugin setup must connect the interpreter provider")
 check(selected)
 selected = "/missing/python"
 check("/project/.venv/bin/python")
@@ -113,4 +127,6 @@ end, debug.traceback)
 vim.fn.delete(temp, "rf")
 assert(ok, err)
 assert(platform.python_host() == "/provider/python")
+interpreter.set_provider(nil)
+assert(interpreter.current() == "/system/python3", "Removing the provider must restore platform fallback")
 print("python: " .. count .. " tests passed")

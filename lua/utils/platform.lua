@@ -54,9 +54,8 @@ function M.python_host()
   return executable_path(vim.env.NVIM_PYTHON3_HOST_PROG) or executable_path(config.python_host)
 end
 
-function M.python()
-  local selector = package.loaded["venv-selector"]
-  local selected = selector and executable_path(selector.python())
+function M.python(selected_path)
+  local selected = executable_path(selected_path)
   if selected then
     return selected
   end
