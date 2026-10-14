@@ -8,7 +8,7 @@ return {
     cond = function()
       return vim.uv.fs_stat(directory .. "/lua/image_tools/init.lua") ~= nil
     end,
-    event = "VeryLazy",
+    lazy = false, -- Register BufReadCmd before startup image/PDF files are read.
     cmd = {
       "ImagePreview",
       "ImagePreviewClose",
@@ -17,6 +17,11 @@ return {
       "ImageInsert",
       "ImagePaste",
       "ImagePick",
+      "ImageOpen",
+      "ImagePage",
+      "ImageNextPage",
+      "ImagePreviousPage",
+      "ImageReload",
     },
     keys = {
       {

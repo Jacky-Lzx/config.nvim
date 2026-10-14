@@ -36,6 +36,11 @@ if available then
   assert(calls == 1, "Preview key must call the independent plugin")
   assert(not plugins["image-insert.nvim"], "Old image insertion plugin must be removed")
   assert(type(snacks.picker.preview) == "function", "Independent picker preview bridge missing")
+  assert(spec.lazy == false, "File buffer interception must register before startup file reads")
+  assert(
+    vim.fn.exists(":ImageOpen") == 2 and vim.fn.exists(":ImagePage") == 2,
+    "Image/PDF file buffer commands missing"
+  )
   assert(vim.fn.exists(":ImagePick") == 2, "Independent picker command missing")
   assert(vim.fn.exists(":ImagePaste") == 2, "Independent clipboard command missing")
   assert(vim.fn.exists(":ImageInsert") == 2, "Independent image import command missing")
