@@ -124,6 +124,10 @@ once in `plugins/coding/`; language contributions never call the same plugin's s
 A custom linter needing plugin APIs (Verilog's parser) can use a language plugin `opts` hook.
 
 `languages/schema.lua` checks declaration fields, types, feature names, and tool identity.
+Linter bindings must be contiguous lists of non-empty names. Formatter bindings use the
+same list shape plus Conform's typed filetype options (`stop_after_first`, `quiet`,
+`timeout_ms`, `lsp_format`, `id`, `name`, `filter`, and `formatting_options`). Unknown
+options, sparse indices, and invalid option types fail while reading the declaration.
 Duplicate tools must have identical definitions; conflicts report both language owners.
 Optional bindings use `requires = { formatters = { html = "html_beautify" } }` rather than
 probing the machine while requiring a definition. `languages.resolve(selection, capabilities)`

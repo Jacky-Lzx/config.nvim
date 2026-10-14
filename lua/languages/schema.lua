@@ -13,6 +13,16 @@ local fields = {
 }
 local tool_fields =
   { mason = "string", executable = "string", resolve = "function", feature = "string", post_install = "function" }
+local formatter_fields = {
+  stop_after_first = "boolean",
+  quiet = "boolean",
+  timeout_ms = "number",
+  lsp_format = "string",
+  id = "number",
+  name = "string",
+  filter = "function",
+  formatting_options = "table",
+}
 
 local function check(ok, path, message)
   assert(ok, path .. ": " .. message)
@@ -29,6 +39,34 @@ local function list(value, path, strings)
       string_value(item, path .. "[" .. i .. "]")
     end
   end
+end
+
+local function formatter_list(value, path)
+  local count, last = 0, 0
+  for key, item in pairs(value) do
+    if type(key) == "number" then
+      check(key >= 1 and key % 1 == 0, path, "expected positive integer indices")
+      string_value(item, path .. "[" .. key .. "]")
+      count, last = count + 1, math.max(last, key)
+    else
+      local option_path = path .. "." .. tostring(key)
+      local expected = formatter_fields[key]
+      check(expected ~= nil, option_path, "unknown formatter option")
+      check(type(item) == expected, option_path, "expected " .. tostring(expected))
+      if key == "timeout_ms" or key == "id" then
+        check(item >= 0 and item % 1 == 0, option_path, "expected a non-negative integer")
+      elseif key == "lsp_format" then
+        check(
+          vim.list_contains({ "never", "fallback", "prefer", "first", "last" }, item),
+          option_path,
+          "invalid LSP formatting mode"
+        )
+      elseif key == "name" then
+        string_value(item, option_path)
+      end
+    end
+  end
+  check(count == last, path, "expected contiguous formatter indices")
 end
 
 function M.validate(name, definition)
@@ -76,10 +114,10 @@ function M.validate(name, definition)
       for key, value in pairs(definition[field]) do
         string_value(key, path .. "." .. field)
         check(type(value) == "table", path .. "." .. field .. "." .. key, "expected a table")
-        if field == "formatters" or field == "linters" then
-          for index, item in ipairs(value) do
-            string_value(item, path .. "." .. field .. "." .. key .. "[" .. index .. "]")
-          end
+        if field == "formatters" then
+          formatter_list(value, path .. "." .. field .. "." .. key)
+        elseif field == "linters" then
+          list(value, path .. "." .. field .. "." .. key, true)
         end
       end
     end
