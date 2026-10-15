@@ -62,7 +62,7 @@ return {
 All six profiles are currently enabled, preserving the existing personal configuration.
 Profile membership is defined in `lua/config/profiles.lua`:
 
-- `base`: Lua, Bash, JSON, YAML, TOML, KDL
+- `base`: Lua, Bash, JSON, YAML, TOML, KDL, Nix
 - `web`: HTML, Vue, JavaScript, TypeScript
 - `native`: C, C++, CMake, Rust, Swift
 - `data`: Python
@@ -97,6 +97,25 @@ anything or register editor behavior while being read; use plugin lifecycle hook
 Declarations are schema-checked, and conflicting definitions of the same tool fail explicitly.
 For optional formatter/linter bindings, declare executable requirements in `requires`;
 the resolver checks availability rather than freezing it when the language module is loaded.
+
+## Nix / NixOS editing
+
+The `base` profile enables Nix Tree-sitter highlighting/folding, the `nil_ls` language
+server, and `nixfmt` through Conform. Saving formats the buffer when autoformat is
+enabled; `<leader>gf` formats manually. Existing LSP mappings provide completion,
+hover, definitions, references, renaming, and code actions.
+
+Run `:ConfigToolsInstall` to install the parser and `nil` (building it requires Cargo and Nix). Install
+`nixfmt` separately: `brew install nixfmt` on macOS, or add `nil` and `nixfmt` to your
+NixOS/Home Manager packages. Mason currently only ships `nixfmt` for Linux, so it is
+registered as a system tool.
+
+Basic diagnostics, local completion, navigation, and formatting work without Nix.
+Evaluating flake inputs and NixOS options requires a working `nix` installation with
+flakes enabled and locally available inputs. `nil` recognizes the `nixpkgs` flake
+input for NixOS options. Automatic input downloading is disabled; prepare inputs
+explicitly with `nix flake archive` from the project directory. Use `:LspInfo`,
+`:ConformInfo`, and `:checkhealth config` to inspect the setup.
 
 ## Platform configuration
 

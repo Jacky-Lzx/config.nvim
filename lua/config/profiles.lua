@@ -1,5 +1,5 @@
 return {
-  base = { "lua", "bash", "json", "yaml", "toml", "kdl" },
+  base = { "lua", "bash", "json", "yaml", "toml", "kdl", "nix" },
   web = { "html", "vue" },
   native = { "cpp", "cmake", "rust", "swift" },
   data = { "python" },
