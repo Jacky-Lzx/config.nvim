@@ -4,8 +4,10 @@ function M.attach(buffer)
   local function map(key, action, description)
     vim.keymap.set("n", key, action, { buffer = buffer, desc = "[LSP] " .. description })
   end
+
   map("<leader>d", vim.diagnostic.open_float, "Show diagnostic")
   map("<leader>gk", vim.lsp.buf.signature_help, "Signature help")
+  map("gK", vim.lsp.buf.signature_help, "Signature help")
   map("<leader>rn", vim.lsp.buf.rename, "Rename")
   map("<leader>gr", vim.lsp.buf.references, "References")
   map("<leader>gt", vim.lsp.buf.type_definition, "Type definition")
