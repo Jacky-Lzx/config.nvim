@@ -20,8 +20,31 @@ for _, key in ipairs({ "apply", "reset", "textobject", "goto_first", "goto_prev"
   assert(spec.opts.mappings[key] == "", "Keep gitsigns mappings: " .. key)
 end
 
--- Use the existing tracked file and change only its in-memory buffer.
-vim.cmd.edit(root .. "/init.lua")
+-- Use a real Git fixture; imported config may not have a committed HEAD yet.
+local fixture = assert(vim.env.NVIM_TEST_TMP) .. "/mini-diff-" .. vim.uv.os_getpid()
+vim.fn.mkdir(fixture, "p")
+local function git(...)
+  local result = vim.system({ "git", "-C", fixture, ... }, { text = true }):wait()
+  assert(result.code == 0, result.stderr)
+end
+git("init", "--quiet")
+vim.fn.writefile({ "return true" }, fixture .. "/sample.lua")
+git("add", "sample.lua")
+git(
+  "-c",
+  "user.name=Example",
+  "-c",
+  "user.email=example@example.invalid",
+  "-c",
+  "commit.gpgsign=false",
+  "-c",
+  "core.hooksPath=/dev/null",
+  "commit",
+  "--quiet",
+  "-m",
+  "Fixture"
+)
+vim.cmd.edit(fixture .. "/sample.lua")
 local buf = vim.api.nvim_get_current_buf()
 vim.api.nvim_buf_set_lines(buf, 0, 0, false, { "-- mini.diff lazy-loading regression" })
 assert(package.loaded["mini.diff"] == nil)

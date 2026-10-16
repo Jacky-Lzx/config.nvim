@@ -31,7 +31,7 @@ export NVIM_TEST_TMP="$test_tmp"
 export NVIM_SMOKE_TEST=1
 export NVIM_LOG_FILE="$test_tmp/nvim.log"
 export SSH_CONNECTION=
-unset PROF NVIM_TEST_SCENARIO NVIM_COLUMN_GUIDE_STARTUP LUALINE_TEST MINI_DIFF_TEST
+unset PROF NVIM_LAZY_LOCKFILE NVIM_TEST_SCENARIO NVIM_COLUMN_GUIDE_STARTUP LUALINE_TEST MINI_DIFF_TEST
 
 cat >"$test_tmp/sample.tex" <<'EOF'
 \documentclass{article}
@@ -56,7 +56,7 @@ native_checks() (
   export NVIM_DEV_PLUGIN_ROOT="$test_tmp/native-dev-plugins"
   printf '\nRunning native checks with isolated plugin data\n'
   nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/smoke.lua"
-  run_tests schema selection info config platform core clipboard diagnostics column_guide \
+  run_tests lockfile schema selection info config platform core clipboard diagnostics column_guide \
     completion math_conditions commands python integrations open_at_cursor tooling lsp_config
 )
 

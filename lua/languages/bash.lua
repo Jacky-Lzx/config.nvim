@@ -5,7 +5,7 @@ return {
     { mason = "bash-language-server", executable = "bash-language-server" },
     { executable = "fish" },
   },
-  parsers = { "bash" },
+  parsers = { "bash", "fish" },
   formatters = {
     sh = { "shfmt" },
     fish = { "fish_indent" },

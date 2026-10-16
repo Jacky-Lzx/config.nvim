@@ -13,6 +13,8 @@ return {
       setup_opts.ensure_installed = nil
       setup_opts.post_install = nil
       setup_opts.tools = nil
+      -- Keep Nix/system tools ahead of Mason's optional fallback executables.
+      setup_opts.PATH = "append"
       require("mason").setup(setup_opts)
 
       vim.api.nvim_create_user_command("MasonToolsInstall", function()

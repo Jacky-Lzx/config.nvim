@@ -3,6 +3,37 @@
 Personal Neovim configuration for macOS and Linux. It targets Neovim 0.12 and uses
 [lazy.nvim](https://github.com/folke/lazy.nvim) for plugins.
 
+This repository owns the Lua configuration, plugin specifications, plugin lock,
+snippets, queries and editor tests. Nix can supply Neovim and external language
+tools without managing plugins. Install this checkout at `~/.config/nvim` for
+direct editing, or consume a pinned revision as a non-flake Nix input.
+
+## Plugin versions and Nix deployment
+
+In a writable checkout, `:Lazy update` writes `lazy-lock.json` directly. Review,
+test and commit that file with any configuration changes. `NVIM_LAZY_LOCKFILE`
+can explicitly select another writable lock for a development session.
+
+For a read-only deployment such as the Nix store, startup seeds or resets
+`stdpath("state")/lazy/lazy-lock.json` from the committed lock. Runtime updates
+do not change the deployed source. Deploying or rolling back configuration does
+not reconcile already installed plugin checkouts; run `:Lazy restore` as well.
+Plugins, parsers and Mason tools remain runtime installations, outside the Nix
+closure. Nix/system executables take priority over Mason's optional fallback.
+
+The consuming Nix repository pins this repository's commit and deploys its root
+as `xdg.configFile."nvim".source`. Publish the tested commit before updating that
+input. A machine using a writable checkout should disable ownership of that
+directory in Home Manager while retaining its Neovim and language-tool packages.
+
+Run `sh tests/smoke.sh native` for offline tests with isolated plugin data, and
+`sh tests/smoke.sh integration` for tests using installed plugins and parsers.
+To review startup independently, create an isolated XDG config tree with a
+`nvim-review` symlink to this checkout and launch with `NVIM_APPNAME=nvim-review`.
+That also isolates plugin data, state and cache; prepare those dependencies
+explicitly. A bare `-u /path/to/init.lua` is insufficient for every plugin's
+runtime-path handling.
+
 ## Configuration layout
 
 - `init.lua`: delegates startup to `config.setup()`.
