@@ -1,4 +1,11 @@
 local directory = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
+local image_patterns = {}
+for _, extension in ipairs({ "png", "jpg", "jpeg", "webp", "avif", "heic", "gif", "bmp", "tif", "tiff", "pdf" }) do
+  image_patterns[#image_patterns + 1] = "*."
+    .. extension:gsub("%a", function(c)
+      return "[" .. c .. c:upper() .. "]"
+    end)
+end
 
 return {
   {
@@ -8,12 +15,18 @@ return {
     cond = function()
       return vim.uv.fs_stat(directory .. "/lua/image_tools/init.lua") ~= nil
     end,
-    lazy = false, -- Register BufReadCmd before startup image/PDF files are read.
+    lazy = true,
+    ft = { "markdown", "tex", "latex", "plaintex", "typst", "html" },
+    -- Load and replay the read event before binary file contents are read.
+    event = { { event = "BufReadCmd", pattern = image_patterns } },
     cmd = {
       "ImagePreview",
       "ImagePreviewClose",
       "ImagePreviewToggle",
       "ImagePreviewClearCache",
+      "ImageCacheClear",
+      "ImageInfo",
+      "ImageCheckAssets",
       "ImageInsert",
       "ImagePaste",
       "ImagePick",
@@ -22,6 +35,8 @@ return {
       "ImageNextPage",
       "ImagePreviousPage",
       "ImageReload",
+      "ImageZoom",
+      "ImagePan",
     },
     keys = {
       {
@@ -66,7 +81,11 @@ return {
         function()
           require("image_tools").paste({
             process = {
-              { name = "PNG", format = "png", command = { "magick", "$INPUT", "-quality", "75", "$OUTPUT" } },
+              {
+                name = "PNG",
+                format = "png",
+                command = { "magick", "$INPUT", "-quality", "75", "$OUTPUT" },
+              },
               { name = "JPEG", format = "jpg", quality = 75 },
               { name = "WebP", format = "webp", quality = 75 },
               { name = "AVIF", format = "avif", quality = 75 },

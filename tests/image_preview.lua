@@ -19,8 +19,10 @@ if available then
   )
   local options = require("lazy.core.plugin").values(spec, "opts", false)
   assert(options.transport == "auto", "Preview should prefer file transfer with automatic direct fallback")
+  assert(spec.lazy == true, "Image preview must load on demand")
+  assert(not spec._.loaded and not package.loaded.image_tools, "Empty startup must leave image preview unloaded")
   local calls = 0
-  require("lazy").load({ plugins = { "image-tools.nvim" } })
+  vim.cmd("ImagePreviewClose")
   assert(spec._.loaded, "Independent preview did not load")
   local image = require("image_tools")
   assert(
@@ -36,7 +38,6 @@ if available then
   assert(calls == 1, "Preview key must call the independent plugin")
   assert(not plugins["image-insert.nvim"], "Old image insertion plugin must be removed")
   assert(type(snacks.picker.preview) == "function", "Independent picker preview bridge missing")
-  assert(spec.lazy == false, "File buffer interception must register before startup file reads")
   assert(
     vim.fn.exists(":ImageOpen") == 2 and vim.fn.exists(":ImagePage") == 2,
     "Image/PDF file buffer commands missing"
