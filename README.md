@@ -192,6 +192,40 @@ Pairing uses [Jacky-Lzx/pairs.nvim](https://github.com/Jacky-Lzx/pairs.nvim) wit
 lazy.nvim installs the GitHub version pinned in `lazy-lock.json`. Blink depends on it and
 composes Enter after completion confirmation. Use `:checkhealth pairs` for plugin diagnostics.
 
+## Image insertion
+
+`lua/plugins/navigation/images.lua` uses the local `image-tools.nvim` checkout and preserves
+these behaviors from the former `image-insert.nvim` configuration:
+
+- `<leader>pI` / `<leader>PI`: paste on the next / previous line.
+- `<leader>pi` / `<leader>Pi`: paste after / before the cursor.
+- `<leader>pC`: choose PNG, JPEG, WebP, AVIF, or original PNG, then edit the filename.
+  The menu only offers formats supported by the document.
+- `<leader>pc`: select one or more existing images and insert references on the next line;
+  the source files are not copied. `<leader>pf` explicitly imports a copy instead.
+- `:ImageInsert` pastes the clipboard; `:ImageInsert path` references an existing file.
+  `:ImagePaste` also pastes the clipboard. `:ImagePick` selects existing image references.
+
+Pasted images go into `Figures/` under the current working directory, with names such as
+`2026-04-28_16-21-17.avif`. References and previews resolve relative to the current document,
+including nested LaTeX files. Typst uses the working directory as its project boundary;
+compile nested Typst documents with `typst compile --root . path/to/document.typ`.
+Markdown uses `![](path)`, LaTeX uses a figure with 80% line width, caption and label,
+Typst uses a figure with 80% width and caption, and HTML uses
+`<img src="path" alt="" />`. The cursor enters insert mode inside the description/caption.
+On macOS, `pbctl` is preferred when installed; otherwise the plugin selects an available backend.
+
+Some differences are intentional: LaTeX and Typst paste PNG by default because the built-in
+adapters reject AVIF for compiler compatibility. Markdown and HTML retain AVIF by default. Unsupported file formats are
+filtered from the picker. JPEG/AVIF choices perform actual conversion instead of merely changing
+a PNG filename's extension. Filenames are single basenames, collisions receive a numeric suffix,
+and insertion requires a named, modifiable document. Markdown URL characters and HTML/Typst
+string characters are escaped. Filename input is asynchronous and prefilled with the timestamp;
+accept the default with Enter, or cancel with Escape. In a batch, the first image's description
+receives the cursor. These validation and editing rules come from `image-tools.nvim` rather
+than the configuration. Image conversion needs `magick`; clipboard capture needs an available
+platform backend such as `pbctl` or `pngpaste` on macOS.
+
 ## Dependencies
 
 Required bootstrap dependencies are Neovim 0.12+, Git, and a usable POSIX shell. A Nerd Font is
@@ -241,6 +275,9 @@ Python tasks, mocked integrations, links, tooling, and LSP setup contracts.
 
 The integration suite preserves real plugin checks for vault-local options, commenting and
 LuaSnip, folding queries, Rust DAP, code actions, image preview, statusline, and Mini.diff.
+Image checks also exercise configured insertion templates, cursor positions, working-directory
+asset storage, document-relative references, clipboard conversion, menu cancellation, and batch
+file selection, using fixture images without accessing the desktop clipboard.
 Individual tests run in separate Neovim processes with `-u NONE -i NONE --noplugin`.
 Statusline and Mini.diff tests exercise both provider load orders or first-invocation paths.
 

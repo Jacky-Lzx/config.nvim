@@ -44,6 +44,7 @@ if available then
   assert(vim.fn.exists(":ImagePick") == 2, "Independent picker command missing")
   assert(vim.fn.exists(":ImagePaste") == 2, "Independent clipboard command missing")
   assert(vim.fn.exists(":ImageInsert") == 2, "Independent image import command missing")
+  dofile(root .. "/tests/image_insertion.lua")
   assert(vim.fn.exists(":ImagePreview") == 2, "Independent preview command missing")
   assert(vim.fn.exists(":ImagePreviewClearCache") == 2, "Terminal cache cleanup command missing")
 else
