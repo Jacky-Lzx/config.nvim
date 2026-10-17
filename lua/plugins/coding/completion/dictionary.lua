@@ -2,9 +2,10 @@ return {
   {
     "saghen/blink.cmp",
     optional = true,
-    dependencies = {
+    specs = {
       {
         "Kaiser-Yang/blink-cmp-dictionary",
+        lazy = true,
         dependencies = { "nvim-lua/plenary.nvim" },
       },
     },

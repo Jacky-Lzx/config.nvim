@@ -63,10 +63,26 @@ declared dependencies or synchronous module loading in filetype hooks.
 Pairing declares `Jacky-Lzx/pairs.nvim` with lazy.nvim's `dev = true`. The shared `dev.path`
 comes from `NVIM_DEV_PLUGIN_ROOT` (default `~/Documents/Github/nvim_plugins`), and
 `dev.fallback = true` selects the GitHub version pinned in `lazy-lock.json` when the local
-`pairs.nvim` directory is absent. Blink declares it as a dependency, and
+`pairs.nvim` directory is absent. Pairing and LuaSnip load on `InsertEnter`, while
 `integrations/blink_pairs.lua` composes Enter after completion confirmation. lazy.nvim owns
 source selection; `:checkhealth pairs` provides the plugin's own diagnostics. Plugin source
 is not copied into this repo.
+
+Blink's provider and menu plugins are module-loaded when completion actually uses
+them. Copilot loads through its Blink provider or `:Copilot`; command-line completion
+does not initialize pairing, snippets, or AI. LSP still depends on Blink so capability
+negotiation is complete before servers start.
+
+Use `specs` for optional configuration contributions and `dependencies` only when
+loading order is required. Language DAP contributions supply options without adding
+filetype triggers. The file tree configures its file-operation integration before
+the first tree window opens; LSP attachment alone does not load the tree.
+
+VimTeX loads at startup so headless inverse-search clients can invoke its global
+command. Its buffer behavior remains filetype-driven. Conform's initial formatting
+toggle is registered before its first save trigger, so opting out does not load the
+formatter. Alignment, textobjects, surround, and operators load on their first keys;
+file decorations load on file read/create and search decorations on first search.
 
 A language definition must not register autocmds, mutate globals, run external commands, or
 install dependencies while being read. Its plugin specs may do these things in explicit
@@ -98,6 +114,12 @@ filetypes with installed plugins, without installing or updating dependencies.
 `tests/smoke.sh native` isolates plugin data and development roots, exercising native behavior
 and contracts with plugin APIs mocked. `tests/smoke.sh integration` exercises installed plugins,
 parser queries, startup profiles, and actual input. The default `all` entry runs both suites.
+Integration checks also require Python 3 and a POSIX PTY. `tests/tui.py` exercises
+the real `UIEnter` and `VeryLazy` path, cold command/key entry points, first-save
+formatting control, and deferred completion/debugging/tree integrations. Ordinary
+headless startup does not emit `UIEnter` and cannot cover that path by waiting.
+`PROF=1 nvim` keeps the Snacks profiler running through the synchronous `VeryLazy`
+handlers instead of stopping at `VimEnter`.
 
 ## Language metadata API
 

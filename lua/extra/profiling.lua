@@ -11,9 +11,8 @@ function M.setup()
     ---@diagnostic disable-next-line: missing-fields
     require("snacks.profiler").startup({
       startup = {
-        event = "VimEnter", -- stop profiler on this event. Defaults to `VimEnter`
-        -- event = "UIEnter",
-        -- event = "VeryLazy",
+        event = "VeryLazy",
+        after = true, -- Stop after all synchronous VeryLazy handlers have run.
       },
     })
   end

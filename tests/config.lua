@@ -59,7 +59,7 @@ local started = false
 package.preload["snacks.profiler"] = function()
   return {
     startup = function(opts)
-      assert(opts.startup.event == "VimEnter")
+      assert(opts.startup.event == "VeryLazy" and opts.startup.after == true)
       started = true
     end,
   }

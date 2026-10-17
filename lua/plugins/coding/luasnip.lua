@@ -2,6 +2,7 @@ return {
   {
     "L3MON4D3/LuaSnip",
     event = "InsertEnter",
+    cmd = { "LuaSnipList", "LuaSnipEdit" },
     -- version = "v2.*",
     version = "*",
     -- install jsregexp (optional!:).

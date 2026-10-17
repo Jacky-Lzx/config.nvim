@@ -1,7 +1,7 @@
 return {
   {
     "petertriho/nvim-scrollbar",
-    event = "VeryLazy",
+    event = { "BufReadPost", "BufNewFile" },
     opts = {
       handle = {
         text = " ",
@@ -13,7 +13,8 @@ return {
       },
       handlers = {
         gitsigns = true, -- for gitsigns
-        search = true, -- for hlslens
+        -- hlslens connects this handler on the first search.
+        search = false,
       },
       excluded_buftypes = {
         "terminal",

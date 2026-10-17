@@ -3,6 +3,15 @@ return {
   {
     "stevearc/conform.nvim",
     event = "BufWritePre",
+    init = function()
+      if vim.g.enable_autoformat == nil then
+        vim.g.enable_autoformat = true
+      end
+      -- Allow opting out before the first save, without loading the formatter.
+      vim.keymap.set("n", "<leader>tf", function()
+        vim.g.enable_autoformat = not vim.g.enable_autoformat
+      end, { desc = "Toggle auto format" })
+    end,
     keys = {
       {
         "<leader>gf",
@@ -33,9 +42,6 @@ return {
     config = function(_, opts)
       require("conform").setup(opts)
 
-      if vim.g.enable_autoformat == nil then
-        vim.g.enable_autoformat = true
-      end
       require("snacks").toggle
         .new({
           id = "auto_format",

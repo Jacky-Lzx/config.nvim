@@ -1,7 +1,7 @@
 return {
   {
     "HiPhish/rainbow-delimiters.nvim",
-    event = "VeryLazy",
+    event = { "BufReadPost", "BufNewFile" },
     submodules = false,
     opts = {
       -- Disable the parsing of markdown files.

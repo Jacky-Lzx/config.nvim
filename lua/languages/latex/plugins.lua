@@ -20,8 +20,8 @@ return {
   },
   {
     "lervag/vimtex",
-    lazy = true, -- lazy-loading will disable inverse search
-    ft = { "tex", "latex", "bib" },
+    -- The global inverse-search command must also exist in headless clients.
+    lazy = false,
     init = function()
       vim.g.tex_flavor = "latex"
       -- Viewer options: One may configure the viewer either by specifying a built-in viewer method:

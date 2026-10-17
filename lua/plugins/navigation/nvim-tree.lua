@@ -2,6 +2,7 @@ return {
   {
     "nvim-tree/nvim-tree.lua",
     version = "*",
+    cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeClose", "NvimTreeFocus", "NvimTreeFindFile", "NvimTreeRefresh" },
     dependencies = {
       "nvim-tree/nvim-web-devicons",
       -- NOTE: The barbar.nvim should be started before the nvim-tree.
@@ -21,6 +22,17 @@ return {
     keys = {
       { "<leader>e", "<CMD>NvimTreeToggle<CR>", mode = { "n" }, desc = "[NvimTree] Toggle NvimTree" },
     },
+    config = function(_, opts)
+      require("nvim-tree").setup(opts)
+      -- Subscribe to tree operations before its first NvimTree FileType event.
+      local operations = package.loaded["lsp-file-operations"]
+      if operations then
+        -- :LFO may have initialized the integration before the tree existed.
+        operations.setup(require("lsp-file-operations.config").get())
+      else
+        require("lazy").load({ plugins = { "nvim-lsp-file-operations" } })
+      end
+    end,
     opts = {
       -- keep the cursor on the first letter of the filename when moving in the tree.
       hijack_cursor = true,
@@ -56,13 +68,10 @@ return {
 
   {
     "antosha417/nvim-lsp-file-operations",
-    event = "LspAttach",
+    lazy = true,
+    cmd = "LFO",
     dependencies = {
       "nvim-lua/plenary.nvim",
-      -- Uncomment whichever supported plugin(s) you use
-      "nvim-tree/nvim-tree.lua",
-      -- "nvim-neo-tree/neo-tree.nvim",
-      -- "simonmclean/triptych.nvim"
     },
     config = function()
       require("lsp-file-operations").setup()

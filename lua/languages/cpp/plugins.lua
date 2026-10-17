@@ -1,7 +1,6 @@
 return {
   {
     "mfussenegger/nvim-dap",
-    ft = { "c", "cpp" },
     optional = true,
     opts = {
       -- See `https://codeberg.org/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation`

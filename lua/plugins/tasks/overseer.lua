@@ -1,7 +1,7 @@
 return {
   {
     "stevearc/overseer.nvim",
-    dependencies = {
+    specs = {
       {
         "rmagatti/auto-session",
         optional = true,
@@ -18,7 +18,7 @@ return {
         },
       },
     },
-    cmd = "OverseerRun",
+    cmd = { "OverseerRun", "OverseerToggle", "OverseerOpen", "OverseerClose", "OverseerTaskAction", "OverseerShell" },
     keys = {
       -- Shift+F5
       { "<F17>", "<CMD>OverseerRun<CR>", desc = "[Overseer] Run" },

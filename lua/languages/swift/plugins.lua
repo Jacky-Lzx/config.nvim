@@ -14,7 +14,6 @@ end
 return {
   {
     "mfussenegger/nvim-dap",
-    ft = "swift",
     optional = true,
     opts = {
       adapters = {

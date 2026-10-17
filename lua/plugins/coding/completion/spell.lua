@@ -2,7 +2,7 @@ return {
   {
     "saghen/blink.cmp",
     optional = true,
-    dependencies = { "ribru17/blink-cmp-spell" },
+    specs = { { "ribru17/blink-cmp-spell", lazy = true } },
     opts = {
       sources = {
         default = { "spell" },

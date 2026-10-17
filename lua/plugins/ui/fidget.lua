@@ -1,8 +1,7 @@
 return {
   {
     "j-hui/fidget.nvim",
-    -- lazy = true,
-    event = "VeryLazy",
+    event = "LspAttach",
     opts = {
       notification = {
         window = {

@@ -2,7 +2,10 @@ return {
   {
     "echasnovski/mini.align",
     version = "*",
-    event = "VeryLazy",
+    keys = {
+      { "gA", mode = { "n", "x" }, desc = "Align" },
+      { "ga", mode = { "n", "x" }, desc = "Align with preview" },
+    },
     opts = {
       mappings = {
         start = "gA",

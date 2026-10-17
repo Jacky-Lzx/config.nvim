@@ -4,7 +4,16 @@ return {
     "echasnovski/mini.ai",
     dependencies = { "folke/which-key.nvim", "nvim-treesitter/nvim-treesitter-textobjects" },
     version = "*",
-    event = "VeryLazy",
+    keys = {
+      { "a", mode = { "o", "x" } },
+      { "i", mode = { "o", "x" } },
+      { "an", mode = { "o", "x" } },
+      { "in", mode = { "o", "x" } },
+      { "al", mode = { "o", "x" } },
+      { "il", mode = { "o", "x" } },
+      { "g[", desc = "Go to textobject left edge" },
+      { "g]", desc = "Go to textobject right edge" },
+    },
     -- NOTE: Configs copied from LazyVim (https://www.lazyvim.org/plugins/coding#miniai) <2026.04.28, lzx>
     opts = function()
       local ai = require("mini.ai")

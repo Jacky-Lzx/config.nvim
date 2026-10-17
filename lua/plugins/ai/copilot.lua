@@ -2,11 +2,12 @@ return {
   {
     "saghen/blink.cmp",
     optional = true,
-    dependencies = {
-      "fang2hou/blink-copilot",
+    specs = {
+      { "fang2hou/blink-copilot", lazy = true, dependencies = { "zbirenbaum/copilot.lua" } },
       {
         "zbirenbaum/copilot.lua",
-        event = "VeryLazy",
+        lazy = true,
+        cmd = "Copilot",
         opts = {
           suggestion = {
             enabled = false,

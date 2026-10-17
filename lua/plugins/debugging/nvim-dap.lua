@@ -1,7 +1,7 @@
 return {
   {
     "igorlfs/nvim-dap-view",
-    dependencies = {
+    specs = {
       {
         -- Solve the display issue with lualine
         "nvim-lualine/lualine.nvim",

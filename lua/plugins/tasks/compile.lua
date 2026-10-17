@@ -10,7 +10,7 @@ return {
       { "<leader>ms", "<cmd>CompileStop<cr>", desc = "[Compile] Stop" },
       { "<leader>mo", "<cmd>CompileOpen<cr>", desc = "[Compile] Open output" },
     },
-    dependencies = {
+    specs = {
       {
         "folke/which-key.nvim",
         optional = true,

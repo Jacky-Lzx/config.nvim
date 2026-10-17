@@ -28,6 +28,8 @@ directory in Home Manager while retaining its Neovim and language-tool packages.
 
 Run `sh tests/smoke.sh native` for offline tests with isolated plugin data, and
 `sh tests/smoke.sh integration` for tests using installed plugins and parsers.
+Integration checks also use Python 3 and a terminal PTY to verify actual `VeryLazy`
+loading, first-use mappings/commands, and first-save formatting behavior.
 To review startup independently, create an isolated XDG config tree with a
 `nvim-review` symlink to this checkout and launch with `NVIM_APPNAME=nvim-review`.
 That also isolates plugin data, state and cache; prepare those dependencies
@@ -52,6 +54,10 @@ See [the architecture guide](docs/architecture.md) for ownership and lifecycle r
 
 `<leader>gf` uses Conform's configured formatters with LSP fallback in all buffers.
 LSP attachment adds navigation/refactoring mappings without replacing the shared format key.
+`<leader>tf` toggles automatic formatting even before the first save, without loading
+Conform. Debugging loads on debugger keys; merely opening C/C++ or Swift does not
+initialize DAP. Pairing/snippets load on Insert mode, and optional completion providers
+load when used. VimTeX stays available at startup for headless inverse search.
 
 ## Compile commands
 

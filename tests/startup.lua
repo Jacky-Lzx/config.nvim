@@ -32,6 +32,10 @@ local function check()
   assert(not plugins["virt-column.nvim"], "Column guide must use native decorations")
   local languages = require("languages").current()
   local features = require("config.context").current().selection.features
+  assert(
+    (vim.fn.exists(":VimtexInverseSearch") == 2) == require("languages").is_enabled("latex"),
+    "Headless inverse search must be available before opening a TeX buffer"
+  )
   local function opts(name)
     return require("lazy.core.plugin").values(assert(plugins[name], name), "opts", false)
   end
@@ -161,7 +165,7 @@ local function check()
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
 
--- Let VimEnter/VeryLazy finish before exercising the configured plugins.
+-- Headless startup covers VimEnter. tests/tui.py covers the real VeryLazy path.
 vim.defer_fn(function()
   local ok, err = xpcall(check, debug.traceback)
   if not ok then

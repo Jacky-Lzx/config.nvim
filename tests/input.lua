@@ -25,9 +25,7 @@ local function check()
     end, 10),
     "Completion did not finish setup"
   )
-  assert(require("pairs").status().initialized)
-  local module = debug.getinfo(require("pairs").setup, "S").source
-  assert(module == "@" .. expected_dir .. "/lua/pairs/init.lua", "Pairing loaded from an unexpected checkout")
+  assert(not pairing._.loaded, "Command-line completion must not load pairing")
 
   local function input(keys, expected)
     vim.cmd("enew!")
@@ -43,6 +41,9 @@ local function check()
     assert(vim.deep_equal(actual, expected), vim.inspect({ keys = keys, actual = actual, expected = expected }))
   end
   input("(", { "()" })
+  assert(require("pairs").status().initialized)
+  local module = debug.getinfo(require("pairs").setup, "S").source
+  assert(module == "@" .. expected_dir .. "/lua/pairs/init.lua", "Pairing loaded from an unexpected checkout")
   input("(<BS>", { "" })
   input("(<CR>x", { "(", "  x", ")" })
   input("don'", { "don'" })

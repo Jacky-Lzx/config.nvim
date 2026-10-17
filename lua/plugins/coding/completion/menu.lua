@@ -2,9 +2,9 @@ return {
   {
     "saghen/blink.cmp",
     optional = true,
-    dependencies = {
+    specs = {
       ---Use treesitter to highlight the label text for the given list of sources.
-      "xzbdmw/colorful-menu.nvim",
+      { "xzbdmw/colorful-menu.nvim", lazy = true },
     },
     opts = {
       completion = {

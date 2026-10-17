@@ -1,8 +1,6 @@
 return {
   {
     "saghen/blink.cmp",
-    dependencies = { "Jacky-Lzx/pairs.nvim" },
-
     event = { "InsertEnter", "CmdlineEnter" },
 
     -- use a release tag to download pre-built binaries

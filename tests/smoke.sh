@@ -86,6 +86,11 @@ integration_checks() (
   NVIM_TEST_SCENARIO=writing nvim --headless -i NONE \
     --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
     -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_highlighting.lua')"
+
+  # A PTY supplies UIEnter, which Lazy needs to fire its actual VeryLazy event.
+  for scenario in boundaries boundaries_lfo editing completion; do
+    python3 "$root/tests/tui.py" "$scenario"
+  done
 )
 
 case "$suite" in

@@ -18,10 +18,17 @@ package.loaded.snacks = { toggle = {
 } }
 local conform = require("plugins.coding.conform")[1]
 vim.g.enable_autoformat = false
+conform.init()
 conform.config(nil, vim.deepcopy(conform.opts))
 assert(vim.g.enable_autoformat == false, "preserve explicit autoformat preference")
 vim.g.enable_autoformat = nil
+conform.init()
+local toggle_format = vim.fn.maparg("<leader>tf", "n", false, true).callback
+toggle_format()
+assert(vim.g.enable_autoformat == false, "Allow disabling formatting before Conform setup")
 conform.config(nil, vim.deepcopy(conform.opts))
+assert(vim.g.enable_autoformat == false, "Loading Conform must preserve the pre-save toggle")
+toggle_format()
 assert(vim.g.enable_autoformat == true)
 local buf = vim.api.nvim_get_current_buf()
 assert(conform.opts.format_on_save(buf).lsp_format == "fallback")
