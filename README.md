@@ -53,6 +53,25 @@ See [the architecture guide](docs/architecture.md) for ownership and lifecycle r
 `<leader>gf` uses Conform's configured formatters with LSP fallback in all buffers.
 LSP attachment adds navigation/refactoring mappings without replacing the shared format key.
 
+## Compile commands
+
+With the `tasks` feature enabled, [compile.nvim](https://github.com/Jacky-Lzx/compile.nvim)
+provides asynchronous shell commands with output in quickfix. It uses lazy.nvim's
+`dev = true` to prefer `NVIM_DEV_PLUGIN_ROOT/compile.nvim`
+(default `~/Documents/Github/nvim_plugins/compile.nvim`). When that directory is absent,
+lazy.nvim falls back to the GitHub version pinned in `lazy-lock.json`.
+
+- `<leader>mc` / `:Compile`: enter a command, prefilled with the previous command.
+- `:Compile cargo build`: run a command directly.
+- `<leader>mr` / `:Recompile`: repeat it in its original working directory.
+- `<leader>ms` / `:CompileStop`: stop the active compilation.
+- `<leader>mo` / `:CompileOpen`: open the most recent compilation output.
+
+Output opens below the editor while the source window keeps focus. In quickfix,
+press Enter on a file location to jump there, or use the existing `<leader>J` /
+`<leader>K` mappings for the next/previous location. Relative paths resolve from
+the working directory at launch. See `:help compile.nvim` for plugin settings.
+
 ## Folding
 
 `lua/features/folding.lua` selects native Tree-sitter folding when a parser and folds

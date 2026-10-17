@@ -34,6 +34,7 @@ function M.setup()
       ["but"] = true,
       ["for"] = true,
       ["or"] = true,
+      ["from"] = true,
       ["nor"] = true,
       ["on"] = true,
       ["in"] = true,
