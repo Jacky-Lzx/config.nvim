@@ -11,7 +11,7 @@ local directory = vim.fn.tempname() .. " latex build"
 vim.fn.mkdir(directory, "p")
 local client
 local function check()
-  assert(vim.fn.executable("texlab") == 1 and vim.fn.executable("latexmk") == 1, "Install texlab and latexmk")
+  assert(vim.fn.executable("latexmk") == 1, "Install latexmk")
   local source = directory .. "/main.tex"
   local text = { "\\documentclass{article}", "\\begin{document}", "First version.", "\\end{document}" }
   vim.fn.writefile(text, source)
@@ -23,6 +23,7 @@ local function check()
   tex.setup({ mappings = false })
   local config =
     vim.tbl_deep_extend("force", vim.deepcopy(vim.lsp.config.texlab), dofile(root .. "/after/lsp/texlab.lua"))
+  assert(vim.fn.executable(config.cmd[1]) == 1, "Install the configured texlab fork")
   config.name, config.root_dir = "texlab", directory
   config.settings.texlab.diagnosticsDelay = 50
   local analyzed = false
@@ -34,8 +35,10 @@ local function check()
       end
     end,
   }
+  assert(config.cmd[1] == vim.fn.expand("~/.local/bin/texlab-fork"))
   local build = config.settings.texlab.build
   assert(build.executable == "latexmk" and build.onSave and not vim.list_contains(build.args, "-pvc"))
+  assert(vim.list_contains(build.args, "-file-line-error"))
   local id = assert(vim.lsp.start(config))
   client = assert(vim.lsp.get_client_by_id(id))
   assert(
@@ -104,7 +107,7 @@ local function check()
     return vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
   end
   previous = builds
-  text[3] = "\\undefinedtestcommand This document has an error."
+  text[3] = "Café " .. string.rep("word ", 30) .. "\\undefinedtestcommand This document has an error."
   vim.api.nvim_buf_set_lines(0, 0, -1, false, text)
   vim.cmd.write()
   wait_build(previous, false)
@@ -119,6 +122,16 @@ local function check()
     end, 10),
     "Compiler errors did not reach native diagnostics"
   )
+  local column = assert(text[3]:find("\\undefinedtestcommand", 1, true)) - 1
+  local diagnostic
+  for _, item in ipairs(errors()) do
+    if item.message:find("Undefined control sequence", 1, true) then
+      diagnostic = item
+      break
+    end
+  end
+  assert(diagnostic and diagnostic.lnum == 2 and diagnostic.end_lnum == 2)
+  assert(diagnostic.col == column and diagnostic.end_col == column + #"\\undefinedtestcommand", vim.inspect(diagnostic))
   previous = builds
   text[3] = "The error is fixed."
   vim.api.nvim_buf_set_lines(0, 0, -1, false, text)
@@ -148,7 +161,7 @@ local function check()
   assert(result.code == 0, result.stderr)
   assert(vim.api.nvim_buf_get_name(0) == source and vim.api.nvim_win_get_cursor(0)[1] == 3)
   print(
-    "Live LaTeX passed: save -> texlab -> latexmk -> PDF/SyncTeX, deduplicated manual build, compiler diagnostics/clearing, native inverse RPC"
+    "Live LaTeX passed: save -> texlab -> latexmk -> PDF/SyncTeX, deduplicated manual build, long UTF-8 diagnostic range/clearing, native inverse RPC"
   )
 end
 local ok, err = xpcall(check, debug.traceback)

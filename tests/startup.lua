@@ -138,7 +138,11 @@ local function check()
     local build = vim.lsp.config.texlab.settings.texlab.build
     assert(build.executable == "latexmk" and build.onSave == true)
     assert(not vim.list_contains(build.args, "-pvc"))
-    assert(not vim.list_contains(build.args, "-file-line-error"), "texlab requires standard TeX log errors")
+    assert(vim.list_contains(build.args, "-file-line-error"))
+    assert(vim.lsp.config.texlab.cmd[1] == vim.fn.expand("~/.local/bin/texlab-fork"))
+    for _, name in ipairs({ "latexmk", "xelatex" }) do
+      assert(vim.list_contains(tex_options.build.profiles[name].args, "-file-line-error"))
+    end
   end
   vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.py")
   assert(vim.bo.filetype == "python")

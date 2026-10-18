@@ -3,11 +3,12 @@ local displayline = platform.skim_displayline()
 local zathura = platform.executable("zathura")
 
 return {
+  cmd = { vim.fn.expand("~/.local/bin/texlab-fork") },
   settings = {
     texlab = {
       build = {
         executable = "latexmk",
-        args = { "-pdf", "-synctex=1", "-interaction=nonstopmode", "%f" },
+        args = { "-pdf", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%f" },
         onSave = true,
         forwardSearchAfter = false,
       },

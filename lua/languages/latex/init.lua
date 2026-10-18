@@ -2,7 +2,13 @@ return {
   servers = { "texlab" },
   tools = {
     { mason = "tex-fmt", executable = "tex-fmt" },
-    { mason = "texlab", executable = "texlab" },
+    {
+      executable = "texlab-fork",
+      resolve = function()
+        local path = vim.fn.expand("~/.local/bin/texlab-fork")
+        return vim.fn.executable(path) == 1 and path or nil
+      end,
+    },
     { executable = "chktex" },
     { executable = "latexmk" },
     { executable = "tectonic" },

@@ -117,12 +117,33 @@ and auxiliary directories and jobname, including computed `.latexmkrc` settings.
 PDF opening, forward search and logs use those discovered paths. Explicit texlab
 `build.auxDirectory`, `logDirectory`, and `pdfDirectory` settings override discovery.
 Discovered log directories are also synchronized to texlab, so compiler errors
-appear in native diagnostics. Standard TeX log formatting is used; `-file-line-error`
-is omitted because texlab's parser does not recognize its error format. Recompile
-once after upgrading to replace old-format logs. Explicit `build.logDirectory`
+appear in native diagnostics. The latexmk and xelatex profiles enable
+`-file-line-error`; the configured [texlab fork](https://github.com/Jacky-Lzx/texlab/tree/fix/build-log-diagnostic-locations)
+supports this format and refines unambiguous error columns from source context.
+Recompile once after upgrading to replace old logs. Explicit `build.logDirectory`
 settings remain authoritative. A nonzero compiler result remains a failure even
 if TeX produced a PDF; the notification explains that it may be incomplete and
 links to the log commands.
+
+The LSP uses `~/.local/bin/texlab-fork` explicitly, independent of PATH and Mason.
+Install it from the fork (Rust/Cargo required):
+
+```sh
+git clone --branch fix/build-log-diagnostic-locations https://github.com/Jacky-Lzx/texlab.git
+cd texlab
+git checkout 0b9a11de26099a847a6d238a33024a23661bbee0
+cargo build --release --locked -p texlab
+install -Dm755 target/release/texlab ~/.local/bin/texlab-fork
+```
+
+The tested fork revision is `0b9a11de26099a847a6d238a33024a23661bbee0`.
+For ambiguous TeX context, diagnostics retain the reported line rather than inventing
+a command column. `:ConfigInfo` reports the fork executable; restart Neovim after
+installing or replacing it. `nvim --clean --headless -i NONE -l tests/latex_build.lua`
+runs the optional real latexmk/LSP integration check, including an exact diagnostic
+range after UTF-8 text on a long line. For an included filename containing an
+unmatched parenthesis, first build the main document once so texlab can discover
+the dependency from the recorder file; subsequent child saves build normally.
 
 `<localleader>li` shows project information, `lt/lT` opens the file/project outline,
 `lq/lo/le` shows the log/live output/diagnostics, and `lc/lC` cleans auxiliary/all

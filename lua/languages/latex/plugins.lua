@@ -40,11 +40,11 @@ return {
           },
           latexmk = {
             executable = "latexmk",
-            args = { "-pdf", "-synctex=1", "-interaction=nonstopmode", "%f" },
+            args = { "-pdf", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%f" },
           },
           xelatex = {
             executable = "latexmk",
-            args = { "-xelatex", "-synctex=1", "-interaction=nonstopmode", "%f" },
+            args = { "-xelatex", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%f" },
           },
         },
       },
