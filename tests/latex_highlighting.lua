@@ -38,7 +38,7 @@ local function check_capture(row, col, expected)
 end
 
 local function verify()
-  assert(vim.bo.syntax == "tex")
+  assert(vim.bo.syntax == "")
   assert(vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()])
   vim.treesitter.get_parser(0, "latex"):parse()
   check_capture(0, 1, "module")
@@ -73,13 +73,23 @@ local function verify()
   end
   assert(path_color, "file path highlighting was lost")
 
-  local conceal = vim.fn.synconcealed(3, 8)
-  assert(conceal[1] == 1 and conceal[2] == "(", "VimTeX conceal was lost")
-  for name, attrs in pairs(vim.api.nvim_get_hl(0, {})) do
-    if name:match("^tex[A-Z]") then
-      assert(vim.tbl_isempty(attrs), "VimTeX style restored: " .. name)
-    end
+  -- Ephemeral conceal is tested by rendered screen text, not synconcealed().
+  vim.wo.number, vim.wo.relativenumber = false, false
+  vim.wo.signcolumn, vim.wo.foldcolumn, vim.wo.statuscolumn = "no", "0", ""
+  vim.wo.foldenable, vim.wo.wrap = false, false
+  vim.wo.conceallevel, vim.wo.concealcursor = 2, "nc"
+  vim.api.nvim_win_set_cursor(0, { 1, 0 })
+  vim.cmd("normal! zt")
+  vim.cmd.redraw({ bang = true })
+  local origin = vim.fn.win_screenpos(0)
+  local text = {}
+  for col = origin[2], origin[2] + vim.api.nvim_win_get_width(0) - 1 do
+    text[#text + 1] = vim.fn.screenstring(origin[1] + 2, col)
   end
+  text = table.concat(text)
+  assert(not text:find("left", 1, true) and not text:find("right", 1, true), "Math sizing was not concealed")
+  assert(text:find("\\alpha", 1, true), "Math symbols must retain source spelling")
+  assert(not vim.b.vimtex and vim.b.tex_tools_generation)
   local math = vim.api.nvim_get_hl(0, { name = "@markup.math", link = false })
   local background = vim.api.nvim_get_hl(0, { name = "@markup.math.background.latex", link = false })
   assert(math.fg and math.fg == background.fg, "math theme color was lost")
@@ -124,6 +134,6 @@ if not ok then
   vim.api.nvim_err_writeln(tostring(err))
   vim.cmd("cquit 1")
 else
-  print("PASS: Tree-sitter priorities and VimTeX conceal survive edits, theme/syntax reloads and new buffers")
+  print("PASS: Tree-sitter priorities and tex-tools conceal survive edits, theme/syntax reloads and new buffers")
   vim.cmd("qa!")
 end

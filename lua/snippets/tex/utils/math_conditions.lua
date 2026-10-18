@@ -779,6 +779,13 @@ end
 -- MATH MODE DETECTION
 ------------------------------------------------------------------------------
 function M.fn.math_mode()
+  -- TeX uses structural context; Markdown retains its own parser/fallbacks.
+  if (vim.bo.filetype == "tex" or vim.bo.filetype == "plaintex") and package.loaded["tex-tools"] then
+    local in_math, err = require("tex-tools").in_math()
+    if not err then
+      return in_math
+    end
+  end
   return (M.is_mathzone() or M.is_mathzone_fallback() or is_math_range() or M.is_in_sile_display_math())
     and not is_cursor_in_text_command()
 end

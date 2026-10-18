@@ -82,7 +82,7 @@ the working directory at launch. See `:help compile.nvim` for plugin settings.
 
 `lua/features/folding.lua` selects native Tree-sitter folding when a parser and folds
 query are available, otherwise indentation folding. Diff and special windows retain
-their own folding settings. VimTeX folding is disabled to keep one folding source.
+their own folding settings. LaTeX uses the same native folding source.
 
 Files initially open all folds; native `zM`, `zR`, `zm`, `zr`, `za`, `zo`, `zc`, `zx`,
 and `zX` control them. `2zS` sets the current window's fold level to 2. Folded lines
@@ -92,8 +92,63 @@ by two spaces.
 `zK` previews a closed fold without moving focus; repeat it to enter the preview.
 Use `q` or Escape there to close it. Moving the source cursor or entering Insert mode
 also closes it. Previews show at most 200 lines in a window up to 100 columns and
-20 rows; longer folds are marked in the title. `K` keeps native LSP hover or the
-filetype's documentation action (VimTeX package documentation in LaTeX).
+20 rows; longer folds are marked in the title. `K` keeps native LSP hover.
+
+## LaTeX
+
+The writing profile loads `tex-tools.nvim` for TeX buffers, using the development
+checkout when available and the pinned Git checkout otherwise. Tree-sitter owns
+highlighting and folding; tex-tools supplies conceal while preserving math command
+spelling (`math_symbols = false`). VimTeX and nvim-texlabconfig are no longer loaded.
+Texlab provides completion, diagnostics, references, compilation and forward search.
+
+The default compiler is **latexmk**, with `texlab.build.onSave = true`: saving a
+source file requests a build through texlab, without a persistent `latexmk -pvc`
+process. `<localleader>ll` and `<leader>lb` build manually; an unsaved buffer is
+saved first without queuing a duplicate build. `<localleader>la` toggles build on
+save for the current texlab session. `<localleader>lk/lK` cancels the current/all
+texlab builds; saving again can start another build while build on save is enabled.
+
+Use `:TexToolsCompiler latexmk`, `:TexToolsCompiler xelatex`, or
+`:TexToolsCompiler tectonic` to select a session-wide profile; `<localleader>lB`
+cycles them. The default latexmk profile uses `-pdf`; select `xelatex` for XeLaTeX.
+All profiles enable SyncTeX. Tex-tools asks latexmk for its effective output
+and auxiliary directories and jobname, including computed `.latexmkrc` settings.
+PDF opening, forward search and logs use those discovered paths. Explicit texlab
+`build.auxDirectory`, `logDirectory`, and `pdfDirectory` settings override discovery.
+A nonzero compiler result remains a failure even if TeX produced a PDF; the
+notification explains that the PDF may be incomplete and links to the log commands.
+
+`<localleader>li` shows project information, `lt/lT` opens the file/project outline,
+`lq/lo/le` shows the log/live output/diagnostics, and `lc/lC` cleans auxiliary/all
+artifacts. `<localleader>ls` selects a main document. For child files, prefer
+`% !TeX root = ../main.tex`: texlab's automatic builds use its dependency graph,
+whereas a `:TexToolsMain` override applies to plugin operations for that session.
+
+`<localleader>lv` performs PDF forward search; `lV` opens the PDF without jumping.
+For Skim, run `:TexToolsInverseSearch skim` and copy Command/Arguments to
+Settings -> Sync -> Custom. This native callback discovers the matching Neovim
+session after restarts, without loading the full configuration in the helper.
+It requires a local TeX buffer in the target session. Regenerate the callback when
+the Neovim executable, plugin path or cache location changes. Zathura can use
+`:TexToolsView` or `:TexToolsInverseSearch zathura`. `<localleader>lr` shows setup.
+
+Text objects follow tex-tools defaults: `ae/ie` environment, `ac/ic` command,
+`aa/ia` argument, `a$/i$` math, `ad/id` math brackets, `ai/ii` item, `aP/iP` section,
+and `at/it` cell. Structural edits retain `cse/csc/csd`, `dse/dsc/dsd`,
+`tsf/tsc/tse/ts$/tsd`, `<F6>/<F7>` for environment/command surrounds, and Insert
+`]]` for closing markers. `<F8>` toggles bracket sizing. Normal `]]`/`][` and `[[`
+now navigate section headings; `]m/[m` visit environments and `]n/[n` visit math.
+`]i/[i` visit items and `]t/[t` visit cells. Navigation is Normal mode only.
+`<localleader>lj` inserts an item; Enter remains composed by Blink and pairs.nvim.
+TeX snippets use tex-tools math context; Markdown retains its own detection.
+
+VimTeX-only selected-region compilation, structural `%`, environment/math/section
+end motions, frame/comment motions, `ds$`, Visual fraction/size toggles, `tsb`,
+`tsD`, Insert `<F7>`, package-documentation `K`, cache/reload and input-map menus
+have no direct replacement and their old mappings were removed. Native `%` and
+LSP `K` remain available. Use `:TexToolsConvertMath` for explicit math conversions;
+row/column editing and section promotion/demotion are available as TexTools commands.
 
 ## Column guide
 
@@ -323,3 +378,12 @@ startup, and set `NVIM_SMOKE_TEST=1` to disable project-local configuration and 
 installation. They never invoke Mason or Tree-sitter installation commands. The full default
 pass requires the configured plugins and LaTeX parser to be installed. It verifies local
 configuration and plugin setup, not live LSP responses, a running debugger, or PDF compilation.
+
+The optional real LaTeX check requires `texlab`, `latexmk`, a TeX installation,
+and the local tex-tools checkout. It builds only temporary documents and verifies
+save-triggered compilation, PDF/SyncTeX output, manual-build deduplication, and a
+real native inverse-search RPC callback:
+
+```sh
+TMPDIR=/private/tmp nvim --clean --headless -i NONE -l tests/latex_build.lua
+```

@@ -43,7 +43,8 @@ local function check()
     "nvim-highlight-colors"
   )
   assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
-  assert(vim.fn.exists(":VimtexInverseSearch") == 2, "Inverse search must exist without a TeX buffer")
+  assert(not package.loaded["tex-tools"], "TeX tools loaded without a TeX buffer")
+  assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
   for _, command in ipairs({ "NvimTreeToggle", "OverseerToggle", "CodeCompanionChat", "LuaSnipEdit", "Copilot" }) do
     assert(vim.fn.exists(":" .. command) == 2, "Missing cold command: " .. command)
   end

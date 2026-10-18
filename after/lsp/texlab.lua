@@ -1,35 +1,25 @@
-local displayline = require("utils.platform").skim_displayline()
+local platform = require("utils.platform")
+local displayline = platform.skim_displayline()
+local zathura = platform.executable("zathura")
 
 return {
   settings = {
     texlab = {
-      -- build = {
-      --   executable = "latexmk",
-      --   args = {
-      --     "%f",
-      --   },
-      --   onSave = false,
-      --   forwardSearchAfter = false,
-      -- },
       build = {
-        executable = "tectonic",
-        args = {
-          "-X",
-          "compile",
-          "%f",
-          "--synctex",
-          "--keep-logs",
-          "--keep-intermediates",
-        },
-        onSave = false,
+        executable = "latexmk",
+        args = { "-pdf", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%f" },
+        onSave = true,
         forwardSearchAfter = false,
       },
       -- Use Skim for preview and forward search
-      -- The inverse search is configured in "f2fora/nvim-texlabconfig"
+      -- Native inverse search: :TexToolsInverseSearch skim (one-time viewer setup).
       forwardSearch = displayline and {
         executable = displayline,
         args = { "%l", "%p", "%f" },
-      } or nil,
+      } or (zathura and {
+        executable = zathura,
+        args = { "--synctex-forward", "%l:1:%f", "%p" },
+      } or nil),
       chktex = {
         onOpenAndSave = false,
         onEdit = false,

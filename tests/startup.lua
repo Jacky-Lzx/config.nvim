@@ -32,10 +32,8 @@ local function check()
   assert(not plugins["virt-column.nvim"], "Column guide must use native decorations")
   local languages = require("languages").current()
   local features = require("config.context").current().selection.features
-  assert(
-    (vim.fn.exists(":VimtexInverseSearch") == 2) == require("languages").is_enabled("latex"),
-    "Headless inverse search must be available before opening a TeX buffer"
-  )
+  assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
+  assert(not package.loaded["tex-tools"], "TeX tools must stay lazy before a TeX buffer")
   local function opts(name)
     return require("lazy.core.plugin").values(assert(plugins[name], name), "opts", false)
   end
@@ -79,7 +77,7 @@ local function check()
   assert((plugins["auto-session"] ~= nil) == not not features.sessions)
   assert((plugins["copilot-lualine"] ~= nil) == not not features.ai)
   assert((plugins["codecompanion.nvim"] ~= nil) == not not features.ai)
-  assert((plugins["vimtex"] ~= nil) == require("languages").is_enabled("latex"))
+  assert((plugins["tex-tools.nvim"] ~= nil) == require("languages").is_enabled("latex"))
   assert((plugins["lazydev.nvim"] ~= nil) == require("languages").is_enabled("lua"))
   local tools = opts("mason.nvim")
   for _, tool in ipairs(languages.tools) do
@@ -130,12 +128,16 @@ local function check()
   local tex_enabled = require("languages").is_enabled("latex")
   assert((vim.fn.maparg("<M-m>", "i", false, true).buffer == 1) == tex_enabled)
   if tex_enabled then
-    assert(vim.g.vimtex_syntax_enabled == true)
-    assert(vim.b.vimtex, "VimTeX did not initialize")
-    assert(vim.g.vimtex_fold_enabled == 0, "VimTeX must not compete with native folding")
+    assert(vim.b.tex_tools_generation, "TeX tools did not attach")
+    assert(not vim.b.vimtex and not package.loaded["texlabconfig"])
     assert(vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()], "LaTeX Tree-sitter did not start")
-    assert(vim.bo.syntax ~= "", "VimTeX syntax required for conceal is disabled")
-    assert(vim.g.vimtex_syntax_conceal.math_delimiters == 1)
+    assert(vim.bo.syntax == "", "Legacy TeX syntax competes with native conceal")
+    local tex_options = require("tex-tools.config").options
+    assert(tex_options.conceal.enabled and not tex_options.conceal.math_symbols)
+    assert(not tex_options.mappings and not tex_options.smart_enter)
+    local build = vim.lsp.config.texlab.settings.texlab.build
+    assert(build.executable == "latexmk" and build.onSave == true)
+    assert(not vim.list_contains(build.args, "-pvc"))
   end
   vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.py")
   assert(vim.bo.filetype == "python")

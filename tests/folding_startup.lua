@@ -43,13 +43,8 @@ local function check()
     vim.cmd("normal! zR")
     assert(vim.fn.foldclosed(first) == -1)
     if extension == "tex" and require("languages").is_enabled("latex") then
-      assert(vim.g.vimtex_fold_enabled == 0 and vim.b.vimtex)
-      assert(
-        vim.wait(1000, function()
-          return vim.fn.maparg("K", "n"):find("vimtex%-doc%-package") ~= nil
-        end),
-        "TeX K lost package documentation"
-      )
+      assert(vim.b.tex_tools_generation and not vim.b.vimtex)
+      assert(vim.fn.maparg("K", "n") == "", "TeX must keep native LSP hover")
     end
   end
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))

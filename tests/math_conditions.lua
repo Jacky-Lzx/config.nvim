@@ -244,6 +244,28 @@ parser_mode = "throw"
 buffer({ "\\documentclass{beamer}" })
 eq(M.fn.in_beamer(), false, "missing document parser")
 
+local context_calls = 0
+local context_result, context_error = true, nil
+package.loaded["tex-tools"] = {
+  in_math = function()
+    context_calls = context_calls + 1
+    return context_result, context_error
+  end,
+}
+buffer({ "$x$" }, "tex")
+eq(M.fn.math_mode(), true, "TeX uses structural context")
+context_result = false
+eq(M.fn.math_mode(), false, "negative structural context does not use regex fallback")
+buffer({ "$x$" }, "plaintex")
+eq(M.fn.math_mode(), false, "plaintex uses structural context")
+context_error = "parser unavailable"
+eq(M.fn.math_mode(), true, "unavailable structural parser keeps fallback")
+local context_before = context_calls
+buffer({ "$x$" }, "markdown")
+eq(M.fn.math_mode(), true, "Markdown keeps its own math detection")
+eq(context_calls, context_before, "Markdown never asks for a LaTeX tree")
+package.loaded["tex-tools"] = nil
+
 local called = false
 M.fn.math_mode = function()
   called = true

@@ -19,76 +19,36 @@ return {
     end,
   },
   {
-    "lervag/vimtex",
-    -- The global inverse-search command must also exist in headless clients.
-    lazy = false,
+    "Jacky-Lzx/tex-tools.nvim",
+    dev = true,
+    main = "tex-tools",
+    ft = { "tex", "plaintex" },
     init = function()
       vim.g.tex_flavor = "latex"
-      -- Viewer options: One may configure the viewer either by specifying a built-in viewer method:
-      vim.g.vimtex_view_enabled = platform.skim_displayline() ~= nil or platform.executable("zathura") ~= nil
-
-      -- Removed default imap
-      vim.g.vimtex_imaps_enabled = false
-
-      -- Silence the compiler messages during start, stop, and callbacks
-      -- vim.g.vimtex_compiler_silent = true
-
-      vim.g.vimtex_complete_enabled = false
-      vim.g.vimtex_syntax_enabled = true -- This config controls conceals. Should be true
-      vim.g.vimtex_indent_enabled = false
-
-      vim.g.vimtex_quickfix_enabled = true
-      -- Only open quickfix when there are errors, not warnings
-      vim.g.vimtex_quickfix_open_on_warning = false
-      vim.g.vimtex_quickfix_method = vim.fn.executable("pplatex") == 1 and "pplatex" or "latexlog"
-      vim.g.vimtex_quickfix_mode = 0
-
-      -- vim.g.vimtex_view_method = "zathura_simple"
-      -- vim.g.vimtex_view_zathura_use_synctex = 0
-
-      if platform.skim_displayline() then
-        vim.g.vimtex_view_method = "skim"
-        vim.g.vimtex_view_skim_sync = 1
-      elseif platform.executable("zathura") then
-        vim.g.vimtex_view_method = "zathura_simple"
-      end
-
-      -- VimTeX uses latexmk as the default compiler backend. If you use it, which is strongly recommended, you probably
-      -- don't need to configure anything. If you want another compiler backend, you can change it as follows. The list
-      -- of supported backends and further explanation is provided in the documentation, see ":help vimtex-compiler".
-      vim.g.vimtex_compiler_method = "latexmk"
-
-      vim.g.vimtex_mappings_disable = { ["n"] = { "K" } } -- disable `K` as it conflicts with LSP hover
-
-      vim.g.vimtex_syntax_conceal = {
-        accents = 1,
-        ligatures = 1,
-        cites = 1,
-        fancy = 1,
-        spacing = 1,
-        greek = 0,
-        math_bounds = 1,
-        math_delimiters = 1,
-        math_fracs = 0,
-        math_super_sub = 0,
-        math_symbols = 0,
-        sections = 0,
-        styles = 1,
-      }
-
-      vim.g.vimtex_fold_enabled = 0 -- Native Tree-sitter/indent folding owns this window.
+      -- tex-tools owns conceal; native TeX syntax must not add replacements.
+      vim.g.tex_conceal = ""
     end,
-  },
-  {
-    "f3fora/nvim-texlabconfig",
-    enabled = platform.executable("go") ~= nil,
-    build = "go build",
-    ft = { "tex", "bib" }, -- Lazy-load on filetype
-
-    opts = {},
-    config = function(_, opts)
-      require("texlabconfig").setup(opts)
-    end,
+    opts = {
+      mappings = false, -- languages.latex.buffer owns the existing key layout.
+      smart_enter = false, -- Blink -> pairs.nvim owns Insert-mode Enter.
+      conceal = { math_symbols = false },
+      build = {
+        profiles = {
+          tectonic = {
+            executable = "tectonic",
+            args = { "-X", "compile", "%f", "--synctex", "--keep-logs", "--keep-intermediates" },
+          },
+          latexmk = {
+            executable = "latexmk",
+            args = { "-pdf", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%f" },
+          },
+          xelatex = {
+            executable = "latexmk",
+            args = { "-xelatex", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%f" },
+          },
+        },
+      },
+    },
   },
   {
     "let-def/texpresso.vim",

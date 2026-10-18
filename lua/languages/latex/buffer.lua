@@ -1,107 +1,91 @@
 local M = {}
+
 function M.setup(bufnr)
+  require("utils.latex_highlighting").attach(bufnr)
   vim.keymap.set("v", "<M-m>", 'c\\( <c-r>" \\)', { buffer = bufnr })
   vim.keymap.set("i", "<M-m>", "\\(  \\)<esc>hhi", { buffer = bufnr })
-  require("utils.latex_highlighting").attach(bufnr)
 
-  vim.keymap.set("n", "<leader>lb", "<CMD>LspTexlabBuild<CR>", { buffer = bufnr, desc = "[Texlab] Compile" })
-
-  local wk = require("which-key")
-  wk.add({
-    buffer = bufnr,
-      -- stylua: ignore start
-      { "<localleader>l", group = "[VimTeX]", icon = { icon = "", color = "green" }, mode = "nx" },
-      {
-        mode = "n",
-        { "<localleader>ll", "<plug>(vimtex-compile)", desc = "Compile", icon = { icon = "", color = "green" }, },
-        { "<localleader>lL", "<plug>(vimtex-compile-selected)", desc = "Compile selected", icon = { icon = "", color = "green" }, mode = "nx", },
-        { "<localleader>li", "<plug>(vimtex-info)", desc = "Information", icon = { icon = "", color = "purple" }, },
-        { "<localleader>lI", "<plug>(vimtex-info-full)", desc = "Full information", icon = { icon = "󰙎", color = "purple" }, },
-        { "<localleader>lt", "<plug>(vimtex-toc-open)", desc = "Table of Contents", icon = { icon = "󰠶", color = "purple" }, },
-        { "<localleader>lT", "<plug>(vimtex-toc-toggle)", desc = "Toggle table of Contents", icon = { icon = "󰠶", color = "purple" }, },
-        { "<localleader>lq", "<plug>(vimtex-log)", desc = "Log", icon = { icon = "", color = "purple" }, },
-        { "<localleader>lv", "<plug>(vimtex-view)", desc = "View", icon = { icon = "", color = "green" }, },
-        { "<localleader>lr", "<plug>(vimtex-reverse-search)", desc = "Reverse search", icon = { icon = "", color = "purple" }, },
-        { "<localleader>lk", "<plug>(vimtex-stop)", desc = "Stop", icon = { icon = "", color = "red" }, },
-        { "<localleader>lK", "<plug>(vimtex-stop-all)", desc = "Stop all", icon = { icon = "󰓛", color = "red" }, },
-        { "<localleader>le", "<plug>(vimtex-errors)", desc = "Errors", icon = { icon = "", color = "red" }, },
-        { "<localleader>lo", "<plug>(vimtex-compile-output)", desc = "Compile output", icon = { icon = "", color = "purple" }, },
-        { "<localleader>lg", "<plug>(vimtex-status)", desc = "Status", icon = { icon = "󱖫", color = "purple" }, },
-        { "<localleader>lG", "<plug>(vimtex-status-full)", desc = "Full status", icon = { icon = "󱖫", color = "purple" }, },
-        { "<localleader>lc", "<plug>(vimtex-clean)", desc = "Clean", icon = { icon = "󰃢", color = "orange" }, },
-        { "<localleader>lh", "<Cmd>VimtexClearCache ALL<cr>", desc = "Clear all cache", icon = { icon = "󰃢", color = "grey" }, },
-        { "<localleader>lC", "<plug>(vimtex-clean-full)", desc = "Full clean", icon = { icon = "󰃢", color = "red" }, },
-        { "<localleader>lx", "<plug>(vimtex-reload)", desc = "Reload", icon = { icon = "󰑓", color = "green" }, },
-        { "<localleader>lX", "<plug>(vimtex-reload-state)", desc = "Reload state", icon = { icon = "󰑓", color = "cyan" }, },
-        { "<localleader>lm", "<plug>(vimtex-imaps-list)", desc = "Input mappings", icon = { icon = "", color = "purple" }, },
-        { "<localleader>ls", "<plug>(vimtex-toggle-main)", desc = "Toggle main", icon = { icon = "󱪚", color = "green" }, },
-        { "<localleader>lS", "<plug>(vimtex-compile-ss)", desc = "Compile (single)", icon = { icon = "", color = "green" }, },
-        { "<localleader>la", "<plug>(vimtex-context-menu)", desc = "Context menu", icon = { icon = "󰮫", color = "purple" }, },
-        { "ds", group = "+surrounding", icon = { icon = "󰗅", color = "green" } },
-        { "dse", "<plug>(vimtex-env-delete)", desc = "environment", icon = { icon = "", color = "red" }, },
-        { "dsc", "<plug>(vimtex-cmd-delete)", desc = "command", icon = { icon = "", color = "red" } },
-        { "ds$", "<plug>(vimtex-env-delete-math)", desc = "math", icon = { icon = "󰿈", color = "red" }, },
-        { "dsd", "<plug>(vimtex-delim-delete)", desc = "delimiter", icon = { icon = "󰅩", color = "red" }, },
-        { "cs", group = "+surrounding", icon = { icon = "󰗅", color = "green" } },
-        { "cse", "<plug>(vimtex-env-change)", desc = "environment", icon = { icon = "", color = "blue" }, },
-        { "csc", "<plug>(vimtex-cmd-change)", desc = "command", icon = { icon = "", color = "blue" }, },
-        { "cs$", "<plug>(vimtex-env-change-math)", desc = "math environment", icon = { icon = "󰿈", color = "blue" }, },
-        { "csd", "<plug>(vimtex-delim-change-math)", desc = "delimiter", icon = { icon = "󰅩", color = "blue" }, },
-        { "ts", group = "+surrounding", icon = { icon = "󰗅", color = "green" }, mode = "nx" },
-        { "tsf", "<plug>(vimtex-cmd-toggle-frac)", desc = "fraction", icon = { icon = "󱦒", color = "yellow" }, mode = "nx", },
-        { "tsc", "<plug>(vimtex-cmd-toggle-star)", desc = "command", icon = { icon = "", color = "yellow" }, },
-        { "tse", "<plug>(vimtex-env-toggle-star)", desc = "environment", icon = { icon = "", color = "yellow" }, },
-        { "ts$", "<plug>(vimtex-env-toggle-math)", desc = "math environment", icon = { icon = "󰿈", color = "yellow" }, },
-        { "tsb", "<plug>(vimtex-env-toggle-break)", desc = "break", icon = { icon = "󰿈", color = "yellow" }, },
-        { "<F6>", "<plug>(vimtex-env-surround-line)", desc = "Surround line with environment", icon = { icon = "", color = "purple" }, },
-        { "<F6>", "<plug>(vimtex-env-surround-visual)", desc = "Surround selection with environment", icon = { icon = "", color = "purple" }, mode = "x", },
-        { "tsd", "<plug>(vimtex-delim-toggle-modifier)", desc = "delimiter", icon = { icon = "󰅩", color = "yellow" }, mode = "nx", },
-        { "tsD", "<plug>(vimtex-delim-toggle-modifier-reverse)", desc = "revers surrounding delimiter", icon = { icon = "󰅩", color = "yellow" }, mode = "nx", },
-        { "<F7>", "<plug>(vimtex-cmd-create)", desc = "Create command", icon = { icon = "󰅩", color = "green" }, mode = "nxi", },
-        { "]]", "<plug>(vimtex-delim-close)", desc = "Close delimiter", icon = { icon = "󰅩", color = "green" }, mode = "i", },
-        { "<F8>", "<plug>(vimtex-delim-add-modifiers)", desc = "Add \\left and \\right", icon = { icon = "󰅩", color = "green" }, mode = "n", },
-      },
-      {
-        mode = "xo",
-        { "ac", "<plug>(vimtex-ac)", desc = "command", icon = { icon = "", color = "orange" } },
-        { "ic", "<plug>(vimtex-ic)", desc = "command", icon = { icon = "", color = "orange" } },
-        { "ad", "<plug>(vimtex-ad)", desc = "delimiter", icon = { icon = "󰅩", color = "orange" } },
-        { "id", "<plug>(vimtex-id)", desc = "delimiter", icon = { icon = "󰅩", color = "orange" } },
-        { "ae", "<plug>(vimtex-ae)", desc = "environment", icon = { icon = "", color = "orange" } },
-        { "ie", "<plug>(vimtex-ie)", desc = "environment", icon = { icon = "", color = "orange" } },
-        { "a$", "<plug>(vimtex-a$)", desc = "math", icon = { icon = "󰿈", color = "orange" } },
-        { "i$", "<plug>(vimtex-i$)", desc = "math", icon = { icon = "󰿈", color = "orange" } },
-        { "aP", "<plug>(vimtex-aP)", desc = "section", icon = { icon = "󰚟", color = "orange" } },
-        { "iP", "<plug>(vimtex-iP)", desc = "section", icon = { icon = "󰚟", color = "orange" } },
-        { "am", "<plug>(vimtex-am)", desc = "item", icon = { icon = "", color = "orange" } },
-        { "im", "<plug>(vimtex-im)", desc = "item", icon = { icon = "", color = "orange" } },
-      },
-      {
-        mode = "nxo",
-        { "%",  "<plug>(vimtex-%)",     desc = "Matching pair",                       icon = { icon = "󰐱", color = "cyan" } },
-        { "]]", "<plug>(vimtex-]])",    desc = "Next end of a section",               icon = { icon = "󰚟", color = "cyan" }, },
-        { "][", "<plug>(vimtex-][)",    desc = "Next beginning of a section",         icon = { icon = "󰚟", color = "cyan" }, },
-        { "[]", "<plug>(vimtex-[])",    desc = "Previous end of a section",           icon = { icon = "󰚟", color = "cyan" }, },
-        { "[[", "<plug>(vimtex-[[)",    desc = "Previous beginning of a section",     icon = { icon = "󰚟", color = "cyan" }, },
-        { "]m", "<plug>(vimtex-]m)",    desc = "Next start of an environment",        icon = { icon = "", color = "cyan" }, },
-        { "]M", "<plug>(vimtex-]M)",    desc = "Next end of an environment",          icon = { icon = "", color = "cyan" }, },
-        { "[m", "<plug>(vimtex-[m)",    desc = "Previous start of an environment",    icon = { icon = "", color = "cyan" }, },
-        { "[M", "<plug>(vimtex-[M)",    desc = "Previous end of an environment",      icon = { icon = "", color = "cyan" }, },
-        { "]n", "<plug>(vimtex-]n)",    desc = "Next start of math",                  icon = { icon = "󰿈", color = "cyan" }, },
-        { "]N", "<plug>(vimtex-]N)",    desc = "Next end of math",                    icon = { icon = "󰿈", color = "cyan" }, },
-        { "[n", "<plug>(vimtex-[n)",    desc = "Previous start of math",              icon = { icon = "󰿈", color = "cyan" }, },
-        { "[N", "<plug>(vimtex-[N)",    desc = "Previous end of math",                icon = { icon = "󰿈", color = "cyan" }, },
-        { "]r", "<plug>(vimtex-]r)",    desc = "Next start of frame environment",     icon = { icon = "󰹉", color = "cyan" }, },
-        { "]R", "<plug>(vimtex-]R)",    desc = "Next end of frame environment",       icon = { icon = "󰹉", color = "cyan" }, },
-        { "[r", "<plug>(vimtex-[r)",    desc = "Previous start of frame environment", icon = { icon = "󰹉", color = "cyan" }, },
-        { "[R", "<plug>(vimtex-[R)",    desc = "Previous end of frame environment",   icon = { icon = "󰹉", color = "cyan" }, },
-        { "]/", "<plug>(vimtex-]/)",    desc = "Next start of a comment",             icon = { icon = "", color = "cyan" }, },
-        { "]*", "<plug>(vimtex-]star)", desc = "Next end of a comment",               icon = { icon = "", color = "cyan" }, },
-        { "[/", "<plug>(vimtex-[/)",    desc = "Previous start of a comment",         icon = { icon = "", color = "cyan" }, },
-        { "[*", "<plug>(vimtex-[star)", desc = "Previous end of a comment",           icon = { icon = "", color = "cyan" }, },
-      },
-      { "K", "<plug>(vimtex-doc-package)", desc = "See package documentation", icon = { icon = "󱔗", color = "azure" }, },
-    -- stylua: ignore end
+  local function map(key, action, description, modes)
+    vim.keymap.set(modes or "n", key, action, { buffer = bufnr, remap = true, desc = description })
+  end
+  local function plug(key, action, description, modes)
+    map(key, "<Plug>(TexTools" .. action .. ")", description, modes)
+  end
+  require("which-key").add({
+    { "<localleader>l", group = "LaTeX", buffer = bufnr },
+    { "<localleader>l", group = "LaTeX", buffer = bufnr, mode = "i" },
   })
+  for _, entry in ipairs({
+    { "<leader>lb", "Build", "Build" },
+    { "<localleader>ll", "Build", "Build" },
+    { "<localleader>lt", "Outline", "File outline" },
+    { "<localleader>lT", "ProjectOutline", "Project outline" },
+    { "<localleader>lq", "Log", "Compiler log" },
+    { "<localleader>lv", "ForwardSearch", "PDF forward search" },
+    { "<localleader>lk", "CancelBuild", "Cancel build" },
+    { "<localleader>lK", "CancelAllBuilds", "Cancel all builds" },
+    { "<localleader>le", "Errors", "Errors and warnings" },
+    { "<localleader>lo", "BuildOutput", "Live compiler output" },
+    { "<localleader>lg", "BuildStatus", "Build status" },
+    { "<localleader>lc", "Clean", "Clean auxiliary files" },
+    { "<localleader>lC", "CleanFull", "Clean all artifacts" },
+    { "<localleader>lm", "JumpEnvironment", "Matching environment marker" },
+    { "<localleader>lj", "InsertItem", "Insert list item", { "n", "i" } },
+    { "dse", "UnwrapEnvironment", "Remove environment markers" },
+    { "dsc", "UnwrapCommand", "Remove command wrapper" },
+    { "dsd", "UnwrapMathDelimiters", "Remove math brackets" },
+    { "cse", "RenameEnvironment", "Rename environment" },
+    { "csc", "RenameCommand", "Rename command" },
+    { "csd", "ChangeMathDelimiters", "Change math brackets" },
+    { "tsf", "ToggleFraction", "Toggle fraction" },
+    { "tsc", "ToggleCommandStar", "Toggle command star" },
+    { "tse", "ToggleEnvironmentStar", "Toggle environment star" },
+    { "ts$", "ToggleMathMode", "Toggle inline/display math" },
+    { "tsd", "ToggleMathDelimiterSize", "Toggle math bracket sizing" },
+    { "<F6>", "SurroundEnvironment", "Surround with environment", { "n", "x" } },
+    { "<F7>", "SurroundCommand", "Surround with command", { "n", "x" } },
+    { "<F8>", "ToggleMathDelimiterSize", "Toggle math bracket sizing" },
+    { "]]", "CloseDelimiter", "Close delimiter", "i" },
+    { "]]", "NextSection", "Next section" },
+    { "][", "NextSection", "Next section" },
+    { "[[", "PreviousSection", "Previous section" },
+    { "]m", "NextEnvironment", "Next environment" },
+    { "[m", "PreviousEnvironment", "Previous environment" },
+    { "]n", "NextMath", "Next formula" },
+    { "[n", "PreviousMath", "Previous formula" },
+    { "]i", "NextItem", "Next list item" },
+    { "[i", "PreviousItem", "Previous list item" },
+    { "]t", "NextCell", "Next table cell" },
+    { "[t", "PreviousCell", "Previous table cell" },
+  }) do
+    plug(unpack(entry))
+  end
+  for _, object in ipairs({
+    { "e", "Environment" },
+    { "c", "Command" },
+    { "a", "Argument" },
+    { "$", "Math" },
+    { "d", "MathDelimiter" },
+    { "i", "Item" },
+    { "P", "Section" },
+    { "t", "Cell" },
+  }) do
+    plug("a" .. object[1], "Around" .. object[2], "Around " .. object[2], { "x", "o" })
+    plug("i" .. object[1], "Inside" .. object[2], "Inside " .. object[2], { "x", "o" })
+  end
+  for _, entry in ipairs({
+    { "<localleader>li", "Info", "Project information" },
+    { "<localleader>lV", "View", "Open PDF" },
+    { "<localleader>ls", "Main select", "Select main document" },
+    { "<localleader>lB", "Compiler toggle", "Switch compiler" },
+    { "<localleader>la", "BuildOnSave toggle", "Toggle build on save" },
+  }) do
+    map(entry[1], "<Cmd>TexTools" .. entry[2] .. "<CR>", entry[3])
+  end
+  map("<localleader>lr", function()
+    local viewer = require("utils.platform").skim_displayline() and "skim" or "zathura"
+    vim.cmd("TexToolsInverseSearch " .. viewer)
+  end, "Show inverse-search setup")
 end
+
 return M
