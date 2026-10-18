@@ -13,6 +13,7 @@ local function check()
   assert((pairing._.is_local == true) == local_pairing)
   assert(pairing.dir == expected_dir, "Pairing did not select the expected checkout")
   assert(not plugins["nvim-autopairs"] and not plugins["mini.pairs"])
+  assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
 
   -- CmdlineEnter can load completion before the first InsertEnter.
   feed(":<Esc>")
@@ -27,9 +28,9 @@ local function check()
   )
   assert(not pairing._.loaded, "Command-line completion must not load pairing")
 
-  local function input(keys, expected)
+  local function input(keys, expected, filetype)
     vim.cmd("enew!")
-    vim.bo.filetype = "lua"
+    vim.bo.filetype = filetype or "lua"
     vim.bo.autoindent = true
     vim.bo.expandtab = true
     vim.bo.shiftwidth = 2
@@ -48,6 +49,38 @@ local function check()
   input("(<CR>x", { "(", "  x", ")" })
   input("don'", { "don'" })
   input("x<CR>y", { "x", "y" })
+  input("( ", { "(  )" })
+  input("**hello**", { "**hello**" }, "markdown")
+  input("**<BS>", { "" }, "markdown")
+  input("~~hello~~", { "~~hello~~" }, "markdown")
+  input("~~~<CR>x", { "~~~", "x", "~~~" }, "markdown")
+  input("/*text*/", { "/*text*/" }, "cpp")
+  input("/*<BS>", { "" }, "c")
+  input("/*<CR>x", { "/*", "  x", "*/" }, "cpp")
+
+  local function surround(lines, filetype, col, keys, expected)
+    vim.cmd("enew!")
+    vim.bo.filetype = filetype
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+    vim.api.nvim_win_set_cursor(0, { 1, col })
+    local ok, parser = pcall(vim.treesitter.get_parser, 0)
+    if ok then
+      parser:parse()
+    end
+    feed(keys)
+    local actual = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    assert(vim.deep_equal(actual, expected), vim.inspect({ keys = keys, actual = actual, expected = expected }))
+  end
+  surround({ "word" }, "markdown", 0, "saiw*", { "**word**" })
+  surround({ "**word**" }, "markdown", 3, "sr*~", { "~~word~~" })
+  surround({ "~~word~~" }, "markdown", 3, "sd~", { "word" })
+  surround({ "word" }, "markdown", 0, "viwsa*", { "**word**" })
+  surround({ "word" }, "cpp", 0, "saiwc", { "/*word*/" })
+  surround({ 'local value = ("(word)")' }, "lua", 17, "sd)", { 'local value = "(word)"' })
+  local status = require("pairs").status().surround
+  assert(status.enabled and pairing.opts.surround.treesitter)
+  assert(#status.conflicts == 0, vim.inspect(status.conflicts))
+  assert(require("pairs.rainbow").status().enabled)
 
   local completion = require("integrations.blink_completion")
   local behavior = require("features.completion")

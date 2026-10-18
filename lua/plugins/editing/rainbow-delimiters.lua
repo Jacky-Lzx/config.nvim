@@ -1,13 +1,4 @@
 return {
-  {
-    "HiPhish/rainbow-delimiters.nvim",
-    event = { "BufReadPost", "BufNewFile" },
-    submodules = false,
-    opts = {
-      -- Disable the parsing of markdown files.
-      -- Problem happens when there are LaTeX codes in a markdown file.
-      blacklist = { "markdown", "markdown_inline" },
-    },
-    main = "rainbow-delimiters.setup",
-  },
+  -- Rainbow brackets are provided by pairs.nvim.
+  { "HiPhish/rainbow-delimiters.nvim", enabled = false },
 }

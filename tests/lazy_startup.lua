@@ -37,13 +37,12 @@ local function check()
     "mini.ai",
     "mini.align",
     "mini.operators",
-    "mini.surround",
     "nvim-hlslens",
     "todo-comments.nvim",
     "nvim-scrollbar",
-    "nvim-highlight-colors",
-    "rainbow-delimiters.nvim"
+    "nvim-highlight-colors"
   )
+  assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
   assert(vim.fn.exists(":VimtexInverseSearch") == 2, "Inverse search must exist without a TeX buffer")
   for _, command in ipairs({ "NvimTreeToggle", "OverseerToggle", "CodeCompanionChat", "LuaSnipEdit", "Copilot" }) do
     assert(vim.fn.exists(":" .. command) == 2, "Missing cold command: " .. command)
@@ -70,7 +69,9 @@ local function check()
     vim.fn.mkdir(temp .. "/lazy-cargo", "p")
     vim.cmd.edit(temp .. "/lazy-cargo/Cargo.toml")
     loaded("crates.nvim")
-    unloaded("nvim-dap", "nvim-tree.lua", "LuaSnip", "pairs.nvim", "copilot.lua", "nvim-hlslens")
+    loaded("pairs.nvim") -- Reading/creating a file enables rainbow before InsertEnter.
+    assert(require("pairs.rainbow").status().enabled)
+    unloaded("nvim-dap", "nvim-tree.lua", "LuaSnip", "copilot.lua", "nvim-hlslens")
     for _, extension in ipairs({ "cpp", "swift" }) do
       vim.cmd.edit(temp .. "/lazy-file." .. extension)
       unloaded("nvim-dap", "nvim-dap-view", "nvim-tree.lua")
@@ -140,7 +141,9 @@ local function check()
     contents({ "(word)" })
     vim.fn.writefile({ "Running first surround" }, vim.env.NVIM_LAZY_RESULT)
     feed("sd)")
-    loaded("mini.surround")
+    loaded("pairs.nvim")
+    assert(require("pairs").status().surround.enabled)
+    assert(#require("pairs").status().surround.conflicts == 0)
     assert(vim.api.nvim_get_current_line() == "word", "First surround key did not operate")
     contents({ "match match" })
     vim.fn.writefile({ "Running first search" }, vim.env.NVIM_LAZY_RESULT)
