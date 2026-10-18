@@ -16,6 +16,7 @@ local function check()
   local text = { "\\documentclass{article}", "\\begin{document}", "First version.", "\\end{document}" }
   vim.fn.writefile(text, source)
   vim.fn.writefile({}, directory .. "/.texlabroot")
+  vim.fn.writefile({ '$out_dir = "build";' }, directory .. "/.latexmkrc")
   vim.cmd.edit(vim.fn.fnameescape(source))
   vim.bo.filetype = "tex"
   local tex = require("tex-tools")
@@ -68,15 +69,17 @@ local function check()
     end
     return request(self, method, ...)
   end
-  local function wait_build(previous)
+  local function wait_build(previous, require_artifacts)
     assert(
       vim.wait(30000, function()
         return builds > previous and tex.build_status().phase == "finished"
       end, 20),
       "Save did not complete a build: " .. vim.inspect(tex.build_status())
     )
-    assert(vim.fn.filereadable(directory .. "/main.pdf") == 1, "Missing PDF")
-    assert(vim.fn.filereadable(directory .. "/main.synctex.gz") == 1, "Missing SyncTeX")
+    if require_artifacts ~= false then
+      assert(vim.fn.filereadable(directory .. "/build/main.pdf") == 1, "Missing PDF")
+      assert(vim.fn.filereadable(directory .. "/build/main.synctex.gz") == 1, "Missing SyncTeX")
+    end
   end
   text[3] = "Built from save."
   vim.api.nvim_buf_set_lines(0, 0, -1, false, text)
@@ -94,7 +97,39 @@ local function check()
   assert(builds == previous + 1 and requests == 0, "Manual build duplicated the on-save build")
   assert(not vim.bo.modified and vim.fn.readfile(source)[3] == text[3])
   local info = assert(tex.project_info())
-  assert(info.main_file == source and info.pdf_file == directory .. "/main.pdf")
+  assert(info.main_file == source and info.pdf_file == directory .. "/build/main.pdf")
+
+  -- Real compiler errors must reach texlab's native diagnostic namespace.
+  local function errors()
+    return vim.diagnostic.get(0, { severity = vim.diagnostic.severity.ERROR })
+  end
+  previous = builds
+  text[3] = "\\undefinedtestcommand This document has an error."
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, text)
+  vim.cmd.write()
+  wait_build(previous, false)
+  assert(
+    vim.wait(10000, function()
+      for _, diagnostic in ipairs(errors()) do
+        if diagnostic.message:find("Undefined control sequence", 1, true) then
+          return true
+        end
+      end
+      return false
+    end, 10),
+    "Compiler errors did not reach native diagnostics"
+  )
+  previous = builds
+  text[3] = "The error is fixed."
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, text)
+  vim.cmd.write()
+  wait_build(previous)
+  assert(
+    vim.wait(10000, function()
+      return #errors() == 0
+    end, 10),
+    "Fixed compiler errors stayed visible"
+  )
 
   -- Invoke the native callback in a second Neovim and route through real RPC.
   local callback = assert(tex.inverse_search_command("skim"))
@@ -112,7 +147,9 @@ local function check()
   )
   assert(result.code == 0, result.stderr)
   assert(vim.api.nvim_buf_get_name(0) == source and vim.api.nvim_win_get_cursor(0)[1] == 3)
-  print("Live LaTeX passed: save -> texlab -> latexmk -> PDF/SyncTeX, deduplicated manual build, native inverse RPC")
+  print(
+    "Live LaTeX passed: save -> texlab -> latexmk -> PDF/SyncTeX, deduplicated manual build, compiler diagnostics/clearing, native inverse RPC"
+  )
 end
 local ok, err = xpcall(check, debug.traceback)
 if client then

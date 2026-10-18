@@ -7,7 +7,7 @@ return {
     texlab = {
       build = {
         executable = "latexmk",
-        args = { "-pdf", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%f" },
+        args = { "-pdf", "-synctex=1", "-interaction=nonstopmode", "%f" },
         onSave = true,
         forwardSearchAfter = false,
       },

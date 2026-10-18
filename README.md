@@ -116,8 +116,13 @@ All profiles enable SyncTeX. Tex-tools asks latexmk for its effective output
 and auxiliary directories and jobname, including computed `.latexmkrc` settings.
 PDF opening, forward search and logs use those discovered paths. Explicit texlab
 `build.auxDirectory`, `logDirectory`, and `pdfDirectory` settings override discovery.
-A nonzero compiler result remains a failure even if TeX produced a PDF; the
-notification explains that the PDF may be incomplete and links to the log commands.
+Discovered log directories are also synchronized to texlab, so compiler errors
+appear in native diagnostics. Standard TeX log formatting is used; `-file-line-error`
+is omitted because texlab's parser does not recognize its error format. Recompile
+once after upgrading to replace old-format logs. Explicit `build.logDirectory`
+settings remain authoritative. A nonzero compiler result remains a failure even
+if TeX produced a PDF; the notification explains that it may be incomplete and
+links to the log commands.
 
 `<localleader>li` shows project information, `lt/lT` opens the file/project outline,
 `lq/lo/le` shows the log/live output/diagnostics, and `lc/lC` cleans auxiliary/all
@@ -382,7 +387,8 @@ configuration and plugin setup, not live LSP responses, a running debugger, or P
 The optional real LaTeX check requires `texlab`, `latexmk`, a TeX installation,
 and the local tex-tools checkout. It builds only temporary documents and verifies
 save-triggered compilation, PDF/SyncTeX output, manual-build deduplication, and a
-real native inverse-search RPC callback:
+compiler diagnostics and their clearing after correction, and a real native
+inverse-search RPC callback:
 
 ```sh
 TMPDIR=/private/tmp nvim --clean --headless -i NONE -l tests/latex_build.lua

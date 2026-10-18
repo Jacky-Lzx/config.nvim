@@ -138,6 +138,7 @@ local function check()
     local build = vim.lsp.config.texlab.settings.texlab.build
     assert(build.executable == "latexmk" and build.onSave == true)
     assert(not vim.list_contains(build.args, "-pvc"))
+    assert(not vim.list_contains(build.args, "-file-line-error"), "texlab requires standard TeX log errors")
   end
   vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.py")
   assert(vim.bo.filetype == "python")
