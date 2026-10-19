@@ -1,12 +1,11 @@
 return {
-  servers = { "texlab" },
+  servers = { "latex_lsp" },
   tools = {
     { mason = "tex-fmt", executable = "tex-fmt" },
     {
-      executable = "texlab-fork",
+      executable = "latex-lsp",
       resolve = function()
-        local path = vim.fn.expand("~/.local/bin/texlab-fork")
-        return vim.fn.executable(path) == 1 and path or nil
+        return require("languages.latex.lsp").executable()
       end,
     },
     { executable = "chktex" },

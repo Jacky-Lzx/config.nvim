@@ -135,11 +135,11 @@ local function check()
     local tex_options = require("tex-tools.config").options
     assert(tex_options.conceal.enabled and not tex_options.conceal.math_symbols)
     assert(not tex_options.mappings and not tex_options.smart_enter)
-    local build = vim.lsp.config.texlab.settings.texlab.build
-    assert(build.executable == "latexmk" and build.onSave == true)
-    assert(not vim.list_contains(build.args, "-pvc"))
-    assert(vim.list_contains(build.args, "-file-line-error"))
-    assert(vim.lsp.config.texlab.cmd[1] == vim.fn.expand("~/.local/bin/texlab-fork"))
+    local server = vim.lsp.config.latex_lsp
+    assert(server.init_options.build.executable == "latexmk" and server.init_options.build.onSave)
+    assert(server.cmd[1] == require("languages.latex.lsp").executable())
+    assert(server.cmd[2] == "--stdio")
+    assert(_G.config_test_lsp_enabled.latex_lsp and not _G.config_test_lsp_enabled.texlab)
     for _, name in ipairs({ "latexmk", "xelatex" }) do
       assert(vim.list_contains(tex_options.build.profiles[name].args, "-file-line-error"))
     end
