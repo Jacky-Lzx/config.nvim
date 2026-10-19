@@ -100,64 +100,35 @@ The writing profile loads `tex-tools.nvim` for TeX buffers, using the developmen
 checkout when available and the pinned Git checkout otherwise. Tree-sitter owns
 highlighting and folding; tex-tools supplies conceal while preserving math command
 spelling (`math_symbols = false`). VimTeX and nvim-texlabconfig are no longer loaded.
-Texlab provides completion, diagnostics, references, compilation and forward search.
+The local **latex-lsp** provides completion, hover, navigation, renaming, semantic
+highlighting and pull diagnostics for TeX and BibTeX. Texlab is not enabled on this branch.
 
-The default compiler is **latexmk**, with `texlab.build.onSave = true`: saving a
-source file requests a build through texlab, without a persistent `latexmk -pvc`
-process. `<localleader>ll` and `<leader>lb` build manually; an unsaved buffer is
-saved first without queuing a duplicate build. `<localleader>la` toggles build on
-save for the current texlab session. `<localleader>lk/lK` cancels the current/all
-texlab builds; saving again can start another build while build on save is enabled.
+`lsp/latex_lsp.lua` starts the release binary from
+`~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/latex-lsp --stdio`.
+Rebuild that checkout with `cargo build --release --locked` after server changes, then
+restart Neovim (or the LSP client). Set `NVIM_LATEX_LSP` to use another executable;
+when the local checkout is absent, a `latex-lsp` executable on PATH is also supported.
+`:ConfigInfo` reports the resolved binary. No Mason package is needed for this server.
 
-Use `:TexToolsCompiler latexmk`, `:TexToolsCompiler xelatex`, or
-`:TexToolsCompiler tectonic` to select a session-wide profile; `<localleader>lB`
-cycles them. The default latexmk profile uses `-pdf`; select `xelatex` for XeLaTeX.
-All profiles enable SyncTeX. Tex-tools asks latexmk for its effective output
-and auxiliary directories and jobname, including computed `.latexmkrc` settings.
-PDF opening, forward search and logs use those discovered paths. Explicit texlab
-`build.auxDirectory`, `logDirectory`, and `pdfDirectory` settings override discovery.
-Discovered log directories are also synchronized to texlab, so compiler errors
-appear in native diagnostics. The latexmk and xelatex profiles enable
-`-file-line-error`; the configured [texlab fork](https://github.com/Jacky-Lzx/texlab/tree/fix/build-log-diagnostic-locations)
-supports this format and refines unambiguous error columns from source context.
-Recompile once after upgrading to replace old logs. Explicit `build.logDirectory`
-settings remain authoritative. A nonzero compiler result remains a failure even
-if TeX produced a PDF; the notification explains that it may be incomplete and
-links to the log commands.
+The default compiler is **latexmk**, with `build.onSave = true`. Artifacts go into
+`build/latex-lsp/` beside the main document. `<localleader>ll` and `<leader>lb` save
+and build without queuing a duplicate save build; `<localleader>lk/lK` cancels the
+current/all builds, `<localleader>lg` shows status, and `<localleader>la` toggles
+build on save. `<localleader>lq` opens the compiler log, `lo` shows the latest output
+summary, and `le` opens native diagnostics. Compiler errors refresh automatically
+and disappear after correction. The diagnostic refresh handler also updates open
+buffers when workspace pull diagnostics are enabled.
 
-The LSP uses `~/.local/bin/texlab-fork` explicitly, independent of PATH and Mason.
-Install it from the fork (Rust/Cargo required):
+Use `% !TeX root = ../main.tex` in child files and `% !TeX program = xelatex` in the
+main file to select XeLaTeX. Server options live in `lsp/latex_lsp.lua`; keep
+`init_options.build` and `settings.latex.build` consistent. `<localleader>lV` opens
+the PDF; `lv` performs forward search with Skim or Zathura after a successful build.
 
-```sh
-git clone --branch fix/build-log-diagnostic-locations https://github.com/Jacky-Lzx/texlab.git
-cd texlab
-git checkout 0b9a11de26099a847a6d238a33024a23661bbee0
-cargo build --release --locked -p texlab
-install -Dm755 target/release/texlab ~/.local/bin/texlab-fork
-```
-
-The tested fork revision is `0b9a11de26099a847a6d238a33024a23661bbee0`.
-For ambiguous TeX context, diagnostics retain the reported line rather than inventing
-a command column. `:ConfigInfo` reports the fork executable; restart Neovim after
-installing or replacing it. `nvim --clean --headless -i NONE -l tests/latex_build.lua`
-runs the optional real latexmk/LSP integration check, including an exact diagnostic
-range after UTF-8 text on a long line. For an included filename containing an
-unmatched parenthesis, first build the main document once so texlab can discover
-the dependency from the recorder file; subsequent child saves build normally.
-
-`<localleader>li` shows project information, `lt/lT` opens the file/project outline,
-`lq/lo/le` shows the log/live output/diagnostics, and `lc/lC` cleans auxiliary/all
-artifacts. `<localleader>ls` selects a main document. For child files, prefer
-`% !TeX root = ../main.tex`: texlab's automatic builds use its dependency graph,
-whereas a `:TexToolsMain` override applies to plugin operations for that session.
-
-`<localleader>lv` performs PDF forward search; `lV` opens the PDF without jumping.
-For Skim, run `:TexToolsInverseSearch skim` and copy Command/Arguments to
-Settings -> Sync -> Custom. This native callback discovers the matching Neovim
-session after restarts, without loading the full configuration in the helper.
-It requires a local TeX buffer in the target session. Regenerate the callback when
-the Neovim executable, plugin path or cache location changes. Zathura can use
-`:TexToolsView` or `:TexToolsInverseSearch zathura`. `<localleader>lr` shows setup.
+Tex-tools retains structural editing, conceal and navigation. Its commands that
+require a texlab client (compiler switching, main selection, cleanup and inverse
+search setup) have not been ported to latex-lsp; use the server options and magic
+comments above. The build/status/log/PDF shortcuts are adapted in
+`lua/languages/latex/lsp.lua` when latex-lsp attaches.
 
 Text objects follow tex-tools defaults: `ae/ie` environment, `ac/ic` command,
 `aa/ia` argument, `a$/i$` math, `ad/id` math brackets, `ai/ii` item, `aP/iP` section,
@@ -405,12 +376,11 @@ installation. They never invoke Mason or Tree-sitter installation commands. The 
 pass requires the configured plugins and LaTeX parser to be installed. It verifies local
 configuration and plugin setup, not live LSP responses, a running debugger, or PDF compilation.
 
-The optional real LaTeX check requires `texlab`, `latexmk`, a TeX installation,
-and the local tex-tools checkout. It builds only temporary documents and verifies
-save-triggered compilation, PDF/SyncTeX output, manual-build deduplication, and a
-compiler diagnostics and their clearing after correction, and a real native
-inverse-search RPC callback:
+The optional real LaTeX check requires the configured `latex-lsp` binary, `latexmk`
+and a TeX distribution. It uses temporary documents to verify automatic TeX/BibTeX
+attachment, save-triggered compilation, PDF/SyncTeX output, manual-build
+deduplication, and compiler diagnostic refresh/clearing:
 
 ```sh
-TMPDIR=/private/tmp nvim --clean --headless -i NONE -l tests/latex_build.lua
+nvim --clean --headless -i NONE -l tests/latex_build.lua
 ```
