@@ -85,8 +85,5 @@ return {
         },
       },
     },
-    config = function(_, opts)
-      require("pairs").setup(opts)
-    end,
   },
 }
