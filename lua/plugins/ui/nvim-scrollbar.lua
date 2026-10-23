@@ -1,6 +1,7 @@
 return {
   {
     "petertriho/nvim-scrollbar",
+    branch = "v1",
     event = { "BufReadPost", "BufNewFile" },
     opts = {
       handle = {
