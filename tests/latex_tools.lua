@@ -34,6 +34,13 @@ local function check()
       assert(not (mapping.rhs or ""):find("vimtex", 1, true))
     end
   end
+  -- A buffer-local Space prefix would make every Insert Space wait before
+  -- the global pairs.nvim mapping can run, even with its nowait=true flag.
+  for _, mapping in ipairs(vim.api.nvim_buf_get_keymap(0, "i")) do
+    local lhs = vim.keycode(mapping.lhs)
+    assert(lhs:sub(1, 1) ~= " " or #lhs == 1, "Insert Space prefix delays typing: " .. mapping.lhs)
+  end
+  assert(vim.fn.maparg("<Space>lj", "n") == "<Plug>(TexToolsInsertItem)")
   at("x")
   keys("yia")
   assert(vim.fn.getreg('"') == "x", "Argument text object did not select the fraction argument")

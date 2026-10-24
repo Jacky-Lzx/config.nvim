@@ -166,7 +166,9 @@ and `at/it` cell. Structural edits retain `cse/csc/csd`, `dse/dsc/dsd`,
 `]]` for closing markers. `<F8>` toggles bracket sizing. Normal `]]`/`][` and `[[`
 now navigate section headings; `]m/[m` visit environments and `]n/[n` visit math.
 `]i/[i` visit items and `]t/[t` visit cells. Navigation is Normal mode only.
-`<localleader>lj` inserts an item; Enter remains composed by Blink and pairs.nvim.
+`<localleader>lj` inserts an item in Normal mode. Space-prefixed shortcuts are
+kept out of Insert mode so typing Space stays immediate; Enter remains composed
+by Blink and pairs.nvim.
 TeX snippets use tex-tools math context; Markdown retains its own detection.
 
 VimTeX-only selected-region compilation, structural `%`, environment/math/section

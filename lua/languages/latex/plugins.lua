@@ -29,9 +29,10 @@ return {
       vim.g.tex_conceal = ""
     end,
     opts = {
-      mappings = false, -- languages.latex.buffer owns the existing key layout.
+      -- mappings = false, -- languages.latex.buffer owns the existing key layout.
+      mappings = true,
       smart_enter = false, -- Blink -> pairs.nvim owns Insert-mode Enter.
-      conceal = { math_symbols = false },
+      conceal = { math_symbols = false, spacing = false },
       build = {
         profiles = {
           tectonic = {
