@@ -45,10 +45,6 @@ function M.setup(bufnr)
     --   { "<F7>", "SurroundCommand", "Surround with command", { "n", "x" } },
     --   { "<F8>", "ToggleMathDelimiterSize", "Toggle math bracket sizing" },
     -- Override these mappings. Otherwise, they conflict with the snacks mappings
-    { "]]", "CloseDelimiter", "Close delimiter", "i" },
-    { "]]", "NextSection", "Next section" },
-    { "][", "NextSection", "Next section" },
-    { "[[", "PreviousSection", "Previous section" },
     --   { "]m", "NextEnvironment", "Next environment" },
     --   { "[m", "PreviousEnvironment", "Previous environment" },
     --   { "]n", "NextMath", "Next formula" },
@@ -89,6 +85,35 @@ function M.setup(bufnr)
   --   local viewer = require("utils.platform").skim_displayline() and "skim" or "zathura"
   --   vim.cmd("TexToolsInverseSearch " .. viewer)
   -- end, "Show inverse-search setup")
+  map("<localleader>lv", function()
+    require("languages.latex.forward_search").request(bufnr)
+  end, "PDF forward search")
+  for _, object in ipairs({
+    { "e", "Environment" },
+    { "c", "Command" },
+    { "a", "Argument" },
+    { "$", "Math" },
+    { "d", "MathDelimiter" },
+    { "i", "Item" },
+    { "P", "Section" },
+    { "t", "Cell" },
+  }) do
+    plug("a" .. object[1], "Around" .. object[2], "Around " .. object[2], { "x", "o" })
+    plug("i" .. object[1], "Inside" .. object[2], "Inside " .. object[2], { "x", "o" })
+  end
+  for _, entry in ipairs({
+    { "<localleader>li", "Info", "Project information" },
+    { "<localleader>lV", "View", "Open PDF" },
+    { "<localleader>ls", "Main select", "Select main document" },
+    { "<localleader>lB", "Compiler toggle", "Switch compiler" },
+    { "<localleader>la", "BuildOnSave toggle", "Toggle build on save" },
+  }) do
+    map(entry[1], "<Cmd>TexTools" .. entry[2] .. "<CR>", entry[3])
+  end
+  map("<localleader>lr", function()
+    local viewer = require("utils.platform").skim_displayline() and "skim" or "zathura"
+    vim.cmd("TexToolsInverseSearch " .. viewer)
+  end, "Show inverse-search setup")
 end
 
 return M

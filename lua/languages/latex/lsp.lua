@@ -1,12 +1,18 @@
 local M = {}
 
 function M.executable()
-  local path = vim.env.NVIM_LATEX_LSP
-    or vim.fn.expand("~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/latex-lsp")
-  if vim.fn.executable(path) == 1 then
+  local platform = require("utils.platform")
+  local default_path
+  if platform.is("macos") then
+    default_path = "~/Documents/Github/nvim_plugins/latex-lsp/target/release/latex-lsp"
+  elseif platform.is("linux") and vim.fn.filereadable("/etc/NIXOS") == 1 then
+    default_path = "~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/latex-lsp"
+  end
+  local path = vim.env.NVIM_LATEX_LSP or (default_path and vim.fn.expand(default_path))
+  if path and vim.fn.executable(path) == 1 then
     return path
   end
-  return not vim.env.NVIM_LATEX_LSP and require("utils.platform").executable("latex-lsp") or nil
+  return not vim.env.NVIM_LATEX_LSP and platform.executable("latex-lsp") or nil
 end
 
 -- Neovim's workspace pull skips buffers already tracked by document diagnostics.
@@ -100,20 +106,7 @@ function M.attach(client, bufnr)
     end, field == "logUri" and "Compiler log" or "Open PDF")
   end
   map("<localleader>lv", function()
-    local params = vim.lsp.util.make_position_params(0, client.offset_encoding)
-    request("forwardSearch", { { uri = params.textDocument.uri, position = params.position } }, function(result)
-      local platform = require("utils.platform")
-      local skim, zathura = platform.skim_displayline(), platform.executable("zathura")
-      local line = tostring(params.position.line + 1)
-      local pdf, source = vim.uri_to_fname(result.pdfUri), vim.uri_to_fname(params.textDocument.uri)
-      local command = skim and { skim, line, pdf, source }
-        or (zathura and { zathura, "--synctex-forward", line .. ":1:" .. source, pdf })
-      if command then
-        vim.fn.jobstart(command, { detach = true })
-      else
-        vim.notify("Install Skim or Zathura for forward search", vim.log.levels.WARN)
-      end
-    end)
+    require("languages.latex.forward_search").request(bufnr)
   end, "PDF forward search")
 end
 
