@@ -25,6 +25,13 @@ function M.refresh(err, result, ctx, config)
 end
 
 function M.attach(client, bufnr)
+  if
+    vim.lsp.linked_editing_range
+    and client:supports_method("textDocument/linkedEditingRange", bufnr)
+  then
+    vim.lsp.linked_editing_range.enable(true, { client_id = client.id })
+  end
+
   local function request(command, arguments, callback)
     client:request("workspace/executeCommand", {
       command = "latex." .. command,
