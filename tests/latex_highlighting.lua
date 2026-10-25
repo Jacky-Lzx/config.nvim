@@ -40,6 +40,21 @@ end
 local function verify()
   assert(vim.bo.syntax == "")
   assert(vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()])
+  -- TeX semantic tokens preserve syntax colors without declaration underlines.
+  for _, ft in ipairs({ "tex", "plaintex" }) do
+    for _, kind in ipairs({ "macro", "type", "enumMember", "string", "comment", "property", "number", "operator" }) do
+      local hl = vim.api.nvim_get_hl(0, { name = "@lsp.type." .. kind .. "." .. ft, link = false })
+      assert(not hl.fg and not hl.bg, "semantic syntax colors override Tree-sitter: " .. kind .. "." .. ft)
+    end
+    local variable = vim.api.nvim_get_hl(0, { name = "@lsp.type.variable." .. ft, link = false })
+    local expected = vim.api.nvim_get_hl(0, { name = "@variable", link = false })
+    assert(variable.fg == expected.fg, "semantic variable identity was lost")
+    local declaration = vim.api.nvim_get_hl(0, { name = "@lsp.mod.declaration." .. ft, link = false })
+    assert(not declaration.underline and not declaration.fg and not declaration.bg)
+  end
+  -- Language-independent groups remain available to all other filetypes.
+  local macro = vim.api.nvim_get_hl(0, { name = "@lsp.type.macro", link = false })
+  assert(macro.fg, "global semantic macro colors were cleared")
   vim.treesitter.get_parser(0, "latex"):parse()
   check_capture(0, 1, "module")
   check_capture(1, 3, "function.macro") -- \label
