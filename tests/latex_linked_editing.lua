@@ -1,4 +1,4 @@
--- Optional real-UI integration; requires a built texquill (or NVIM_TEXQUILL).
+-- Optional real-UI integration; requires an installed texquill (or NVIM_TEXQUILL).
 -- NVIM_CONFIG_ROOT="$PWD" nvim --headless -u NONE -i NONE --noplugin -l tests/latex_linked_editing.lua
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 local candidate = vim.env.NVIM_LINKED_EDITING_CANDIDATE
@@ -101,7 +101,7 @@ local function check()
     vim.opt.rtp:prepend(root)
     if candidate then vim.opt.rtp:prepend(candidate) end
     local integration = require('languages.latex.lsp')
-    local executable = assert(integration.executable(), 'Build texquill or set NVIM_TEXQUILL')
+    local executable = assert(integration.executable(), 'Install texquill or set NVIM_TEXQUILL')
     local directory = vim.fn.tempname()
     vim.fn.mkdir(directory, 'p')
     local file = directory .. '/main.tex'

@@ -100,15 +100,13 @@ The writing profile loads `tex-tools.nvim` for TeX buffers, using the developmen
 checkout when available and the pinned Git checkout otherwise. Tree-sitter owns
 highlighting and folding; tex-tools supplies conceal while preserving math command
 spelling (`math_symbols = false`). VimTeX and nvim-texlabconfig are no longer loaded.
-The local **texquill** provides completion, hover, navigation, renaming, semantic
+**TeXquill** provides completion, hover, navigation, renaming, semantic
 highlighting and pull diagnostics for TeX and BibTeX. Texlab is not enabled on this branch.
 
-`lsp/texquill.lua` starts the local release binary with `--stdio`: on macOS,
-`~/Documents/Github/nvim_plugins/latex-lsp/target/release/texquill`; on NixOS,
-`~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/texquill`.
-Rebuild that checkout with `cargo build --release --locked` after server changes, then
-restart Neovim (or the LSP client). Set `NVIM_TEXQUILL` to use another executable;
-when the local checkout is absent, a `texquill` executable on PATH is also supported.
+`lsp/texquill.lua` starts the installed `texquill` executable from PATH with `--stdio`.
+Ensure the installation directory (for example, `~/.cargo/bin`) is on Neovim's PATH.
+Set `NVIM_TEXQUILL` to use another executable, including a local development build.
+After updating the server, restart Neovim (or the LSP client).
 `:ConfigInfo` reports the resolved binary. No Mason package is needed for this server.
 
 The default compiler is **latexmk**, with `build.onSave = true`. The server honors

@@ -1,18 +1,11 @@
 local M = {}
 
 function M.executable()
-  local platform = require("utils.platform")
-  local default_path
-  if platform.is("macos") then
-    default_path = "~/Documents/Github/nvim_plugins/latex-lsp/target/release/texquill"
-  elseif platform.is("linux") and vim.fn.filereadable("/etc/NIXOS") == 1 then
-    default_path = "~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/texquill"
+  local path = vim.env.NVIM_TEXQUILL
+  if path then
+    return vim.fn.executable(path) == 1 and path or nil
   end
-  local path = vim.env.NVIM_TEXQUILL or (default_path and vim.fn.expand(default_path))
-  if path and vim.fn.executable(path) == 1 then
-    return path
-  end
-  return not vim.env.NVIM_TEXQUILL and platform.executable("texquill") or nil
+  return require("utils.platform").executable("texquill")
 end
 
 -- Neovim's workspace pull skips buffers already tracked by document diagnostics.
