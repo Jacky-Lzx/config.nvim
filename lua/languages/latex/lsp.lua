@@ -4,15 +4,15 @@ function M.executable()
   local platform = require("utils.platform")
   local default_path
   if platform.is("macos") then
-    default_path = "~/Documents/Github/nvim_plugins/latex-lsp/target/release/latex-lsp"
+    default_path = "~/Documents/Github/nvim_plugins/latex-lsp/target/release/texquill"
   elseif platform.is("linux") and vim.fn.filereadable("/etc/NIXOS") == 1 then
-    default_path = "~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/latex-lsp"
+    default_path = "~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/texquill"
   end
-  local path = vim.env.NVIM_LATEX_LSP or (default_path and vim.fn.expand(default_path))
+  local path = vim.env.NVIM_TEXQUILL or (default_path and vim.fn.expand(default_path))
   if path and vim.fn.executable(path) == 1 then
     return path
   end
-  return not vim.env.NVIM_LATEX_LSP and platform.executable("latex-lsp") or nil
+  return not vim.env.NVIM_TEXQUILL and platform.executable("texquill") or nil
 end
 
 -- Neovim's workspace pull skips buffers already tracked by document diagnostics.
@@ -40,7 +40,7 @@ function M.attach(client, bufnr)
       arguments = arguments or { vim.uri_from_bufnr(bufnr) },
     }, function(err, result)
       if err then
-        vim.notify(err.message, vim.log.levels.ERROR, { title = "latex-lsp" })
+        vim.notify(err.message, vim.log.levels.ERROR, { title = "texquill" })
       elseif callback then
         callback(result)
       end
@@ -59,19 +59,19 @@ function M.attach(client, bufnr)
       request("build")
     end
   end
-  map("<leader>lb", build, "Build with latex-lsp")
-  map("<localleader>ll", build, "Build with latex-lsp")
+  map("<leader>lb", build, "Build with texquill")
+  map("<localleader>ll", build, "Build with texquill")
   map("<localleader>lk", function()
     request("cancelBuild")
   end, "Cancel build")
   map("<localleader>lK", function()
-    for _, server in ipairs(vim.lsp.get_clients({ name = "latex_lsp" })) do
+    for _, server in ipairs(vim.lsp.get_clients({ name = "texquill" })) do
       server:exec_cmd({ command = "latex.cancelBuild", arguments = {} }, { bufnr = bufnr })
     end
   end, "Cancel all builds")
   map("<localleader>lg", function()
     request("buildStatus", nil, function(result)
-      vim.notify(vim.inspect(result), vim.log.levels.INFO, { title = "latex-lsp" })
+      vim.notify(vim.inspect(result), vim.log.levels.INFO, { title = "texquill" })
     end)
   end, "Build status")
   map("<localleader>la", function()

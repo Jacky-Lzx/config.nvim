@@ -29,7 +29,7 @@ return {
       vim.g.tex_conceal = ""
     end,
     opts = {
-      lsp = "latex-lsp",
+      lsp = "texquill",
       viewer = { focus = false },
       -- mappings = false, -- languages.latex.buffer owns the existing key layout.
       mappings = true,

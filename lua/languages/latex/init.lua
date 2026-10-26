@@ -1,9 +1,9 @@
 return {
-  servers = { "latex_lsp" },
+  servers = { "texquill" },
   tools = {
     { mason = "tex-fmt", executable = "tex-fmt" },
     {
-      executable = "latex-lsp",
+      executable = "texquill",
       resolve = function()
         return require("languages.latex.lsp").executable()
       end,

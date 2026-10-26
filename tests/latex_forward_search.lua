@@ -9,7 +9,7 @@ package.loaded["integrations.bibtex_preview"] = { setup = function() end }
 package.loaded["languages.latex.linked_editing"] = { attach = function() end }
 local spec = require("languages.latex.plugins")
 assert(spec[2][1] == "Jacky-Lzx/tex-tools.nvim")
-assert(spec[2].opts.lsp == "latex-lsp" and spec[2].opts.viewer.focus == false)
+assert(spec[2].opts.lsp == "texquill" and spec[2].opts.viewer.focus == false)
 local called = 0
 vim.api.nvim_create_user_command("TexToolsForwardSearch", function()
   called = called + 1

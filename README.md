@@ -100,19 +100,19 @@ The writing profile loads `tex-tools.nvim` for TeX buffers, using the developmen
 checkout when available and the pinned Git checkout otherwise. Tree-sitter owns
 highlighting and folding; tex-tools supplies conceal while preserving math command
 spelling (`math_symbols = false`). VimTeX and nvim-texlabconfig are no longer loaded.
-The local **latex-lsp** provides completion, hover, navigation, renaming, semantic
+The local **texquill** provides completion, hover, navigation, renaming, semantic
 highlighting and pull diagnostics for TeX and BibTeX. Texlab is not enabled on this branch.
 
-`lsp/latex_lsp.lua` starts the local release binary with `--stdio`: on macOS,
-`~/Documents/Github/nvim_plugins/latex-lsp/target/release/latex-lsp`; on NixOS,
-`~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/latex-lsp`.
+`lsp/texquill.lua` starts the local release binary with `--stdio`: on macOS,
+`~/Documents/Github/nvim_plugins/latex-lsp/target/release/texquill`; on NixOS,
+`~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/texquill`.
 Rebuild that checkout with `cargo build --release --locked` after server changes, then
-restart Neovim (or the LSP client). Set `NVIM_LATEX_LSP` to use another executable;
-when the local checkout is absent, a `latex-lsp` executable on PATH is also supported.
+restart Neovim (or the LSP client). Set `NVIM_TEXQUILL` to use another executable;
+when the local checkout is absent, a `texquill` executable on PATH is also supported.
 `:ConfigInfo` reports the resolved binary. No Mason package is needed for this server.
 
 The default compiler is **latexmk**, with `build.onSave = true`. The server honors
-the project `.latexmkrc` output directory, falling back to `build/latex-lsp/` beside
+the project `.latexmkrc` output directory, falling back to `build/texquill/` beside
 the main document. `<localleader>ll` and `<leader>lb` save
 and build without queuing a duplicate save build; `<localleader>lk/lK` cancels the
 current/all builds, `<localleader>lg` shows status, and `<localleader>la` toggles
@@ -122,11 +122,11 @@ and disappear after correction. The diagnostic refresh handler also updates open
 buffers when workspace pull diagnostics are enabled.
 
 Use `% !TeX root = ../main.tex` in child files and `% !TeX program = xelatex` in the
-main file to select XeLaTeX. Server options live in `lsp/latex_lsp.lua`; keep
+main file to select XeLaTeX. Server options live in `lsp/texquill.lua`; keep
 `init_options.build` and `settings.latex.build` consistent. `<localleader>lV` opens
 the PDF; `lv` performs forward search with Skim or Zathura after a successful build.
 
-Tex-tools uses `lsp = "latex-lsp"` for build/status, compiler switching, main
+Tex-tools uses `lsp = "texquill"` for build/status, compiler switching, main
 selection, cleanup, outline and PDF integration, alongside structural editing,
 conceal and navigation. Compiler profiles use the server's native settings:
 `latexmk` and `tectonic` use default arguments, while `xelatex` selects latexmk
@@ -384,7 +384,7 @@ installation. They never invoke Mason or Tree-sitter installation commands. The 
 pass requires the configured plugins and LaTeX parser to be installed. It verifies local
 configuration and plugin setup, not live LSP responses, a running debugger, or PDF compilation.
 
-The optional real LaTeX check requires the configured `latex-lsp` binary, `latexmk`
+The optional real LaTeX check requires the configured `texquill` binary, `latexmk`
 and a TeX distribution. It uses temporary documents to verify automatic TeX/BibTeX
 attachment, save-triggered compilation, PDF/SyncTeX output, manual-build
 deduplication, and compiler diagnostic refresh/clearing:

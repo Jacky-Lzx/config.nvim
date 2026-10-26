@@ -4,7 +4,7 @@ local method = "textDocument/linkedEditingRange"
 
 -- Neovim 0.12 ignores the server's wordPattern and rejects '*' and Unicode.
 -- Keep this LaTeX adapter on public APIs until native linked editing honors it.
--- The Lua character class below matches latex-lsp's returned name pattern.
+-- The Lua character class below matches texquill's returned name pattern.
 local function valid_name(lines)
   return #lines == 1 and not lines[1]:find("[%s{}\\%%]")
 end

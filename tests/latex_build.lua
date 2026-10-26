@@ -11,14 +11,14 @@ local function check()
   local text = { [[\documentclass{article}]], [[\begin{document}]], "First version.", [[\end{document}]] }
   vim.fn.writefile(text, source)
   vim.fn.writefile({}, directory .. "/.latexmkrc")
-  vim.lsp.enable("latex_lsp")
+  vim.lsp.enable("texquill")
   vim.cmd.edit(vim.fn.fnameescape(source))
   assert(
     vim.wait(10000, function()
-      client = vim.lsp.get_clients({ bufnr = 0, name = "latex_lsp" })[1]
+      client = vim.lsp.get_clients({ bufnr = 0, name = "texquill" })[1]
       return client and client.initialized
     end, 20),
-    "latex-lsp did not attach automatically"
+    "texquill did not attach automatically"
   )
   assert(client.root_dir == directory)
   assert(#vim.lsp.get_clients({ name = "texlab" }) == 0)
@@ -56,8 +56,8 @@ local function check()
     wait_build(status)
   end
   save("Built on save.", "success")
-  assert(vim.fn.filereadable(directory .. "/build/latex-lsp/main.pdf") == 1)
-  assert(vim.fn.filereadable(directory .. "/build/latex-lsp/main.synctex.gz") == 1)
+  assert(vim.fn.filereadable(directory .. "/build/texquill/main.pdf") == 1)
+  assert(vim.fn.filereadable(directory .. "/build/texquill/main.synctex.gz") == 1)
   assert(builds == 1, "Save queued duplicate builds")
   -- Invoke the actual local shortcut with unsaved contents: didSave owns this build.
   local previous = builds
@@ -93,10 +93,10 @@ local function check()
     vim.wait(5000, function()
       return vim.lsp.buf_is_attached(0, client.id)
     end, 20),
-    "latex-lsp did not attach to BibTeX"
+    "texquill did not attach to BibTeX"
   )
   print(
-    "Live latex-lsp passed: automatic TeX/BibTeX attachment, save/manual builds, PDF/SyncTeX and diagnostic refresh/clearing"
+    "Live texquill passed: automatic TeX/BibTeX attachment, save/manual builds, PDF/SyncTeX and diagnostic refresh/clearing"
   )
 end
 local ok, err = xpcall(check, debug.traceback)

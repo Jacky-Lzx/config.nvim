@@ -135,13 +135,13 @@ local function check()
     assert(vim.bo.syntax == "", "Legacy TeX syntax competes with native conceal")
     local tex_options = require("tex-tools.config").options
     assert(tex_options.conceal.enabled and not tex_options.conceal.math_symbols)
-    assert(tex_options.lsp == "latex-lsp")
+    assert(tex_options.lsp == "texquill")
     assert(tex_options.mappings and not tex_options.smart_enter)
-    local server = vim.lsp.config.latex_lsp
+    local server = vim.lsp.config.texquill
     assert(server.init_options.build.executable == "latexmk" and server.init_options.build.onSave)
     assert(server.cmd[1] == require("languages.latex.lsp").executable())
     assert(server.cmd[2] == "--stdio")
-    assert(_G.config_test_lsp_enabled.latex_lsp and not _G.config_test_lsp_enabled.texlab)
+    assert(_G.config_test_lsp_enabled.texquill and not _G.config_test_lsp_enabled.texlab)
     assert(tex_options.build.profiles.latexmk.executable == "latexmk")
     assert(tex_options.build.profiles.xelatex.engine == "xelatex")
   end

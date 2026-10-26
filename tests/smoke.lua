@@ -56,7 +56,7 @@ assert(tools.debugpy and tools.codelldb)
 assert(type(tools.debugpy.resolve) == "function")
 
 local writing = languages.resolve(selection({ "writing" }))
-assert(vim.list_contains(writing.servers, "latex_lsp"))
+assert(vim.list_contains(writing.servers, "texquill"))
 assert(not vim.list_contains(writing.servers, "texlab"))
 assert(vim.list_contains(writing.parsers, "latex"))
 assert(vim.deep_equal(writing.formatters.tex, { "tex-fmt" }))
