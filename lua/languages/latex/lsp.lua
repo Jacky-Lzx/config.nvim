@@ -90,25 +90,17 @@ function M.attach(client, bufnr)
       vim.lsp.util.open_floating_preview(vim.split(result.output or "No build output", "\n"), "text", {})
     end)
   end, "Last compiler output")
-  for key, field in pairs({ ["<localleader>lq"] = "logUri", ["<localleader>lV"] = "pdfUri" }) do
-    map(key, function()
-      request("buildStatus", nil, function(result)
-        if not result[field] then
-          vim.notify("Build the document first", vim.log.levels.WARN)
-        elseif field == "logUri" then
-          vim.cmd.split(vim.fn.fnameescape(vim.uri_to_fname(result[field])))
-        else
-          local ok, err = require("utils.platform").open(vim.uri_to_fname(result[field]))
-          if not ok then
-            vim.notify(err, vim.log.levels.ERROR)
-          end
-        end
-      end)
-    end, field == "logUri" and "Compiler log" or "Open PDF")
-  end
-  map("<localleader>lv", function()
-    require("languages.latex.forward_search").request(bufnr)
-  end, "PDF forward search")
+  map("<localleader>lq", function()
+    request("buildStatus", nil, function(result)
+      if not result.logUri then
+        vim.notify("Build the document first", vim.log.levels.WARN)
+      else
+        vim.cmd.split(vim.fn.fnameescape(vim.uri_to_fname(result.logUri)))
+      end
+    end)
+  end, "Compiler log")
+  map("<localleader>lV", "<Cmd>TexToolsView<CR>", "Open PDF")
+  map("<localleader>lv", "<Cmd>TexToolsForwardSearch<CR>", "PDF forward search")
 end
 
 return M

@@ -85,9 +85,7 @@ function M.setup(bufnr)
   --   local viewer = require("utils.platform").skim_displayline() and "skim" or "zathura"
   --   vim.cmd("TexToolsInverseSearch " .. viewer)
   -- end, "Show inverse-search setup")
-  map("<localleader>lv", function()
-    require("languages.latex.forward_search").request(bufnr)
-  end, "PDF forward search")
+  map("<localleader>lv", "<Cmd>TexToolsForwardSearch<CR>", "PDF forward search")
   for _, object in ipairs({
     { "e", "Environment" },
     { "c", "Command" },

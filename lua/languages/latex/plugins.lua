@@ -30,6 +30,7 @@ return {
     end,
     opts = {
       lsp = "latex-lsp",
+      viewer = { focus = false },
       -- mappings = false, -- languages.latex.buffer owns the existing key layout.
       mappings = true,
       smart_enter = false, -- Blink -> pairs.nvim owns Insert-mode Enter.

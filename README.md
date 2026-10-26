@@ -131,8 +131,9 @@ selection, cleanup, outline and PDF integration, alongside structural editing,
 conceal and navigation. Compiler profiles use the server's native settings:
 `latexmk` and `tectonic` use default arguments, while `xelatex` selects latexmk
 with `engine = "xelatex"`. The server owns argument generation and artifact paths.
-The existing build/status/log/PDF shortcuts in `lua/languages/latex/lsp.lua` and
-Skim startup handling remain available.
+The existing build/status/log/PDF shortcuts in `lua/languages/latex/lsp.lua`
+remain available. Tex-tools handles Skim startup and positioning;
+`viewer.focus = false` keeps focus in Neovim.
 
 Text objects follow tex-tools defaults: `ae/ie` environment, `ac/ic` command,
 `aa/ia` argument, `a$/i$` math, `ad/id` math brackets, `ai/ii` item, `aP/iP` section,
