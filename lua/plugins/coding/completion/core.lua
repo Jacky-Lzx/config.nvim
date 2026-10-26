@@ -178,6 +178,9 @@ return {
           end,
         },
         documentation = {
+          draw = function(opts)
+            require("integrations.bibtex_preview").draw(opts)
+          end,
           auto_show = true,
           -- Delay before showing the documentation window
           auto_show_delay_ms = 200,

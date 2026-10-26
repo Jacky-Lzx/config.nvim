@@ -31,6 +31,7 @@ function M.refresh(err, result, ctx, config)
 end
 
 function M.attach(client, bufnr)
+  require("integrations.bibtex_preview").setup()
   require("languages.latex.linked_editing").attach(client, bufnr)
 
   local function request(command, arguments, callback)
