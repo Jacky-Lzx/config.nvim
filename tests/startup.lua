@@ -66,7 +66,7 @@ local function check()
   end
   assert(not vim.lsp.is_enabled("kdl"))
   assert(vim.fn.exists(":ConfigToolsInstall") == 2)
-  assert(vim.fn.maparg("<M-m>", "i") == "", "TeX mapping leaked into startup buffer")
+  assert(vim.fn.maparg("<Plug>(TexToolsSmartEnter)", "i") == "", "TeX mapping leaked into startup buffer")
 
   local blink = opts("blink.cmp")
   assert((blink.sources.providers.lazydev ~= nil) == require("languages").is_enabled("lua"))
@@ -126,7 +126,8 @@ local function check()
   assert(vim.bo.filetype == "tex")
   assert(vim.bo.textwidth == 0)
   local tex_enabled = require("languages").is_enabled("latex")
-  assert((vim.fn.maparg("<M-m>", "i", false, true).buffer == 1) == tex_enabled)
+  -- Test the plugin-owned buffer mapping; the old <M-m> shortcut was removed.
+  assert((vim.fn.maparg("<Plug>(TexToolsSmartEnter)", "i", false, true).buffer == 1) == tex_enabled)
   if tex_enabled then
     assert(vim.b.tex_tools_generation, "TeX tools did not attach")
     assert(not vim.b.vimtex and not package.loaded["texlabconfig"])
@@ -151,7 +152,7 @@ local function check()
   if vim.v.errmsg == "E31: No such mapping" then
     vim.v.errmsg = ""
   end
-  assert(vim.fn.maparg("<M-m>", "i") == "")
+  assert(vim.fn.maparg("<Plug>(TexToolsSmartEnter)", "i") == "")
   assert(vim.bo.makeprg == [["$NVIM_PYTHON_MAKE" %:p:S]])
   if require("languages").is_enabled("vue") then
     vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.vue")

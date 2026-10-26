@@ -136,13 +136,14 @@ Skim startup handling remain available.
 
 Text objects follow tex-tools defaults: `ae/ie` environment, `ac/ic` command,
 `aa/ia` argument, `a$/i$` math, `ad/id` math brackets, `ai/ii` item, `aP/iP` section,
-and `at/it` cell. Structural edits retain `cse/csc/csd`, `dse/dsc/dsd`,
-`tsf/tsc/tse/ts$/tsd`, `<F6>/<F7>` for environment/command surrounds, and Insert
-`]]` for closing markers. `<F8>` toggles bracket sizing. Normal `]]`/`][` and `[[`
-now navigate section headings; `]m/[m` visit environments and `]n/[n` visit math.
-`]i/[i` visit items and `]t/[t` visit cells. Navigation is Normal mode only.
-`<localleader>lj` inserts an item in Normal mode. Space-prefixed shortcuts are
-kept out of Insert mode so typing Space stays immediate; Enter remains composed
+and `at/it` cell. Structural edits use tex-tools defaults: `<localleader>lcr/lcd/lcs`
+rename/unwrap/surround commands, `ler/let/les/led` edit environments, and
+`ldc/ldd/ldt/ldm` edit or match math brackets. Insert `]]` closes the nearest
+missing marker. Normal `]]/[[` navigate sections, `]e/[e` environments, `]m/[m`
+math, `]i/[i` items and `]t/[t` table cells.
+`<localleader>li` shows project information; use `:TexToolsInsertItem` or
+`<Plug>(TexToolsInsertItem)` to insert an item. Space-prefixed shortcuts stay
+out of Insert mode so typing Space stays immediate; Enter remains composed
 by Blink and pairs.nvim.
 TeX snippets use tex-tools math context; Markdown retains its own detection.
 
