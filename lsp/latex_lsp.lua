@@ -4,7 +4,7 @@ local build = { executable = "latexmk", onSave = true }
 return {
   cmd = { integration.executable() or "latex-lsp", "--stdio" },
   filetypes = { "tex", "plaintex", "bib", "bst" },
-  root_markers = { ".latexmkrc", "latexmkrc", ".texlabroot", ".git" },
+  root_markers = { ".latex-lsp.json", ".latexmkrc", "latexmkrc", ".texlabroot", ".git" },
   init_options = { build = vim.deepcopy(build) },
   settings = { latex = { build = vim.deepcopy(build) } },
   capabilities = { workspace = { diagnostic = { refreshSupport = true } } },

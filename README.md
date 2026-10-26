@@ -103,15 +103,17 @@ spelling (`math_symbols = false`). VimTeX and nvim-texlabconfig are no longer lo
 The local **latex-lsp** provides completion, hover, navigation, renaming, semantic
 highlighting and pull diagnostics for TeX and BibTeX. Texlab is not enabled on this branch.
 
-`lsp/latex_lsp.lua` starts the release binary from
-`~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/latex-lsp --stdio`.
+`lsp/latex_lsp.lua` starts the local release binary with `--stdio`: on macOS,
+`~/Documents/Github/nvim_plugins/latex-lsp/target/release/latex-lsp`; on NixOS,
+`~/.local/share/t3-server/nix-data/projects/latex-lsp/target/release/latex-lsp`.
 Rebuild that checkout with `cargo build --release --locked` after server changes, then
 restart Neovim (or the LSP client). Set `NVIM_LATEX_LSP` to use another executable;
 when the local checkout is absent, a `latex-lsp` executable on PATH is also supported.
 `:ConfigInfo` reports the resolved binary. No Mason package is needed for this server.
 
-The default compiler is **latexmk**, with `build.onSave = true`. Artifacts go into
-`build/latex-lsp/` beside the main document. `<localleader>ll` and `<leader>lb` save
+The default compiler is **latexmk**, with `build.onSave = true`. The server honors
+the project `.latexmkrc` output directory, falling back to `build/latex-lsp/` beside
+the main document. `<localleader>ll` and `<leader>lb` save
 and build without queuing a duplicate save build; `<localleader>lk/lK` cancels the
 current/all builds, `<localleader>lg` shows status, and `<localleader>la` toggles
 build on save. `<localleader>lq` opens the compiler log, `lo` shows the latest output
@@ -124,11 +126,13 @@ main file to select XeLaTeX. Server options live in `lsp/latex_lsp.lua`; keep
 `init_options.build` and `settings.latex.build` consistent. `<localleader>lV` opens
 the PDF; `lv` performs forward search with Skim or Zathura after a successful build.
 
-Tex-tools retains structural editing, conceal and navigation. Its commands that
-require a texlab client (compiler switching, main selection, cleanup and inverse
-search setup) have not been ported to latex-lsp; use the server options and magic
-comments above. The build/status/log/PDF shortcuts are adapted in
-`lua/languages/latex/lsp.lua` when latex-lsp attaches.
+Tex-tools uses `lsp = "latex-lsp"` for build/status, compiler switching, main
+selection, cleanup, outline and PDF integration, alongside structural editing,
+conceal and navigation. Compiler profiles use the server's native settings:
+`latexmk` and `tectonic` use default arguments, while `xelatex` selects latexmk
+with `engine = "xelatex"`. The server owns argument generation and artifact paths.
+The existing build/status/log/PDF shortcuts in `lua/languages/latex/lsp.lua` and
+Skim startup handling remain available.
 
 Text objects follow tex-tools defaults: `ae/ie` environment, `ac/ic` command,
 `aa/ia` argument, `a$/i$` math, `ad/id` math brackets, `ai/ii` item, `aP/iP` section,

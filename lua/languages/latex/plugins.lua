@@ -29,6 +29,7 @@ return {
       vim.g.tex_conceal = ""
     end,
     opts = {
+      lsp = "latex-lsp",
       -- mappings = false, -- languages.latex.buffer owns the existing key layout.
       mappings = true,
       smart_enter = false, -- Blink -> pairs.nvim owns Insert-mode Enter.
@@ -37,15 +38,13 @@ return {
         profiles = {
           tectonic = {
             executable = "tectonic",
-            args = { "-X", "compile", "%f", "--synctex", "--keep-logs", "--keep-intermediates" },
           },
           latexmk = {
             executable = "latexmk",
-            args = { "-pdf", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%f" },
           },
           xelatex = {
             executable = "latexmk",
-            args = { "-xelatex", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%f" },
+            engine = "xelatex",
           },
         },
       },
