@@ -146,8 +146,13 @@ return {
       },
 
       completion = {
-        -- NOTE: some LSPs may add auto brackets themselves anyway
-        accept = { auto_brackets = { enabled = true } },
+        accept = {
+          auto_brackets = {
+            enabled = true,
+            -- TeX commands include zero-argument macros; the LSP supplies argument snippets.
+            blocked_filetypes = { "tex", "plaintex", "latex" },
+          },
+        },
         list = { selection = { preselect = true, auto_insert = false } },
 
         menu = {
