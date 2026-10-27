@@ -31,8 +31,8 @@ return {
     opts = {
       lsp = "texquill",
       viewer = {
-        method = "folio",
-        executable = "/Users/zexili/Documents/Github/pdf-viewer/target/release/folio",
+        method = "pagewing",
+        executable = "/Users/zexili/Documents/Github/pdf-viewer/target/release/pagewing",
         focus = false,
       },
       -- mappings = false, -- languages.latex.buffer owns the existing key layout.
