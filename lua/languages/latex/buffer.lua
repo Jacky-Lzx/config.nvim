@@ -109,7 +109,7 @@ function M.setup(bufnr)
     map(entry[1], "<Cmd>TexTools" .. entry[2] .. "<CR>", entry[3])
   end
   map("<localleader>lr", function()
-    local viewer = require("utils.platform").skim_displayline() and "skim" or "zathura"
+    local viewer = require("tex-tools.viewer").detect().method
     vim.cmd("TexToolsInverseSearch " .. viewer)
   end, "Show inverse-search setup")
 end

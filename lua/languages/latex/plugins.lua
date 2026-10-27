@@ -30,7 +30,11 @@ return {
     end,
     opts = {
       lsp = "texquill",
-      viewer = { focus = false },
+      viewer = {
+        method = "folio",
+        executable = "/Users/zexili/Documents/Github/pdf-viewer/target/release/folio",
+        focus = false,
+      },
       -- mappings = false, -- languages.latex.buffer owns the existing key layout.
       mappings = true,
       smart_enter = false, -- Blink -> pairs.nvim owns Insert-mode Enter.
