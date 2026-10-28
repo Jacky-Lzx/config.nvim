@@ -43,7 +43,7 @@ function M.setup()
     -- TODO: What is this? <2026.10.09, lzx>
     clipboard = "",
 
-    textwidth = 0,
+    textwidth = 120,
 
     signcolumn = "yes:1",
 

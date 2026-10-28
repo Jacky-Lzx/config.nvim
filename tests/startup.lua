@@ -7,7 +7,7 @@ local function check()
   assert(info.paths.state == vim.fn.stdpath("state"))
   assert(vim.g.mapleader == " " and vim.g.maplocalleader == " ")
   assert(vim.g.loaded_netrw == 1 and vim.g.loaded_netrwPlugin == 1)
-  assert(vim.bo.textwidth == 0 and vim.bo.softtabstop == -1)
+  assert(vim.bo.textwidth == 120 and vim.bo.softtabstop == -1)
   assert(vim.o.autoread and vim.o.undofile and vim.o.confirm)
   assert(
     vim.fs.normalize(vim.o.undodir):gsub("/+$", "") == vim.fs.joinpath(vim.fn.stdpath("state"), "undo"),
@@ -124,7 +124,7 @@ local function check()
   -- Filetype hooks still run when language plugins are disabled.
   vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.tex")
   assert(vim.bo.filetype == "tex")
-  assert(vim.bo.textwidth == 0)
+  assert(vim.bo.textwidth == 120)
   local tex_enabled = require("languages").is_enabled("latex")
   -- Test the plugin-owned buffer mapping; the old <M-m> shortcut was removed.
   assert((vim.fn.maparg("<Plug>(TexToolsSmartEnter)", "i", false, true).buffer == 1) == tex_enabled)

@@ -5,10 +5,10 @@ function M.setup()
 
   vim.api.nvim_create_autocmd("FileType", {
     group = group,
-    desc = "Disable automatic comment wrapping and continuation",
+    desc = "Disable automatic text wrapping and comment continuation",
     callback = function(event)
       vim.api.nvim_buf_call(event.buf, function()
-        vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+        vim.opt_local.formatoptions:remove({ "t", "c", "a", "r", "o" })
       end)
     end,
   })

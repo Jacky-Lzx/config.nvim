@@ -19,13 +19,13 @@ local function feed(keys)
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, true, true), "xt", false)
 end
 
-vim.o.textwidth = 120
+vim.o.textwidth = 80
 vim.o.softtabstop = 2
 local before = #vim.api.nvim_get_autocmds({})
 local options = require("core.options")
 local autocmds = require("core.autocmds")
 local keymaps = require("core.keymaps")
-assert(vim.o.textwidth == 120 and vim.o.softtabstop == 2, "Core imports must not apply options")
+assert(vim.o.textwidth == 80 and vim.o.softtabstop == 2, "Core imports must not apply options")
 assert(#vim.api.nvim_get_autocmds({}) == before, "Core imports must not register autocmds")
 assert(vim.fn.maparg("jk", "i") == "", "Core imports must not register mappings")
 options.setup()
@@ -34,7 +34,7 @@ autocmds.setup()
 local count = #vim.api.nvim_get_autocmds({ group = "ConfigCore" })
 autocmds.setup()
 assert(#vim.api.nvim_get_autocmds({ group = "ConfigCore" }) == count, "Repeated setup duplicated core callbacks")
-assert(vim.bo.textwidth == 0 and vim.o.autoread and vim.o.undofile and vim.o.confirm)
+assert(vim.bo.textwidth == 120 and vim.o.autoread and vim.o.undofile and vim.o.confirm)
 
 -- Tab input follows the buffer's shiftwidth instead of a fixed softtabstop.
 for _, width in ipairs({ 2, 4 }) do
@@ -54,16 +54,16 @@ vim.cmd.close()
 -- FileType must change the event buffer even when another buffer is current.
 local current = vim.api.nvim_get_current_buf()
 local target = vim.api.nvim_create_buf(true, false)
-vim.bo[current].formatoptions = "tcroq"
-vim.bo[target].formatoptions = "tcroq"
+vim.bo[current].formatoptions = "tcraoq"
+vim.bo[target].formatoptions = "tcraoq"
 vim.api.nvim_exec_autocmds("FileType", { group = "ConfigCore", buffer = target })
-for _, flag in ipairs({ "c", "r", "o" }) do
+for _, flag in ipairs({ "t", "c", "a", "r", "o" }) do
   assert(not vim.bo[target].formatoptions:find(flag, 1, true), "FileType retained formatoption " .. flag)
 end
-for _, flag in ipairs({ "t", "q" }) do
+for _, flag in ipairs({ "q" }) do
   assert(vim.bo[target].formatoptions:find(flag, 1, true), "FileType removed formatoption " .. flag)
 end
-assert(vim.bo[current].formatoptions == "tcroq", "FileType changed the wrong buffer")
+assert(vim.bo[current].formatoptions == "tcraoq", "FileType changed the wrong buffer")
 
 local checktime = vim.cmd.checktime
 local checked
