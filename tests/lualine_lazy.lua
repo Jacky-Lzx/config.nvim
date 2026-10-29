@@ -8,7 +8,6 @@ for _, plugin in ipairs({
   "copilot.lua",
   "nvim-web-devicons",
   "overseer.nvim",
-  "trouble.nvim",
   "nvim-dap",
   "plenary.nvim",
   "nui.nvim",
@@ -16,6 +15,9 @@ for _, plugin in ipairs({
   assert(vim.fn.isdirectory(lazy_root .. "/" .. plugin) == 1, "Missing installed plugin: " .. plugin)
   vim.opt.runtimepath:append(lazy_root .. "/" .. plugin)
 end
+vim.opt.runtimepath:append(require("utils.platform").dev_plugin_root() .. "/lsp-tools.nvim")
+vim.api.nvim_buf_set_lines(0, 0, -1, false, { "test_document_symbol", "" })
+vim.api.nvim_win_set_cursor(0, { 1, 0 })
 vim.o.swapfile = false
 vim.o.columns = 240
 vim.g.actual_curwin = vim.api.nvim_get_current_win()
@@ -24,7 +26,7 @@ local allowed = {}
 local attempted = {}
 local original_require = require
 _G.require = function(name)
-  for _, prefix in ipairs({ "overseer", "trouble", "dap" }) do
+  for _, prefix in ipairs({ "overseer", "trouble", "dap", "lsp-tools" }) do
     if (name == prefix or name:sub(1, #prefix + 1) == prefix .. ".") and not allowed[prefix] then
       attempted[#attempted + 1] = name
       error("Unexpected lazy dependency: " .. name)
@@ -38,39 +40,42 @@ local function unloaded(prefix)
   end
 end
 
-local symbol_calls, symbol_gets = 0, 0
-local has_symbols = false
+local symbol_calls = 0
 local symbol_text = "test_document_symbol"
+local symbol_callback
+local original_clients = vim.lsp.get_clients
+local original_client = vim.lsp.get_client_by_id
+local original_attached = vim.lsp.buf_is_attached
+local client = { id = 98765, name = "lualine-fixture", offset_encoding = "utf-8" }
+function client:request(method, _, callback)
+  assert(method == "textDocument/documentSymbol")
+  symbol_calls = symbol_calls + 1
+  symbol_callback = callback
+  return true, symbol_calls
+end
+function client:cancel_request() end
 local function load_providers()
-  allowed.overseer, allowed.trouble = true, true
+  allowed.overseer, allowed["lsp-tools"] = true, true
   require("overseer").setup({ dap = false })
-  local trouble = require("trouble")
-  trouble.setup({})
-  local statusline = trouble.statusline
-  trouble.statusline = function(opts)
-    symbol_calls = symbol_calls + 1
-    assert(
-      vim.deep_equal(opts, {
-        mode = "lsp_document_symbols",
-        groups = {},
-        title = false,
-        filter = { range = true },
-        format = "{kind_icon}{symbol.name:Normal}",
-      }),
-      "Trouble symbol options changed"
-    )
-    local symbols = statusline(opts)
-    assert(type(symbols.has) == "function" and type(symbols.get) == "function")
-    -- Exercise the real factory, but supply symbols without a running LSP server.
-    symbols.has = function()
-      return has_symbols
+  vim.lsp.get_clients = function(opts)
+    if opts and opts.method == "textDocument/documentSymbol" then
+      return { client }
     end
-    symbols.get = function()
-      symbol_gets = symbol_gets + 1
-      return symbol_text
-    end
-    return symbols
+    return original_clients(opts)
   end
+  vim.lsp.get_client_by_id = function(id)
+    return id == client.id and client or original_client(id)
+  end
+  vim.lsp.buf_is_attached = function(buf, id)
+    return id == client.id or original_attached(buf, id)
+  end
+  require("lsp-tools").setup({
+    code_actions = false,
+    references = false,
+    rename = false,
+    outline = false,
+    breadcrumbs = { request_timeout = 10000 },
+  })
 end
 
 local spec = dofile("lua/plugins/ui/lualine.lua")[1]
@@ -102,6 +107,7 @@ local tasks = assert(config.sections.lualine_x[1])
 local symbols = assert(config.winbar.lualine_b[1])
 local default_hl = "%#lualine_x_normal#"
 local function render()
+  vim.g.actual_curwin = vim.api.nvim_get_current_win()
   lualine.statusline()
   lualine.winbar()
   lualine.refresh({ force = true })
@@ -114,6 +120,7 @@ if vim.env.LUALINE_TEST ~= "before" then
   assert(not package.loaded["lualine.components.overseer"])
   unloaded("overseer")
   unloaded("trouble")
+  unloaded("lsp-tools")
   unloaded("dap")
   assert(#attempted == 0, vim.inspect(attempted))
   load_providers()
@@ -182,21 +189,45 @@ for _, options in ipairs({
   local opts = vim.tbl_extend("force", vim.deepcopy(tasks.options), options)
   assert(visuals(deferred(vim.deepcopy(opts)):draw(default_hl, true)) == visuals(upstream(opts):draw(default_hl, true)))
 end
-assert(symbols:draw(default_hl, true) == "" and symbol_gets == 0)
-has_symbols = true
-assert(symbols:draw(default_hl, true):find(symbol_text, 1, true))
-assert(lualine.winbar():find(symbol_text, 1, true), "Symbols must appear in the real winbar")
-has_symbols = false
 assert(symbols:draw(default_hl, true) == "")
+assert(symbol_callback, "Breadcrumb provider did not request symbols")
+symbol_callback(nil, {
+  {
+    name = symbol_text,
+    kind = 12,
+    range = { start = { line = 0, character = 0 }, ["end"] = { line = 0, character = #symbol_text } },
+  },
+})
+assert(
+  vim.wait(1000, function()
+    return symbols:draw(default_hl, true):find(symbol_text, 1, true) ~= nil
+  end),
+  "Real lsp-tools breadcrumbs did not reach lualine"
+)
+assert(lualine.winbar():find(symbol_text, 1, true), "Symbols must appear in the real winbar")
+vim.api.nvim_win_set_cursor(0, { 2, 0 })
+assert(symbols:draw(default_hl, true) == "", "Leaving the scope must clear breadcrumbs")
+
 for _, task in ipairs(fixtures) do
   task_list.remove(task)
 end
 assert(tasks:draw(default_hl, true) == "", "No tasks must leave no padding or highlights")
 render()
 assert(tasks.component == component, "Upstream instance must be reused")
-assert(symbol_calls == 1, "Trouble provider must be created once")
+assert(symbol_calls == 1, "Rendering must reuse the document symbol cache")
 assert(setups == 1, "Refresh must not reconfigure lualine")
 unloaded("dap")
+unloaded("trouble")
+require("lsp-tools").setup({
+  code_actions = false,
+  references = false,
+  rename = false,
+  outline = false,
+  breadcrumbs = false,
+})
+vim.lsp.get_clients = original_clients
+vim.lsp.get_client_by_id = original_client
+vim.lsp.buf_is_attached = original_attached
 assert(#attempted == 0, vim.inspect(attempted))
 _G.require = original_require
 print("lualine_lazy: " .. (vim.env.LUALINE_TEST or "after") .. " passed")

@@ -47,20 +47,9 @@ return {
         return self.component:update_status(is_focused)
       end
 
-      local symbols
-      local function trouble_symbols()
-        if not package.loaded.trouble then
-          return ""
-        end
-        symbols = symbols
-          or require("trouble").statusline({
-            mode = "lsp_document_symbols",
-            groups = {},
-            title = false,
-            filter = { range = true },
-            format = "{kind_icon}{symbol.name:Normal}",
-          })
-        return symbols.has() and symbols.get() or ""
+      local function breadcrumbs()
+        local tools = package.loaded["lsp-tools"]
+        return tools and tools.breadcrumbs() or ""
       end
 
       local function show_macro_recording()
@@ -104,7 +93,7 @@ return {
         table.insert(opts.sections.lualine_c, copilot)
       end
       table.insert(opts.winbar.lualine_b, 1, {
-        trouble_symbols,
+        breadcrumbs,
       })
 
       require("lualine").setup(opts)
