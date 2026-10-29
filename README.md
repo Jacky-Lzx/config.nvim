@@ -66,6 +66,13 @@ picker and previews, replacing code-actions.nvim. `<leader>a` works in Normal an
 Visual mode; `<A-a>` works in Insert mode. Enter applies the action, Escape cancels.
 Delta renders previews with project-relative hunk headers, with native diff fallback.
 
+`]r` / `[r` move between the current symbol's references in the current file.
+Normal-mode counts work (for example, `3]r`); jumps stop at the ends and add a
+jumplist entry. LSP document highlights provide semantic positions, with read/write
+highlight groups when supported by the server. lsp-tools owns automatic reference
+highlighting, so Snacks.words is disabled. `]]` / `[[` retain native section and
+terminal-prompt navigation. Reference navigation itself does not require Snacks.
+
 The configuration prefers the local development checkout through lazy.nvim's
 `dev = true`, and falls back to GitHub over SSH when it is absent. Code action options live
 under `opts.code_actions`; the public API is `require("lsp-tools").code_action()`.

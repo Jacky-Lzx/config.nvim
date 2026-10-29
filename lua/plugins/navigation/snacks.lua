@@ -193,7 +193,7 @@ return {
         refresh = 50, -- refresh at most every 50ms
       },
       terminal = { enabled = true },
-      words = { enabled = true },
+      words = { enabled = false }, -- Reference highlighting/navigation is owned by lsp-tools.nvim.
       styles = {
         terminal = {
           relative = "editor",
@@ -278,9 +278,6 @@ return {
       { "gco", function() Snacks.picker.lsp_outgoing_calls() end, desc = "[Snacks] Calls Outgoing" },
       { "<leader>ss", function() require("snacks").picker.lsp_symbols() end, desc = "[Snacks] LSP symbols", },
       { "<leader>sS", function() require("snacks").picker.lsp_workspace_symbols() end, desc = "[Snacks] LSP workspace symbols", },
-      -- Words
-      { "]]", function() require("snacks").words.jump(vim.v.count1) end, desc = "[Snacks] Next Reference", mode = { "n", "t" }, },
-      { "[[", function() require("snacks").words.jump(-vim.v.count1) end, desc = "[Snacks] Prev Reference", mode = { "n", "t" }, },
       -- Zen mode
       { "<leader>Z", function() require("snacks").zen() end, desc = "[Snacks] Toggle Zen Mode", },
       { "<leader>z", function() require("snacks").zen.zoom() end, desc = "[Snacks] Toggle Zoom", },

@@ -7,6 +7,22 @@ return {
     event = "LspAttach",
     keys = {
       {
+        "]r",
+        function()
+          require("lsp-tools").jump_reference(vim.v.count1)
+        end,
+        desc = "[LSP] Next reference",
+        mode = "n",
+      },
+      {
+        "[r",
+        function()
+          require("lsp-tools").jump_reference(-vim.v.count1)
+        end,
+        desc = "[LSP] Previous reference",
+        mode = "n",
+      },
+      {
         "<leader>a",
         function()
           require("lsp-tools").code_action()
