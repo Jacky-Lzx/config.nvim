@@ -59,6 +59,17 @@ Conform. Debugging loads on debugger keys; merely opening C/C++ or Swift does no
 initialize DAP. Pairing/snippets load on Insert mode, and optional completion providers
 load when used. VimTeX stays available at startup for headless inverse search.
 
+## LSP tools
+
+[lsp-tools.nvim](https://github.com/Jacky-Lzx/lsp-tools.nvim) supplies the code action
+picker and previews, replacing code-actions.nvim. `<leader>a` works in Normal and
+Visual mode; `<A-a>` works in Insert mode. Enter applies the action, Escape cancels.
+Delta renders previews with project-relative hunk headers, with native diff fallback.
+
+The configuration prefers the local development checkout through lazy.nvim's
+`dev = true`, and falls back to GitHub over SSH when it is absent. Code action options live
+under `opts.code_actions`; the public API is `require("lsp-tools").code_action()`.
+
 ## Compile commands
 
 With the `tasks` feature enabled, [compile.nvim](https://github.com/Jacky-Lzx/compile.nvim)

@@ -63,7 +63,7 @@ native_checks() (
 integration_checks() (
   cd -- "$root"
   printf '\nRunning integration checks with installed plugins\n'
-  run_tests obsidian_local comments folding rust code_actions image_preview lualine_lazy mini_diff_lazy
+  run_tests obsidian_local comments folding rust lsp_tools image_preview lualine_lazy mini_diff_lazy
   LUALINE_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lualine_lazy.lua"
   MINI_DIFF_TEST=direct nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/mini_diff_lazy.lua"
   NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
