@@ -1,12 +1,32 @@
 local integration = require("languages.latex.lsp")
-local build = { executable = "latexmk", onSave = true }
+local settings = {
+  build = { executable = "latexmk", onSave = true },
+  diagnostics = {
+    chktex = {
+      enabled = true,
+      arguments = {
+        "-wall",
+        "-n1",
+        "-n3",
+        "-n8",
+        "-n9",
+        "-n22",
+        "-n30",
+        "-n24",
+        "-n17",
+        "-n19",
+        "-e16",
+      },
+    },
+  },
+}
 
 return {
   cmd = { integration.executable() or "texquill", "--stdio" },
   filetypes = { "tex", "plaintex", "bib", "bst" },
   root_markers = { ".texquill.json", ".latexmkrc", "latexmkrc", ".texlabroot", ".git" },
-  init_options = { build = vim.deepcopy(build) },
-  settings = { latex = { build = vim.deepcopy(build) } },
+  init_options = vim.deepcopy(settings),
+  settings = { latex = vim.deepcopy(settings) },
   capabilities = { workspace = { diagnostic = { refreshSupport = true } } },
   handlers = {
     ["workspace/diagnostic/refresh"] = integration.refresh,

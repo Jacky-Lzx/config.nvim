@@ -60,7 +60,7 @@ assert(vim.list_contains(writing.servers, "texquill"))
 assert(not vim.list_contains(writing.servers, "texlab"))
 assert(vim.list_contains(writing.parsers, "latex"))
 assert(vim.deep_equal(writing.formatters.tex, { "tex-fmt" }))
-assert(vim.deep_equal(writing.linters.tex, { "chktex" }))
+assert(writing.linters.tex == nil, "ChkTeX must run through TeXquill, not nvim-lint")
 assert(#vim.api.nvim_get_autocmds({}) == before, "Reading language metadata registered autocmds")
 assert(vim.g.tex_flavor == nil, "Reading language metadata changed globals")
 

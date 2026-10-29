@@ -139,6 +139,8 @@ local function check()
     assert(tex_options.mappings and not tex_options.smart_enter)
     local server = vim.lsp.config.texquill
     assert(server.init_options.build.executable == "latexmk" and server.init_options.build.onSave)
+    assert(server.init_options.diagnostics.chktex.enabled)
+    assert(vim.deep_equal(server.init_options.diagnostics, server.settings.latex.diagnostics))
     assert(server.cmd[1] == require("languages.latex.lsp").executable())
     assert(server.cmd[2] == "--stdio")
     assert(_G.config_test_lsp_enabled.texquill and not _G.config_test_lsp_enabled.texlab)
