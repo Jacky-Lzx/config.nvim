@@ -32,7 +32,7 @@ return {
     ["workspace/diagnostic/refresh"] = integration.refresh,
     ["latex/buildStarted"] = function() end,
     ["latex/buildFinished"] = function(err, result)
-      if not err and result then
+      if not err and result and result.status ~= "cancelled" and not result.stale then
         local level = result.status == "success" and vim.log.levels.INFO or vim.log.levels.WARN
         vim.notify(result.message or ("Build: " .. result.status), level, { title = "texquill" })
       end
