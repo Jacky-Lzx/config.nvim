@@ -40,6 +40,12 @@ return {
       },
     },
     opts = {
+      rename = {
+        backend = "delta",
+        delta = {
+          args = { "--file-style=omit", "--hunk-header-style=file line-number syntax" },
+        },
+      },
       code_actions = {
         backend = "delta", -- Set "vim" to use the native diff preview.
         delta = {

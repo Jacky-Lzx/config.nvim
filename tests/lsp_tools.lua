@@ -78,6 +78,17 @@ local source = debug.getinfo(vim.ui.select).source
 assert(source:find("lsp-tools/code_actions/init.lua", 1, true), "Code action selection adapter was not installed")
 assert(not package.loaded["code_actions"], "Standalone code_actions module was loaded")
 local opts = require("lazy.core.plugin").values(spec, "opts", false)
+assert(opts.rename.backend == "delta", "Rename must use the configured delta backend")
+assert(vim.deep_equal(opts.rename.delta.args, opts.code_actions.delta.args), "Rename/code action diff styles differ")
+local rename_calls = 0
+local original_rename = require("lsp-tools").rename
+require("lsp-tools").rename = function()
+  rename_calls = rename_calls + 1
+end
+vim.api.nvim_exec_autocmds("LspAttach", { buffer = 0, data = { client_id = 999999 } })
+feed(vim.g.mapleader .. "rn")
+assert(rename_calls == 1, "Attached rename mapping must reach lsp-tools once")
+require("lsp-tools").rename = original_rename
 assert(opts.code_actions.backend == "delta", "Delta backend was lost during migration")
 assert(
   vim.deep_equal(opts.code_actions.delta.args, {

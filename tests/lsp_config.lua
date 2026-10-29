@@ -68,6 +68,16 @@ vim.api.nvim_buf_call(attached, function()
   assert(mapping.buffer == 0 and mapping.callback == format, "LSP attach replaced the shared format mapping")
   mapping.callback()
   assert(vim.fn.maparg("<leader>rn", "n", false, true).buffer == 1)
+  local previous = package.loaded["lsp-tools"]
+  local renamed
+  package.loaded["lsp-tools"] = {
+    rename = function()
+      renamed = vim.api.nvim_get_current_buf()
+    end,
+  }
+  vim.fn.maparg("<leader>rn", "n", false, true).callback()
+  assert(renamed == attached, "Rename mapping must invoke lsp-tools in the attached buffer")
+  package.loaded["lsp-tools"] = previous
 end)
 assert(formatted == attached)
 vim.api.nvim_buf_call(unrelated, function()
