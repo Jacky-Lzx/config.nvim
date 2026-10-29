@@ -7,6 +7,7 @@ dofile(root .. "/init.lua")
 local plugins = require("lazy.core.config").plugins
 assert(not plugins["tiny-code-action.nvim"], "Old code action plugin remains configured")
 assert(not plugins["code-actions.nvim"], "Standalone code-actions.nvim remains configured")
+assert(not plugins["outline.nvim"], "Standalone outline.nvim remains configured")
 local spec = plugins["lsp-tools.nvim"]
 assert(spec and spec.url == "git@github.com:Jacky-Lzx/lsp-tools.nvim.git")
 local dev_directory = require("utils.platform").dev_plugin_root() .. "/lsp-tools.nvim"
@@ -48,6 +49,22 @@ if vim.env.NVIM_TEST_REFERENCE_FIRST == "1" then
   assert(spec._.loaded, "Reference mapping did not load lsp-tools")
   assert(vim.api.nvim_win_get_cursor(0)[2] == 8, "Lazy reference replay lost the count")
 end
+if vim.env.NVIM_TEST_OUTLINE_FIRST == "1" then
+  -- Exercise first-use outline loading before any LspAttach.
+  vim.api.nvim_feedkeys(vim.keycode(vim.g.mapleader .. "go"), "xt", false)
+  assert(spec._.loaded, "Outline key did not load lsp-tools")
+  local sidebar
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "lsp-tools-outline" then
+      sidebar = win
+    end
+  end
+  assert(sidebar and vim.api.nvim_get_current_win() ~= sidebar, "Outline must open without stealing focus")
+  require("lsp-tools").close_outline()
+  vim.cmd("OutlineOpen")
+  require("lsp-tools").close_outline()
+  assert(vim.fn.exists(":Outline") == 2, "Outline command alias is missing")
+end
 local calls = 0
 vim.lsp.buf.code_action = function()
   calls = calls + 1
@@ -78,6 +95,8 @@ local source = debug.getinfo(vim.ui.select).source
 assert(source:find("lsp-tools/code_actions/init.lua", 1, true), "Code action selection adapter was not installed")
 assert(not package.loaded["code_actions"], "Standalone code_actions module was loaded")
 local opts = require("lazy.core.plugin").values(spec, "opts", false)
+assert(opts.outline.width == 0.15 and not opts.outline.focus_on_open, "Outline layout changed")
+assert(opts.outline.icons.Key.icon == "󰌆" and opts.outline.icons.Event.icon == "󱐋", "Outline icons changed")
 assert(opts.rename.backend == "delta", "Rename must use the configured delta backend")
 assert(vim.deep_equal(opts.rename.delta.args, opts.code_actions.delta.args), "Rename/code action diff styles differ")
 local rename_calls = 0

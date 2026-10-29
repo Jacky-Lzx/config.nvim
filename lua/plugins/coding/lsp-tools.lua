@@ -5,7 +5,16 @@ return {
     dev = true,
     dependencies = { "folke/snacks.nvim" },
     event = "LspAttach",
+    cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose" },
     keys = {
+      {
+        "<leader>go",
+        function()
+          require("lsp-tools").toggle_outline()
+        end,
+        desc = "[LSP] Toggle outline",
+        mode = "n",
+      },
       {
         "]r",
         function()
@@ -40,6 +49,14 @@ return {
       },
     },
     opts = {
+      outline = {
+        width = 0.15,
+        focus_on_open = false,
+        icons = {
+          Key = { icon = "󰌆", hl = "Type" },
+          Event = { icon = "󱐋", hl = "Type" },
+        },
+      },
       rename = {
         backend = "delta",
         delta = {
@@ -57,7 +74,13 @@ return {
       },
     },
     config = function(_, opts)
-      require("lsp-tools").setup(opts)
+      local tools = require("lsp-tools")
+      tools.setup(opts)
+      -- Preserve the previous outline commands during migration.
+      vim.api.nvim_create_user_command("Outline", tools.toggle_outline, { force = true })
+      vim.api.nvim_create_user_command("OutlineOpen", function()
+        tools.open_outline()
+      end, { force = true })
     end,
   },
 }
