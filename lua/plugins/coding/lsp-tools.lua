@@ -49,6 +49,7 @@ return {
       },
     },
     opts = {
+      lightbulb = true,
       outline = {
         width = 0.15,
         focus_on_open = false,

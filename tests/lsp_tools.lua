@@ -8,6 +8,7 @@ local plugins = require("lazy.core.config").plugins
 assert(not plugins["tiny-code-action.nvim"], "Old code action plugin remains configured")
 assert(not plugins["code-actions.nvim"], "Standalone code-actions.nvim remains configured")
 assert(not plugins["outline.nvim"], "Standalone outline.nvim remains configured")
+assert(not plugins["nvim-lightbulb"], "Standalone lightbulb remains configured")
 local spec = plugins["lsp-tools.nvim"]
 assert(spec and spec.url == "git@github.com:Jacky-Lzx/lsp-tools.nvim.git")
 local dev_directory = require("utils.platform").dev_plugin_root() .. "/lsp-tools.nvim"
@@ -95,6 +96,7 @@ local source = debug.getinfo(vim.ui.select).source
 assert(source:find("lsp-tools/code_actions/init.lua", 1, true), "Code action selection adapter was not installed")
 assert(not package.loaded["code_actions"], "Standalone code_actions module was loaded")
 local opts = require("lazy.core.plugin").values(spec, "opts", false)
+assert(opts.lightbulb == true, "LSP tools indicator must be enabled")
 assert(opts.outline.width == 0.15 and not opts.outline.focus_on_open, "Outline layout changed")
 assert(opts.outline.icons.Key.icon == "󰌆" and opts.outline.icons.Event.icon == "󱐋", "Outline icons changed")
 assert(opts.rename.backend == "delta", "Rename must use the configured delta backend")
