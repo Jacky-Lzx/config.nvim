@@ -21,6 +21,16 @@ else
   assert(not spec._.is_local, "Absent local project must fall back to the GitHub checkout")
 end
 assert(spec.dir == expected_directory, "Plugin resolved the wrong development/fallback directory")
+if vim.env.NVIM_TEST_LINK_FIRST == "1" then
+  local opener = require("utils.open")
+  local original_open, fallback_calls = opener.open_at_cursor, 0
+  opener.open_at_cursor = function()
+    fallback_calls = fallback_calls + 1
+  end
+  vim.api.nvim_feedkeys(vim.keycode("go"), "xt", false)
+  assert(spec._.loaded and fallback_calls == 1, "First semantic link key must load plugin and fall back without an LSP")
+  opener.open_at_cursor = original_open
+end
 -- A deterministic document-highlight client tests the real lazy key replay.
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "foo foo foo" })
 vim.api.nvim_win_set_cursor(0, { 1, 0 })
@@ -102,6 +112,9 @@ assert(opts.outline.width == 0.15 and not opts.outline.focus_on_open, "Outline l
 assert(opts.outline.icons.Key.icon == "󰌆" and opts.outline.icons.Event.icon == "󱐋", "Outline icons changed")
 assert(opts.rename.backend == "delta", "Rename must use the configured delta backend")
 assert(vim.deep_equal(opts.rename.delta.args, opts.code_actions.delta.args), "Rename/code action diff styles differ")
+for _, feature in ipairs({ "diagnostics", "hover", "links", "inspect", "hierarchy" }) do
+  assert(opts[feature], feature .. " must be enabled")
+end
 local rename_calls = 0
 local original_rename = require("lsp-tools").rename
 require("lsp-tools").rename = function()
@@ -111,6 +124,39 @@ vim.api.nvim_exec_autocmds("LspAttach", { buffer = 0, data = { client_id = 99999
 feed(vim.g.mapleader .. "rn")
 assert(rename_calls == 1, "Attached rename mapping must reach lsp-tools once")
 require("lsp-tools").rename = original_rename
+local tools = require("lsp-tools")
+for _, binding in ipairs({
+  { "<leader>d", "diagnostic" },
+  { "<leader>gH", "hover" },
+  { "<leader>g?", "inspect" },
+  { "<leader>gT", "type_hierarchy" },
+}) do
+  local old, invoked = tools[binding[2]], 0
+  tools[binding[2]] = function()
+    invoked = invoked + 1
+  end
+  feed(binding[1])
+  assert(invoked == 1, binding[1] .. " must reach " .. binding[2])
+  tools[binding[2]] = old
+end
+local old_calls, directions = tools.call_hierarchy, {}
+tools.call_hierarchy = function(options)
+  directions[#directions + 1] = options.direction
+end
+feed("gci")
+feed("gco")
+assert(vim.deep_equal(directions, { "incoming", "outgoing" }), "Call tree bindings must preserve direction")
+tools.call_hierarchy = old_calls
+local picker = require("snacks").picker
+local old_references, references_calls = picker.lsp_references, 0
+picker.lsp_references = function()
+  references_calls = references_calls + 1
+end
+feed("gi")
+feed("<leader>gr")
+assert(references_calls == 2, "Reference entry points must use the same picker")
+picker.lsp_references = old_references
+
 assert(opts.code_actions.backend == "delta", "Delta backend was lost during migration")
 assert(
   vim.deep_equal(opts.code_actions.delta.args, {

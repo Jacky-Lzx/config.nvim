@@ -83,6 +83,27 @@ The configuration prefers the local development checkout through lazy.nvim's
 `dev = true`, and falls back to GitHub over SSH when it is absent. Code action options live
 under `opts.code_actions`; the public API is `require("lsp-tools").code_action()`.
 
+LSP tools also owns the code-action indicator and linked editing (including
+LaTeX environment names with stars and Unicode); nvim-lightbulb and the former
+configuration-side linked-editing adapter are no longer needed.
+
+- `<leader>d`: persistent diagnostic details, related locations and previewed fixes.
+  In the panel, `a` fixes; `A` fixes and continues after a confirmed diagnostic refresh.
+  `<A-j>` / `<A-k>` retain quick diagnostic navigation and native floats.
+- `<leader>gH`: pin hover documentation; `r` refreshes, `f` follows the source cursor,
+  `y` copies, and `gx` opens a documentation link. `K` keeps ordinary hover.
+- `go` in Normal mode: open the LSP document link, falling back to the existing
+  path opener. Visual `go` still opens the selected text.
+- `<leader>g?` / `:LspToolsInfo`: inspect clients, roots, providers and requests.
+- `gci` / `gco`: persistent incoming/outgoing call trees; `<leader>gT`: type tree.
+  Tab/`l` expands, `h` collapses, `d` switches direction, `p` previews source,
+  Enter jumps to the symbol and `g` jumps to a call site.
+- `<leader>go`: the canonical outline entry; the duplicate Trouble symbols mapping
+  is removed. Both `gi` and `<leader>gr` use the same Snacks references picker.
+
+These persistent panels use `q` / Escape to close. Server-dependent features are
+available only when a client advertises the corresponding methods.
+
 ## Compile commands
 
 With the `tasks` feature enabled, [compile.nvim](https://github.com/Jacky-Lzx/compile.nvim)
