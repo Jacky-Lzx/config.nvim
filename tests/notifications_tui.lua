@@ -187,8 +187,8 @@ vim.api.nvim_create_autocmd("User", {
         if ft == "blink-cmp-menu" then menu = vim.api.nvim_win_get_config(win) end
       end
       assert(command and menu)
-      assert(menu.row == command.row + command.height + 1, "Blink menu did not follow the input row")
-      assert(math.abs(menu.col - command.col) < 10, "Blink menu is still anchored to the left edge")
+      assert(menu.row == command.row + command.height + 2, "Blink menu did not follow the input row")
+      assert(menu.col == command.col, "Blink and input outer borders must align")
       blink_selected = assert(cmp.get_selected_item()).label
       vim.api.nvim_feedkeys(vim.keycode("<Tab>"), "nt", false)
     end)
