@@ -230,6 +230,8 @@ return {
       -- find
       -- git
       { "<C-g>", function() require("snacks").lazygit() end, desc = "[Snacks] Lazygit", },
+      { "<leader>ggl", function() require("snacks").picker.git_log() end, desc = "[Snacks] Git log", },
+      { "<leader>ggc", function() require("snacks").picker.git_diff() end, desc = "[Snacks] Git changes", },
       { "<leader>ggb", function() require("snacks").git.blame_line() end, desc = "[Snacks] Git blame line", },
       { "<leader>ggB", function() require("snacks").gitbrowse() end, desc = "[Snacks] Git browse", },
       -- Grep

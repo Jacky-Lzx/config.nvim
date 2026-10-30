@@ -78,20 +78,6 @@ return {
         desc = "[Selection] Grep",
       },
       {
-        "<leader>ggl",
-        function()
-          require("selection_tools").git_log()
-        end,
-        desc = "[Selection] Git log",
-      },
-      {
-        "<leader>ggc",
-        function()
-          require("selection_tools").git_diff()
-        end,
-        desc = "[Selection] Git changes",
-      },
-      {
         "<leader>sP",
         function()
           require("selection_tools").projects()
