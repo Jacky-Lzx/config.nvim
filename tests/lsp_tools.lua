@@ -9,6 +9,7 @@ assert(not plugins["tiny-code-action.nvim"], "Old code action plugin remains con
 assert(not plugins["code-actions.nvim"], "Standalone code-actions.nvim remains configured")
 assert(not plugins["outline.nvim"], "Standalone outline.nvim remains configured")
 assert(not plugins["nvim-lightbulb"], "Standalone lightbulb remains configured")
+assert(not plugins["trouble.nvim"], "Trouble must be replaced by LSP tools")
 local spec = plugins["lsp-tools.nvim"]
 assert(spec and spec.url == "git@github.com:Jacky-Lzx/lsp-tools.nvim.git")
 local dev_directory = require("utils.platform").dev_plugin_root() .. "/lsp-tools.nvim"
@@ -113,7 +114,7 @@ assert(opts.outline.width == 0.15 and not opts.outline.focus_on_open, "Outline l
 assert(opts.outline.icons.Key.icon == "󰌆" and opts.outline.icons.Event.icon == "󱐋", "Outline icons changed")
 assert(opts.rename.backend == "delta", "Rename must use the configured delta backend")
 assert(vim.deep_equal(opts.rename.delta.args, opts.code_actions.delta.args), "Rename/code action diff styles differ")
-for _, feature in ipairs({ "diagnostics", "hover", "links", "inspect", "hierarchy" }) do
+for _, feature in ipairs({ "diagnostics", "hover", "links", "inspect", "hierarchy", "results" }) do
   assert(opts[feature], feature .. " must be enabled")
 end
 local rename_calls = 0
@@ -128,13 +129,23 @@ require("lsp-tools").rename = original_rename
 local tools = require("lsp-tools")
 for _, binding in ipairs({
   { "<leader>d", "diagnostic" },
+  { "<leader>gd", "diagnostics" },
+  { "<leader>gl", "locations" },
+  { "<leader>gL", "loclist" },
+  { "<leader>gq", "quickfix" },
   { "<leader>gH", "hover" },
   { "<leader>g?", "inspect" },
   { "<leader>gT", "type_hierarchy" },
 }) do
   local old, invoked = tools[binding[2]], 0
-  tools[binding[2]] = function()
+  tools[binding[2]] = function(options)
     invoked = invoked + 1
+    if binding[1]:match("<leader>g[dlLq]$") then
+      assert(options.toggle, "Result bindings must preserve toggle behavior")
+    end
+    if binding[2] == "locations" then
+      assert(options.position == "right" and options.focus == false)
+    end
   end
   feed(binding[1])
   assert(invoked == 1, binding[1] .. " must reach " .. binding[2])

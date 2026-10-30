@@ -99,8 +99,22 @@ configuration-side linked-editing adapter are no longer needed.
 - `gci` / `gco`: persistent incoming/outgoing call trees; `<leader>gT`: type tree.
   Tab/`l` expands, `h` collapses, `d` switches direction, `p` previews source,
   Enter jumps to the symbol and `g` jumps to a call site.
-- `<leader>go`: the canonical outline entry; the duplicate Trouble symbols mapping
-  is removed. Both `gi` and `<leader>gr` use the same Snacks references picker.
+- `<leader>go`: outline. Both `gi` and `<leader>gr` use the same Snacks references picker.
+- `<leader>gd`: live diagnostic overview of all received diagnostics, grouped by
+  directory/file. `S` cycles all/project/original-buffer scopes; `d` opens details,
+  `a` previews a fix, and `A` fixes then continues after confirmed diagnostics.
+- `<leader>gl`: persistent definitions/references/implementations/type definitions/
+  declarations on the right. `r` queries the source window's current symbol.
+- `<leader>gq` / `<leader>gL`: quickfix / original window's location list. Native
+  ordering, current index, visual columns and list history remain canonical.
+- `<C-t>` in Snacks picker input (Normal/Insert): import selected items, or all
+  filtered items when nothing is selected, into a persistent result snapshot.
+
+Trouble is replaced by lsp-tools. Result lists keep source focus when opened;
+Enter jumps, `o` jumps while keeping list focus, `p` previews, `f` filters, `e`
+filters errors, `za`/`zM`/`zR` fold groups, `F` pins, `Q` exports to quickfix.
+Lists survive source-buffer closure. Each source loads on its first entry; picker
+configuration and LSP attachment do not eagerly load the result engine.
 
 These persistent panels use `q` / Escape to close. Server-dependent features are
 available only when a client advertises the corresponding methods.

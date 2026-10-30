@@ -28,7 +28,7 @@ return {
         { "<leader>w",  group = "[Workspace]"                 },
         { "<leader>s",  group = "[Snacks]"                    },
         { "<leader>t",  group = "[Snacks] Toggle"             },
-        { "<leader>g",  group = "[LSP] / [Trouble] / [Git]"           },
+        { "<leader>g",  group = "[LSP] / [Git]"           },
 
         { "]c", desc = "Jump to next change"     },
         { "[c", desc = "Jump to previous change" },

@@ -50,7 +50,6 @@ return {
           enabled = true,
           indent_scope_color = "flamingo", -- catppuccin color (eg. `lavender`) Default: text
         },
-        lsp_trouble = true,
         which_key = true,
       },
     },

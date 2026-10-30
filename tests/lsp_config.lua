@@ -114,22 +114,22 @@ vim.lsp.config, vim.lsp.enable = original_config, original_enable
 package.loaded["blink.cmp"] = original_blink
 vim.api.nvim_del_augroup_by_name("ConfigLsp")
 
-local original_snacks = package.loaded["trouble.sources.snacks"]
+local original_tools = package.loaded["lsp-tools"]
 local picker, opened = {}, false
-package.loaded["trouble.sources.snacks"] = {
-  open = function(actual, opts)
+package.loaded["lsp-tools"] = {
+  from_picker = function(actual, opts)
     assert(actual == picker and opts.type == "smart")
     opened = true
   end,
 }
-local snacks = require("plugins.navigation.trouble")[2].specs
+local snacks = require("plugins.coding.lsp-tools")[2]
 local opts = snacks.opts(nil, { picker = { enabled = true } })
-assert(not opened, "configuring Snacks must not open Trouble")
+assert(not opened, "configuring Snacks must not open or initialize result lists")
 assert(opts.picker.enabled)
-assert(opts.picker.win.input.keys["<c-t>"][1] == "trouble_open")
-opts.picker.actions.trouble_open.action(picker)
-assert(opened, "picker action must open Trouble, not just create a wrapper")
-package.loaded["trouble.sources.snacks"] = original_snacks
+assert(opts.picker.win.input.keys["<c-t>"][1] == "results_open")
+opts.picker.actions.results_open.action(picker)
+assert(opened, "picker action must import results into lsp-tools")
+package.loaded["lsp-tools"] = original_tools
 
 local mini = require("plugins.editing.mini-ai")[1]
 assert(vim.list_contains(mini.dependencies, "nvim-treesitter/nvim-treesitter-textobjects"))
