@@ -96,6 +96,7 @@ local source = debug.getinfo(vim.ui.select).source
 assert(source:find("lsp-tools/code_actions/init.lua", 1, true), "Code action selection adapter was not installed")
 assert(not package.loaded["code_actions"], "Standalone code_actions module was loaded")
 local opts = require("lazy.core.plugin").values(spec, "opts", false)
+assert(opts.linked_editing == true, "Linked editing must be owned by LSP tools")
 assert(opts.lightbulb == true, "LSP tools indicator must be enabled")
 assert(opts.outline.width == 0.15 and not opts.outline.focus_on_open, "Outline layout changed")
 assert(opts.outline.icons.Key.icon == "󰌆" and opts.outline.icons.Event.icon == "󱐋", "Outline icons changed")

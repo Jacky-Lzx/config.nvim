@@ -82,7 +82,7 @@ local function move(name, closing, star)
   until_value(
     [=[
     local namespaces = vim.api.nvim_get_namespaces()
-    local ns = namespaces['latex.linked_editing:' .. _G.client_id .. ':' .. vim.api.nvim_get_current_buf()]
+    local ns = namespaces['lsp-tools.linked_editing:' .. _G.client_id .. ':' .. vim.api.nvim_get_current_buf()]
       or namespaces['nvim.lsp.linked_editing_range:' .. _G.client_id]
     return ns and #vim.api.nvim_buf_get_extmarks(0, ns, 0, -1, {}) or 0
   ]=],
@@ -99,7 +99,9 @@ local function check()
     [=[
     local root, candidate = ...
     vim.opt.rtp:prepend(root)
+    vim.opt.rtp:prepend(require("utils.platform").dev_plugin_root() .. "/lsp-tools.nvim")
     if candidate then vim.opt.rtp:prepend(candidate) end
+    require('lsp-tools.linked_editing').setup()
     local integration = require('languages.latex.lsp')
     local executable = assert(integration.executable(), 'Install texquill or set NVIM_TEXQUILL')
     local directory = vim.fn.tempname()
@@ -162,7 +164,7 @@ local function check()
   until_value(
     [=[
     for _, item in ipairs(vim.api.nvim_get_autocmds({})) do
-      if item.group_name and item.group_name:match('^LatexLinkedEditing') then return false end
+      if item.group_name and item.group_name:match('^LspToolsLinkedEditing%d') then return false end
     end
     return true
   ]=],

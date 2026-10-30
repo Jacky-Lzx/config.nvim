@@ -50,6 +50,7 @@ return {
     },
     opts = {
       lightbulb = true,
+      linked_editing = true,
       outline = {
         width = 0.15,
         focus_on_open = false,
