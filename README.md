@@ -465,11 +465,15 @@ The plugin is installed from `Jacky-Lzx/notification-tools.nvim` over SSH.
 The lockfile pins the published revision for remote installs. Snacks notifier stays
 disabled so only notification-tools owns ordinary notifications; Fidget is no longer configured.
 
-Noice retains its command line and message routes. Its `notify` view uses the
-configuration-side `integrations.notification_tools_noice` adapter, while Noice's
-`vim.notify` override and LSP progress UI stay disabled. LSP show-message notices
-use Neovim's native handler and flow through `vim.notify`; Noice's LSP message
-hook is disabled (the installed version references an undefined `_on_message`).
+`input-tools.nvim` owns the command line, search/input prompts and native completion
+menus. It also prefers the local development checkout through lazy.nvim's shared
+`dev.path`. `messages.enabled = true` lets it hand non-interactive messages to
+notification-tools after its renderer is ready. Both plugins load at startup;
+notifications load first (priority 1100), then input-tools (priority 1000).
+Reconfiguring either plugin reacquires the handoff. Noice is disabled to avoid
+competing UI owners. Its old `<leader>N` / `<leader>sN` history keys now open
+notification history too. Native LSP show-message notices still use `vim.notify`.
+
 CodeCompanion hooks live
 in `integrations.codecompanion_notifications` and create/finish tasks through the
 public API; notification-tools itself has no CodeCompanion integration.

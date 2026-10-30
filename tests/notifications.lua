@@ -23,23 +23,20 @@ local tools = require("notification-tools")
 tools.clear_history()
 local id = vim.notify("Notification route", "info", { title = "Build", timeout = 0 })
 assert(tools.history()[1].id == id and tools.history()[1].title == "Build")
-local owner = vim.notify
-require("lazy").load({ plugins = { "noice.nvim" } })
--- -l does not fire VimEnter; test the real merged Noice config/backend here.
--- The TUI case covers Noice's actual scheduled setup and UI routing.
-require("noice.config").setup(require("lazy.core.plugin").values(plugins["noice.nvim"], "opts", false))
-assert(vim.notify == owner, "Noice must leave vim.notify owned by notification-tools")
-local noice = require("noice.config").options
-assert(not noice.notify.enabled and not noice.lsp.progress.enabled and not noice.lsp.message.enabled)
-assert(noice.views.notify.backend == "notification_tools")
--- Exercise the real Noice backend resolution rather than a mock adapter.
-local view = assert(require("noice.view").get_view("notify", {}))
-local message = require("noice.message")("msg_show", "wmsg", "Noice warning route")
-message.level = "warn"
-message.opts = { title = "texquill" }
-view:push(message, { format = false })
-view:show()
-assert(tools.history()[2].message == "Noice warning route")
+local input_plugin = assert(plugins["input-tools.nvim"])
+assert(input_plugin._.loaded, "Command-line UI must load at startup")
+assert(not plugins["noice.nvim"] and not package.loaded.noice, "Noice must not own overlapping UI")
+local input_root = require("utils.platform").dev_plugin_root() .. "/input-tools.nvim"
+local input_local = vim.uv.fs_stat(input_root .. "/lua/input-tools/init.lua") ~= nil
+local input_expected = input_local and input_root or (require("lazy.core.config").options.root .. "/input-tools.nvim")
+assert(vim.fs.normalize(input_plugin.dir) == vim.fs.normalize(input_expected))
+local input = require("input-tools")
+assert(input.status().notifications, "Input renderer must hand native messages to notifications")
+vim.api.nvim_echo({ { "Native warning route", "WarningMsg" } }, true, { kind = "wmsg" })
+assert(vim.wait(500, function()
+  return #tools.history() == 2
+end, 10))
+assert(tools.history()[2].message == "Native warning route")
 assert(tools.history()[2].level == vim.log.levels.WARN)
 
 local hooks = require("integrations.codecompanion_notifications")
@@ -75,7 +72,7 @@ assert(vim.wait(500, function()
   return vim.bo.filetype == "notification-tools-history"
 end, 10))
 feed("q")
-feed(" sn")
+feed(" sN")
 assert(vim.wait(500, function()
   return vim.bo.filetype == "notification-tools-history"
 end, 10))
@@ -90,5 +87,7 @@ assert(vim.wait(500, function()
   end
   return true
 end, 10))
-io.stdout:write("notifications: startup, ownership, Noice, CodeCompanion API adapter and mappings passed\n")
+io.stdout:write(
+  "notifications: startup, ownership, native messages, input-tools, CodeCompanion API adapter and mappings passed\n"
+)
 vim.cmd("qa!")

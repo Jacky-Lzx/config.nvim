@@ -53,9 +53,8 @@ vim.api.nvim_create_autocmd("User", {
     later(100, function()
       assert(vim.g.did_very_lazy and #vim.api.nvim_list_uis() > 0)
       assert(not require("lazy.core.config").plugins["fidget.nvim"])
-      local noice = require("noice.config").options
-      assert(not noice.notify.enabled and not noice.lsp.progress.enabled and not noice.lsp.message.enabled)
-      assert(noice.views.notify.backend == "notification_tools")
+      assert(not require("lazy.core.config").plugins["noice.nvim"] and not package.loaded.noice)
+      assert(require("input-tools").status().notifications, "Native message handoff is inactive")
       tools.dismiss()
       tools.clear_tasks()
       tools.clear_history()
@@ -69,15 +68,19 @@ vim.api.nvim_create_autocmd("User", {
         pattern = "CodeCompanionRequestStarted",
         data = { id = "tui", adapter = { formatted_name = "External API" } },
       })
-      -- Native LSP notices use vim.notify; Noice warning messages use its router.
+      -- Native LSP notices use vim.notify; native warning messages use the message handoff.
       local get_client = vim.lsp.get_client_by_id
       vim.lsp.get_client_by_id = function(id)
         return id == 987654 and { name = "notification-test" } or get_client(id)
       end
       assert(type(vim.lsp.handlers["window/showMessage"]) == "function")
-      vim.lsp.handlers["window/showMessage"](nil, { type = 2, message = "Native LSP warning" }, { client_id = 987654 })
+      vim.lsp.handlers["window/showMessage"](
+        nil,
+        { type = 2, message = "Native LSP warning" },
+        { client_id = 987654 }
+      )
       vim.lsp.get_client_by_id = get_client
-      vim.api.nvim_echo({ { "Noice warning route", "WarningMsg" } }, true, { kind = "wmsg" })
+      vim.api.nvim_echo({ { "Native warning route", "WarningMsg" } }, true, { kind = "wmsg" })
     end)
     later(500, function()
       assert(vim.tbl_count(floats()) == 4, "Expected three notifications and a task panel")
@@ -85,7 +88,7 @@ vim.api.nvim_create_autocmd("User", {
       local text = capture()
       assert(text:find("中文通知", 1, true) and text:find("Requesting assistance", 1, true))
       assert(text:find("Native LSP warning", 1, true), "The native LSP handler did not route the message")
-      assert(text:find("Noice warning route", 1, true), "Noice did not route the warning message")
+      assert(text:find("Native warning route", 1, true), "Native messages did not route the warning message")
       before = floats()
       local top, bottom = false, false
       for win in pairs(before) do
@@ -109,7 +112,10 @@ vim.api.nvim_create_autocmd("User", {
       assert(vim.api.nvim_buf_get_lines(original_buf, 0, 1, false)[1] == "typing")
       local after = floats()
       for win, buf in pairs(before) do
-        assert(after[win] == buf, "An existing float was recreated while typing: " .. vim.inspect(tools.history()))
+        assert(
+          after[win] == buf,
+          "An existing float was recreated while typing: " .. vim.inspect(tools.history())
+        )
       end
       vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "n", false)
       vim.api.nvim_exec_autocmds("User", {
@@ -127,9 +133,37 @@ vim.api.nvim_create_autocmd("User", {
       end
       assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
       tools.dismiss(notice)
+      vim.api.nvim_feedkeys(":let g:input_tools_config_value = '你好🙂'", "nt", false)
+    end)
+    later(1400, function()
+      assert(vim.fn.getcmdline():find("你好🙂", 1, true))
+      local visible = false
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        visible = visible or vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "input-tools-command"
+      end
+      assert(visible, "Configured command-line renderer is missing")
+      assert(capture():find("你好🙂", 1, true))
+      vim.api.nvim_feedkeys(vim.keycode("<CR>"), "nt", false)
+    end)
+    later(1600, function()
+      assert(vim.g.input_tools_config_value == "你好🙂")
+      vim.api.nvim_feedkeys(
+        ":lua vim.g.input_tools_answer = vim.fn.input('Config input: ')" .. vim.keycode("<CR>"),
+        "nt",
+        false
+      )
+    end)
+    later(1800, function()
+      assert(capture():find("Config input:", 1, true))
+      vim.api.nvim_feedkeys("answer" .. vim.keycode("<CR>"), "nt", false)
+    end)
+    later(2000, function()
+      assert(vim.g.input_tools_answer == "answer")
+      assert(require("input-tools").status().notifications)
+      assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
       finish(
         true,
-        "Terminal notification checks passed: configured UI (minimal profile), native LSP, Noice warning route, API adapter, colors, corners and continuous Insert input"
+        "Terminal checks passed: configured notifications/input UI, native LSP/messages, API adapter, colors, continuous Insert input, Unicode command line and input()"
       )
     end)
   end,
