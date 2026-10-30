@@ -67,8 +67,8 @@ Visual mode; `<A-a>` works in Insert mode. Enter applies the action, Escape canc
 Delta renders previews with project-relative hunk headers, with native diff fallback.
 
 `<leader>rn` in LSP-attached buffers prepares the rename, prefills the old name
-through the general input-tools API, called automatically by lsp-tools, at the
-configured top input position,
+through the general input-tools API, called automatically by lsp-tools, beside
+the source cursor with a centered upper-border title,
 and previews the complete workspace edit by file. The title reports affected-file
 and edit counts. Enter applies all changes; Escape cancels. Rename uses the same
 delta style as code actions. Changes to affected buffers, document versions, or
