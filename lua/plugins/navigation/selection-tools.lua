@@ -9,6 +9,7 @@ return {
     cmd = "SelectionTools",
     opts = {
       ui_select = true,
+      matcher = { backend = "auto", threshold = 50000 },
       layout = {
         width = 0.8,
         min_width = 60,
