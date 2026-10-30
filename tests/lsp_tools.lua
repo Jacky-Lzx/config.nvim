@@ -112,18 +112,8 @@ assert(opts.linked_editing == true, "Linked editing must be owned by LSP tools")
 assert(opts.lightbulb == true, "LSP tools indicator must be enabled")
 assert(opts.outline.width == 0.15 and not opts.outline.focus_on_open, "Outline layout changed")
 assert(opts.outline.icons.Key.icon == "󰌆" and opts.outline.icons.Event.icon == "󱐋", "Outline icons changed")
-assert(type(opts.rename.input) == "function", "Rename must use a dedicated input provider")
-local input_tools = require("input-tools")
-local original_input, global_input = input_tools.input, vim.ui.input
-local input_options, input_callback
-input_tools.input = function(options, callback)
-  input_options, input_callback = options, callback
-end
-local confirm = function() end
-opts.rename.input({ prompt = "Rename to: ", default = "foo" }, confirm)
-assert(input_options.default == "foo" and input_callback == confirm, "Rename must forward to input-tools")
-assert(vim.ui.input == global_input, "Rename input must not replace the global provider")
-input_tools.input = original_input
+assert(opts.rename.input == nil, "Rename must use lsp-tools' automatic general input API")
+assert(require("input-tools").is_enabled(), "General input renderer must be enabled")
 assert(opts.rename.backend == "delta", "Rename must use the configured delta backend")
 assert(vim.deep_equal(opts.rename.delta.args, opts.code_actions.delta.args), "Rename/code action diff styles differ")
 for _, feature in ipairs({ "diagnostics", "hover", "links", "inspect", "hierarchy", "results" }) do

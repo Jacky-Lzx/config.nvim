@@ -119,9 +119,6 @@ return {
         },
       },
       rename = {
-        input = function(opts, on_confirm)
-          require("input-tools").input(opts, on_confirm)
-        end,
         backend = "delta",
         delta = {
           args = { "--file-style=omit", "--hunk-header-style=file line-number syntax" },
