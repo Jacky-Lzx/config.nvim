@@ -6,6 +6,8 @@ return {
         -- Solve the display issue with lualine
         "nvim-lualine/lualine.nvim",
         optional = true,
+        -- Keep exclusions contributed by the base UI (including lsp-tools results).
+        opts_extend = { "options.disabled_filetypes.winbar" },
         opts = { options = { disabled_filetypes = { winbar = { "dap-view", "dap-view-term", "dap-repl" } } } },
       },
     },
