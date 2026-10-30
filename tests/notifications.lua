@@ -39,6 +39,22 @@ end, 10))
 assert(tools.history()[2].message == "Native warning route")
 assert(tools.history()[2].level == vim.log.levels.WARN)
 
+-- Exercise actual new/overwritten file messages, including native progress kinds.
+local before_write = #tools.history()
+local save_path = vim.env.NVIM_TEST_TMP .. "/notification-save-" .. vim.uv.os_getpid() .. ".txt"
+vim.api.nvim_buf_set_lines(0, 0, -1, false, { "notification save filter" })
+vim.cmd.write(save_path)
+vim.wait(40)
+assert(#tools.history() == before_write, "New-file success message must be filtered")
+vim.cmd.write({ bang = true })
+vim.wait(40)
+assert(#tools.history() == before_write, "Overwrite success message must be filtered")
+local success = '"main.tex" 370L, 23103B written'
+assert(tools.notify(success, "info", { source = "neovim" }) == nil)
+assert(tools.notify(success, "error", { source = "neovim" }), "Never filter an error by its text")
+assert(tools.notify('"main.tex" 370L, 23103B', "info", { source = "neovim" }), "Keep file-read messages")
+assert(tools.notify(success, "info", { source = "compiler" }), "Only filter native save status")
+
 local hooks = require("integrations.codecompanion_notifications")
 hooks.setup()
 hooks.setup()

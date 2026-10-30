@@ -456,7 +456,8 @@ nvim --clean --headless -i NONE -l tests/latex_build.lua
 `notification-tools.nvim` owns `vim.notify`: ordinary notifications appear at the
 top right and LSP/background task progress at the bottom right. `<leader>n` and
 `<leader>sn` open notification history; `<leader>un` dismisses ordinary notifications.
-`:NotificationToolsDemo` previews both areas.
+`:NotificationToolsDemo` previews both areas. Successful native file-write status
+messages are filtered from notifications/history; errors and other sources remain visible.
 
 The plugin is installed from `Jacky-Lzx/notification-tools.nvim` over SSH.
 `dev = true` prefers `NVIM_DEV_PLUGIN_ROOT/notification-tools.nvim`
