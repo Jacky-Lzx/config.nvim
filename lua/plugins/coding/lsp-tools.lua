@@ -5,8 +5,9 @@ return {
     dev = true,
     dependencies = { "folke/snacks.nvim" },
     event = "LspAttach",
-    cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose" },
+    cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },
     keys = {
+      { "<leader>g?", function() require("lsp-tools").inspect() end, desc = "[LSP] Inspect clients and requests" },
       { "<leader>gH", function() require("lsp-tools").hover() end, desc = "[LSP] Pin hover documentation" },
       {
         "<leader>go",
@@ -54,6 +55,7 @@ return {
       linked_editing = true,
       diagnostics = true,
       hover = true,
+      inspect = true,
       links = { fallback = function() require("utils.open").open_at_cursor() end },
       outline = {
         width = 0.15,
@@ -82,6 +84,7 @@ return {
     config = function(_, opts)
       local tools = require("lsp-tools")
       tools.setup(opts)
+      vim.api.nvim_create_user_command("LspToolsInfo", function() tools.inspect() end, { force = true })
       -- Preserve the previous outline commands during migration.
       vim.api.nvim_create_user_command("Outline", tools.toggle_outline, { force = true })
       vim.api.nvim_create_user_command("OutlineOpen", function()
