@@ -67,7 +67,7 @@ return {
         configure = false,
       },
       notifier = {
-        enabled = true,
+        enabled = not require("integrations.notification_tools").available(),
         style = "notification",
       },
       picker = {
@@ -224,10 +224,6 @@ return {
     keys = {
       -- { "<A-w>", function() require("snacks").bufdelete() end, desc = "[Snacks] Delete buffer", },
       { "<A-i>", function() require("snacks").terminal() end, desc = "[Snacks] Toggle terminal", mode = { "n", "t" }, },
-      -- Notification
-      { "<leader>sn", function() require("snacks").picker.notifications() end, desc = "[Snacks] Notification history", },
-      { "<leader>n", function() require("snacks").notifier.show_history() end, desc = "[Snacks] Notification history", },
-      { "<leader>un", function() require("snacks").notifier.hide() end, desc = "[Snacks] Dismiss all notifications", },
       -- Top Pickers & Explorer
       -- { "<leader><space>", function() require("snacks").picker.smart() end, desc = "[Snacks] Smart find files", },
       { "<leader>,", function() require("snacks").picker.buffers() end, desc = "[Snacks] Buffers", },

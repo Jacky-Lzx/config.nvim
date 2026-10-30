@@ -63,12 +63,14 @@ native_checks() (
 integration_checks() (
   cd -- "$root"
   printf '\nRunning integration checks with installed plugins\n'
-  run_tests obsidian_local comments folding rust lsp_tools image_preview lualine_lazy mini_diff_lazy
+  run_tests obsidian_local comments folding rust lsp_tools notifications image_preview lualine_lazy mini_diff_lazy
   NVIM_TEST_REFERENCE_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   LUALINE_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lualine_lazy.lua"
   MINI_DIFF_TEST=direct nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/mini_diff_lazy.lua"
   NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
     -l "$root/tests/image_preview.lua"
+  NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
+    -l "$root/tests/notifications.lua"
 
   for scenario in default minimal python writing; do
     NVIM_COLUMN_GUIDE_STARTUP=1 NVIM_TEST_SCENARIO="$scenario" nvim --headless -u NONE -i NONE --noplugin \
@@ -87,6 +89,8 @@ integration_checks() (
   NVIM_TEST_SCENARIO=writing nvim --headless -i NONE \
     --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
     -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_highlighting.lua')"
+
+  python3 "$root/tests/tui.py" notifications
 
   NVIM_TEST_SCENARIO=writing nvim --headless -i NONE \
     --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \

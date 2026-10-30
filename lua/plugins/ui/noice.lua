@@ -10,6 +10,9 @@ return {
       { "<leader>N", "<CMD>Noice<CR>", desc = "[Noice] Show history messages" },
     },
     opts = {
+      views = require("integrations.notification_tools").available() and require(
+        "integrations.notification_tools_noice"
+      ) or nil,
       routes = {
         {
           filter = {
@@ -27,7 +30,7 @@ return {
         },
       },
       lsp = {
-        -- Lsp progress is handled by fidget.nvim
+        -- LSP progress is handled by notification-tools.nvim
         progress = { enabled = false },
         -- override markdown rendering so that **cmp** and other plugins use **Treesitter**
         override = {
@@ -36,8 +39,8 @@ return {
           -- ["cmp.entry.get_documentation"] = true,
         },
         message = {
-          -- Messages shown by lsp servers
-          enabled = true,
+          -- Native window/showMessage routes through notification-tools via vim.notify.
+          enabled = false,
           view = "notify",
           opts = {},
         },

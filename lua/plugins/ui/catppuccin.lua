@@ -12,7 +12,6 @@ return {
       integrations = {
         barbar = true,
         blink_cmp = true,
-        fidget = true,
         flash = true,
         gitsigns = true,
         markdown = true,

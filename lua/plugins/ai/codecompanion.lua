@@ -6,7 +6,6 @@ return {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
       -- "echasnovski/mini.diff",
-      "j-hui/fidget.nvim",
     },
 
     -- stylua: ignore
@@ -106,7 +105,7 @@ return {
     },
 
     config = function(_, opts)
-      require("integrations.codecompanion_fidget"):init()
+      require("integrations.codecompanion_notifications").setup()
 
       local codecompanion = require("codecompanion")
       codecompanion.setup(opts)

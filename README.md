@@ -414,3 +414,29 @@ deduplication, and compiler diagnostic refresh/clearing:
 ```sh
 nvim --clean --headless -i NONE -l tests/latex_build.lua
 ```
+
+## Notifications and task progress
+
+`notification-tools.nvim` owns `vim.notify`: ordinary notifications appear at the
+top right and LSP/background task progress at the bottom right. `<leader>n` and
+`<leader>sn` open notification history; `<leader>un` dismisses ordinary notifications.
+`:NotificationToolsDemo` previews both areas.
+
+The unpublished plugin loads from `NVIM_DEV_PLUGIN_ROOT/notification-tools.nvim`
+(default `~/Documents/Github/nvim_plugins/notification-tools.nvim`). If the local
+checkout is absent, startup keeps Snacks notifier as an ordinary-notification
+fallback. Fidget is no longer configured.
+
+Noice retains its command line and message routes. Its `notify` view uses the
+configuration-side `integrations.notification_tools_noice` adapter, while Noice's
+`vim.notify` override and LSP progress UI stay disabled. LSP show-message notices
+use Neovim's native handler and flow through `vim.notify`; Noice's LSP message
+hook is disabled (the installed version references an undefined `_on_message`).
+CodeCompanion hooks live
+in `integrations.codecompanion_notifications` and create/finish tasks through the
+public API; notification-tools itself has no CodeCompanion integration.
+
+Third-party producers can call `require("notification-tools").progress()` and then
+use the returned handle's `update`, `finish`, and `cancel` methods. The caller owns
+its events and actual cancellation. This configuration disables stale-task expiry
+so long-running silent requests remain visible until their producer finishes them.
