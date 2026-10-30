@@ -9,6 +9,7 @@ return {
     optional = true,
     -- Apply after the fragments so existing completion policies are preserved.
     opts = function(_, opts)
+      opts.sources = require("input-tools.blink").sources_config(opts.sources)
       opts.completion = opts.completion or {}
       local menu = opts.completion.menu or {}
       opts.completion.menu = vim.tbl_deep_extend(

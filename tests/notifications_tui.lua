@@ -2,7 +2,7 @@
 local tools = require("notification-tools")
 local result = assert(vim.env.NVIM_LAZY_RESULT)
 local original_win, original_buf, notice, before
-local blink_selected
+local blink_selected, buffer_done, buffer_value
 local failed = false
 local function finish(ok, message)
   if failed then
@@ -190,7 +190,7 @@ vim.api.nvim_create_autocmd("User", {
       assert(menu.row == command.row + command.height + 2, "Blink menu did not follow the input row")
       assert(menu.col == command.col, "Blink and input outer borders must align")
       blink_selected = assert(cmp.get_selected_item()).label
-      vim.api.nvim_feedkeys(vim.keycode("<Tab>"), "nt", false)
+      vim.api.nvim_feedkeys(vim.keycode("<Tab>"), "mt", false)
     end)
     later(2500, function()
       assert(vim.fn.getcmdline():sub(1, #blink_selected) == blink_selected, "Configured Tab acceptance failed")
@@ -200,7 +200,37 @@ vim.api.nvim_create_autocmd("User", {
       assert(vim.g.ui_cmdline_pos == nil, "Command-line position was not released")
       assert(not require("blink.cmp").is_menu_visible())
       assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
-      finish(true, "Terminal checks passed: configured notifications/input UI, native LSP/messages, Unicode input, Blink anchoring and Tab acceptance")
+      _G.ConfigInputComplete = function() return { "alpha", "alpine" } end
+      require("input-tools").input({
+        vim_mode = true, title = "Complete", width = 32,
+        completion = "customlist,v:lua.ConfigInputComplete", default = "al",
+      }, function(value) buffer_done, buffer_value = true, value end)
+    end)
+    later(2900, function()
+      assert(vim.bo.filetype == "input-tools-input" and vim.b.completion)
+      assert(vim.deep_equal(require("blink.cmp.sources.lib").get_enabled_provider_ids("default"), {"input_tools"}))
+      vim.api.nvim_feedkeys("p", "nt", false)
+    end)
+    later(3100, function()
+      local cmp = require("blink.cmp")
+      assert(cmp.is_menu_visible(), "Configured Vim input completion did not open")
+      assert(#cmp.get_items() == 2, "Vim input must use only its declared completion")
+      if not cmp.get_selected_item() then cmp.select_next() end
+      assert(cmp.get_selected_item())
+      vim.api.nvim_feedkeys(vim.keycode("<CR>"), "mt", false)
+    end)
+    later(3300, function()
+      assert(not buffer_done, "Accepting completion confirmed the input early")
+      local text = vim.api.nvim_get_current_line()
+      assert(text == "alpha" or text == "alpine", "Completion was not inserted: " .. text)
+      vim.api.nvim_feedkeys(vim.keycode("<CR>"), "mt", false)
+    end)
+    later(3500, function()
+      assert(buffer_done and (buffer_value == "alpha" or buffer_value == "alpine"), "Second Enter must confirm input")
+      assert(vim.api.nvim_get_current_win() == original_win)
+      assert(not require("input-tools").get_window())
+      assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
+      finish(true, "Terminal checks passed: notifications, native input/messages, Blink anchoring, Vim-input completion and acceptance")
     end)
   end,
 })
