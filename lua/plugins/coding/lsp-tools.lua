@@ -7,6 +7,7 @@ return {
     event = "LspAttach",
     cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose" },
     keys = {
+      { "<leader>gH", function() require("lsp-tools").hover() end, desc = "[LSP] Pin hover documentation" },
       {
         "<leader>go",
         function()
@@ -52,6 +53,7 @@ return {
       lightbulb = true,
       linked_editing = true,
       diagnostics = true,
+      hover = true,
       outline = {
         width = 0.15,
         focus_on_open = false,
