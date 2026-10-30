@@ -2,6 +2,7 @@
 local tools = require("notification-tools")
 local result = assert(vim.env.NVIM_LAZY_RESULT)
 local original_win, original_buf, notice, before
+local blink_selected
 local failed = false
 local function finish(ok, message)
   if failed then
@@ -174,10 +175,32 @@ vim.api.nvim_create_autocmd("User", {
       assert(vim.g.input_tools_answer == "answer")
       assert(require("input-tools").status().notifications)
       assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
-      finish(
-        true,
-        "Terminal checks passed: configured notifications/input UI, native LSP/messages, API adapter, colors, continuous Insert input, Unicode command line and input()"
-      )
+      vim.api.nvim_feedkeys(":he", "nt", false)
+    end)
+    later(2300, function()
+      local cmp = require("blink.cmp")
+      assert(cmp.is_menu_visible(), "Real Blink command-line completion did not open")
+      local command, menu
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local ft = vim.bo[vim.api.nvim_win_get_buf(win)].filetype
+        if ft == "input-tools-command" then command = vim.api.nvim_win_get_config(win) end
+        if ft == "blink-cmp-menu" then menu = vim.api.nvim_win_get_config(win) end
+      end
+      assert(command and menu)
+      assert(menu.row == command.row + command.height + 1, "Blink menu did not follow the input row")
+      assert(math.abs(menu.col - command.col) < 10, "Blink menu is still anchored to the left edge")
+      blink_selected = assert(cmp.get_selected_item()).label
+      vim.api.nvim_feedkeys(vim.keycode("<Tab>"), "nt", false)
+    end)
+    later(2500, function()
+      assert(vim.fn.getcmdline():sub(1, #blink_selected) == blink_selected, "Configured Tab acceptance failed")
+      vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "nt", false)
+    end)
+    later(2700, function()
+      assert(vim.g.ui_cmdline_pos == nil, "Command-line position was not released")
+      assert(not require("blink.cmp").is_menu_visible())
+      assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
+      finish(true, "Terminal checks passed: configured notifications/input UI, native LSP/messages, Unicode input, Blink anchoring and Tab acceptance")
     end)
   end,
 })
