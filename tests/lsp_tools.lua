@@ -28,7 +28,8 @@ if vim.env.NVIM_TEST_LINK_FIRST == "1" then
     fallback_calls = fallback_calls + 1
   end
   vim.api.nvim_feedkeys(vim.keycode("go"), "xt", false)
-  assert(spec._.loaded and fallback_calls == 1, "First semantic link key must load plugin and fall back without an LSP")
+  assert(not spec._.loaded and fallback_calls == 1, "Path fallback without an LSP must not load the plugin")
+  assert(not package.loaded["lsp-tools"], "Path fallback must leave the entry module unloaded")
   opener.open_at_cursor = original_open
 end
 -- A deterministic document-highlight client tests the real lazy key replay.
@@ -147,6 +148,19 @@ feed("gci")
 feed("gco")
 assert(vim.deep_equal(directions, { "incoming", "outgoing" }), "Call tree bindings must preserve direction")
 tools.call_hierarchy = old_calls
+local old_get_clients, old_link, semantic_links = vim.lsp.get_clients, tools.open_link, 0
+vim.lsp.get_clients = function(query)
+  if query.method == "textDocument/documentLink" then
+    return { reference_client }
+  end
+  return old_get_clients(query)
+end
+tools.open_link = function()
+  semantic_links = semantic_links + 1
+end
+feed("go")
+assert(semantic_links == 1, "Semantic provider must still route go to lsp-tools")
+vim.lsp.get_clients, tools.open_link = old_get_clients, old_link
 local picker = require("snacks").picker
 local old_references, references_calls = picker.lsp_references, 0
 picker.lsp_references = function()

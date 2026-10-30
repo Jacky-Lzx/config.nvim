@@ -93,7 +93,8 @@ configuration-side linked-editing adapter are no longer needed.
 - `<leader>gH`: pin hover documentation; `r` refreshes, `f` follows the source cursor,
   `y` copies, and `gx` opens a documentation link. `K` keeps ordinary hover.
 - `go` in Normal mode: open the LSP document link, falling back to the existing
-  path opener. Visual `go` still opens the selected text.
+  path opener. Visual `go` still opens the selected text. A path-only open keeps
+  lsp-tools unloaded when no server offers document links.
 - `<leader>g?` / `:LspToolsInfo`: inspect clients, roots, providers and requests.
 - `gci` / `gco`: persistent incoming/outgoing call trees; `<leader>gT`: type tree.
   Tab/`l` expands, `h` collapses, `d` switches direction, `p` previews source,

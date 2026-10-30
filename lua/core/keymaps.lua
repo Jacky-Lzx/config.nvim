@@ -78,7 +78,14 @@ function M.setup()
   map("c", "<CR>", command_enter, { expr = true, desc = "Confirm command; save full buffer with Visual :write" })
 
   map("x", "go", require("utils.open").open_at_cursor, { desc = "Open selected path or URL", nowait = true })
-  map("n", "go", function() require("lsp-tools").open_link() end, { desc = "Open semantic link or path", nowait = true })
+  map("n", "go", function()
+    local lsp = package.loaded["vim.lsp"]
+    if lsp and #lsp.get_clients({ bufnr = 0, method = "textDocument/documentLink" }) > 0 then
+      require("lsp-tools").open_link()
+    else
+      require("utils.open").open_at_cursor()
+    end
+  end, { desc = "Open semantic link or path", nowait = true })
 
   -- Map double space to the function
   map("n", "<leader><leader>", pulse_cursor, { desc = "Pulse current line" })
