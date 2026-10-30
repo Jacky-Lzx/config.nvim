@@ -72,6 +72,7 @@ return {
       },
       picker = {
         enabled = true,
+        ui_select = false, -- Generic selection is owned by selection-tools.nvim.
         actions = {
           system_open = {
             desc = "Open with system app",
@@ -226,10 +227,7 @@ return {
       { "<A-i>", function() require("snacks").terminal() end, desc = "[Snacks] Toggle terminal", mode = { "n", "t" }, },
       -- Top Pickers & Explorer
       -- { "<leader><space>", function() require("snacks").picker.smart() end, desc = "[Snacks] Smart find files", },
-      { "<leader>,", function() require("snacks").picker.buffers() end, desc = "[Snacks] Buffers", },
       -- find
-      { "<leader>sb", function() require("snacks").picker.buffers() end, desc = "[Snacks] Buffers", },
-      { "<leader>sf", function() require("snacks").picker.files() end, desc = "[Snacks] Find files", },
       { "<leader>sP", function() require("snacks").picker.projects() end, desc = "[Snacks] Projects", },
       { "<leader>sR", function() require("snacks").picker.recent() end, desc = "[Snacks] Recent", },
       -- git
