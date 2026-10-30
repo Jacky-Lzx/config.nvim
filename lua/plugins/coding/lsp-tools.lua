@@ -54,6 +54,7 @@ return {
       linked_editing = true,
       diagnostics = true,
       hover = true,
+      links = { fallback = function() require("utils.open").open_at_cursor() end },
       outline = {
         width = 0.15,
         focus_on_open = false,

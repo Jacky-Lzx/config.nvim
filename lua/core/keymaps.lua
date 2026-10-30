@@ -77,7 +77,8 @@ function M.setup()
   -- Only a bare Visual :write loses its range; substitutions and exports retain it.
   map("c", "<CR>", command_enter, { expr = true, desc = "Confirm command; save full buffer with Visual :write" })
 
-  map({ "n", "x" }, "go", require("utils.open").open_at_cursor, { desc = "Open link under cursor", nowait = true })
+  map("x", "go", require("utils.open").open_at_cursor, { desc = "Open selected path or URL", nowait = true })
+  map("n", "go", function() require("lsp-tools").open_link() end, { desc = "Open semantic link or path", nowait = true })
 
   -- Map double space to the function
   map("n", "<leader><leader>", pulse_cursor, { desc = "Pulse current line" })
