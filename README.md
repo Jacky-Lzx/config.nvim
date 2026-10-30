@@ -112,8 +112,10 @@ configuration-side linked-editing adapter are no longer needed.
   filtered items when nothing is selected, into a persistent result snapshot.
 
 Trouble is replaced by lsp-tools. Result lists keep source focus when opened;
-Enter jumps; `za`/`zM`/`zR` fold groups. Result actions use `<LocalLeader>`
-(Space in this configuration): `o` jumps while keeping list focus, `p` previews,
+Enter jumps; groups use native Neovim folds: `za`, `zc`/`zo`, `zM`/`zR`,
+`zm`/`zr`, and `zj`/`zk` work directly. Fold states survive live diagnostics and
+reopening. Result actions use `<LocalLeader>` (Space in this configuration):
+`o` jumps while keeping list focus, `p` previews,
 `f` filters, `e` filters errors, `F` pins, `Q` exports to quickfix, and `?` shows
 only lsp-tools bindings. Escape or `<LocalLeader>q` closes the result window.
 Native `gg/G`, word/character motions, `/` and `?` search, yank and macro commands
