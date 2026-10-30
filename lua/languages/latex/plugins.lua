@@ -32,7 +32,8 @@ return {
       lsp = "texquill",
       viewer = {
         method = "pagewing",
-        executable = "/Users/zexili/Documents/Github/pdf-viewer/target/release/pagewing",
+        -- Use the macOS app bundle so menu bars can resolve its app identity and icon.
+        executable = "/Applications/Pagewing.app/Contents/MacOS/pagewing",
         focus = false,
       },
       -- mappings = false, -- languages.latex.buffer owns the existing key layout.
