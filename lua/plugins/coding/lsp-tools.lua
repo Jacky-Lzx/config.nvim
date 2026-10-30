@@ -7,6 +7,7 @@ return {
     event = "LspAttach",
     cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },
     keys = {
+      { "<leader>gT", function() require("lsp-tools").type_hierarchy() end, desc = "[LSP] Type hierarchy" },
       { "<leader>g?", function() require("lsp-tools").inspect() end, desc = "[LSP] Inspect clients and requests" },
       { "<leader>gH", function() require("lsp-tools").hover() end, desc = "[LSP] Pin hover documentation" },
       {
@@ -56,6 +57,7 @@ return {
       diagnostics = true,
       hover = true,
       inspect = true,
+      hierarchy = true,
       links = { fallback = function() require("utils.open").open_at_cursor() end },
       outline = {
         width = 0.15,
