@@ -32,6 +32,17 @@ local function floats()
   end
   return windows
 end
+local function assert_input_position()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "input-tools-command" then
+      local geometry = vim.api.nvim_win_get_config(win)
+      assert(geometry.row == 3, "Input must use the old Noice command_palette top offset")
+      assert(geometry.col == math.floor((vim.o.columns - geometry.width - 2) / 2), "Input must stay horizontally centered")
+      return
+    end
+  end
+  error("Configured input window is missing")
+end
 local function capture()
   vim.cmd.redraw()
   local rows = {}
@@ -142,6 +153,7 @@ vim.api.nvim_create_autocmd("User", {
         visible = visible or vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "input-tools-command"
       end
       assert(visible, "Configured command-line renderer is missing")
+      assert_input_position()
       assert(capture():find("你好🙂", 1, true))
       vim.api.nvim_feedkeys(vim.keycode("<CR>"), "nt", false)
     end)
@@ -155,6 +167,7 @@ vim.api.nvim_create_autocmd("User", {
     end)
     later(1800, function()
       assert(capture():find("Config input:", 1, true))
+      assert_input_position()
       vim.api.nvim_feedkeys("answer" .. vim.keycode("<CR>"), "nt", false)
     end)
     later(2000, function()

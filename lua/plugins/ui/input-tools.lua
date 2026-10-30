@@ -5,6 +5,8 @@ return {
     main = "input-tools",
     lazy = false,
     priority = 1000,
-    opts = {},
+    opts = {
+      window = { row = 3 }, -- Match the previous Noice command_palette position.
+    },
   },
 }
