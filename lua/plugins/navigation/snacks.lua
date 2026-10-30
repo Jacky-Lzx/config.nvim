@@ -67,7 +67,7 @@ return {
         configure = false,
       },
       notifier = {
-        enabled = not require("integrations.notification_tools").available(),
+        enabled = false, -- notification-tools owns vim.notify.
         style = "notification",
       },
       picker = {

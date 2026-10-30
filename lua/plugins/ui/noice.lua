@@ -10,9 +10,7 @@ return {
       { "<leader>N", "<CMD>Noice<CR>", desc = "[Noice] Show history messages" },
     },
     opts = {
-      views = require("integrations.notification_tools").available() and require(
-        "integrations.notification_tools_noice"
-      ) or nil,
+      views = require("integrations.notification_tools_noice"),
       routes = {
         {
           filter = {

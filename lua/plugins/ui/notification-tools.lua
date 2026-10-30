@@ -1,12 +1,9 @@
-local notifications = require("integrations.notification_tools")
-
 return {
   {
-    -- Local-only until notification-tools has a published remote repository.
-    dir = notifications.directory(),
-    name = "notification-tools.nvim",
+    "Jacky-Lzx/notification-tools.nvim",
+    url = "git@github.com:Jacky-Lzx/notification-tools.nvim.git",
+    dev = true,
     main = "notification-tools",
-    cond = notifications.available,
     lazy = false,
     priority = 1100,
     opts = {

@@ -5,18 +5,18 @@ vim.g.loaded_wakatime = true
 vim.o.loadplugins = true
 dofile(root .. "/init.lua")
 local plugins = require("lazy.core.config").plugins
-local available = require("integrations.notification_tools").available()
 local snacks = require("lazy.core.plugin").values(plugins["snacks.nvim"], "opts", false)
 assert(not plugins["fidget.nvim"] and not package.loaded.fidget, "Fidget must be removed")
-if not available then
-  assert(snacks.notifier.enabled, "Missing unpublished plugin must keep ordinary notifications available")
-  assert(not package.loaded["notification-tools"])
-  require("integrations.codecompanion_notifications").setup()
-  assert(#vim.api.nvim_get_autocmds({ group = "CodeCompanionNotificationHooks" }) == 0)
-  io.stdout:write("notifications: unpublished checkout gracefully absent, Snacks fallback retained\n")
-  vim.cmd("qa!")
-  return
-end
+local plugin = assert(plugins["notification-tools.nvim"])
+assert(plugin.url == "git@github.com:Jacky-Lzx/notification-tools.nvim.git", "Use the published SSH repository")
+local dev_root = require("utils.platform").dev_plugin_root() .. "/notification-tools.nvim"
+local local_checkout = vim.uv.fs_stat(dev_root .. "/lua/notification-tools/init.lua") ~= nil
+local expected_dir = local_checkout and dev_root
+  or (require("lazy.core.config").options.root .. "/notification-tools.nvim")
+assert(
+  vim.fs.normalize(plugin.dir) == vim.fs.normalize(expected_dir),
+  "Prefer local development, fall back to installed repository"
+)
 assert(plugins["notification-tools.nvim"]._.loaded, "Notifications must load at startup")
 assert(not snacks.notifier.enabled and not package.loaded["snacks.notifier"])
 local tools = require("notification-tools")

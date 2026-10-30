@@ -422,10 +422,12 @@ top right and LSP/background task progress at the bottom right. `<leader>n` and
 `<leader>sn` open notification history; `<leader>un` dismisses ordinary notifications.
 `:NotificationToolsDemo` previews both areas.
 
-The unpublished plugin loads from `NVIM_DEV_PLUGIN_ROOT/notification-tools.nvim`
-(default `~/Documents/Github/nvim_plugins/notification-tools.nvim`). If the local
-checkout is absent, startup keeps Snacks notifier as an ordinary-notification
-fallback. Fidget is no longer configured.
+The plugin is installed from `Jacky-Lzx/notification-tools.nvim` over SSH.
+`dev = true` prefers `NVIM_DEV_PLUGIN_ROOT/notification-tools.nvim`
+(default `~/Documents/Github/nvim_plugins/notification-tools.nvim`); lazy.nvim's
+`dev.fallback = true` installs the published repository when that checkout is absent.
+The lockfile pins the published revision for remote installs. Snacks notifier stays
+disabled so only notification-tools owns ordinary notifications; Fidget is no longer configured.
 
 Noice retains its command line and message routes. Its `notify` view uses the
 configuration-side `integrations.notification_tools_noice` adapter, while Noice's
