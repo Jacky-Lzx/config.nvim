@@ -228,8 +228,6 @@ return {
       -- Top Pickers & Explorer
       -- { "<leader><space>", function() require("snacks").picker.smart() end, desc = "[Snacks] Smart find files", },
       -- find
-      { "<leader>sP", function() require("snacks").picker.projects() end, desc = "[Snacks] Projects", },
-      { "<leader>sR", function() require("snacks").picker.recent() end, desc = "[Snacks] Recent", },
       -- git
       { "<C-g>", function() require("snacks").lazygit() end, desc = "[Snacks] Lazygit", },
       { "<leader>ggl", function() require("snacks").picker.git_log() end, desc = "[Snacks] Git log", },
@@ -239,29 +237,11 @@ return {
       -- Grep
       -- { "<leader>sb", function() require("snacks").picker.lines() end, desc = "[Snacks] Buffer lines" },
       -- { "<leader>sB", function() require("snacks").picker.grep_buffers() end, desc = "[Snacks] Grep open buffers" },
-      { "<leader>sg", function() require("snacks").picker.grep() end, desc = "[Snacks] Grep", },
       -- { "<leader>sw", function() require("snacks").picker.grep_word() end, desc = "[Snacks] Visual selection or word", mode = { "n", "x" } },
       -- search
-      { '<leader>s"', function() require("snacks").picker.registers() end, desc = "[Snacks] Registers", },
-      { "<leader>s/", function() require("snacks").picker.search_history() end, desc = "[Snacks] Search history", },
-      { "<leader>sa", function() require("snacks").picker.spelling() end, desc = "[Snacks] Spelling", },
-      { "<leader>sA", function() require("snacks").picker.autocmds() end, desc = "[Snacks] Autocmds", },
-      { "<leader>s:", function() require("snacks").picker.command_history() end, desc = "[Snacks] Command history", },
-      { "<leader>sc", function() require("snacks").picker.commands() end, desc = "[Snacks] Commands", },
       { "<leader>sd", function() require("snacks").picker.diagnostics() end, desc = "[Snacks] Diagnostics", },
       { "<leader>sD", function() require("snacks").picker.diagnostics_buffer() end, desc = "[Snacks] Diagnostics buffer", },
-      { "<leader>sH", function() require("snacks").picker.help() end, desc = "[Snacks] Help pages", },
-      { "<leader>sh", function() require("snacks").picker.highlights() end, desc = "[Snacks] Highlights", },
-      { "<leader>sI", function() require("snacks").picker.icons() end, desc = "[Snacks] Icons", },
-      { "<leader>sj", function() require("snacks").picker.jumps() end, desc = "[Snacks] Jumps", },
-      { "<leader>sk", function() require("snacks").picker.keymaps() end, desc = "[Snacks] Keymaps", },
-      { "<leader>sl", function() require("snacks").picker.loclist() end, desc = "[Snacks] Location list", },
-      { "<leader>sm", function() require("snacks").picker.marks() end, desc = "[Snacks] Marks", },
-      { "<leader>sM", function() require("snacks").picker.man() end, desc = "[Snacks] Man pages", },
       { "<leader>sp", function() require("snacks").picker.lazy() end, desc = "[Snacks] Search for plugin spec", },
-      { "<leader>sq", function() require("snacks").picker.qflist() end, desc = "[Snacks] Quickfix list", },
-      { "<leader>sr", function() require("snacks").picker.resume() end, desc = "[Snacks] Resume", },
-      { "<leader>su", function() require("snacks").picker.undo() end, desc = "[Snacks] Undo history", },
       -- LSP
       { "gd", function() require("snacks").picker.lsp_definitions() end, desc = "[Snacks] Goto definition", },
       { "gD", function() require("snacks").picker.lsp_declarations() end, desc = "[Snacks] Goto declaration", },

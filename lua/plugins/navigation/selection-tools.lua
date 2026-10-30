@@ -70,6 +70,162 @@ return {
         end,
         desc = "[Selection] Find files",
       },
+      {
+        "<leader>sg",
+        function()
+          require("selection_tools").grep({ regex = true })
+        end,
+        desc = "[Selection] Grep",
+      },
+      {
+        "<leader>sP",
+        function()
+          require("selection_tools").projects()
+        end,
+        desc = "[Selection] Projects",
+      },
+      {
+        "<leader>sR",
+        function()
+          require("selection_tools").recent()
+        end,
+        desc = "[Selection] Recent",
+      },
+      {
+        "<leader>sr",
+        function()
+          require("selection_tools").resume()
+        end,
+        desc = "[Selection] Resume",
+      },
+      {
+        "<leader>st",
+        function()
+          require("selection_tools").todo_comments({
+            keywords = { "TODO", "FIX", "FIXME", "BUG", "FIXIT", "HACK", "WARN", "ISSUE" },
+          })
+        end,
+        desc = "[Selection] Todos (without NOTE)",
+      },
+      {
+        "<leader>sT",
+        function()
+          require("selection_tools").todo_comments()
+        end,
+        desc = "[Selection] Todos (with NOTE)",
+      },
+      {
+        '<leader>s"',
+        function()
+          require("selection_tools").registers()
+        end,
+        desc = "[Selection] Registers",
+      },
+      {
+        "<leader>sj",
+        function()
+          require("selection_tools").jumps()
+        end,
+        desc = "[Selection] Jumps",
+      },
+      {
+        "<leader>sm",
+        function()
+          require("selection_tools").marks()
+        end,
+        desc = "[Selection] Marks",
+      },
+      {
+        "<leader>su",
+        function()
+          require("selection_tools").undo()
+        end,
+        desc = "[Selection] Undo history",
+      },
+      {
+        "<leader>s/",
+        function()
+          require("selection_tools").search_history()
+        end,
+        desc = "[Selection] Search history",
+      },
+      {
+        "<leader>s:",
+        function()
+          require("selection_tools").command_history()
+        end,
+        desc = "[Selection] Command history",
+      },
+      {
+        "<leader>sq",
+        function()
+          require("selection_tools").qflist()
+        end,
+        desc = "[Selection] Quickfix list",
+      },
+      {
+        "<leader>sl",
+        function()
+          require("selection_tools").loclist()
+        end,
+        desc = "[Selection] Location list",
+      },
+      {
+        "<leader>sc",
+        function()
+          require("selection_tools").commands()
+        end,
+        desc = "[Selection] Commands",
+      },
+      {
+        "<leader>sA",
+        function()
+          require("selection_tools").autocmds()
+        end,
+        desc = "[Selection] Autocmds",
+      },
+      {
+        "<leader>sk",
+        function()
+          require("selection_tools").keymaps()
+        end,
+        desc = "[Selection] Keymaps",
+      },
+      {
+        "<leader>sH",
+        function()
+          require("selection_tools").help()
+        end,
+        desc = "[Selection] Help pages",
+      },
+      {
+        "<leader>sM",
+        function()
+          require("selection_tools").man()
+        end,
+        desc = "[Selection] Man pages",
+      },
+      {
+        "<leader>sa",
+        function()
+          require("selection_tools").spelling({ layout = { min_width = 80 } })
+        end,
+        desc = "[Selection] Spelling",
+      },
+      {
+        "<leader>sh",
+        function()
+          require("selection_tools").highlights()
+        end,
+        desc = "[Selection] Highlights",
+      },
+      {
+        "<leader>sI",
+        function()
+          require("selection_tools").icons()
+        end,
+        desc = "[Selection] Icons",
+      },
     },
   },
 }
