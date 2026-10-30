@@ -66,7 +66,8 @@ picker and previews, replacing code-actions.nvim. `<leader>a` works in Normal an
 Visual mode; `<A-a>` works in Insert mode. Enter applies the action, Escape cancels.
 Delta renders previews with project-relative hunk headers, with native diff fallback.
 
-`<leader>rn` in LSP-attached buffers prepares the rename, prefills the old name,
+`<leader>rn` in LSP-attached buffers prepares the rename, prefills the old name
+through input-tools at the configured top input position,
 and previews the complete workspace edit by file. The title reports affected-file
 and edit counts. Enter applies all changes; Escape cancels. Rename uses the same
 delta style as code actions. Changes to affected buffers, document versions, or
