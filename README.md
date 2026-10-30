@@ -73,6 +73,9 @@ and previews the complete workspace edit by file. The title reports affected-fil
 and edit counts. Enter applies all changes; Escape cancels. Rename uses the same
 delta style as code actions. Changes to affected buffers, document versions, or
 disk files invalidate the preview and block application; text edits are left unsaved.
+The name input starts in Insert mode; Escape enters Normal for Vim motions and
+undo/redo. Enter confirms the name before review; Ctrl-C or Normal-mode Escape
+cancels the input.
 
 `]r` / `[r` move between the current symbol's references in the current file.
 Normal-mode counts work (for example, `3]r`); jumps stop at the ends and add a
