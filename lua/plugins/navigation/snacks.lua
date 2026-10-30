@@ -339,7 +339,16 @@ return {
             :map("<leader>tc")
           Snacks.toggle.treesitter():map("<leader>tT")
           Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map("<leader>tb")
-          Snacks.toggle.inlay_hints():map("<leader>th")
+          Snacks.toggle
+            .inlay_hints({
+              get = function()
+                return vim.lsp.inlay_hint.is_enabled()
+              end,
+              set = function(state)
+                vim.lsp.inlay_hint.enable(state)
+              end,
+            })
+            :map("<leader>th")
           Snacks.toggle.indent():map("<leader>tG")
           Snacks.toggle.dim():map("<leader>tD")
           -- Toggle the profiler

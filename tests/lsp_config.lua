@@ -55,6 +55,32 @@ assert(not package.loaded.snacks)
 assert(#vim.api.nvim_get_autocmds({ group = "ConfigLsp", event = "LspAttach" }) == 1)
 assert(not package.loaded.conform, "LSP setup must not load formatters")
 
+assert(vim.lsp.inlay_hint.is_enabled(), "Inlay hints must default to enabled for the session")
+local hints_before_toggle = vim.api.nvim_create_buf(true, false)
+assert(vim.lsp.inlay_hint.is_enabled({ bufnr = hints_before_toggle }))
+vim.lsp.inlay_hint.enable(false)
+mappings.setup()
+assert(not vim.lsp.inlay_hint.is_enabled(), "Repeated setup must preserve the manual toggle")
+local hints_after_toggle = vim.api.nvim_create_buf(true, false)
+local get_client = vim.lsp.get_client_by_id
+vim.lsp.get_client_by_id = function()
+  return {
+    supports_method = function(_, method, buffer)
+      assert(method == "textDocument/inlayHint" and buffer == hints_after_toggle)
+      return true
+    end,
+  }
+end
+vim.api.nvim_exec_autocmds("LspAttach", { group = "ConfigLsp", buffer = hints_after_toggle, data = { client_id = 1 } })
+vim.lsp.get_client_by_id = get_client
+for _, buffer in ipairs({ hints_before_toggle, hints_after_toggle }) do
+  assert(not vim.lsp.inlay_hint.is_enabled({ bufnr = buffer }), "LSP attach must preserve disabled hints")
+end
+vim.lsp.inlay_hint.enable(true)
+for _, buffer in ipairs({ hints_before_toggle, hints_after_toggle, vim.api.nvim_create_buf(true, false) }) do
+  assert(vim.lsp.inlay_hint.is_enabled({ bufnr = buffer }), "Re-enabling hints must cover old and new buffers")
+end
+
 local attached = vim.api.nvim_create_buf(true, false)
 local unrelated = vim.api.nvim_get_current_buf()
 local formatted
