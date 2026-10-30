@@ -101,22 +101,26 @@ configuration-side linked-editing adapter are no longer needed.
   Enter jumps to the symbol and `g` jumps to a call site.
 - `<leader>go`: outline. Both `gi` and `<leader>gr` use the same Snacks references picker.
 - `<leader>gd`: live diagnostic overview of all received diagnostics, grouped by
-  directory/file. `S` cycles all/project/original-buffer scopes; `d` opens details,
-  `a` previews a fix, and `A` fixes then continues after confirmed diagnostics.
+  directory/file. `<LocalLeader>S` cycles all/project/original-buffer scopes;
+  `<LocalLeader>d` opens details, `<LocalLeader>a` previews a fix, and
+  `<LocalLeader>A` fixes then continues after confirmed diagnostics.
 - `<leader>gl`: persistent definitions/references/implementations/type definitions/
-  declarations on the right. `r` queries the source window's current symbol.
+  declarations on the right. `<LocalLeader>r` queries the source window's current symbol.
 - `<leader>gq` / `<leader>gL`: quickfix / original window's location list. Native
   ordering, current index, visual columns and list history remain canonical.
 - `<C-t>` in Snacks picker input (Normal/Insert): import selected items, or all
   filtered items when nothing is selected, into a persistent result snapshot.
 
 Trouble is replaced by lsp-tools. Result lists keep source focus when opened;
-Enter jumps, `o` jumps while keeping list focus, `p` previews, `f` filters, `e`
-filters errors, `za`/`zM`/`zR` fold groups, `F` pins, `Q` exports to quickfix.
-Lists survive source-buffer closure. Each source loads on its first entry; picker
-configuration and LSP attachment do not eagerly load the result engine.
+Enter jumps; `za`/`zM`/`zR` fold groups. Result actions use `<LocalLeader>`
+(Space in this configuration): `o` jumps while keeping list focus, `p` previews,
+`f` filters, `e` filters errors, `F` pins, `Q` exports to quickfix, and `?` shows
+only lsp-tools bindings. Escape or `<LocalLeader>q` closes the result window.
+Native `gg/G`, word/character motions, `/` and `?` search, yank and macro commands
+remain available. Lists survive source-buffer closure. Each source loads on its
+first entry; picker configuration and LSP attachment keep the result engine deferred.
 
-These persistent panels use `q` / Escape to close. Server-dependent features are
+Other persistent panels use `q` / Escape to close. Server-dependent features are
 available only when a client advertises the corresponding methods.
 
 ## Compile commands
