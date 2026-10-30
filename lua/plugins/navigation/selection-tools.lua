@@ -21,6 +21,13 @@ return {
         preview_height = 0.6,
       },
       history = { persist = true },
+      preview = {
+        providers = {
+          function(ctx)
+            return require("selection_tools.integrations.image_tools").preview(ctx)
+          end,
+        },
+      },
       select = {
         layout = {
           width = 0.5,
