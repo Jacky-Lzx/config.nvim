@@ -12,6 +12,7 @@ return {
       options = {
         theme = "catppuccin-nvim",
         always_divide_middle = false,
+        disabled_filetypes = { winbar = { "lsp-tools-results" } },
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
       },
