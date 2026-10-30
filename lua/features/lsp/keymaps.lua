@@ -5,7 +5,9 @@ function M.attach(buffer)
     vim.keymap.set("n", key, action, { buffer = buffer, desc = "[LSP] " .. description })
   end
 
-  map("<leader>d", vim.diagnostic.open_float, "Show diagnostic")
+  map("<leader>d", function()
+    require("lsp-tools").diagnostic()
+  end, "Diagnostic details and fixes")
   map("<leader>gk", vim.lsp.buf.signature_help, "Signature help")
   map("gK", vim.lsp.buf.signature_help, "Signature help")
   map("<leader>rn", function()
