@@ -3,7 +3,7 @@ return {
     "Jacky-Lzx/lsp-tools.nvim",
     url = "git@github.com:Jacky-Lzx/lsp-tools.nvim.git",
     dev = true,
-    dependencies = { "folke/snacks.nvim" },
+    dependencies = { "Jacky-Lzx/selection-tools.nvim" },
     event = "LspAttach",
     cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },
     keys = {
