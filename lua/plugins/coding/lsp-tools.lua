@@ -3,7 +3,14 @@ return {
     "Jacky-Lzx/lsp-tools.nvim",
     url = "git@github.com:Jacky-Lzx/lsp-tools.nvim.git",
     dev = true,
-    dependencies = { "Jacky-Lzx/selection-tools.nvim" },
+    dependencies = {
+      "Jacky-Lzx/selection-tools.nvim",
+      {
+        dir = require("utils.platform").dev_plugin_root() .. "/git-tools.nvim",
+        name = "git-tools.nvim",
+        main = "git_tools",
+      },
+    },
     event = "LspAttach",
     cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },
     keys = {
