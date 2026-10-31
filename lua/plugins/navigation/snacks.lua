@@ -61,7 +61,7 @@ return {
         -- When enabled, scopes will be rendered as chunks, except for the top-level scope which will be rendered as a scope.
         chunk = { enabled = true },
       },
-      input = { enabled = true },
+      input = { enabled = false }, -- Native vim.ui.input is displayed by input-tools.
       lazygit = {
         enabled = platform.executable("lazygit") ~= nil,
         configure = false,

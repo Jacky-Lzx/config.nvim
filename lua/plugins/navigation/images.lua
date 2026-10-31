@@ -186,14 +186,4 @@ return {
       })
     end,
   },
-  {
-    "folke/snacks.nvim",
-    opts = {
-      picker = {
-        preview = function(ctx)
-          require("integrations.snacks_images").preview(ctx)
-        end,
-      },
-    },
-  },
 }

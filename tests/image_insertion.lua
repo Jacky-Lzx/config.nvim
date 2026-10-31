@@ -141,19 +141,16 @@ assert(paths[1] == source, "Explicit :ImageInsert path must reference the source
 assert(text() == "![](../outside%20%28100%25%29.png)", text())
 vim.cmd("bwipeout!")
 
-local snacks = require("snacks")
-local picker_files = snacks.picker.files
+local selection = require("selection_tools")
+local picker_files = selection.files
 local picker_config, picker
-snacks.picker.files = function(config)
+selection.files = function(config)
   picker_config = config
-  picker = {
-    selected = function()
-      return { { file = source }, { file = command_source } }
-    end,
-    close = function(self)
-      config.on_close(self)
-    end,
-  }
+  config.finder = function(ctx)
+    ctx.set_items({ { file = source }, { file = command_source } })
+    ctx.done()
+  end
+  picker = picker_files(config)
   return picker
 end
 image.pick = function(opts)
@@ -161,13 +158,19 @@ image.pick = function(opts)
 end
 document("markdown", "md", "before")
 key("pc")
+assert(vim.wait(3000, function()
+  return picker and not picker.loading and #picker.matches == 2
+end))
+picker:toggle()
+picker:move(1)
+picker:toggle()
 picker_config.actions.confirm(picker)
 wait()
 assert(vim.deep_equal(paths, { source, command_source }), "Picker must reference selected sources in order")
 assert(text() == "before\n![](../outside%20%28100%25%29.png)\n![](../source.png)", text())
 cursor(2, 2)
 assert(not vim.uv.fs_stat(directory .. "/Figures/source.png"), "Picker must not copy sources")
-image.pick, snacks.picker.files = original_pick, picker_files
+image.pick = original_pick
 
 -- Cancelling the process menu must leave the document and clipboard untouched.
 document("markdown", "md", "unchanged")
@@ -180,11 +183,13 @@ assert(done and failure == "Cancelled" and reads == before_reads and text() == "
 
 -- Explicit import remains available and retains the source basename.
 document("markdown", "md")
-vim.ui.input = function(_, callback)
-  callback(source)
-end
 key("pf")
+assert(vim.wait(3000, function()
+  return picker and not picker.closed and not picker.loading and picker.opts.prompt == "Import images"
+end))
+picker:confirm()
 wait()
+selection.files = picker_files
 assert(paths[1] == directory .. "/Figures/outside (100%).png", "Import must copy and retain the filename")
 
 image.insert, image.paste, image.pick = original_insert, original_paste, original_pick

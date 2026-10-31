@@ -37,7 +37,9 @@ if available then
   mapping.callback()
   assert(calls == 1, "Preview key must call the independent plugin")
   assert(not plugins["image-insert.nvim"], "Old image insertion plugin must be removed")
-  assert(type(snacks.picker.preview) == "function", "Independent picker preview bridge missing")
+  assert(snacks.picker.preview == nil, "Image-tools must not install a Snacks preview adapter")
+  assert(snacks.input.enabled == false, "Native input-tools prompts must not be replaced by Snacks")
+  assert(image.snacks_preview == nil, "Removed Snacks API must not remain exposed")
   assert(
     vim.fn.exists(":ImageOpen") == 2 and vim.fn.exists(":ImagePage") == 2,
     "Image/PDF file buffer commands missing"
