@@ -8,6 +8,7 @@ return {
     opts = {
       indent = { only_scope = true, chunk = true },
       statuscolumn = {
+        slot_width = 2,
         layout = { { "diagnostic", "sign", "mark" }, "number", { "fold", "git" } },
         git_patterns = { "GitTools" },
       },

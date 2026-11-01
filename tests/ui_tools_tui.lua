@@ -41,7 +41,7 @@ local function check()
   vim.cmd("redraw!")
   local win = vim.api.nvim_get_current_win()
   local info = vim.fn.getwininfo(win)[1]
-  assert(info.textoff == 6, "Compact status column retained empty slots: " .. info.textoff)
+  assert(info.textoff == 8, "Expected two-cell sign and fold slots: " .. info.textoff)
   local rows = assert(column.cache[win], "Source window with inherited column was not adopted")
   local diagnostic = assert(rows[3] and rows[3].diagnostic, "Native diagnostic sign missing")
   assert(diagnostic.sign_hl_group == "DiagnosticSignError", "Error must take precedence")
