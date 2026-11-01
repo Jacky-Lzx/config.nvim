@@ -72,10 +72,14 @@ local function check()
   column.refresh()
   vim.cmd("redraw!")
   local fold_info = vim.fn.getwininfo(win)[1]
-  assert(fold_info.textoff == 10, "Fold area did not expand for four nested levels")
+  assert(fold_info.textoff == 8, "Configured two-column fold area grew with nesting")
   for level = 1, 4 do
     local row = fold_info.winrow + fold_info.winbar + level * 2 - 1
-    assert(vim.fn.screenstring(row, fold_info.wincol + 5 + level) == "▾", "Missing fold level " .. level)
+    local col = math.min(level, 2)
+    assert(vim.fn.screenstring(row, fold_info.wincol + 5 + col) == "▾", "Missing fold level " .. level)
+    if level > 1 then
+      assert(vim.fn.screenstring(row, fold_info.wincol + 6) == "│", "Inner fold displaced the first layer")
+    end
   end
   vim.cmd("normal! zE")
   vim.wo.foldmethod, vim.wo.foldlevel = folding.method, folding.level
