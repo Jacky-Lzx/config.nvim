@@ -1,6 +1,8 @@
 return {
   {
-    dir = require("utils.platform").dev_plugin_root() .. "/ui-tools.nvim",
+    "Jacky-Lzx/ui-tools.nvim",
+    url = "git@github.com:Jacky-Lzx/ui-tools.nvim.git",
+    dev = true,
     name = "ui-tools.nvim",
     main = "ui_tools",
     lazy = false,
