@@ -48,8 +48,9 @@ local function on_attach(buf)
 end
 return {
   {
-    dir = require("utils.platform").dev_plugin_root() .. "/git-tools.nvim",
-    name = "git-tools.nvim",
+    "Jacky-Lzx/git-tools.nvim",
+    url = "git@github.com:Jacky-Lzx/git-tools.nvim.git",
+    dev = true,
     main = "git_tools",
     event = { "BufReadPost", "BufNewFile" },
     cmd = "GitTools",

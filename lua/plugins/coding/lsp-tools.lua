@@ -5,11 +5,7 @@ return {
     dev = true,
     dependencies = {
       "Jacky-Lzx/selection-tools.nvim",
-      {
-        dir = require("utils.platform").dev_plugin_root() .. "/git-tools.nvim",
-        name = "git-tools.nvim",
-        main = "git_tools",
-      },
+      "Jacky-Lzx/git-tools.nvim",
     },
     event = "LspAttach",
     cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },

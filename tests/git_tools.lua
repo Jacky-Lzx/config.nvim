@@ -1,7 +1,15 @@
 local root = vim.env.NVIM_CONFIG_ROOT or vim.fn.getcwd()
 vim.opt.rtp:prepend(root)
 local spec = dofile(root .. "/lua/plugins/git/git-tools.lua")[1]
-vim.opt.rtp:prepend(spec.dir)
+local function plugin_dir(plugin)
+  if plugin.dir then
+    return plugin.dir
+  end
+  local name = plugin.name or plugin[1]:match("/([^/]+)$")
+  local dev_dir = require("utils.platform").dev_plugin_root() .. "/" .. name
+  return vim.uv.fs_stat(dev_dir) and dev_dir or vim.fn.stdpath("data") .. "/lazy/" .. name
+end
+vim.opt.rtp:prepend(plugin_dir(spec))
 vim.o.swapfile = false
 vim.g.mapleader = " "
 local fixture = assert(vim.env.NVIM_TEST_TMP) .. "/git-tools-config"
@@ -45,7 +53,7 @@ assert(snacks.opts.picker.previewers == nil, "Git/diff preview overrides must be
 assert(snacks.opts.statuscolumn.enabled == false, "ui-tools owns the status column")
 local ui_spec = dofile(root .. "/lua/plugins/ui/ui-tools.lua")[1]
 assert(vim.deep_equal(ui_spec.opts.statuscolumn.git_patterns, { "GitTools" }))
-vim.opt.rtp:prepend(ui_spec.dir)
+vim.opt.rtp:prepend(plugin_dir(ui_spec))
 ui_spec.config(nil, ui_spec.opts)
 local marks = require("ui_tools.scrollbar").providers.git_tools.callback({ buf = buf })
 assert(#marks > 0 and marks[1].hl == "GitToolsChange", "Scrollbar adapter did not read real GitTools hunks")
