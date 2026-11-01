@@ -15,6 +15,69 @@ return {
     cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },
     keys = {
       {
+        "gd",
+        function()
+          require("lsp-tools").lsp_definitions()
+        end,
+        desc = "[LSP] Goto definition",
+      },
+      {
+        "gD",
+        function()
+          require("lsp-tools").lsp_declarations()
+        end,
+        desc = "[LSP] Goto declaration",
+      },
+      {
+        "gi",
+        function()
+          require("lsp-tools").lsp_references()
+        end,
+        desc = "[LSP] References",
+      },
+      {
+        "gI",
+        function()
+          require("lsp-tools").lsp_implementations()
+        end,
+        desc = "[LSP] Goto implementation",
+      },
+      {
+        "gy",
+        function()
+          require("lsp-tools").lsp_type_definitions()
+        end,
+        desc = "[LSP] Goto type definition",
+      },
+      {
+        "<leader>ss",
+        function()
+          require("lsp-tools").lsp_symbols()
+        end,
+        desc = "[LSP] Document symbols",
+      },
+      {
+        "<leader>sS",
+        function()
+          require("lsp-tools").lsp_workspace_symbols()
+        end,
+        desc = "[LSP] Workspace symbols",
+      },
+      {
+        "<leader>sd",
+        function()
+          require("lsp-tools").pick_diagnostics()
+        end,
+        desc = "[LSP] Search diagnostics",
+      },
+      {
+        "<leader>sD",
+        function()
+          require("lsp-tools").pick_diagnostics({ scope = "buffer" })
+        end,
+        desc = "[LSP] Search buffer diagnostics",
+      },
+      {
         "<leader>gd",
         function()
           require("lsp-tools").diagnostics({ toggle = true })
@@ -108,6 +171,7 @@ return {
       lightbulb = true,
       linked_editing = true,
       diagnostics = true,
+      pickers = true,
       results = true,
       hover = true,
       inspect = true,

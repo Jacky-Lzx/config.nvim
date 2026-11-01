@@ -236,19 +236,10 @@ return {
       -- { "<leader>sB", function() require("snacks").picker.grep_buffers() end, desc = "[Snacks] Grep open buffers" },
       -- { "<leader>sw", function() require("snacks").picker.grep_word() end, desc = "[Snacks] Visual selection or word", mode = { "n", "x" } },
       -- search
-      { "<leader>sd", function() require("snacks").picker.diagnostics() end, desc = "[Snacks] Diagnostics", },
-      { "<leader>sD", function() require("snacks").picker.diagnostics_buffer() end, desc = "[Snacks] Diagnostics buffer", },
       { "<leader>sp", function() require("snacks").picker.lazy() end, desc = "[Snacks] Search for plugin spec", },
       -- LSP
-      { "gd", function() require("snacks").picker.lsp_definitions() end, desc = "[Snacks] Goto definition", },
-      { "gD", function() require("snacks").picker.lsp_declarations() end, desc = "[Snacks] Goto declaration", },
-      { "gi", function() require("snacks").picker.lsp_references() end, desc = "[Snacks] References", },
-      { "gI", function() require("snacks").picker.lsp_implementations() end, desc = "[Snacks] Goto implementation", },
-      { "gy", function() require("snacks").picker.lsp_type_definitions() end, desc = "[Snacks] Goto t[y]pe definition", },
       { "gci", function() require("lsp-tools").call_hierarchy({ direction = "incoming" }) end, desc = "[LSP] Incoming call tree" },
       { "gco", function() require("lsp-tools").call_hierarchy({ direction = "outgoing" }) end, desc = "[LSP] Outgoing call tree" },
-      { "<leader>ss", function() require("snacks").picker.lsp_symbols() end, desc = "[Snacks] LSP symbols", },
-      { "<leader>sS", function() require("snacks").picker.lsp_workspace_symbols() end, desc = "[Snacks] LSP workspace symbols", },
       -- Zen mode
       { "<leader>Z", function() require("snacks").zen() end, desc = "[Snacks] Toggle Zen Mode", },
       { "<leader>z", function() require("snacks").zen.zoom() end, desc = "[Snacks] Toggle Zoom", },

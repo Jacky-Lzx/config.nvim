@@ -174,15 +174,38 @@ end
 feed("go")
 assert(semantic_links == 1, "Semantic provider must still route go to lsp-tools")
 vim.lsp.get_clients, tools.open_link = old_get_clients, old_link
-local picker = require("snacks").picker
-local old_references, references_calls = picker.lsp_references, 0
-picker.lsp_references = function()
+local old_references, references_calls = tools.lsp_references, 0
+tools.lsp_references = function()
   references_calls = references_calls + 1
 end
 feed("gi")
 feed("<leader>gr")
 assert(references_calls == 2, "Reference entry points must use the same picker")
-picker.lsp_references = old_references
+tools.lsp_references = old_references
+
+for _, binding in ipairs({
+  { "gd", "lsp_definitions" },
+  { "gD", "lsp_declarations" },
+  { "gI", "lsp_implementations" },
+  { "gy", "lsp_type_definitions" },
+  { "<leader>gt", "lsp_type_definitions" },
+  { "<leader>ss", "lsp_symbols" },
+  { "<leader>sS", "lsp_workspace_symbols" },
+  { "<leader>sd", "pick_diagnostics", "all" },
+  { "<leader>sD", "pick_diagnostics", "buffer" },
+}) do
+  local old, invoked = tools[binding[2]], 0
+  tools[binding[2]] = function(options)
+    invoked = invoked + 1
+    if binding[3] then
+      assert(((options or {}).scope or "all") == binding[3], "Diagnostic picker scope changed")
+    end
+  end
+  feed(binding[1])
+  assert(invoked == 1, binding[1] .. " must reach lsp-tools " .. binding[2])
+  tools[binding[2]] = old
+end
+assert(opts.pickers == true, "Search pickers must be enabled")
 
 assert(opts.code_actions.backend == "delta", "Delta backend was lost during migration")
 assert(
