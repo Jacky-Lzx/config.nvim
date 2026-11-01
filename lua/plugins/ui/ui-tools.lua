@@ -6,7 +6,7 @@ return {
     lazy = false,
     priority = 900,
     opts = {
-      indent = { only_scope = true, chunk = true },
+      indent = { only_scope = true, chunk = false },
       statuscolumn = {
         slot_width = 2,
         separator = " ",
