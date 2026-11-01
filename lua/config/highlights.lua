@@ -24,8 +24,8 @@ function M.apply()
   vim.api.nvim_set_hl(0, "UiToolsFlash", { link = "Visual" })
   vim.api.nvim_set_hl(0, "UiToolsDim", { fg = colors.overlay0 })
   vim.api.nvim_set_hl(0, "UiToolsBackdrop", { bg = colors.base, fg = colors.base })
-  vim.api.nvim_set_hl(0, "UiToolsScrollbar", { bg = colors.base })
-  vim.api.nvim_set_hl(0, "UiToolsScrollbarHandle", { bg = colors.overlay0 })
+  vim.api.nvim_set_hl(0, "UiToolsScrollbar", { bg = "NONE", blend = 100 })
+  vim.api.nvim_set_hl(0, "UiToolsScrollbarHandle", { bg = "#000000", blend = 0 })
   vim.api.nvim_set_hl(0, "UiToolsSearch", { fg = colors.mauve })
 
   -- minuet-ai.nvim
