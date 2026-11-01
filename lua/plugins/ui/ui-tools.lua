@@ -9,8 +9,10 @@ return {
       indent = { only_scope = true, chunk = true },
       statuscolumn = {
         slot_width = 2,
-        folds = { levels = true, columns = 2 },
-        layout = { { "diagnostic", "sign", "mark" }, "number", { "fold", "git" } },
+        separator = " ",
+        git_numbers = true,
+        folds = { levels = true, columns = 2, scope = true },
+        layout = { { "diagnostic", "sign", "mark" }, "number", "fold" },
         git_patterns = { "GitTools" },
       },
       guide = { columns = { 121 }, char = "" },

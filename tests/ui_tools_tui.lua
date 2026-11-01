@@ -41,7 +41,11 @@ local function check()
   vim.cmd("redraw!")
   local win = vim.api.nvim_get_current_win()
   local info = vim.fn.getwininfo(win)[1]
-  assert(info.textoff == 8, "Expected two-cell sign and fold slots: " .. info.textoff)
+  assert(info.textoff == 9, "Expected two-cell slots and one padding cell: " .. info.textoff)
+  assert(
+    vim.fn.screenstring(info.winrow + info.winbar, info.wincol + info.textoff - 1) == " ",
+    "Gutter padding missing"
+  )
   local rows = assert(column.cache[win], "Source window with inherited column was not adopted")
   local diagnostic = assert(rows[3] and rows[3].diagnostic, "Native diagnostic sign missing")
   assert(diagnostic.sign_hl_group == "DiagnosticSignError", "Error must take precedence")
@@ -59,6 +63,23 @@ local function check()
     "Configured column guide not visible"
   )
 
+  -- Match git-tools' actual signs=false / numhl=true output.
+  local git_ns = vim.api.nvim_create_namespace("GitToolsConfiguredNumberTest")
+  vim.api.nvim_buf_set_extmark(0, git_ns, 2, 0, { number_hl_group = "GitToolsChange", priority = 6 })
+  column.refresh()
+  local git_row = assert(column.cache[win][3].git_numbers, "Git numhl-only mark was not adopted")
+  local color = assert(vim.api.nvim_get_hl(0, { name = "GitToolsChange", link = false }).fg, "Git color missing")
+  assert(vim.api.nvim_get_hl(0, { name = git_row[1], link = false }).fg == color, "Git number lost its color")
+  assert(vim.api.nvim_get_hl(0, { name = git_row[2], link = false }).bold, "Current Git number lost emphasis")
+  for _, kind in ipairs({ "Add", "Change", "Delete" }) do
+    local hl = vim.api.nvim_get_hl(0, { name = "GitTools" .. kind, link = false })
+    assert(hl.fg and not hl.bg, "Git number must have a foreground and no background: " .. kind)
+  end
+  assert(column.options.layout[3] == "fold", "Git should not share the fold slot")
+  vim.api.nvim_buf_clear_namespace(0, git_ns, 0, -1)
+  column.refresh()
+  assert(not column.cache[win][3] or not column.cache[win][3].git_numbers, "Cleared Git color remained")
+
   -- Exercise deeper fold columns through the actual configured renderer/theme.
   local folding = { method = vim.wo.foldmethod, level = vim.wo.foldlevel, view = vim.fn.winsaveview() }
   vim.wo.foldmethod = "manual"
@@ -72,7 +93,7 @@ local function check()
   column.refresh()
   vim.cmd("redraw!")
   local fold_info = vim.fn.getwininfo(win)[1]
-  assert(fold_info.textoff == 8, "Configured two-column fold area grew with nesting")
+  assert(fold_info.textoff == 9, "Configured fold area and padding grew with nesting")
   for level = 1, 4 do
     local row = fold_info.winrow + fold_info.winbar + level * 2 - 1
     local col = math.min(level, 2)

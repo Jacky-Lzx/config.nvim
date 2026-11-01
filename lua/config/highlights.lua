@@ -17,9 +17,18 @@ function M.apply()
   vim.api.nvim_set_hl(0, "SnacksPickerSearch", { link = "SelectionInactive" })
   vim.api.nvim_set_hl(0, "SnacksPickerMatch", { link = "SelectionInactive" })
 
+  -- Use foreground-only Git colors so number highlights keep the gutter transparent.
+  vim.api.nvim_set_hl(0, "GitToolsAdd", { fg = colors.green })
+  vim.api.nvim_set_hl(0, "GitToolsChange", { fg = colors.yellow })
+  vim.api.nvim_set_hl(0, "GitToolsDelete", { fg = colors.red })
+
   -- ui-tools owns editor decorations; keep the existing Catppuccin palette.
   vim.api.nvim_set_hl(0, "UiToolsIndent", { fg = colors.surface1 })
   vim.api.nvim_set_hl(0, "UiToolsScope", { fg = colors.flamingo })
+  vim.api.nvim_set_hl(0, "UiToolsLineNr", { fg = colors.surface2 })
+  vim.api.nvim_set_hl(0, "UiToolsCursorLineNr", { fg = colors.lavender, bold = true })
+  vim.api.nvim_set_hl(0, "UiToolsFoldSeparator", { fg = colors.surface1 })
+  vim.api.nvim_set_hl(0, "UiToolsFoldScope", { fg = colors.overlay0 })
   vim.api.nvim_set_hl(0, "UiToolsGuide", { link = "NonText" })
   vim.api.nvim_set_hl(0, "UiToolsFlash", { link = "Visual" })
   vim.api.nvim_set_hl(0, "UiToolsDim", { fg = colors.overlay0 })
