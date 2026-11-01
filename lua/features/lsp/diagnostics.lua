@@ -32,6 +32,11 @@ end
 
 function M.set_enabled(state)
   vim.diagnostic.enable(state)
+  -- Native enable/hide updates signs without emitting DiagnosticChanged.
+  local column = package.loaded["ui_tools.statuscolumn"]
+  if column and column.enabled then
+    column.refresh()
+  end
 end
 
 function M.virtual_lines_enabled()

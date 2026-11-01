@@ -31,8 +31,29 @@ local function check()
   local column = require("ui_tools.statuscolumn")
   column.refresh()
   assert(vim.wo.statuscolumn:find("ui_tools", 1, true))
+  local diagnostic_ns = vim.api.nvim_create_namespace("UiToolsConfiguredDiagnostics")
+  vim.diagnostic.set(diagnostic_ns, 0, {
+    { lnum = 2, col = 0, severity = vim.diagnostic.severity.WARN, message = "warning" },
+    { lnum = 2, col = 0, severity = vim.diagnostic.severity.ERROR, message = "error" },
+  })
+  vim.wait(80)
+  column.refresh()
   vim.cmd("redraw!")
-  local info = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1]
+  local win = vim.api.nvim_get_current_win()
+  local info = vim.fn.getwininfo(win)[1]
+  assert(info.textoff == 6, "Compact status column retained empty slots: " .. info.textoff)
+  local rows = assert(column.cache[win], "Source window with inherited column was not adopted")
+  local diagnostic = assert(rows[3] and rows[3].diagnostic, "Native diagnostic sign missing")
+  assert(diagnostic.sign_hl_group == "DiagnosticSignError", "Error must take precedence")
+  local icon = diagnostic.sign_text:gsub("%s+$", "")
+  assert(vim.fn.screenstring(info.winrow + info.winbar + 2, info.wincol) == icon, "Diagnostic icon not drawn")
+  local diagnostics = require("features.lsp.diagnostics")
+  diagnostics.set_enabled(false)
+  assert(not ((column.cache[win] or {})[3] or {}).diagnostic, "Disabled diagnostic remained cached")
+  diagnostics.set_enabled(true)
+  assert(column.cache[win][3].diagnostic, "Diagnostic toggle did not restore the sign")
+  vim.diagnostic.reset(diagnostic_ns, 0)
+  column.refresh()
   assert(
     vim.fn.screenstring(info.winrow + info.winbar, info.wincol + info.textoff + 120) == "",
     "Configured column guide not visible"
@@ -121,7 +142,7 @@ vim.api.nvim_create_autocmd("User", {
     vim.defer_fn(function()
       local ok, err = xpcall(check, debug.traceback)
       local result = ok
-          and "ui-tools configured TUI: ownership, guide, pulse/yank, keys, Zen/Zoom typing/restore, search and scrollbar passed"
+          and "ui-tools configured TUI: ownership, compact diagnostics, guide, pulse/yank, keys, Zen/Zoom typing/restore, search and scrollbar passed"
         or err
       vim.fn.writefile(vim.split(result, "\n", { plain = true }), vim.env.NVIM_LAZY_RESULT)
       vim.cmd(ok and "quitall!" or "cquit 1")

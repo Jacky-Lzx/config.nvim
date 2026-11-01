@@ -7,7 +7,10 @@ return {
     priority = 900,
     opts = {
       indent = { only_scope = true, chunk = true },
-      statuscolumn = { git_patterns = { "GitTools" } },
+      statuscolumn = {
+        layout = { { "diagnostic", "sign", "mark" }, "number", { "fold", "git" } },
+        git_patterns = { "GitTools" },
+      },
       guide = { columns = { 121 }, char = "" },
       feedback = { yank = true, hl = "IncSearch", timeout = 200 },
       focus = { width = 100, height = 0.9, dim = true },
