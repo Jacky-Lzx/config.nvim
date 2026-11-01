@@ -56,6 +56,13 @@ return {
     opts = { buffer = { signs = false, numhl = true, on_attach = on_attach } },
     keys = {
       {
+        "<C-g>",
+        function()
+          require("git_tools").lazygit()
+        end,
+        desc = "[Git] Lazygit",
+      },
+      {
         "<leader>ggc",
         function()
           require("git_tools").status({ backend = "delta" })

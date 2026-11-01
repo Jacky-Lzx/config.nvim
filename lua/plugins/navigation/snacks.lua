@@ -62,10 +62,7 @@ return {
         chunk = { enabled = true },
       },
       input = { enabled = false }, -- Native vim.ui.input is displayed by input-tools.
-      lazygit = {
-        enabled = platform.executable("lazygit") ~= nil,
-        configure = false,
-      },
+      lazygit = { enabled = false }, -- git-tools owns the Lazygit terminal.
       notifier = {
         enabled = false, -- notification-tools owns vim.notify.
         style = "notification",
@@ -230,7 +227,6 @@ return {
       -- { "<leader><space>", function() require("snacks").picker.smart() end, desc = "[Snacks] Smart find files", },
       -- find
       -- git
-      { "<C-g>", function() require("snacks").lazygit() end, desc = "[Snacks] Lazygit", },
       -- Grep
       -- { "<leader>sb", function() require("snacks").picker.lines() end, desc = "[Snacks] Buffer lines" },
       -- { "<leader>sB", function() require("snacks").picker.grep_buffers() end, desc = "[Snacks] Grep open buffers" },

@@ -40,7 +40,17 @@ assert(vim.wait(5000, function()
 end, 5))
 assert(not package.loaded.gitsigns and not package.loaded["mini.diff"] and not package.loaded.diffview)
 local snacks = dofile(root .. "/lua/plugins/navigation/snacks.lua")[1]
+assert(snacks.opts.lazygit.enabled == false, "Snacks must not own Lazygit")
+local lazygit_key
+for _, key in ipairs(spec.keys) do
+  if key[1] == "<C-g>" then
+    lazygit_key = key
+  end
+end
+assert(lazygit_key and lazygit_key.desc == "[Git] Lazygit")
+assert(type(require("git_tools").lazygit) == "function" and vim.fn.exists(":GitTools") == 2)
 for _, key in ipairs(snacks.keys) do
+  assert(key[1] ~= "<C-g>", "Lazygit key must be owned by git-tools")
   assert(not key[1]:match("^<leader>gg"), "Git keys must be owned by git-tools")
 end
 local staged
