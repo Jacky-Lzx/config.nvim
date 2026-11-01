@@ -93,6 +93,15 @@ local function check()
   assert(scrollbar.providers.git_tools)
   assert(not package.loaded["scrollbar.handlers.search"])
   local bar = scrollbar.bars[vim.api.nvim_get_current_win()]
+  local cursor_row = scrollbar.project(
+    vim.api.nvim_win_get_cursor(0)[1],
+    vim.api.nvim_buf_line_count(0),
+    vim.api.nvim_buf_line_count(bar.buf)
+  )
+  assert(
+    vim.api.nvim_buf_get_lines(bar.buf, cursor_row - 1, cursor_row, false)[1] == "●",
+    "Configured cursor indicator missing"
+  )
   assert(vim.tbl_contains(vim.api.nvim_buf_get_lines(bar.buf, 0, -1, false), "•"), "Search markers missing")
   feed("//")
   scrollbar.refresh()

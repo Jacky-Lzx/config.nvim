@@ -11,7 +11,7 @@ return {
       guide = { columns = { 121 }, char = "" },
       feedback = { yank = true, hl = "IncSearch", timeout = 200 },
       focus = { width = 100, height = 0.9, dim = true },
-      scrollbar = { handle = " ", blend = 100 },
+      scrollbar = { handle = " ", blend = 100, cursor = true, cursor_char = "●" },
     },
     config = function(_, opts)
       require("ui_tools").setup(opts)
