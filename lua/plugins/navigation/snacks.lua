@@ -106,16 +106,6 @@ return {
             end,
           },
         },
-        previewers = {
-          diff = {
-            builtin = platform.executable("delta") == nil,
-            cmd = platform.executable("delta") and { "delta" } or nil,
-          },
-          git = {
-            builtin = false, -- use Neovim for previewing git output (true) or use git (false)
-            args = {}, -- additional arguments passed to the git command. Useful to set pager options using `-c ...`
-          },
-        },
         sources = {
           spelling = {
             layout = { reverse = false, preset = "select" },
@@ -183,7 +173,7 @@ return {
       statuscolumn = {
         enabled = true,
         left = { "mark", "sign" }, -- priority of signs on the left (high to low)
-        git = { patterns = { "GitTools", "GitSign", "MiniDiffSign" } },
+        git = { patterns = { "GitTools" } },
         right = { "fold", "git" }, -- priority of signs on the right (high to low)
         folds = {
           open = true, -- show open fold icons

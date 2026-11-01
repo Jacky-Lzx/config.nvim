@@ -56,6 +56,41 @@ return {
     opts = { buffer = { signs = false, numhl = true, on_attach = on_attach } },
     keys = {
       {
+        "<leader>ggC",
+        function()
+          require("git_tools").status({ backend = "delta" })
+        end,
+        desc = "[Git] Changed files",
+      },
+      {
+        "<leader>ggv",
+        function()
+          require("git_tools").branches({ all = true })
+        end,
+        desc = "[Git] Branches",
+      },
+      {
+        "<leader>ggt",
+        function()
+          require("git_tools").stash({ backend = "delta" })
+        end,
+        desc = "[Git] Stash",
+      },
+      {
+        "<leader>ggo",
+        function()
+          require("git_tools").browse({ what = "repo" })
+        end,
+        desc = "[Git] Repository page",
+      },
+      {
+        "<leader>ggO",
+        function()
+          require("git_tools").browse({ what = "branch" })
+        end,
+        desc = "[Git] Branch page",
+      },
+      {
         "<C-g>",
         function()
           require("git_tools").lazygit()
@@ -65,9 +100,9 @@ return {
       {
         "<leader>ggc",
         function()
-          require("git_tools").status({ backend = "delta" })
+          require("git_tools").changes({ backend = "delta" })
         end,
-        desc = "[Git] Changes",
+        desc = "[Git] Change hunks",
       },
       {
         "<leader>ggl",

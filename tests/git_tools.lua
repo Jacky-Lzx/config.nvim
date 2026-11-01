@@ -41,6 +41,15 @@ end, 5))
 assert(not package.loaded.gitsigns and not package.loaded["mini.diff"] and not package.loaded.diffview)
 local snacks = dofile(root .. "/lua/plugins/navigation/snacks.lua")[1]
 assert(snacks.opts.lazygit.enabled == false, "Snacks must not own Lazygit")
+assert(snacks.opts.picker.previewers == nil, "Git/diff preview overrides must be removed")
+assert(vim.deep_equal(snacks.opts.statuscolumn.git.patterns, { "GitTools" }))
+local keys = {}
+for _, key in ipairs(spec.keys) do
+  keys[key[1]] = true
+end
+for _, name in ipairs({ "<leader>ggc", "<leader>ggC", "<leader>ggv", "<leader>ggt", "<leader>ggo", "<leader>ggO" }) do
+  assert(keys[name], name)
+end
 local lazygit_key
 for _, key in ipairs(spec.keys) do
   if key[1] == "<C-g>" then
