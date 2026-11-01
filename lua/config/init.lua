@@ -25,7 +25,6 @@ function M.setup()
 
   require("features.lsp").setup()
   require("features.folding").setup()
-  require("features.column_guide").setup()
 
   if vim.g.neovide then
     require("integrations.neovide")

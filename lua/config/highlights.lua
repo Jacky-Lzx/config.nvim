@@ -17,6 +17,17 @@ function M.apply()
   vim.api.nvim_set_hl(0, "SnacksPickerSearch", { link = "SelectionInactive" })
   vim.api.nvim_set_hl(0, "SnacksPickerMatch", { link = "SelectionInactive" })
 
+  -- ui-tools owns editor decorations; keep the existing Catppuccin palette.
+  vim.api.nvim_set_hl(0, "UiToolsIndent", { fg = colors.surface1 })
+  vim.api.nvim_set_hl(0, "UiToolsScope", { fg = colors.flamingo })
+  vim.api.nvim_set_hl(0, "UiToolsGuide", { link = "NonText" })
+  vim.api.nvim_set_hl(0, "UiToolsFlash", { link = "Visual" })
+  vim.api.nvim_set_hl(0, "UiToolsDim", { fg = colors.overlay0 })
+  vim.api.nvim_set_hl(0, "UiToolsBackdrop", { bg = colors.base, fg = colors.base })
+  vim.api.nvim_set_hl(0, "UiToolsScrollbar", { bg = colors.base })
+  vim.api.nvim_set_hl(0, "UiToolsScrollbarHandle", { bg = colors.overlay0 })
+  vim.api.nvim_set_hl(0, "UiToolsSearch", { fg = colors.mauve })
+
   -- minuet-ai.nvim
   -- vim.api.nvim_set_hl(0, "BlinkCmpItemKindMinuet", { fg = "#a6e3a1" })
 

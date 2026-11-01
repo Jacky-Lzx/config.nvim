@@ -42,7 +42,13 @@ assert(not package.loaded.gitsigns and not package.loaded["mini.diff"] and not p
 local snacks = dofile(root .. "/lua/plugins/navigation/snacks.lua")[1]
 assert(snacks.opts.lazygit.enabled == false, "Snacks must not own Lazygit")
 assert(snacks.opts.picker.previewers == nil, "Git/diff preview overrides must be removed")
-assert(vim.deep_equal(snacks.opts.statuscolumn.git.patterns, { "GitTools" }))
+assert(snacks.opts.statuscolumn.enabled == false, "ui-tools owns the status column")
+local ui_spec = dofile(root .. "/lua/plugins/ui/ui-tools.lua")[1]
+assert(vim.deep_equal(ui_spec.opts.statuscolumn.git_patterns, { "GitTools" }))
+vim.opt.rtp:prepend(ui_spec.dir)
+ui_spec.config(nil, ui_spec.opts)
+local marks = require("ui_tools.scrollbar").providers.git_tools.callback({ buf = buf })
+assert(#marks > 0 and marks[1].hl == "GitToolsChange", "Scrollbar adapter did not read real GitTools hunks")
 local keys = {}
 for _, key in ipairs(spec.keys) do
   keys[key[1]] = true

@@ -17,8 +17,6 @@ return {
     },
     config = function(_, opts)
       require("hlslens").setup(opts)
-      -- nvim-scrollbar integration
-      require("scrollbar.handlers.search").setup(opts)
     end,
   },
 }

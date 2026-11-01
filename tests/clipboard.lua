@@ -77,7 +77,7 @@ local function feed(keys)
 end
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "中文 first", "second", "third" })
 feed("ggyy")
-assert(#sequences == 1 and highlights == 1, "Yank synchronization or highlighting ran twice")
+assert(#sequences == 1 and highlights == 0, "Core clipboard must not duplicate plugin-owned yank feedback")
 assert(sequences[1] == "\27]52;c;" .. vim.base64.encode("中文 first\n") .. "\27\\")
 feed("ddccchanged<Esc>")
 assert(#sequences == 1, "Deletes and changes overwrote the clipboard")

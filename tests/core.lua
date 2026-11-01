@@ -98,7 +98,7 @@ vim.hl.on_yank = function(opts)
   highlighted = true
 end
 feed("yy")
-assert(highlighted, "Yanking must invoke the core highlight hook")
+assert(not highlighted, "Yank highlighting belongs to ui-tools, outside native core setup")
 vim.hl.on_yank = on_yank
 
 -- Real command-line input verifies that only bare Visual writes lose their range.

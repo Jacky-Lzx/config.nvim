@@ -48,19 +48,7 @@ return {
         doc = { inline = false, float = false, max_width = 60, max_height = 30 },
         math = { latex = { font_size = "small" } },
       },
-      indent = {
-        enabled = true,
-        animate = { enabled = false },
-        indent = { only_scope = true },
-        scope = {
-          -- Enable highlighting the current scope
-          enabled = false,
-          -- underline the start of the scope
-          underline = true,
-        },
-        -- When enabled, scopes will be rendered as chunks, except for the top-level scope which will be rendered as a scope.
-        chunk = { enabled = true },
-      },
+      indent = { enabled = false }, -- ui-tools owns indentation guides and chunks.
       input = { enabled = false }, -- Native vim.ui.input is displayed by input-tools.
       lazygit = { enabled = false }, -- git-tools owns the Lazygit terminal.
       notifier = {
@@ -170,17 +158,9 @@ return {
         },
       },
       scroll = { enabled = false },
-      statuscolumn = {
-        enabled = true,
-        left = { "mark", "sign" }, -- priority of signs on the left (high to low)
-        git = { patterns = { "GitTools" } },
-        right = { "fold", "git" }, -- priority of signs on the right (high to low)
-        folds = {
-          open = true, -- show open fold icons
-          git_hl = false, -- use Git Signs hl for fold icons
-        },
-        refresh = 50, -- refresh at most every 50ms
-      },
+      statuscolumn = { enabled = false }, -- ui-tools owns the gutter.
+      zen = { enabled = false },
+      dim = { enabled = false },
       terminal = { enabled = true },
       words = { enabled = false }, -- Reference highlighting/navigation is owned by lsp-tools.nvim.
       styles = {
@@ -226,9 +206,6 @@ return {
       -- LSP
       { "gci", function() require("lsp-tools").call_hierarchy({ direction = "incoming" }) end, desc = "[LSP] Incoming call tree" },
       { "gco", function() require("lsp-tools").call_hierarchy({ direction = "outgoing" }) end, desc = "[LSP] Outgoing call tree" },
-      -- Zen mode
-      { "<leader>Z", function() require("snacks").zen() end, desc = "[Snacks] Toggle Zen Mode", },
-      { "<leader>z", function() require("snacks").zen.zoom() end, desc = "[Snacks] Toggle Zoom", },
     },
 
     init = function()
@@ -297,8 +274,6 @@ return {
               end,
             })
             :map("<leader>th")
-          Snacks.toggle.indent():map("<leader>tG")
-          Snacks.toggle.dim():map("<leader>tD")
           -- Toggle the profiler
           Snacks.toggle.profiler():map("<leader>tPp")
           -- Toggle the profiler highlights

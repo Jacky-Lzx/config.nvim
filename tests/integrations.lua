@@ -48,24 +48,7 @@ for _, key in ipairs({ "]a", "]A", "[a", "[A" }) do
 end
 vim.g.mapleader = " "
 require("core.keymaps").setup()
-local defer, cleanup = vim.defer_fn
-vim.defer_fn = function(cb)
-  cleanup = cb
-end
-local pulse = vim.fn.maparg("<Space><Space>", "n", false, true).callback
-local origin = vim.api.nvim_get_current_win()
-pulse()
-local id = vim.fn.getmatches()[1].id
-vim.cmd.vnew()
-vim.fn.matchadd("Visual", "other", 10, id)
-cleanup()
-assert(#vim.fn.getmatches(origin) == 0)
-assert(vim.fn.getmatches()[1].id == id)
-vim.fn.clearmatches()
-pulse()
-vim.cmd.close()
-cleanup() -- Closing the origin before the timer fires must be harmless.
-vim.defer_fn = defer
+assert(vim.fn.maparg("<Space><Space>", "n") == "", "Pulse mapping belongs to ui-tools")
 
 local navigated
 package.loaded.git_tools = {

@@ -11,21 +11,6 @@ local function command_enter()
   return "<CR>"
 end
 
--- Function to pulse the cursor line
-local function pulse_cursor()
-  -- Set a highlight on the current line
-  -- 'CursorLine' is a standard group, but you can use 'Visual' or 'Search' for more pop
-  local win = vim.api.nvim_get_current_win()
-  local match_id = vim.fn.matchadd("Visual", "\\%" .. vim.fn.line(".") .. "l")
-
-  -- Clear the highlight after 200 milliseconds
-  vim.defer_fn(function()
-    if vim.api.nvim_win_is_valid(win) then
-      pcall(vim.fn.matchdelete, match_id, win)
-    end
-  end, 200)
-end
-
 function M.setup()
   local del = vim.keymap.del
   local map = vim.keymap.set
@@ -86,9 +71,6 @@ function M.setup()
       require("utils.open").open_at_cursor()
     end
   end, { desc = "Open semantic link or path", nowait = true })
-
-  -- Map double space to the function
-  map("n", "<leader><leader>", pulse_cursor, { desc = "Pulse current line" })
 end
 
 return M

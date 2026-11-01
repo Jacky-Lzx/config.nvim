@@ -39,7 +39,6 @@ local function check()
     "mini.operators",
     "nvim-hlslens",
     "todo-comments.nvim",
-    "nvim-scrollbar",
     "nvim-highlight-colors"
   )
   assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
@@ -150,7 +149,9 @@ local function check()
     vim.fn.writefile({ "Running first search" }, vim.env.NVIM_LAZY_RESULT)
     feed("/match<CR>")
     loaded("nvim-hlslens")
-    assert(require("scrollbar.config").get().handlers.search, "First search did not enable scrollbar integration")
+    assert(not plugins["nvim-scrollbar"] and not package.loaded.scrollbar)
+    assert(require("ui_tools.scrollbar").options.search, "ui-tools search markers must stay enabled")
+    require("ui_tools.scrollbar").refresh()
   elseif case == "completion" then
     feed(":<Esc>")
     loaded("blink.cmp")

@@ -59,14 +59,14 @@ native_checks() (
   export NVIM_DEV_PLUGIN_ROOT="$test_tmp/native-dev-plugins"
   printf '\nRunning native checks with isolated plugin data\n'
   nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/smoke.lua"
-  run_tests lockfile schema selection info config platform core clipboard diagnostics column_guide \
+  run_tests lockfile schema selection info config platform core clipboard diagnostics \
     completion math_conditions commands python integrations open_at_cursor tooling lsp_config
 )
 
 integration_checks() (
   cd -- "$root"
   printf '\nRunning integration checks with installed plugins\n'
-  run_tests obsidian_local comments folding rust lsp_tools notifications image_preview lualine_lazy git_tools
+  run_tests obsidian_local comments folding rust lsp_tools notifications image_preview lualine_lazy git_tools column_guide
   NVIM_TEST_LINK_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   NVIM_TEST_REFERENCE_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   LUALINE_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lualine_lazy.lua"
@@ -100,7 +100,7 @@ integration_checks() (
     -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_tools.lua')"
 
   # A PTY supplies UIEnter, which Lazy needs to fire its actual VeryLazy event.
-  for scenario in boundaries boundaries_lfo editing completion; do
+  for scenario in boundaries boundaries_lfo editing completion ui_tools; do
     python3 "$root/tests/tui.py" "$scenario"
   done
 )

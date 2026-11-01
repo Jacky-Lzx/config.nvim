@@ -224,14 +224,24 @@ have no direct replacement and their old mappings were removed. Native `%` and
 LSP `K` remain available. Use `:TexToolsConvertMath` for explicit math conversions;
 row/column editing and section promotion/demotion are available as TexTools commands.
 
-## Column guide
+## Editor UI helpers
 
-`lua/features/column_guide.lua` draws `` at display column 121 using native,
-temporary decorations. It follows horizontal scrolling independently in each
-window, accounts for tabs and wide characters, and avoids covering text.
-Special buffers and floating windows do not show the guide. The character uses
-the theme's `NonText` highlight. Change `column` and `char` in the module's setup
-defaults, or pass these options from `lua/config/init.lua`.
+`lua/plugins/ui/ui-tools.lua` loads the local ui-tools.nvim checkout through
+`utils.platform.dev_plugin_root()`. It owns indentation/chunk guides, the status
+column, the column-121 `` guide, transient line/yank highlighting, Zen/Zoom,
+scope dimming and the scrollbar. Theme colors live in `lua/config/highlights.lua`.
+
+Existing keys are retained: `<leader><leader>` pulses the current line,
+`<leader>Z` toggles Zen, `<leader>z` toggles Zoom, `<leader>tG` toggles indent
+guides and `<leader>tD` toggles scope dimming. The column guide uses temporary,
+per-window decorations, handles tabs/wide characters and avoids covering text.
+Change its `columns` and `char` in the plugin spec.
+
+Snacks indent/statuscolumn/Zen/dim are disabled. Snacks still provides its other
+features, including scope textobjects. Native folding remains in
+`lua/features/folding.lua`. hlslens keeps its match lens and search keys; search
+markers and the optional GitTools hunk adapter are provided by ui-tools.
+Core yank handling retains clipboard copying, with feedback owned by ui-tools.
 
 ## Profiles and features
 

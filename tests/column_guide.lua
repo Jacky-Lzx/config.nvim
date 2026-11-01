@@ -1,9 +1,11 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.runtimepath:prepend(root)
+local ui_root = require("utils.platform").dev_plugin_root() .. "/ui-tools.nvim"
+vim.opt.runtimepath:prepend(ui_root)
 local before = #vim.api.nvim_get_autocmds({})
-require("features.column_guide")
+require("ui_tools")
 assert(#vim.api.nvim_get_autocmds({}) == before, "Requiring the guide must be pure")
-assert(vim.api.nvim_get_namespaces().ConfigColumnGuide == nil)
+assert(vim.api.nvim_get_namespaces().UiToolsDecorations == nil)
 
 -- Attach a real UI to an embedded Neovim and inspect its rendered screen cells.
 -- Pipes use raw MessagePack so this needs no Python or third-party test library.
@@ -83,6 +85,7 @@ local function check()
   local initial_errmsg = run([=[return vim.v.errmsg]=])
   run([=[
     vim.opt.rtp:prepend(vim.env.NVIM_CONFIG_ROOT)
+    vim.opt.rtp:prepend(require('utils.platform').dev_plugin_root() .. '/ui-tools.nvim')
     vim.api.nvim_set_current_buf(vim.api.nvim_create_buf(true, false))
     vim.o.number = false
     vim.o.signcolumn = 'no'
@@ -95,7 +98,7 @@ local function check()
       '\t' .. string.rep('a', 112), '\t' .. string.rep('a', 113),
       string.rep('界', 60), string.rep('界', 61), string.rep('x', 300),
     })
-    require('features.column_guide').setup()
+    require('ui_tools.guide').setup({columns={121},char=''})
   ]=])
   for _, row in ipairs({ 1, 2, 4, 6 }) do
     assert(cell(row, 121) == "", "Missing guide on row " .. row)
@@ -104,7 +107,8 @@ local function check()
   assert(cell(7, 121) == "界", "Guide overwrote a wide character")
   assert(cell(9, 121) ~= "", "Guide extends beyond buffer lines")
   assert(
-    run([=[return #vim.api.nvim_buf_get_extmarks(0, vim.api.nvim_get_namespaces().ConfigColumnGuide, 0, -1, {})]=]) == 0,
+    run([=[return #vim.api.nvim_buf_get_extmarks(0, vim.api.nvim_get_namespaces().UiToolsDecorations, 0, -1, {})]=])
+      == 0,
     "Guide left persistent extmarks"
   )
 
@@ -158,10 +162,10 @@ local function check()
   run([=[
     vim.api.nvim_win_close(_G.float,true)
     vim.cmd('colorscheme default')
-    require('features.column_guide').setup()
+    require('ui_tools.guide').setup({columns={121},char=''})
   ]=])
   assert(cell(1, 121) == "", "Theme/repeated setup lost the guide")
-  run([=[require('features.column_guide').setup({column=25,char='|'})]=])
+  run([=[require('ui_tools.guide').setup({columns={25},char='|'})]=])
   assert(cell(1, 25) == "|" and cell(1, 121) ~= "", "Guide configuration did not update")
   assert(run([=[return vim.v.errmsg]=]) == initial_errmsg, "Column guide introduced a redraw error")
 end
@@ -182,6 +186,6 @@ for _, handle in ipairs({ process, input, output, errors }) do
 end
 assert(ok, err)
 print(
-  "Native column guide screen, scrolling, windows, folds, Unicode and lifecycle checks passed"
+  "ui-tools column guide screen, scrolling, windows, folds, Unicode and lifecycle checks passed"
     .. (startup and " (real startup)" or "")
 )

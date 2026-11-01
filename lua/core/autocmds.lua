@@ -26,9 +26,8 @@ function M.setup()
 
   vim.api.nvim_create_autocmd("TextYankPost", {
     group = group,
-    desc = "Highlight yanked text and copy through the native clipboard provider",
+    desc = "Copy yanked text through the native clipboard provider",
     callback = function()
-      vim.hl.on_yank({ higroup = "IncSearch", timeout = 200 })
       require("core.clipboard").on_yank(vim.v.event)
     end,
   })
