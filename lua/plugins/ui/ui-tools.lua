@@ -21,10 +21,41 @@ return {
       feedback = { yank = true, hl = "IncSearch", timeout = 200 },
       focus = { width = 100, height = 0.9, dim = true },
       scrollbar = { handle = " ", blend = 100, cursor = true, cursor_char = "●" },
+      context_menu = true,
     },
     config = function(_, opts)
       require("ui_tools").setup(opts)
       require("ui_tools.integrations.git_tools").setup()
+      require("ui_tools.integrations.context_lsp").setup({
+        actions = {
+          definition = function()
+            require("lsp-tools").lsp_definitions()
+          end,
+          references = function()
+            require("lsp-tools").lsp_references()
+          end,
+          hover = function()
+            require("lsp-tools").hover()
+          end,
+          rename = function()
+            require("lsp-tools").rename()
+          end,
+          code_action = function()
+            require("lsp-tools").code_action()
+          end,
+          diagnostic = function()
+            require("lsp-tools").diagnostic()
+          end,
+        },
+        shortcuts = {
+          definition = "gd",
+          references = "gi",
+          hover = "<leader>gH",
+          rename = "<leader>rn",
+          code_action = "<leader>a",
+          diagnostic = "<leader>d",
+        },
+      })
     end,
     keys = {
       {
