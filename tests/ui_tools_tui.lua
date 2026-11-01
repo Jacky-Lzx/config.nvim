@@ -59,6 +59,30 @@ local function check()
     "Configured column guide not visible"
   )
 
+  -- Exercise deeper fold columns through the actual configured renderer/theme.
+  local folding = { method = vim.wo.foldmethod, level = vim.wo.foldlevel, view = vim.fn.winsaveview() }
+  vim.wo.foldmethod = "manual"
+  vim.cmd("normal! zE")
+  for _, range in ipairs({ { 2, 30 }, { 4, 25 }, { 6, 20 }, { 8, 15 } }) do
+    vim.cmd(range[1] .. "," .. range[2] .. "fold")
+    vim.cmd("normal! zR")
+  end
+  vim.api.nvim_win_set_cursor(0, { 1, 0 })
+  vim.cmd("normal! zt")
+  column.refresh()
+  vim.cmd("redraw!")
+  local fold_info = vim.fn.getwininfo(win)[1]
+  assert(fold_info.textoff == 10, "Fold area did not expand for four nested levels")
+  for level = 1, 4 do
+    local row = fold_info.winrow + fold_info.winbar + level * 2 - 1
+    assert(vim.fn.screenstring(row, fold_info.wincol + 5 + level) == "▾", "Missing fold level " .. level)
+  end
+  vim.cmd("normal! zE")
+  vim.wo.foldmethod, vim.wo.foldlevel = folding.method, folding.level
+  vim.fn.winrestview(folding.view)
+  column.refresh()
+  vim.cmd("redraw!")
+
   feed("  ")
   local ns = assert(vim.api.nvim_get_namespaces().UiToolsFeedback)
   assert(#vim.api.nvim_buf_get_extmarks(0, ns, 0, -1, {}) > 0, "Pulse key did not flash the line")
