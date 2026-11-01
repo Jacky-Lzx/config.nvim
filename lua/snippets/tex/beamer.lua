@@ -38,26 +38,26 @@ return {
     { trig = "columns", desc = "Create columns" },
     fmta(
       [[
-        \begin{columns}[onlytextwidth, T]
-          \begin{column}{0.<>\textwidth}
+        \begin{columns}[T,totalwidth=\linewidth]
+          \begin{column}{0.<>\linewidth}
             <>
           \end{column}
 
-          \begin{column}{0.<>\textwidth}
+          \begin{column}{0.<>\linewidth}
             <>
           \end{column}
         \end{columns}
       ]],
       {
-        i(1, "5"),
+        i(1, "49"),
         i(2),
         f(function(args)
           local val = tonumber("0." .. args[1][1])
-          if val then
-            local new_val = 1 - val
-            return tostring(1 - val):sub(3)
+          if val and val <= 0.98 then
+            local digits = string.format("%.6f", 0.98 - val):sub(3):gsub("0+$", "")
+            return digits ~= "" and digits or "0"
           end
-          return "5" -- Default fallback
+          return "49" -- Default fallback
         end, { 1 }),
         i(0),
       }
