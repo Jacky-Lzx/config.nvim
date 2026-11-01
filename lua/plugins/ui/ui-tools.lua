@@ -8,11 +8,11 @@ return {
     opts = {
       indent = { only_scope = true, chunk = false },
       statuscolumn = {
-        slot_width = 2,
+        slot_width = 1,
         separator = " ",
         git_numbers = true,
         folds = { levels = true, columns = 2, scope = true },
-        layout = { { "diagnostic", "sign", "mark" }, "number", "fold" },
+        layout = { "diagnostic", { "sign", "mark" }, "number", "fold" },
         git_patterns = { "GitTools" },
       },
       guide = { columns = { 121 }, char = "" },
