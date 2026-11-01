@@ -5,7 +5,6 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
-      -- "echasnovski/mini.diff",
     },
 
     -- stylua: ignore
@@ -30,11 +29,6 @@ return {
           fold_reasoning = false,
           show_reasoning = true,
           show_settings = false, -- If show settings, can not change adapter during the chat
-        },
-        diff = {
-          layout = "vertical", -- "vertical"|"horizontal" split for default provider
-          opts = { "internal", "filler", "closeoff", "algorithm:patience", "followwrap", "linematch:120" },
-          provider = "mini_diff", -- "default"|"mini_diff"
         },
       },
 

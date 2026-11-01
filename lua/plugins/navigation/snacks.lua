@@ -186,6 +186,7 @@ return {
       statuscolumn = {
         enabled = true,
         left = { "mark", "sign" }, -- priority of signs on the left (high to low)
+        git = { patterns = { "GitTools", "GitSign", "MiniDiffSign" } },
         right = { "fold", "git" }, -- priority of signs on the right (high to low)
         folds = {
           open = true, -- show open fold icons
@@ -230,10 +231,6 @@ return {
       -- find
       -- git
       { "<C-g>", function() require("snacks").lazygit() end, desc = "[Snacks] Lazygit", },
-      { "<leader>ggl", function() require("snacks").picker.git_log() end, desc = "[Snacks] Git log", },
-      { "<leader>ggc", function() require("snacks").picker.git_diff() end, desc = "[Snacks] Git changes", },
-      { "<leader>ggb", function() require("snacks").git.blame_line() end, desc = "[Snacks] Git blame line", },
-      { "<leader>ggB", function() require("snacks").gitbrowse() end, desc = "[Snacks] Git browse", },
       -- Grep
       -- { "<leader>sb", function() require("snacks").picker.lines() end, desc = "[Snacks] Buffer lines" },
       -- { "<leader>sB", function() require("snacks").picker.grep_buffers() end, desc = "[Snacks] Grep open buffers" },

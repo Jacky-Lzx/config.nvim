@@ -68,7 +68,7 @@ cleanup() -- Closing the origin before the timer fires must be harmless.
 vim.defer_fn = defer
 
 local navigated
-package.loaded.gitsigns = {
+package.loaded.git_tools = {
   nav_hunk = function(direction)
     navigated = direction
   end,
@@ -79,12 +79,12 @@ package.loaded.snacks = {
   end,
 }
 -- on_attach also registers unrelated action callbacks.
-setmetatable(package.loaded.gitsigns, {
+setmetatable(package.loaded.git_tools, {
   __index = function()
     return function() end
   end,
 })
-require("plugins.git.gitsigns")[1].opts.on_attach(vim.api.nvim_get_current_buf())
+require("plugins.git.git-tools")[1].opts.buffer.on_attach(vim.api.nvim_get_current_buf())
 local maps = {}
 for key, direction in pairs({ ["]h"] = "next", ["[h"] = "prev", ["]H"] = "last", ["[H"] = "first" }) do
   maps[key] = vim.fn.maparg(key, "n", false, true).callback

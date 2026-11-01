@@ -2,6 +2,7 @@ return {
   {
     "petertriho/nvim-scrollbar",
     branch = "v1",
+    dependencies = { "git-tools.nvim" },
     event = { "BufReadPost", "BufNewFile" },
     opts = {
       handle = {
@@ -13,7 +14,7 @@ return {
         hide_if_all_visible = true, -- Hides handle if all lines are visible
       },
       handlers = {
-        gitsigns = true, -- for gitsigns
+        gitsigns = false, -- git-tools owns Git marks
         -- hlslens connects this handler on the first search.
         search = false,
       },
@@ -32,6 +33,7 @@ return {
     },
     config = function(_, opts)
       require("scrollbar").setup(opts)
+      require("git_tools.integrations.status").scrollbar()
     end,
   },
 }

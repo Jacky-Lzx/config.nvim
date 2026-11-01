@@ -18,7 +18,21 @@ return {
       },
       sections = {
         lualine_a = { "mode" },
-        lualine_b = { "branch", "diff", "diagnostics" },
+        lualine_b = {
+          function()
+            return (vim.b.git_tools_status or {}).head or ""
+          end,
+          {
+            "diff",
+            source = function()
+              if package.loaded["git_tools.buffer"] then
+                return require("git_tools.integrations.status").diff()
+              end
+              return {}
+            end,
+          },
+          "diagnostics",
+        },
         lualine_c = { "filename" },
         lualine_x = {},
         lualine_y = { "encoding", "fileformat", "filetype", "progress" },
