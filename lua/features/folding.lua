@@ -52,6 +52,7 @@ function M.attach(win)
       if vim.wo[win].foldlevel ~= 99 then
         return
       end
+      local cursor = vim.api.nvim_win_get_cursor(win)
       vim.api.nvim_win_call(win, function()
         -- FileType can invalidate the TS cache after our FileType callback.
         -- Recompute once after its handlers finish, before finding max depth.
@@ -59,6 +60,9 @@ function M.attach(win)
         -- zR sets the real maximum depth, so the first zm works immediately.
         vim.cmd("normal! zR")
       end)
+      -- This can finish during the first insert. normal! clamps an insertion
+      -- cursor at EOL to the last character; keep the user's exact byte column.
+      vim.api.nvim_win_set_cursor(win, cursor)
     end)
   end
   if parser then

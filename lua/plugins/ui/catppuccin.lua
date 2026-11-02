@@ -11,7 +11,6 @@ return {
       flavour = "mocha",
       integrations = {
         barbar = true,
-        blink_cmp = true,
         flash = true,
         gitsigns = true,
         markdown = true,

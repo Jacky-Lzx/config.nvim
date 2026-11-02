@@ -38,26 +38,26 @@ return {
         ext_opts = {
           [types.choiceNode] = {
             active = {
-              virt_text = { { "", "BlinkCmpKindEnum" } },
+              virt_text = { { "", "Type" } },
               sign_text = "",
-              sign_hl_group = "BlinkCmpKindEnum",
+              sign_hl_group = "Type",
             },
             passive = {
-              virt_text = { { "", "BlinkCmpLabel" } },
+              virt_text = { { "", "Comment" } },
               sign_text = "",
-              sign_hl_group = "BlinkCmpLabel",
+              sign_hl_group = "Comment",
             },
           },
           [types.insertNode] = {
             active = {
-              virt_text = { { "", "BlinkCmpKindText" } },
+              virt_text = { { "", "Identifier" } },
               sign_text = "",
-              sign_hl_group = "BlinkCmpKindText",
+              sign_hl_group = "Identifier",
             },
             passive = {
-              virt_text = { { "", "BlinkCmpLabel" } },
+              virt_text = { { "", "Comment" } },
               sign_text = "",
-              sign_hl_group = "BlinkCmpLabel",
+              sign_hl_group = "Comment",
             },
           },
         },

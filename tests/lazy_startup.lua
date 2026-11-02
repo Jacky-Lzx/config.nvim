@@ -30,10 +30,6 @@ local function check()
     "LuaSnip",
     "pairs.nvim",
     "copilot.lua",
-    "blink-copilot",
-    "blink-cmp-dictionary",
-    "blink-cmp-spell",
-    "colorful-menu.nvim",
     "mini.ai",
     "mini.align",
     "mini.operators",
@@ -154,29 +150,21 @@ local function check()
     require("ui_tools.scrollbar").refresh()
   elseif case == "completion" then
     feed(":<Esc>")
-    loaded("blink.cmp")
-    assert(
-      vim.wait(1000, function()
-        return package.loaded["blink.cmp.completion"] ~= nil
-      end, 10),
-      "Completion setup did not finish"
-    )
-    unloaded("LuaSnip", "pairs.nvim", "copilot.lua", "blink-copilot", "blink-cmp-dictionary", "blink-cmp-spell")
+    assert(not plugins["completion-tools.nvim"]._.loaded)
+    assert(not plugins["blink.cmp"] and not package.loaded["blink.cmp"])
+    unloaded("LuaSnip", "pairs.nvim", "copilot.lua")
     contents({ "" })
     vim.bo.filetype = "lua"
     feed("i(<CR>x<Esc>")
+    loaded("completion-tools.nvim")
     loaded("pairs.nvim")
     loaded("LuaSnip")
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     assert(vim.deep_equal(lines, { "(", "  x", ")" }), "First insert newline pairing failed: " .. vim.inspect(lines))
-    local sources = require("blink.cmp.sources.lib")
-    for _, provider in ipairs({ "snippets", "dictionary", "spell", "copilot" }) do
-      assert(sources.get_provider_by_id(provider), "Could not initialize provider " .. provider)
+    for _, provider in ipairs({ "blink-copilot", "blink-cmp-dictionary", "blink-cmp-spell", "colorful-menu.nvim" }) do
+      assert(not plugins[provider], "Unadapted provider must stay absent: " .. provider)
     end
-    loaded("blink-cmp-dictionary")
-    loaded("blink-cmp-spell")
-    loaded("blink-copilot")
-    loaded("copilot.lua")
+    unloaded("copilot.lua")
   else
     error("Unknown lazy startup case: " .. tostring(case))
   end

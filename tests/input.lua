@@ -15,17 +15,10 @@ local function check()
   assert(not plugins["nvim-autopairs"] and not plugins["mini.pairs"])
   assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
 
-  -- CmdlineEnter can load completion before the first InsertEnter.
+  -- Ex completion stays native and must not activate the insert engine.
   feed(":<Esc>")
-  assert(plugins["blink.cmp"]._.loaded)
-  -- Blink initializes its matcher asynchronously after loading. Let setup finish
-  -- before the next physical input, as the interactive event loop does.
-  assert(
-    vim.wait(1000, function()
-      return package.loaded["blink.cmp.completion"] ~= nil
-    end, 10),
-    "Completion did not finish setup"
-  )
+  assert(not plugins["completion-tools.nvim"]._.loaded)
+  assert(not package.loaded["blink.cmp"])
   assert(not pairing._.loaded, "Command-line completion must not load pairing")
 
   local function input(keys, expected, filetype)
@@ -82,14 +75,15 @@ local function check()
   assert(#status.conflicts == 0, vim.inspect(status.conflicts))
   assert(require("pairs.rainbow").status().enabled)
 
-  local completion = require("integrations.blink_completion")
+  local completion = require("integrations.completion")
   local behavior = require("features.completion")
-  local config = require("blink.cmp.config").sources
+  local config = require("integrations.completion").source_config
   local defaults = vim.deepcopy(config.default)
   local shown
   local cmp = {
+    hide = function() end,
     show = function(opts)
-      shown = opts.providers
+      shown = opts.sources
     end,
   }
   vim.cmd("enew!")
@@ -103,7 +97,7 @@ local function check()
   assert(vim.deep_equal(shown, defaults))
   completion.toggle_source(cmp, "buffer")
   completion.toggle_source(cmp, "buffer")
-  assert(vim.deep_equal(require("blink.cmp.config").sources.default, defaults), "Buffer toggle mutated global defaults")
+  assert(vim.deep_equal(config.default, defaults), "Buffer toggle mutated global defaults")
   vim.cmd("enew!")
   assert(vim.deep_equal(behavior.sources(config), defaults), "Completion state leaked into another buffer")
   completion.cycle(cmp, -1)

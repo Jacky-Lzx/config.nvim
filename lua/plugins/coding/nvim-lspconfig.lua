@@ -5,7 +5,7 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       -- Completion capabilities must be installed before any server is enabled.
-      "saghen/blink.cmp",
+      "completion-tools.nvim",
       "mason-org/mason.nvim",
     },
     opts = {
@@ -13,7 +13,7 @@ return {
     },
     config = function(_, opts)
       vim.lsp.config("*", {
-        capabilities = require("blink.cmp").get_lsp_capabilities(nil, true),
+        capabilities = require("completion-tools").get_lsp_capabilities(),
       })
       vim.lsp.enable(opts.servers)
     end,

@@ -14,8 +14,7 @@ return {
     opts = {
       -- Disable by default, use keymap to toggle
       enabled = false,
-      -- The plugin also provides a completion method using blink.cmp
-      -- However, just enabling the general LSP conmpletions is enough
+      -- Use native LSP completions; no completion-engine-specific adapter.
       completions = {
         lsp = { enabled = true },
       },

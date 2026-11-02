@@ -2,7 +2,7 @@
 local tools = require("notification-tools")
 local result = assert(vim.env.NVIM_LAZY_RESULT)
 local original_win, original_buf, notice, before
-local blink_selected, buffer_done, buffer_value
+local buffer_done, buffer_value
 local failed = false
 local function finish(ok, message)
   if failed then
@@ -38,7 +38,10 @@ local function assert_input_position()
     if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "input-tools-command" then
       local geometry = vim.api.nvim_win_get_config(win)
       assert(geometry.row == 3, "Input must use the old Noice command_palette top offset")
-      assert(geometry.col == math.floor((vim.o.columns - geometry.width - 2) / 2), "Input must stay horizontally centered")
+      assert(
+        geometry.col == math.floor((vim.o.columns - geometry.width - 2) / 2),
+        "Input must stay horizontally centered"
+      )
       return
     end
   end
@@ -86,11 +89,7 @@ vim.api.nvim_create_autocmd("User", {
         return id == 987654 and { name = "notification-test" } or get_client(id)
       end
       assert(type(vim.lsp.handlers["window/showMessage"]) == "function")
-      vim.lsp.handlers["window/showMessage"](
-        nil,
-        { type = 2, message = "Native LSP warning" },
-        { client_id = 987654 }
-      )
+      vim.lsp.handlers["window/showMessage"](nil, { type = 2, message = "Native LSP warning" }, { client_id = 987654 })
       vim.lsp.get_client_by_id = get_client
       vim.api.nvim_echo({ { "Native warning route", "WarningMsg" } }, true, { kind = "wmsg" })
     end)
@@ -124,10 +123,7 @@ vim.api.nvim_create_autocmd("User", {
       assert(vim.api.nvim_buf_get_lines(original_buf, 0, 1, false)[1] == "typing")
       local after = floats()
       for win, buf in pairs(before) do
-        assert(
-          after[win] == buf,
-          "An existing float was recreated while typing: " .. vim.inspect(tools.history())
-        )
+        assert(after[win] == buf, "An existing float was recreated while typing: " .. vim.inspect(tools.history()))
       end
       vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "n", false)
       vim.api.nvim_exec_autocmds("User", {
@@ -178,45 +174,45 @@ vim.api.nvim_create_autocmd("User", {
       vim.api.nvim_feedkeys(":he", "nt", false)
     end)
     later(2300, function()
-      local cmp = require("blink.cmp")
-      assert(cmp.is_menu_visible(), "Real Blink command-line completion did not open")
-      local command, menu
-      for _, win in ipairs(vim.api.nvim_list_wins()) do
-        local ft = vim.bo[vim.api.nvim_win_get_buf(win)].filetype
-        if ft == "input-tools-command" then command = vim.api.nvim_win_get_config(win) end
-        if ft == "blink-cmp-menu" then menu = vim.api.nvim_win_get_config(win) end
-      end
-      assert(command and menu)
-      assert(menu.row == command.row + command.height + 2, "Blink menu did not follow the input row")
-      assert(menu.col == command.col, "Blink and input outer borders must align")
-      blink_selected = assert(cmp.get_selected_item()).label
+      assert(not package.loaded["blink.cmp"])
+      local cmp = package.loaded["completion-tools"]
+      assert(not cmp or not cmp.is_menu_visible(), "Insert engine must not own Ex completion")
+      assert_input_position()
       vim.api.nvim_feedkeys(vim.keycode("<Tab>"), "mt", false)
     end)
     later(2500, function()
-      assert(vim.fn.getcmdline():sub(1, #blink_selected) == blink_selected, "Configured Tab acceptance failed")
+      assert(vim.fn.getcmdline():match("^help"), "Native Ex Tab completion did not insert a command")
       vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "nt", false)
     end)
     later(2700, function()
       assert(vim.g.ui_cmdline_pos == nil, "Command-line position was not released")
-      assert(not require("blink.cmp").is_menu_visible())
+      local cmp = package.loaded["completion-tools"]
+      assert(not cmp or not cmp.is_menu_visible())
       assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
-      _G.ConfigInputComplete = function() return { "alpha", "alpine" } end
+      _G.ConfigInputComplete = function()
+        return { "alpha", "alpine" }
+      end
       require("input-tools").input({
-        vim_mode = true, title = "Complete", width = 32,
-        completion = "customlist,v:lua.ConfigInputComplete", default = "al",
-      }, function(value) buffer_done, buffer_value = true, value end)
+        vim_mode = true,
+        title = "Complete",
+        width = 32,
+        completion = "customlist,v:lua.ConfigInputComplete",
+        default = "al",
+      }, function(value)
+        buffer_done, buffer_value = true, value
+      end)
     end)
     later(2900, function()
-      assert(vim.bo.filetype == "input-tools-input" and vim.b.completion)
-      assert(vim.deep_equal(require("blink.cmp.sources.lib").get_enabled_provider_ids("default"), {"input_tools"}))
-      vim.api.nvim_feedkeys("p", "nt", false)
+      assert(vim.bo.filetype == "input-tools-input" and vim.b.input_tools_completion)
+      assert(
+        not require("integrations.completion").options().enabled(),
+        "Input buffers must opt out of insert completion"
+      )
+      vim.api.nvim_feedkeys("p" .. vim.keycode("<C-x><C-u>"), "nt", false)
     end)
     later(3100, function()
-      local cmp = require("blink.cmp")
-      assert(cmp.is_menu_visible(), "Configured Vim input completion did not open")
-      assert(#cmp.get_items() == 2, "Vim input must use only its declared completion")
-      if not cmp.get_selected_item() then cmp.select_next() end
-      assert(cmp.get_selected_item())
+      assert(vim.fn.pumvisible() == 1, "Native completefunc popup did not open")
+      assert(not require("completion-tools").is_menu_visible())
       vim.api.nvim_feedkeys(vim.keycode("<CR>"), "mt", false)
     end)
     later(3300, function()
@@ -236,12 +232,29 @@ vim.api.nvim_create_autocmd("User", {
     later(3700, function()
       local box = assert(require("input-tools").get_layout(), "Quit confirmation disappeared")
       assert(box.kind == "confirm" and box.width >= 36 and box.width <= 64 and box.height >= 5)
-      assert(box.row == math.floor((vim.o.lines - vim.o.cmdheight - box.outer_height) / 2), "Confirmation must be centered")
+      assert(
+        box.row == math.floor((vim.o.lines - vim.o.cmdheight - box.outer_height) / 2),
+        "Confirmation must be centered"
+      )
       local body = table.concat(vim.api.nvim_buf_get_lines(box.buf, 0, -1, false), "\n")
       assert(body:find("Save changes to", 1, true) and body:find("unsaved-confirm.txt", 1, true), body)
       assert(body:find("(C)ancel", 1, true), "Confirmation choices are missing")
-      local marks = vim.api.nvim_buf_get_extmarks(box.buf, vim.api.nvim_create_namespace("input-tools.view"), 0, -1, {details=true})
-      assert(vim.tbl_contains(vim.tbl_map(function(mark) return mark[4].hl_group end, marks), "InputToolsConfirmDefault"), "Default action is not highlighted")
+      local marks = vim.api.nvim_buf_get_extmarks(
+        box.buf,
+        vim.api.nvim_create_namespace("input-tools.view"),
+        0,
+        -1,
+        { details = true }
+      )
+      assert(
+        vim.tbl_contains(
+          vim.tbl_map(function(mark)
+            return mark[4].hl_group
+          end, marks),
+          "InputToolsConfirmDefault"
+        ),
+        "Default action is not highlighted"
+      )
       local screen = capture()
       assert(screen:find("Confirm", 1, true) and screen:find("Save changes to", 1, true), screen)
       vim.api.nvim_feedkeys("c", "nt", false)
@@ -250,7 +263,10 @@ vim.api.nvim_create_autocmd("User", {
       assert(not require("input-tools").get_layout())
       assert(vim.api.nvim_get_current_win() == original_win and vim.bo[original_buf].modified)
       assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
-      finish(true, "Terminal checks passed: notifications, Blink/Vim input and persistent modified-buffer quit confirmation")
+      finish(
+        true,
+        "Terminal checks passed: notifications, native command/input completion and persistent modified-buffer quit confirmation"
+      )
     end)
   end,
 })

@@ -1,65 +1,19 @@
+-- The standalone command/status remain available. Completion suggestions wait
+-- for a native source; the Blink-only adapter is intentionally not configured.
 return {
   {
-    "saghen/blink.cmp",
-    optional = true,
-    specs = {
-      { "fang2hou/blink-copilot", lazy = true, dependencies = { "zbirenbaum/copilot.lua" } },
-      {
-        "zbirenbaum/copilot.lua",
-        lazy = true,
-        cmd = "Copilot",
-        opts = {
-          suggestion = {
-            enabled = false,
-          },
-          panel = {
-            enabled = false,
-          },
-          filetypes = {
-            markdown = true,
-            help = true,
-          },
-        },
-      },
-    },
+    "zbirenbaum/copilot.lua",
+    lazy = true,
+    cmd = "Copilot",
     opts = {
-      keymap = {
-        ["<A-i>"] = {
-          function(cmp)
-            return require("integrations.blink_completion").toggle_source(cmp, "copilot")
-          end,
-        },
-      },
-      sources = {
-        default = { "copilot" },
-        providers = {
-          copilot = {
-            name = "copilot",
-            module = "blink-copilot",
-            score_offset = 90,
-            async = true,
-            opts = {
-              kind_icon = "",
-              kind_hl = "DevIconCopilot",
-            },
-          },
-        },
-      },
+      suggestion = { enabled = false },
+      panel = { enabled = false },
+      filetypes = { markdown = true, help = true },
     },
   },
-
-  -- Customization of the Copilot icon
   {
     "nvim-tree/nvim-web-devicons",
     optional = true,
-    opts = {
-      override = {
-        copilot = {
-          icon = "",
-          color = "#cba6f7", -- Catppuccin.mocha.mauve
-          name = "Copilot",
-        },
-      },
-    },
+    opts = { override = { copilot = { icon = "", color = "#cba6f7", name = "Copilot" } } },
   },
 }

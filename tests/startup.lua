@@ -52,8 +52,8 @@ local function check()
   if vim.v.errmsg == "E31: No such mapping" then
     vim.v.errmsg = ""
   end
-  assert(plugins["blink.cmp"]._.loaded, "Completion loaded after LSP enable")
-  local completion = require("blink.cmp").get_lsp_capabilities().textDocument.completion
+  assert(plugins["completion-tools.nvim"]._.loaded, "Completion loaded after LSP enable")
+  local completion = require("completion-tools").get_lsp_capabilities().textDocument.completion
   local function check_completion(capabilities, name)
     local actual = capabilities.textDocument.completion
     assert(vim.deep_equal(vim.tbl_deep_extend("force", actual, completion), actual), name)
@@ -77,10 +77,13 @@ local function check()
   assert(vim.fn.exists(":ConfigToolsInstall") == 2)
   assert(vim.fn.maparg("<Plug>(TexToolsSmartEnter)", "i") == "", "TeX mapping leaked into startup buffer")
 
-  local blink = opts("blink.cmp")
-  assert((blink.sources.providers.lazydev ~= nil) == require("languages").is_enabled("lua"))
-  assert((blink.sources.providers.copilot ~= nil) == not not features.ai)
-  assert((blink.keymap["<A-i>"] ~= nil) == not not features.ai)
+  local completion_spec = opts("completion-tools.nvim")
+  assert(completion_spec.providers.lazydev == nil and completion_spec.providers.copilot == nil)
+  assert(completion_spec.keymap["<A-i>"] == nil)
+  assert(not plugins["blink.cmp"] and not package.loaded["blink.cmp"])
+  for _, name in ipairs({ "blink-copilot", "blink-cmp-dictionary", "blink-cmp-spell", "colorful-menu.nvim" }) do
+    assert(not plugins[name], "Unadapted Blink extension must not enter the active spec: " .. name)
+  end
   assert((plugins["nvim-dap"] ~= nil) == not not features.debugging)
   assert((plugins["overseer.nvim"] ~= nil) == not not features.tasks)
   assert((plugins["auto-session"] ~= nil) == not not features.sessions)
@@ -96,7 +99,7 @@ local function check()
   end
 
   -- Exercise actual plugin setup, not just spec merging.
-  require("lazy").load({ plugins = { "conform.nvim", "nvim-lint", "blink.cmp" } })
+  require("lazy").load({ plugins = { "conform.nvim", "nvim-lint", "completion-tools.nvim" } })
   assert(vim.deep_equal(require("conform").formatters_by_ft, opts("conform.nvim").formatters_by_ft))
   assert(vim.deep_equal(require("lint").linters_by_ft, opts("nvim-lint").linters_by_ft))
   -- The same physical format key must use Conform in attached and unattached buffers.

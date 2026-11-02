@@ -10,18 +10,6 @@ return {
   },
   plugins = {
     {
-      "saghen/blink.cmp",
-      optional = true,
-      opts = function(_, opts)
-        table.insert(opts.sources.default, 1, "lazydev")
-        opts.sources.providers.lazydev = {
-          name = "LazyDev",
-          module = "lazydev.integrations.blink",
-          score_offset = 90,
-        }
-      end,
-    },
-    {
       "folke/lazydev.nvim",
       ft = "lua", -- only load on lua files
       opts = {

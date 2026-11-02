@@ -113,18 +113,6 @@ return {
     ft = { "codecompanion" },
   },
   {
-    "saghen/blink.cmp",
-    optional = true,
-    opts = {
-      sources = {
-        per_filetype = {
-          codecompanion = { "codecompanion" },
-        },
-      },
-    },
-  },
-
-  {
     "HakonHarnes/img-clip.nvim",
     optional = true,
     opts = {

@@ -2,20 +2,20 @@ local root = assert(vim.env.NVIM_CONFIG_ROOT, "NVIM_CONFIG_ROOT is required")
 vim.opt.runtimepath:prepend(root)
 
 local lsp = require("plugins.coding.nvim-lspconfig")[1]
-assert(vim.list_contains(lsp.dependencies, "saghen/blink.cmp"))
-local blink = require("plugins.coding.completion.core")[1]
-local original_blink = package.loaded["blink.cmp"]
+assert(vim.list_contains(lsp.dependencies, "completion-tools.nvim"))
+local completion_spec = require("plugins.coding.completion.core")[1]
+local original_completion = package.loaded["completion-tools"]
 local original_config, original_enable = vim.lsp.config, vim.lsp.enable
 local configured, setup, enabled = false, false, false
 local capabilities = { textDocument = { completion = { completionItem = { snippetSupport = true } } } }
-package.loaded["blink.cmp"] = {
+package.loaded["completion-tools"] = {
   setup = function(opts)
-    assert(opts == blink.opts)
+    assert(opts == completion_spec.opts)
     setup = true
   end,
   get_lsp_capabilities = function(override, defaults)
-    assert(setup, "Blink must load before LSP configuration")
-    assert(override == nil and defaults == true, "include Neovim defaults")
+    assert(setup, "Completion must load before LSP configuration")
+    assert(override == nil and defaults == nil, "completion-tools includes Neovim defaults")
     return capabilities
   end,
 }
@@ -28,10 +28,10 @@ vim.lsp.enable = function(servers)
   assert(servers == lsp.opts.servers)
   enabled = true
 end
-(blink.config or function(_, opts)
-  require("blink.cmp").setup(opts)
-end)(nil, blink.opts)
-assert(not configured, "Blink setup must not separately configure capabilities")
+(completion_spec.config or function(_, opts)
+  require("completion-tools").setup(opts)
+end)(nil, completion_spec.opts)
+assert(not configured, "Completion setup must not separately configure capabilities")
 lsp.config(nil, lsp.opts)
 assert(configured and enabled)
 
@@ -111,7 +111,7 @@ vim.api.nvim_buf_call(unrelated, function()
   assert(vim.fn.maparg("<leader>rn", "n") == "")
 end)
 vim.lsp.config, vim.lsp.enable = original_config, original_enable
-package.loaded["blink.cmp"] = original_blink
+package.loaded["completion-tools"] = original_completion
 vim.api.nvim_del_augroup_by_name("ConfigLsp")
 
 local original_tools = package.loaded["lsp-tools"]

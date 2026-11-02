@@ -37,7 +37,7 @@ return {
         desc = "[Pairs] Toggle pairing",
       },
     },
-    -- blink.cmp composes Enter after completion confirmation.
+    -- completion-tools composes Enter after completion confirmation.
     opts = {
       treesitter = true,
       surround = { enabled = true, treesitter = true },

@@ -71,11 +71,11 @@ local function check()
   at("x")
   assert(not conditions.fn.math_mode(), "Comment was treated as math")
 
-  -- The completion/Enter composition remains the existing Blink -> pairs chain.
+  -- The completion/Enter composition remains the completion-tools -> pairs chain.
   vim.api.nvim_exec_autocmds("InsertEnter", {})
-  local blink = require("lazy.core.plugin").values(plugins["blink.cmp"], "opts", false)
+  local completion_spec = require("lazy.core.plugin").values(plugins["completion-tools.nvim"], "opts", false)
   assert(require("tex-tools.config").options.smart_enter == false)
-  assert(blink.keymap["<CR>"][2]() == require("pairs").expr("<CR>"))
+  assert(completion_spec.keymap["<CR>"][2]() == require("pairs").expr("<CR>"))
   assert(not vim.fn.maparg("<CR>", "i"):find("TexTools", 1, true))
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
   print("LaTeX tools: native text objects, editing, context and Enter ownership passed")

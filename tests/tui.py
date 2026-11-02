@@ -17,7 +17,7 @@ def main():
     root = Path(os.environ["NVIM_CONFIG_ROOT"])
     case = sys.argv[1]
     env = dict(os.environ, NVIM_LAZY_CASE=case)
-    if case in ("notifications", "ui_tools"):
+    if case in ("notifications", "ui_tools", "completion_input"):
         # Isolate UI/adapter behavior from external AI servers disabled by setup.lua.
         env["NVIM_TEST_SCENARIO"] = "minimal"
     result = Path(env["NVIM_TEST_TMP"]) / ("lazy-startup-" + case + ".log")
@@ -27,7 +27,7 @@ def main():
     env["TERM"] = "xterm-256color"
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case == "ui_tools" else 120, 0, 0))
-    test_file = {"notifications": "notifications_tui.lua", "ui_tools": "ui_tools_tui.lua"}.get(case, "lazy_startup.lua")
+    test_file = {"notifications": "notifications_tui.lua", "ui_tools": "ui_tools_tui.lua", "completion_input": "completion_tui.lua"}.get(case, "lazy_startup.lua")
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",

@@ -72,8 +72,18 @@ integration_checks() (
   LUALINE_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lualine_lazy.lua"
   NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
     -l "$root/tests/image_preview.lua"
-  NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
-    -l "$root/tests/notifications.lua"
+  installed_plugins=$(nvim --headless -u NONE -i NONE --noplugin \
+    --cmd "lua io.stdout:write(vim.fn.stdpath('data') .. '/lazy')" +qa)
+  fallback_ready=true
+  for plugin in notification-tools.nvim input-tools.nvim ui-tools.nvim selection-tools.nvim; do
+    if [ ! -d "$installed_plugins/$plugin" ]; then fallback_ready=false; fi
+  done
+  if [ "$fallback_ready" = true ]; then
+    NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
+      -l "$root/tests/notifications.lua"
+  else
+    printf '\nSkipping remote notification fallback: required installed checkouts are absent\n'
+  fi
 
   for scenario in default minimal python writing; do
     NVIM_COLUMN_GUIDE_STARTUP=1 NVIM_TEST_SCENARIO="$scenario" nvim --headless -u NONE -i NONE --noplugin \
@@ -94,6 +104,7 @@ integration_checks() (
     -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_highlighting.lua')"
 
   python3 "$root/tests/tui.py" notifications
+  python3 "$root/tests/tui.py" completion_input
 
   NVIM_TEST_SCENARIO=writing nvim --headless -i NONE \
     --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \

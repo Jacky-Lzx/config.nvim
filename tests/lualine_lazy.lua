@@ -10,7 +10,6 @@ for _, plugin in ipairs({
   "overseer.nvim",
   "nvim-dap",
   "plenary.nvim",
-  "nui.nvim",
 }) do
   assert(vim.fn.isdirectory(lazy_root .. "/" .. plugin) == 1, "Missing installed plugin: " .. plugin)
   vim.opt.runtimepath:append(lazy_root .. "/" .. plugin)
