@@ -12,7 +12,7 @@ function M.code_sources()
 end
 
 function M.active_sources(config)
-  local choices = { M.sources(config), { "buffer" }, { "snippets" }, M.code_sources() }
+  local choices = { M.sources(config), { "buffer", "dictionary", "spell" }, { "snippets" }, M.code_sources() }
   return choices[vim.b.completion_tools_source_index or 1]
 end
 

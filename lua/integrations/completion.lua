@@ -1,7 +1,7 @@
 local M = {}
 M.source_config = {
-  default = { "lsp", "path", "buffer", "snippets" },
-  providers = { lsp = {}, path = {}, buffer = {}, snippets = {} },
+  default = { "lsp", "path", "buffer", "snippets", "dictionary", "spell" },
+  providers = { lsp = {}, path = {}, buffer = {}, snippets = {}, dictionary = {}, spell = {} },
 }
 
 function M.cycle(cmp, direction)
@@ -41,6 +41,8 @@ function M.options()
       path = { score_offset = 95 },
       buffer = { score_offset = 20 },
       snippets = { score_offset = 60 },
+      dictionary = { score_offset = 5 },
+      spell = { score_offset = 10 },
     },
     path = {
       get_cwd = function()
@@ -59,6 +61,14 @@ function M.options()
       end,
     },
     snippets = { preset = "luasnip" },
+    dictionary = {
+      files = { require("utils.paths").config("configs", "dictionary.txt") },
+      min_keyword_length = 3,
+      max_items = 10,
+      matching = "fuzzy",
+    },
+    -- Native spell settings are inherited; active only in windows with 'spell'.
+    spell = { sort = "match" },
     menu = {
       border = "rounded",
       max_height = 20,

@@ -88,7 +88,7 @@ local function check()
   }
   vim.cmd("enew!")
   completion.cycle(cmp, 1)
-  assert(vim.deep_equal(shown, { "buffer" }))
+  assert(vim.deep_equal(shown, { "buffer", "dictionary", "spell" }))
   completion.cycle(cmp, 1)
   assert(vim.deep_equal(shown, { "snippets" }))
   completion.cycle(cmp, 1)

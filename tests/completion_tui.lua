@@ -67,6 +67,64 @@ local function visible()
   local ctx = cmp and cmp.get_context()
   return ctx and ctx.prefix == "al" and cmp.is_menu_visible() and cmp._can("accept")
 end
+local function word_sources()
+  input("<Esc>")
+  await(function()
+    return vim.api.nvim_get_mode().mode == "n"
+  end, function()
+    vim.cmd("enew!")
+    vim.b.completion_tools_sources = { "dictionary" }
+    input("iaardv")
+    await(function()
+      local item = require("completion-tools").get_selected_item()
+      return item and item.label == "aardvark"
+    end, function()
+      input("<Tab>!")
+      await(function()
+        return vim.api.nvim_get_current_line() == "aardvark!"
+      end, function()
+        input("<Esc>")
+        await(function()
+          return vim.api.nvim_get_mode().mode == "n"
+        end, function()
+          vim.cmd("enew!")
+          vim.wo.spell = true
+          vim.bo.spelllang = "en"
+          vim.b.completion_tools_sources = { "spell" }
+          input("iteh")
+          await(function()
+            for _, item in ipairs(require("completion-tools").get_items()) do
+              if item.label == "the" then
+                return true
+              end
+            end
+            return false
+          end, function()
+            local cmp = require("completion-tools")
+            for _ = 1, #cmp.get_items() do
+              if cmp.get_selected_item().label == "the" then
+                break
+              end
+              cmp.select_next()
+            end
+            input("<Tab>!")
+            await(function()
+              return vim.api.nvim_get_current_line() == "the!"
+            end, function()
+              vim.wo.spell = false
+              assert(not package.loaded["blink-cmp-dictionary"] and not package.loaded["blink-cmp-spell"])
+              assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
+              finish(
+                true,
+                "Configured completion: columns, keys, pairs, real custom dictionary and native spelling acceptance passed"
+              )
+            end)
+          end)
+        end)
+      end)
+    end)
+  end)
+end
 vim.api.nvim_create_autocmd("User", {
   pattern = "VeryLazy",
   once = true,
@@ -126,10 +184,7 @@ vim.api.nvim_create_autocmd("User", {
                     )
                     assert(not package.loaded["blink.cmp"])
                     assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
-                    finish(
-                      true,
-                      "Configured completion: local plugin, kind columns, independent highlights, Ctrl-N/Tab/Enter acceptance and pairs newline passed"
-                    )
+                    word_sources()
                   end)
                 end)
               end)
