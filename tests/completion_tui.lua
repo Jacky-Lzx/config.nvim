@@ -67,6 +67,54 @@ local function visible()
   local ctx = cmp and cmp.get_context()
   return ctx and ctx.prefix == "al" and cmp.is_menu_visible() and cmp._can("accept")
 end
+local function commandline_completion()
+  input("<Esc>")
+  await(function()
+    return vim.api.nvim_get_mode().mode == "n"
+  end, function()
+    input(":")
+    await(function()
+      return vim.api.nvim_get_mode().mode == "c" and require("input-tools").get_layout() ~= nil
+    end, function()
+      local cmp = require("completion-tools")
+      assert(not cmp.is_menu_visible(), "Empty command line opened completion")
+      input("set nu")
+      await(function()
+        return cmp.is_menu_visible()
+      end, function()
+        assert(vim.fn.getcmdline() == "set nu")
+        input("<C-n><A-k><Tab>")
+        await(function()
+          return vim.fn.getcmdline() == "set number"
+        end, function()
+          assert(vim.api.nvim_get_mode().mode == "c", "Accepting Tab executed the command")
+          input("<Esc>")
+          await(function()
+            return vim.api.nvim_get_mode().mode == "n"
+          end, function()
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, { "thematic" })
+            input("/them")
+            await(function()
+              return cmp.is_menu_visible() and cmp.get_selected_item().label == "thematic"
+            end, function()
+              input("<Tab><CR>")
+              await(function()
+                return vim.api.nvim_get_mode().mode == "n" and vim.fn.getreg("/") == "thematic"
+              end, function()
+                assert(not cmp.is_menu_visible())
+                assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
+                finish(
+                  true,
+                  "Configured completion: insert, dictionary/spell, external command-line navigation/acceptance and search passed"
+                )
+              end)
+            end)
+          end)
+        end)
+      end)
+    end)
+  end)
+end
 local function word_sources()
   input("<Esc>")
   await(function()
@@ -114,10 +162,7 @@ local function word_sources()
               vim.wo.spell = false
               assert(not package.loaded["blink-cmp-dictionary"] and not package.loaded["blink-cmp-spell"])
               assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
-              finish(
-                true,
-                "Configured completion: columns, keys, pairs, real custom dictionary and native spelling acceptance passed"
-              )
+              commandline_completion()
             end)
           end)
         end)

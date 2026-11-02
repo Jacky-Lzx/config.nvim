@@ -150,7 +150,7 @@ local function check()
     require("ui_tools.scrollbar").refresh()
   elseif case == "completion" then
     feed(":<Esc>")
-    assert(not plugins["completion-tools.nvim"]._.loaded)
+    loaded("completion-tools.nvim")
     assert(not plugins["blink.cmp"] and not package.loaded["blink.cmp"])
     unloaded("LuaSnip", "pairs.nvim", "copilot.lua")
     contents({ "" })

@@ -176,12 +176,23 @@ vim.api.nvim_create_autocmd("User", {
     later(2300, function()
       assert(not package.loaded["blink.cmp"])
       local cmp = package.loaded["completion-tools"]
-      assert(not cmp or not cmp.is_menu_visible(), "Insert engine must not own Ex completion")
+      assert(cmp and cmp.is_menu_visible(), "Command-line completion menu did not open")
+      local box = require("input-tools").get_layout()
+      local menu
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "completion-tools-menu" then
+          menu = vim.api.nvim_win_get_config(win)
+        end
+      end
+      assert(
+        menu and (menu.row >= box.row + box.outer_height or menu.row + menu.height + 2 <= box.row),
+        "Completion overlapped the command-line frame"
+      )
       assert_input_position()
       vim.api.nvim_feedkeys(vim.keycode("<Tab>"), "mt", false)
     end)
     later(2500, function()
-      assert(vim.fn.getcmdline():match("^help"), "Native Ex Tab completion did not insert a command")
+      assert(vim.fn.getcmdline():match("^help"), "Ex Tab completion did not insert a command")
       vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "nt", false)
     end)
     later(2700, function()

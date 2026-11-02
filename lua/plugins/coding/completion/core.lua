@@ -4,7 +4,7 @@ return {
     dir = vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "completion-tools.nvim"),
     name = "completion-tools.nvim",
     main = "completion-tools",
-    event = "InsertEnter",
+    event = { "InsertEnter", "CmdlineEnter" },
     opts = require("integrations.completion").options(),
     config = function(_, opts)
       require("completion-tools").setup(opts)

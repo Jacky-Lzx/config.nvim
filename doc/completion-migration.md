@@ -11,7 +11,10 @@ Alt-n/p 按 buffer 循环默认/单词（buffer + dictionary + spell）/snippets
 词典已接入 configs/dictionary.txt，输入至少 3 字符、最多 10 项，后台模糊检索；
 拼写已接入原生 spelllang/spellfile，仅在开启 spell 的窗口启用，保留匹配排序及纠错候选。
 两者均为 completion-tools 的独立来源，不加载对应 Blink 插件。
-input-tools 仍显示命令行/输入框及原生 popupmenu；Ex 用 Tab，输入框用 Ctrl-x Ctrl-u 显式补全。
+命令行已接入独立补全：: 使用原生命令/参数补全，/ 与 ? 使用缓冲区单词。
+input-tools 继续绘制命令行与输入框；候选框通过公开布局 API 避让整个输入窗口。
+命令行支持自动显示、方向键/Ctrl-n/p/Alt-j/k、Alt-u/d 跳五项、Tab 接受和 Alt-/ 开关；Enter 保持执行/搜索。
+原生 input() 及 Vim 模式输入框仍由 input-tools 管理，后者使用 Ctrl-x Ctrl-u 显式补全。
 
 暂未适配的来源：
 
@@ -20,8 +23,6 @@ input-tools 仍显示命令行/输入框及原生 popupmenu；Ex 用 Tab，输�
 - CodeCompanion 的 Blink 来源：聊天 buffer 中专用候选；聊天、请求通知不受影响。
 - input-tools.blink / input_tools 来源：输入框自动候选、声明来源自动筛选；
   保留原生 completefunc 的显式补全，Enter 仍先接受候选、再确认输入。
-  Ex 命令行由自动菜单改为原生 Tab 触发；外置 UI 继续归 input-tools。
-  原命令行 Alt-j/k、Alt-u/d、Alt-/ 补全专属快捷键暂未迁移。
 
 暂未迁移的其他 Blink 功能：
 

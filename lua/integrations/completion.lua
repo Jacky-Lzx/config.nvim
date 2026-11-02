@@ -79,9 +79,49 @@ function M.options()
       highlight = { enabled = true, treesitter = true },
     },
     documentation = { auto_show = true, delay_ms = 200, max_width = 120, max_height = 20, border = "rounded" },
-    -- Native cmdline completion already uses input-tools' external popupmenu.
-    -- Keep Blink-only positioning and input_tools source adapters disabled.
-    cmdline = { enabled = false },
+    cmdline = {
+      enabled = true,
+      get_anchor = function()
+        local input = package.loaded["input-tools"]
+        local box = input and input.get_layout()
+        if box and not box.vim_mode then
+          return { row = box.row, col = box.col, height = box.outer_height }
+        end
+      end,
+      keymap = {
+        ["<C-Space>"] = { "show", "fallback" },
+        ["<Up>"] = { "select_prev", "fallback" },
+        ["<Down>"] = { "select_next", "fallback" },
+        ["<A-k>"] = { "select_prev", "fallback" },
+        ["<A-j>"] = { "select_next", "fallback" },
+        ["<C-p>"] = { "select_prev", "fallback" },
+        ["<C-n>"] = { "select_next", "fallback" },
+        ["<A-u>"] = {
+          function(cmp)
+            return cmp.select_prev({ count = 5 })
+          end,
+          "fallback",
+        },
+        ["<A-d>"] = {
+          function(cmp)
+            return cmp.select_next({ count = 5 })
+          end,
+          "fallback",
+        },
+        ["<Tab>"] = { "accept", "show", "fallback" },
+        ["<S-Tab>"] = { "select_prev", "show", "fallback" },
+        ["<A-/>"] = {
+          function(cmp)
+            if cmp.is_menu_visible() then
+              return cmp.hide()
+            end
+            return cmp.show()
+          end,
+          "fallback",
+        },
+        -- Enter retains the native command/search confirmation mapping.
+      },
+    },
     keymap = {
       ["<C-Space>"] = { "show", "show_documentation" },
       ["<A-k>"] = { "select_prev", "fallback" },
@@ -134,6 +174,16 @@ function M.options()
 end
 
 function M.setup()
+  vim.api.nvim_create_autocmd("User", {
+    group = vim.api.nvim_create_augroup("ConfigCompletionLayout", { clear = true }),
+    pattern = { "InputToolsOpen", "InputToolsLayoutChanged", "InputToolsClose" },
+    callback = function()
+      local cmp = package.loaded["completion-tools"]
+      if cmp then
+        cmp.refresh_cmdline()
+      end
+    end,
+  })
   vim.api.nvim_create_autocmd("User", {
     group = vim.api.nvim_create_augroup("ConfigCompletion", { clear = true }),
     pattern = "LazyLoad",

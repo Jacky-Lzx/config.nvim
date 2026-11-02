@@ -15,9 +15,9 @@ local function check()
   assert(not plugins["nvim-autopairs"] and not plugins["mini.pairs"])
   assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
 
-  -- Ex completion stays native and must not activate the insert engine.
+  -- Command-line completion loads on first use without loading insert dependencies.
   feed(":<Esc>")
-  assert(not plugins["completion-tools.nvim"]._.loaded)
+  assert(plugins["completion-tools.nvim"]._.loaded)
   assert(not package.loaded["blink.cmp"])
   assert(not pairing._.loaded, "Command-line completion must not load pairing")
 
