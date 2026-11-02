@@ -41,5 +41,17 @@ assert(opts.dictionary.min_keyword_length == 3 and opts.dictionary.max_items == 
 assert(opts.dictionary.files[1] == require("utils.paths").config("configs", "dictionary.txt"))
 assert(opts.spell.sort == "match")
 assert(type(opts.cmdline.get_anchor) == "function" and opts.cmdline.keymap["<CR>"] == nil)
+for _, maps in ipairs({ opts.keymap, opts.cmdline.keymap }) do
+  for key, method in pairs({ ["<A-d>"] = "select_next", ["<A-u>"] = "select_prev" }) do
+    local called = false
+    local paging = {}
+    paging[method] = function(options)
+      assert(options.count == 5 and options.wrap == false)
+      called = true
+      return true
+    end
+    assert(maps[key][1](paging) and called, "Paging must stop at candidate boundaries")
+  end
+end
 assert(not package.loaded["completion-tools"] and not package.loaded["blink.cmp"], "Policy must remain pure")
 print("Completion policy, persistent buffer-local sources and adapter checks passed")

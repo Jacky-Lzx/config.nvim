@@ -98,13 +98,13 @@ function M.options()
         ["<C-n>"] = { "select_next", "fallback" },
         ["<A-u>"] = {
           function(cmp)
-            return cmp.select_prev({ count = 5 })
+            return cmp.select_prev({ count = 5, wrap = false })
           end,
           "fallback",
         },
         ["<A-d>"] = {
           function(cmp)
-            return cmp.select_next({ count = 5 })
+            return cmp.select_next({ count = 5, wrap = false })
           end,
           "fallback",
         },
@@ -130,13 +130,13 @@ function M.options()
       ["<C-n>"] = { "select_next", "fallback" },
       ["<A-u>"] = {
         function(cmp)
-          return cmp.select_prev({ count = 5 })
+          return cmp.select_prev({ count = 5, wrap = false })
         end,
         "fallback",
       },
       ["<A-d>"] = {
         function(cmp)
-          return cmp.select_next({ count = 5 })
+          return cmp.select_next({ count = 5, wrap = false })
         end,
         "fallback",
       },
