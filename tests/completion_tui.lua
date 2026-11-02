@@ -85,7 +85,11 @@ local function commandline_completion()
         assert(vim.fn.getcmdline() == "set nu")
         input("<C-n><A-k><Tab>")
         await(function()
+          local box = require("input-tools").get_layout()
           return vim.fn.getcmdline() == "set number"
+            and box ~= nil
+            and table.concat(vim.api.nvim_buf_get_lines(box.buf, 0, -1, false), "\n"):find("set number", 1, true)
+              ~= nil
         end, function()
           assert(vim.api.nvim_get_mode().mode == "c", "Accepting Tab executed the command")
           input("<Esc>")
