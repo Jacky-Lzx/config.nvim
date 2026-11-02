@@ -6,7 +6,7 @@
 已接入：LSP、路径（cwd 基准）、同 filetype 缓冲区、LuaSnip、Tab/Enter 接受、
 Enter → pairs、Alt-j/k 与 Ctrl-n/p 导航、Alt-u/d 跳五项、文档滚动、
 Alt-n/p 按 buffer 循环默认/单词（buffer + dictionary + spell）/snippets/代码来源。LuaSnip 原有 Alt-l/h 跳转与 choice 操作保留。
-菜单已恢复 kind 图标｜名称/签名/说明｜kind 名称的三列布局；名称高亮由 completion-tools 独立实现，
+菜单已恢复 kind 图标｜名称/签名/说明｜kind 名称｜来源的四列布局；名称高亮由 completion-tools 独立实现，
 使用 kind 颜色、内置词法规则及可用的原生 Tree-sitter query，缺少解析器时回退；不依赖 colorful-menu。
 词典已接入 configs/dictionary.txt，输入至少 3 字符、最多 10 项，后台模糊检索；
 拼写已接入原生 spelllang/spellfile，仅在开启 spell 的窗口启用，保留匹配排序及纠错候选。

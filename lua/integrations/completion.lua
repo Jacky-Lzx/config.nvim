@@ -72,8 +72,8 @@ function M.options()
     menu = {
       border = "rounded",
       max_height = 20,
-      -- Match the previous Blink layout using completion-tools' own renderer.
-      columns = { { "kind_icon" }, { "label", gap = 1 }, { "kind" } },
+      -- Show both completion kind and provider in aligned columns.
+      columns = { { "kind_icon" }, { "label", gap = 1 }, { "kind" }, { "source" } },
       kind_icons = true,
       label_details = true,
       highlight = { enabled = true, treesitter = true },

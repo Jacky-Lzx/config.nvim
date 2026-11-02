@@ -192,7 +192,13 @@ vim.api.nvim_create_autocmd("User", {
             menu_line = vim.api.nvim_buf_get_lines(b, 0, 1, false)[1]
           end
         end
-        assert(menu_line and menu_line:find("alpha", 1, true) and menu_line:find("Text", 1, true), menu_line)
+        assert(
+          menu_line
+            and menu_line:find("alpha", 1, true)
+            and menu_line:find("Text", 1, true)
+            and menu_line:find("Buffer", 1, true),
+          menu_line
+        )
         assert(not package.loaded["colorful-menu"])
         local plugin = require("lazy.core.config").plugins["completion-tools.nvim"]
         assert(
