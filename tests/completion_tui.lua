@@ -78,6 +78,15 @@ vim.api.nvim_create_autocmd("User", {
       await(visible, function()
         local cmp = require("completion-tools")
         assert(cmp.get_selected_item().label == "alpha")
+        local menu_line
+        for _, w in ipairs(vim.api.nvim_list_wins()) do
+          local b = vim.api.nvim_win_get_buf(w)
+          if vim.bo[b].filetype == "completion-tools-menu" then
+            menu_line = vim.api.nvim_buf_get_lines(b, 0, 1, false)[1]
+          end
+        end
+        assert(menu_line and menu_line:find("alpha", 1, true) and menu_line:find("Text", 1, true), menu_line)
+        assert(not package.loaded["colorful-menu"])
         local plugin = require("lazy.core.config").plugins["completion-tools.nvim"]
         assert(
           plugin._.is_local
@@ -119,7 +128,7 @@ vim.api.nvim_create_autocmd("User", {
                     assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
                     finish(
                       true,
-                      "Configured completion: local plugin, real menu, Ctrl-N/Tab/Enter acceptance and pairs newline passed"
+                      "Configured completion: local plugin, kind columns, independent highlights, Ctrl-N/Tab/Enter acceptance and pairs newline passed"
                     )
                   end)
                 end)

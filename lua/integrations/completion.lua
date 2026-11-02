@@ -59,7 +59,15 @@ function M.options()
       end,
     },
     snippets = { preset = "luasnip" },
-    menu = { border = "rounded", max_height = 20 },
+    menu = {
+      border = "rounded",
+      max_height = 20,
+      -- Match the previous Blink layout using completion-tools' own renderer.
+      columns = { { "kind_icon" }, { "label", gap = 1 }, { "kind" } },
+      kind_icons = true,
+      label_details = true,
+      highlight = { enabled = true, treesitter = true },
+    },
     documentation = { auto_show = true, delay_ms = 200, max_width = 120, max_height = 20, border = "rounded" },
     -- Native cmdline completion already uses input-tools' external popupmenu.
     -- Keep Blink-only positioning and input_tools source adapters disabled.

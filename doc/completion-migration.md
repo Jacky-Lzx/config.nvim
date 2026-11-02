@@ -6,6 +6,8 @@
 已接入：LSP、路径（cwd 基准）、同 filetype 缓冲区、LuaSnip、Tab/Enter 接受、
 Enter → pairs、Alt-j/k 与 Ctrl-n/p 导航、Alt-u/d 跳五项、文档滚动、
 Alt-n/p 按 buffer 循环默认/单词/snippets/代码来源。LuaSnip 原有 Alt-l/h 跳转与 choice 操作保留。
+菜单已恢复 kind 图标｜名称/签名/说明｜kind 名称的三列布局；名称高亮由 completion-tools 独立实现，
+使用 kind 颜色、内置词法规则及可用的原生 Tree-sitter query，缺少解析器时回退；不依赖 colorful-menu。
 input-tools 仍显示命令行/输入框及原生 popupmenu；Ex 用 Tab，输入框用 Ctrl-x Ctrl-u 显式补全。
 
 暂未适配的来源：
@@ -22,7 +24,7 @@ input-tools 仍显示命令行/输入框及原生 popupmenu；Ex 用 Tab，输�
 
 暂未迁移的其他 Blink 功能：
 
-- colorful-menu 的 Treesitter 菜单高亮、kind 图标/列布局；目前使用内置 label + 来源布局。
+- colorful-menu 针对特定语言服务器的签名改写与特殊格式化；通用语法高亮、kind 图标和列布局已由新插件独立实现。
 - ghost text。
 - completion.accept.auto_brackets（pairs 普通括号配对继续可用）。
 - BibTeX 文档的 Blink draw 回调压缩；通用浮窗压缩 autocmd 仍保留。
