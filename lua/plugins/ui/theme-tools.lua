@@ -71,9 +71,10 @@ return {
           which_key = true,
         },
       },
-      default = "catppuccin-mocha",
+      default = "theme-tools-mocha",
       picker = { backend = "selection_tools" },
       themes = {
+        "theme-tools-mocha",
         "catppuccin-mocha",
         "catppuccin-latte",
         "catppuccin-frappe",

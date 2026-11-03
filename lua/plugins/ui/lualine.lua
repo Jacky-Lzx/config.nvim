@@ -51,7 +51,7 @@ return {
       },
     },
     config = function(_, opts)
-      local mocha = require("catppuccin.palettes").get_palette("mocha")
+      local mocha = require("theme_tools.mocha.palette")
       local overseer = require("lualine.component"):extend()
       function overseer:update_status(is_focused)
         if not package.loaded.overseer then

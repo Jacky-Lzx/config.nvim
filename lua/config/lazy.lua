@@ -28,7 +28,7 @@ local opts = {
     -- install missing plugins on startup. This doesn't increase startup time.
     missing = vim.env.NVIM_SMOKE_TEST ~= "1",
     -- try to load one of these colorschemes when starting an installation during startup
-    colorscheme = { "catppuccin" },
+    colorscheme = { "theme-tools-mocha", "habamax" },
   },
   -- automatically check for plugin updates
   -- checker = { enabled = true },

@@ -15,10 +15,6 @@ for _, plugin in ipairs({
 end
 local dev_root = require("utils.platform").dev_plugin_root()
 vim.opt.runtimepath:append(dev_root .. "/theme-tools.nvim")
-local source = require("theme_tools.providers.catppuccin").source
-local catppuccin = vim.fn.stdpath("data") .. "/theme-tools/themes/" .. source.name .. "/" .. source.commit
-assert(vim.fn.isdirectory(catppuccin) == 1, "Managed Catppuccin is missing; run :ThemeToolsInstall")
-vim.opt.runtimepath:append(catppuccin)
 vim.opt.runtimepath:append(dev_root .. "/lsp-tools.nvim")
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "test_document_symbol", "" })
 vim.api.nvim_win_set_cursor(0, { 1, 0 })
@@ -30,7 +26,7 @@ local allowed = {}
 local attempted = {}
 local original_require = require
 _G.require = function(name)
-  for _, prefix in ipairs({ "overseer", "trouble", "dap", "lsp-tools" }) do
+  for _, prefix in ipairs({ "catppuccin", "overseer", "trouble", "dap", "lsp-tools" }) do
     if (name == prefix or name:sub(1, #prefix + 1) == prefix .. ".") and not allowed[prefix] then
       attempted[#attempted + 1] = name
       error("Unexpected lazy dependency: " .. name)
