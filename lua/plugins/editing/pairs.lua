@@ -62,6 +62,9 @@ return {
       mappings = { cr = true },
       filetypes = {
         markdown = {
+          pairs = {
+            ["["] = { space = false },
+          },
           multi_pairs = {
             ["```"] = {},
             ["~~~"] = {},
