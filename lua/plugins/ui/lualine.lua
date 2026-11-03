@@ -10,7 +10,7 @@ return {
     event = "VeryLazy",
     opts = {
       options = {
-        theme = "catppuccin-nvim",
+        theme = "auto",
         always_divide_middle = false,
         disabled_filetypes = { winbar = { "lsp-tools-results" } },
         component_separators = { left = "", right = "" },

@@ -1,6 +1,6 @@
 local M = {}
 function M.apply()
-  local colors = require("catppuccin.palettes").get_palette("mocha")
+  local colors = require("catppuccin.palettes").get_palette()
 
   vim.api.nvim_set_hl(0, "LineNr", { fg = colors.surface2 })
   vim.api.nvim_set_hl(0, "Visual", { bg = colors.overlay0 })
@@ -22,7 +22,7 @@ function M.apply()
   vim.api.nvim_set_hl(0, "GitToolsChange", { fg = colors.yellow })
   vim.api.nvim_set_hl(0, "GitToolsDelete", { fg = colors.red })
 
-  -- ui-tools owns editor decorations; keep the existing Catppuccin palette.
+  -- ui-tools decorations follow the active Catppuccin flavour.
   vim.api.nvim_set_hl(0, "UiToolsIndent", { fg = colors.surface1 })
   vim.api.nvim_set_hl(0, "UiToolsScope", { fg = colors.flamingo })
   vim.api.nvim_set_hl(0, "UiToolsLineNr", { fg = colors.surface2 })

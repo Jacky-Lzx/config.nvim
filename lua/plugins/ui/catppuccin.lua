@@ -61,7 +61,6 @@ return {
           require("config.highlights").apply()
         end,
       })
-      vim.cmd.colorscheme("catppuccin-nvim")
     end,
   },
 }
