@@ -11,6 +11,7 @@ return {
       { dir = root .. "/selection-tools.nvim", name = "selection-tools.nvim" },
     },
     opts = {
+      dracula = { transparent_bg = true },
       catppuccin = {
         transparent_background = true,
         float = {
@@ -75,6 +76,7 @@ return {
       picker = { backend = "selection_tools" },
       themes = {
         "theme-tools-mocha",
+        "dracula",
         "catppuccin-mocha",
         "catppuccin-latte",
         "catppuccin-frappe",
