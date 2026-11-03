@@ -11,6 +11,9 @@ Alt-n/p 按 buffer 循环默认/单词（buffer + dictionary + spell）/snippets
 词典已接入 configs/dictionary.txt，输入至少 3 字符、最多 10 项，后台模糊检索；
 拼写已接入原生 spelllang/spellfile，仅在开启 spell 的窗口启用，保留匹配排序及纠错候选。
 两者均为 completion-tools 的独立来源，不加载对应 Blink 插件。
+Copilot 已通过 copilot.lua 原生接口接入，AI 功能启用时进入默认来源；Alt-i 按 buffer 开关。
+建议复用菜单导航与 Tab/Enter 接受，多行内容保留；请求独立防抖并取消旧结果。
+Copilot 仅在请求该来源时加载，命令行不加载；独立 Copilot 命令/状态保留。
 命令行已接入独立补全：: 使用原生命令/参数补全，/ 与 ? 使用缓冲区单词。
 input-tools 继续绘制命令行与输入框；候选框通过公开布局 API 避让整个输入窗口。
 命令行支持自动显示、方向键/Ctrl-n/p/Alt-j/k、Alt-u/d 跳五项、Tab 接受和 Alt-/ 开关；Enter 保持执行/搜索。
@@ -18,7 +21,6 @@ input-tools 继续绘制命令行与输入框；候选框通过公开布局 API 
 
 暂未适配的来源：
 
-- blink-copilot：Copilot 菜单建议及 Alt-i 来源开关；独立 Copilot 命令/状态保留。
 - lazydev.integrations.blink：LazyDev 专用模块/路径候选；LazyDev 本身和 LuaLS 类型库仍保留。
 - CodeCompanion 的 Blink 来源：聊天 buffer 中专用候选；聊天、请求通知不受影响。
 - input-tools.blink / input_tools 来源：输入框自动候选、声明来源自动筛选；

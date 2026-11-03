@@ -1,5 +1,4 @@
--- The standalone command/status remain available. Completion suggestions wait
--- for a native source; the Blink-only adapter is intentionally not configured.
+-- completion-tools loads the native source on demand; command/status stay available.
 return {
   {
     "zbirenbaum/copilot.lua",

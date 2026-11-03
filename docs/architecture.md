@@ -68,10 +68,11 @@ comes from `NVIM_DEV_PLUGIN_ROOT` (default `~/Documents/Github/nvim_plugins`), a
 source selection; `:checkhealth pairs` provides the plugin's own diagnostics. Plugin source
 is not copied into this repo.
 
-Blink's provider and menu plugins are module-loaded when completion actually uses
-them. Copilot loads through its Blink provider or `:Copilot`; command-line completion
-does not initialize pairing, snippets, or AI. LSP still depends on Blink so capability
-negotiation is complete before servers start.
+completion-tools owns the completion menu and loads Copilot through its native source
+only when requested, or through `:Copilot`. Command-line completion does not initialize
+pairing, snippets, or AI. LSP depends on completion-tools so capability negotiation is
+complete before servers start. With the AI feature enabled, Copilot is in the default
+source list and Alt-i toggles it for the current buffer.
 
 Use `specs` for optional configuration contributions and `dependencies` only when
 loading order is required. Language DAP contributions supply options without adding

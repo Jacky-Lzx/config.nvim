@@ -164,7 +164,11 @@ local function check()
     for _, provider in ipairs({ "blink-copilot", "blink-cmp-dictionary", "blink-cmp-spell", "colorful-menu.nvim" }) do
       assert(not plugins[provider], "Unadapted provider must stay absent: " .. provider)
     end
-    unloaded("copilot.lua")
+    -- Requesting the native source loads Copilot; command-line setup stays cold.
+    local source = require("completion_tools.sources.copilot").new()
+    source.complete({ mode = "insert" }, function() end)
+    source.dispose()
+    loaded("copilot.lua")
   else
     error("Unknown lazy startup case: " .. tostring(case))
   end

@@ -1,8 +1,14 @@
 local M = {}
+local ai = require("config.context").current().selection.features.ai
 M.source_config = {
   default = { "lsp", "path", "buffer", "snippets", "dictionary", "spell" },
   providers = { lsp = {}, path = {}, buffer = {}, snippets = {}, dictionary = {}, spell = {} },
 }
+
+if ai then
+  table.insert(M.source_config.default, 1, "copilot")
+  M.source_config.providers.copilot = {}
+end
 
 function M.cycle(cmp, direction)
   local sources = require("features.completion").cycle(M.source_config, direction)
@@ -30,6 +36,7 @@ function M.options()
       return require("features.completion").active_sources(M.source_config)
     end,
     providers = {
+      copilot = ai and { score_offset = 100 } or nil,
       lsp = {
         score_offset = 60,
         transform_items = function(_, items)
@@ -123,6 +130,11 @@ function M.options()
       },
     },
     keymap = {
+      ["<A-i>"] = ai and {
+        function(cmp)
+          return M.toggle_source(cmp, "copilot")
+        end,
+      } or nil,
       ["<C-Space>"] = { "show", "show_documentation" },
       ["<A-k>"] = { "select_prev", "fallback" },
       ["<A-j>"] = { "select_next", "fallback" },
