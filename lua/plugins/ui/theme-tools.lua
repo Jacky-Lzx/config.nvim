@@ -73,7 +73,14 @@ return {
         },
       },
       default = "theme-tools-mocha",
-      picker = { backend = "selection_tools" },
+      picker = {
+        backend = "selection_tools",
+        preview_after = function(theme)
+          if theme.colorscheme:match("^catppuccin") then
+            require("config.highlights").apply()
+          end
+        end,
+      },
       themes = {
         "theme-tools-mocha",
         "dracula",
