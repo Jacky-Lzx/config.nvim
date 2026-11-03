@@ -3,7 +3,6 @@
 local lazy_root = vim.fn.stdpath("data") .. "/lazy"
 for _, plugin in ipairs({
   "lualine.nvim",
-  "catppuccin",
   "copilot-lualine",
   "copilot.lua",
   "nvim-web-devicons",
@@ -14,7 +13,13 @@ for _, plugin in ipairs({
   assert(vim.fn.isdirectory(lazy_root .. "/" .. plugin) == 1, "Missing installed plugin: " .. plugin)
   vim.opt.runtimepath:append(lazy_root .. "/" .. plugin)
 end
-vim.opt.runtimepath:append(require("utils.platform").dev_plugin_root() .. "/lsp-tools.nvim")
+local dev_root = require("utils.platform").dev_plugin_root()
+vim.opt.runtimepath:append(dev_root .. "/theme-tools.nvim")
+local source = require("theme_tools.providers.catppuccin").source
+local catppuccin = vim.fn.stdpath("data") .. "/theme-tools/themes/" .. source.name .. "/" .. source.commit
+assert(vim.fn.isdirectory(catppuccin) == 1, "Managed Catppuccin is missing; run :ThemeToolsInstall")
+vim.opt.runtimepath:append(catppuccin)
+vim.opt.runtimepath:append(dev_root .. "/lsp-tools.nvim")
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "test_document_symbol", "" })
 vim.api.nvim_win_set_cursor(0, { 1, 0 })
 vim.o.swapfile = false
