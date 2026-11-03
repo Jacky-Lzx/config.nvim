@@ -229,7 +229,7 @@ row/column editing and section promotion/demotion are available as TexTools comm
 `lua/plugins/ui/ui-tools.lua` loads the local ui-tools.nvim checkout through
 `utils.platform.dev_plugin_root()`. It owns indentation/chunk guides, the status
 column, the column-121 `` guide, transient line/yank highlighting, Zen/Zoom,
-scope dimming and the scrollbar. Theme colors live in `lua/config/highlights.lua`.
+scope dimming, the scrollbar and the startup dashboard. Theme colors live in `lua/config/highlights.lua`.
 
 Existing keys are retained: `<leader><leader>` pulses the current line,
 `<leader>Z` toggles Zen, `<leader>z` toggles Zoom, `<leader>tG` toggles indent
@@ -237,7 +237,13 @@ guides and `<leader>tD` toggles scope dimming. The column guide uses temporary,
 per-window decorations, handles tabs/wide characters and avoids covering text.
 Change its `columns` and `char` in the plugin spec.
 
-Snacks indent/statuscolumn/Zen/dim are disabled. Snacks still provides its other
+Set dashboard `layout = "vertical"` for art above the menu or `"horizontal"`
+for art on the left. Both layouts fit automatically as the terminal resizes.
+The dashboard retains the header art and `f`/`n`/`g`/`r`/`c`/`s`/`L`/`q` actions;
+file, grep and recent-file actions use selection-tools. Session restore appears
+when auto-session is enabled. Open it manually with `:lua require("ui_tools").dashboard()`.
+
+Snacks dashboard/indent/statuscolumn/Zen/dim are disabled. Snacks still provides its other
 features, including scope textobjects. Native folding remains in
 `lua/features/folding.lua`. hlslens keeps its match lens and search keys; search
 markers and the optional GitTools hunk adapter are provided by ui-tools.
