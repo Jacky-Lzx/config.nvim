@@ -17,6 +17,18 @@ return {
           transparent = true, -- enable transparent floating windows
         },
         flavour = "mocha",
+        highlight_overrides = {
+          -- Keep Latte solid while the dark flavours retain transparency.
+          latte = function(colors)
+            return {
+              Normal = { bg = colors.base },
+              NormalNC = { bg = colors.base },
+              NormalFloat = { bg = colors.mantle },
+              FloatBorder = { bg = colors.mantle },
+              FloatTitle = { bg = colors.mantle },
+            }
+          end,
+        },
         integrations = {
           barbar = true,
           flash = true,
