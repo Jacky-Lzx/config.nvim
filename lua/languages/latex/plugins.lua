@@ -22,6 +22,7 @@ return {
     "Jacky-Lzx/tex-tools.nvim",
     dev = true,
     main = "tex-tools",
+    dependencies = { "image-tools.nvim" },
     ft = { "tex", "plaintex" },
     init = function()
       vim.g.tex_flavor = "latex"
@@ -30,6 +31,7 @@ return {
     end,
     opts = {
       lsp = "texquill",
+      formula_preview = { enabled = true },
       viewer = {
         method = "pagewing",
         -- Use the macOS app bundle so menu bars can resolve its app identity and icon.

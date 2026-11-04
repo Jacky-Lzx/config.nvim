@@ -106,14 +106,27 @@ return {
       {
         "<leader>si",
         function()
+          if vim.tbl_contains({ "tex", "plaintex", "latex" }, vim.bo.filetype) then
+            local tex = require("tex-tools")
+            if tex.formula_at() then
+              tex.preview_formula()
+              return
+            end
+          end
           require("image_tools").hover()
         end,
-        desc = "[Image] Preview image on current line",
+        desc = "[Image] Preview image or formula on current line",
       },
       {
         "<leader>ui",
         function()
-          require("image_tools").toggle()
+          local enabled = require("image_tools").toggle()
+          if vim.tbl_contains({ "tex", "plaintex", "latex" }, vim.bo.filetype) then
+            local tex = require("tex-tools")
+            if tex.formula_info().enabled ~= enabled then
+              tex.toggle_formula_preview()
+            end
+          end
         end,
         desc = "[Image] Toggle automatic preview",
       },
