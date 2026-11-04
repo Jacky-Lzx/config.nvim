@@ -11,6 +11,7 @@ return {
       "ToolchainRetry",
       "ToolchainCancel",
       "ToolchainLog",
+      "Mason",
       "MasonToolsInstall",
       "TSInstallConfigured",
     },
@@ -23,6 +24,10 @@ return {
     },
     config = function(_, opts)
       require("toolchain").setup(opts)
+      -- Keep :Mason from abbreviating to :MasonToolsInstall after removing Mason.
+      vim.api.nvim_create_user_command("Mason", function()
+        require("toolchain").open()
+      end, { desc = "Open the unified tool manager", force = true })
       for command, provider in pairs({ MasonToolsInstall = "tool", TSInstallConfigured = "parser" }) do
         vim.api.nvim_create_user_command(command, function()
           require("integrations.toolchain").install(provider)

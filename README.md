@@ -308,8 +308,9 @@ Mason is no longer declared or loaded. Toolchain installs pinned release archive
 npm/Python packages, Cargo packages and selected source builds. It appends managed tool
 directories after the existing PATH. Old Mason packages remain untouched for rollback but
 are not consulted. New npm/Python installs record resolved dependency locks, reused during
-repairs; initial transitive resolutions are not globally locked. `:MasonToolsInstall` remains
-a compatibility alias. Use `:Toolchain` and `:ToolchainLog` instead of other `:Mason*` commands.
+repairs; initial transitive resolutions are not globally locked. `:Mason` opens the unified tool
+manager and `:MasonToolsInstall` remains an installation alias. Use `:ToolchainLog` for
+logs; the other old `:Mason*` commands are no longer registered.
 
 ## Adding a language
 

@@ -21,10 +21,13 @@ end
 assert(not package.loaded.toolchain and not package.loaded.mason and not package.loaded["nvim-treesitter"])
 
 -- Exercise plugin setup and the legacy commands without loading an installer.
-local configured, installed
+local configured, installed, opened
 package.loaded.toolchain = {
   setup = function(opts)
     configured = opts
+  end,
+  open = function()
+    opened = true
   end,
   install = function(requirements)
     installed = requirements
@@ -33,6 +36,8 @@ package.loaded.toolchain = {
 local spec = require("plugins.coding.toolchain")[1]
 spec.config(nil, spec.opts)
 assert(configured.concurrency == 2 and type(configured.requirements) == "function")
+vim.cmd("Mason")
+assert(opened and installed == nil, "Mason compatibility must only open the manager")
 for command, provider in pairs({ MasonToolsInstall = "tool", TSInstallConfigured = "parser" }) do
   vim.cmd(command)
   assert(#installed > 0)

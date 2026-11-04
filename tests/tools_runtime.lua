@@ -12,7 +12,7 @@ for _, path in ipairs(vim.opt.rtp:get()) do
   assert(not path:match("/mason%.nvim"), path)
 end
 local commands = vim.api.nvim_get_commands({})
-assert(commands.Mason == nil and commands.MasonToolsInstall ~= nil)
+assert(commands.Mason ~= nil and commands.MasonToolsInstall ~= nil)
 local java_home = require("utils.platform").jdtls_java_home()
 if java_home and plugins["nvim-lspconfig"] then
   require("lazy").load({ plugins = { "nvim-lspconfig" } })
