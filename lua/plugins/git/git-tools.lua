@@ -59,7 +59,7 @@ return {
       {
         "<leader>ggC",
         function()
-          require("git_tools").status({ backend = "delta" })
+          require("git_tools").status({ backend = "native" })
         end,
         desc = "[Git] Changed files",
       },
@@ -73,7 +73,7 @@ return {
       {
         "<leader>ggt",
         function()
-          require("git_tools").stash({ backend = "delta" })
+          require("git_tools").stash({ backend = "native" })
         end,
         desc = "[Git] Stash",
       },
@@ -101,21 +101,21 @@ return {
       {
         "<leader>ggc",
         function()
-          require("git_tools").changes({ backend = "delta" })
+          require("git_tools").changes({ backend = "native" })
         end,
         desc = "[Git] Change hunks",
       },
       {
         "<leader>ggl",
         function()
-          require("git_tools").log({ backend = "delta" })
+          require("git_tools").log({ backend = "native" })
         end,
         desc = "[Git] Log",
       },
       {
         "<leader>ggf",
         function()
-          require("git_tools").file_history({ backend = "delta" })
+          require("git_tools").file_history({ backend = "native" })
         end,
         desc = "[Git] File history",
       },

@@ -186,19 +186,12 @@ return {
         },
       },
       rename = {
-        backend = "delta",
-        delta = {
-          args = { "--file-style=omit", "--hunk-header-style=file line-number syntax" },
-        },
+        backend = "native",
+        native = { file_header = false },
       },
       code_actions = {
-        backend = "delta", -- Set "vim" to use the native diff preview.
-        delta = {
-          args = {
-            "--file-style=omit",
-            "--hunk-header-style=file line-number syntax",
-          },
-        },
+        backend = "native", -- Set "delta" for the optional ANSI renderer.
+        native = { file_header = false },
       },
     },
     config = function(_, opts)
