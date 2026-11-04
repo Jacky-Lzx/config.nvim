@@ -4,12 +4,11 @@ return {
     event = "VeryLazy",
     dependencies = { "nvim-tree/nvim-web-devicons" },
 
-    keys = {
-      -- stylua: ignore
-      { "<leader>?", function() require("which-key").show({ global = false }) end, desc = "[Which-key] Buffer Local Keymaps", },
-    },
-
     opts = {
+      -- keymap-tools owns Normal/Visual hints and the global keymap picker.
+      -- Retain operator-pending textobject hints used by mini.ai and LaTeX.
+      triggers = { { "<auto>", mode = "o" } },
+      plugins = { marks = false, registers = false, spelling = { enabled = false } },
       preset = "helix",
       defer = function(ctx)
         return false

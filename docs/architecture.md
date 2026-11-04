@@ -57,8 +57,11 @@ Diagnostic getters/setters are shared by native mappings and Snacks toggles, so 
 Snacks preserves the current diagnostic state.
 
 LSP configuration depends on blink.cmp so its native capability registration runs before
-`vim.lsp.enable()`. Completion has one setup owner. which-key integrations run through
-declared dependencies or synchronous module loading in filetype hooks.
+`vim.lsp.enable()`. Completion has one setup owner. keymap-tools owns Normal/Visual
+prefix hints and `<leader>?`, with selection-tools providing the keymap picker.
+which-key remains restricted to operator-pending textobject hints for mini.ai and
+LaTeX; its Normal/Visual triggers and mark/register/spelling popups are disabled.
+Existing which-key metadata integrations retain their declared dependency lifecycle.
 
 Pairing declares `Jacky-Lzx/pairs.nvim` with lazy.nvim's `dev = true`. The shared `dev.path`
 comes from `NVIM_DEV_PLUGIN_ROOT` (default `~/Documents/Github/nvim_plugins`), and

@@ -1,0 +1,30 @@
+return {
+  {
+    dir = require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim",
+    name = "keymap-tools.nvim",
+    main = "keymap_tools",
+    lazy = false,
+    priority = 850,
+    dependencies = { "selection-tools.nvim" },
+    opts = {
+      delay = 200,
+      win = { width = 48, height = 16, border = "rounded" },
+      picker = { key = "<leader>?" },
+      groups = {
+        ["<leader>tg"] = "[Git] Toggle",
+        ["<leader>gg"] = "[Git]",
+        ["<leader>cc"] = "[CodeCompanion]",
+        ["<leader>D"] = "[Dap]",
+        ["<leader>w"] = "[Workspace]",
+        ["<leader>s"] = "[Selection]",
+        ["<leader>t"] = "[Toggle]",
+        ["<leader>g"] = "[LSP] / [Git]",
+        ["<leader>tP"] = "[Profiler]",
+        ["<leader>m"] = "[Compile]",
+        ["<leader>o"] = "[Overseer]",
+        ["<leader>O"] = "[Obsidian]",
+        ["<localleader>l"] = "LaTeX",
+      },
+    },
+  },
+}

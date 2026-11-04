@@ -27,7 +27,7 @@ def main():
     env["TERM"] = "xterm-256color"
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case in ("ui_tools", "bars") else 120, 0, 0))
-    test_file = {"notifications": "notifications_tui.lua", "ui_tools": "ui_tools_tui.lua", "bars": "bars_tui.lua", "completion_input": "completion_tui.lua"}.get(case, "lazy_startup.lua")
+    test_file = {"notifications": "notifications_tui.lua", "ui_tools": "ui_tools_tui.lua", "bars": "bars_tui.lua", "completion_input": "completion_tui.lua", "keymaps": "keymaps_tui.lua"}.get(case, "lazy_startup.lua")
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
@@ -36,6 +36,12 @@ def main():
     ]
     process = subprocess.Popen(command, env=env, stdin=slave, stdout=slave, stderr=slave, start_new_session=True)
     os.close(slave)
+    keymap_actions = {
+        "prefix": b" ", "subgroup": b"s", "hint_cancel": b"\x1b", "picker": b" ?",
+        "filter": b"Toggle Wrap", "confirm": b"\r", "visual_picker": b"vj ?",
+        "visual_cancel": b"\x1b", "visual_escape": b"\x1b", "textobject": b"di(",
+    }
+    handled = set()
     deadline = time.monotonic() + 30
     try:
         while process.poll() is None and time.monotonic() < deadline:
@@ -46,6 +52,12 @@ def main():
                         break
                 except OSError:
                     break
+            if case == "keymaps":
+                stage_file = Path(env["NVIM_TEST_TMP"], "keymap-stage")
+                stage = stage_file.read_text().strip() if stage_file.exists() else ""
+                if stage in keymap_actions and stage not in handled:
+                    os.write(master, keymap_actions[stage])
+                    handled.add(stage)
         try:
             # PTYs can report EOF just before the child exit becomes observable.
             process.wait(timeout=max(0.1, deadline - time.monotonic()))
