@@ -312,6 +312,14 @@ repairs; initial transitive resolutions are not globally locked. `:Mason` opens 
 manager and `:MasonToolsInstall` remains an installation alias. Use `:ToolchainLog` for
 logs; the other old `:Mason*` commands are no longer registered.
 
+`toolchain-lock.json` freezes the managed fallback recipes, release digests and
+npm/Python/Cargo dependencies per platform. Normal installation uses the frozen
+record and never rewrites it. `:ToolchainLock!` explicitly resolves configured
+managed tools and updates the current platform's record; commit that change.
+`:ToolchainLock` exports existing verified managed versions. Missing platform or
+package entries require an explicit lock update; system/Nix tools retain priority.
+Python fallback installs require the interpreter major/minor recorded in the lock.
+
 ## Adding a language
 
 1. Add `lua/languages/<name>.lua` returning metadata (see `lua/languages/json.lua`).

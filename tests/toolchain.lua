@@ -48,6 +48,7 @@ end
 integration.install()
 assert(vim.deep_equal(installed, integration.requirements()))
 assert(spec.opts.tools.path == "append")
+assert(spec.opts.tools.lockfile == root .. "/toolchain-lock.json")
 assert(not spec.dependencies, "Toolchain must not depend on the legacy runtimes")
 
 -- The actual Vue repair helper must complete every no-op path immediately,

@@ -17,7 +17,7 @@ return {
     },
     opts = {
       concurrency = 2,
-      tools = { path = "append" },
+      tools = { path = "append", lockfile = require("utils.paths").root .. "/toolchain-lock.json" },
       requirements = function()
         return require("integrations.toolchain").requirements()
       end,
