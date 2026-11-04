@@ -71,7 +71,17 @@ local system, notify = vim.system, vim.notify
 local pending, logs = nil, {}
 vim.notify = function() end
 vim.system = function(command, opts, callback)
-  assert(vim.deep_equal(command, { "npm", "install", "typescript@5", "--no-save", "--no-audit", "--no-fund" }))
+  assert(vim.deep_equal(command, {
+    "npm",
+    "install",
+    "--prefix",
+    assert(vim.uv.fs_realpath(directory .. "/node_modules/@vue/language-server")),
+    "--global=false",
+    "typescript@5",
+    "--no-save",
+    "--no-audit",
+    "--no-fund",
+  }))
   assert(opts.cwd == directory .. "/node_modules/@vue/language-server" and opts.text)
   pending = callback
 end

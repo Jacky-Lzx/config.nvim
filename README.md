@@ -320,6 +320,12 @@ managed tools and updates the current platform's record; commit that change.
 package entries require an explicit lock update; system/Nix tools retain priority.
 Python fallback installs require the interpreter major/minor recorded in the lock.
 
+`:ToolchainVersions [tool:name]` lists stored versions; `:ToolchainRollback tool:name <id>`
+verifies and selects a previous version. Restart affected clients afterward. Rollback leaves
+`toolchain-lock.json` unchanged. `:ToolchainPrune [tool:name]` previews retired versions and
+explains protections for current versions, live editors and active installers; it deletes
+nothing. Reports close with `q`.
+
 ## Adding a language
 
 1. Add `lua/languages/<name>.lua` returning metadata (see `lua/languages/json.lua`).

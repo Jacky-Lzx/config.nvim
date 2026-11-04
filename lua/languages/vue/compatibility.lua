@@ -66,7 +66,17 @@ function M.ensure_typescript5(package_path, done, log)
   end
 
   vim.notify(("vue-language-server: replacing incompatible TypeScript %s with TypeScript 5"):format(version))
-  vim.system({ "npm", "install", "typescript@5", "--no-save", "--no-audit", "--no-fund" }, {
+  vim.system({
+    "npm",
+    "install",
+    "--prefix",
+    assert(vim.uv.fs_realpath(path)),
+    "--global=false",
+    "typescript@5",
+    "--no-save",
+    "--no-audit",
+    "--no-fund",
+  }, {
     cwd = path,
     text = true,
   }, function(result)
