@@ -8,7 +8,6 @@ for _, path in ipairs({
   dev .. "/ui-tools.nvim",
   dev .. "/lsp-tools.nvim",
   installed .. "overseer.nvim",
-  installed .. "copilot.lua",
 }) do
   vim.opt.rtp:append(path)
 end
@@ -155,24 +154,9 @@ end
 settle()
 assert(scans == 1 and symbol_calls == calls, "Redraw/cursor updates queried providers")
 
--- Native Copilot notifications update text without starting its server.
-allowed.copilot = true
-local copilot, notification = require("copilot.client"), require("copilot.status")
-local disabled, attached = copilot.is_disabled, copilot.buf_is_attached
-copilot.is_disabled, copilot.buf_is_attached = function()
-  return false
-end, function()
-  return true
-end
-vim.api.nvim_exec_autocmds("User", { pattern = "LazyLoad", data = "copilot.lua" })
-settle()
-notification.handlers.statusNotification(nil, { status = "InProgress" }, { client_id = 4321 })
-settle()
-assert(line():find(" …", 1, true), line())
-notification.handlers.statusNotification(nil, { status = "Warning" }, { client_id = 4321 })
-settle()
-assert(line():find("", 1, true), line())
-copilot.is_disabled, copilot.buf_is_attached = disabled, attached
+-- Copilot status belongs to the completion window, not the statusline.
+assert(not line():find("", 1, true) and not line():find("", 1, true), line())
+assert(not package.loaded["copilot.client"] and not package.loaded["copilot.status"])
 vim.api.nvim_win_set_cursor(0, { 2, 0 })
 assert(not winbar():find("test_document_symbol", 1, true), "Stale enclosing symbol")
 for _, task in ipairs(fixtures) do
@@ -232,7 +216,8 @@ check_winbar("second%bar.txt")
 local exec, temporary_redraws = vim.api.nvim_exec2, {}
 vim.api.nvim_exec2 = function(command, ...)
   if
-    command == "redrawstatus" and (vim.fn.win_gettype() == "autocmd" or vim.api.nvim_win_get_config(0).relative ~= "")
+    command == "redrawstatus"
+    and (vim.fn.win_gettype() == "autocmd" or vim.api.nvim_win_get_config(0).relative ~= "")
   then
     temporary_redraws[#temporary_redraws + 1] = debug.traceback()
   end

@@ -2,30 +2,11 @@
 local M = {}
 local api = vim.api
 local counts, tasks_dirty = {}, true
-local queue, copilot_status, copilot_callback
+local queue
 local task_symbols = { FAILURE = "󰅚 ", CANCELED = " ", SUCCESS = "󰄴 ", RUNNING = "󰑮 " }
 
 local function features()
   return require("config.context").current().selection.features
-end
-
-local function copilot_state(ctx)
-  local client = package.loaded["copilot.client"]
-  if not client then
-    return "unknown"
-  end
-  if client.is_disabled() or not client.buf_is_attached(ctx.buf) then
-    return "disabled"
-  end
-  local status = package.loaded["copilot.status"]
-  local state = status and status.data.status or ""
-  if state == "Warning" then
-    return "warning"
-  end
-  if state == "InProgress" then
-    return "busy"
-  end
-  return "enabled"
 end
 
 function M.sections()
@@ -37,24 +18,6 @@ function M.sections()
     y = { "encoding", "fileformat", "filetype", "progress" },
     z = { "location" },
   }
-  if features().ai then
-    for _, entry in ipairs({
-      { "enabled", " ", "DiagnosticOk" },
-      { "disabled", " ", "Comment" },
-      { "warning", " ", "DiagnosticWarn" },
-      { "busy", " …", "Special" },
-      { "unknown", " ", "DiagnosticError" },
-    }) do
-      local state, icon, color = unpack(entry)
-      result.c[#result.c + 1] = {
-        function(ctx)
-          return copilot_state(ctx) == state and icon or ""
-        end,
-        color = color,
-        priority = 30,
-      }
-    end
-  end
   if features().tasks then
     for _, status in ipairs({ "FAILURE", "CANCELED", "SUCCESS", "RUNNING" }) do
       result.x[#result.x + 1] = {
@@ -80,17 +43,6 @@ local function update()
       end
     end
   end
-  local status = features().ai and package.loaded["copilot.status"]
-  if status and status ~= copilot_status then
-    if copilot_status then
-      copilot_status.unregister_status_notification_handler(copilot_callback)
-    end
-    copilot_status = status
-    copilot_callback = function()
-      queue.request()
-    end
-    status.register_status_notification_handler(copilot_callback)
-  end
   -- Refresh only custom text; cached diagnostic/LSP/Git snapshots stay valid.
   require("ui_tools.statusline").update()
 end
@@ -110,10 +62,6 @@ function M.setup()
   if queue then
     queue.cancel()
   end
-  if copilot_status then
-    copilot_status.unregister_status_notification_handler(copilot_callback)
-  end
-  copilot_status, copilot_callback = nil, nil
   queue = require("ui_tools.bar").scheduler(30, update)
   tasks_dirty = true
   local group = api.nvim_create_augroup("ConfigBars", { clear = true })

@@ -80,11 +80,14 @@ comes from `NVIM_DEV_PLUGIN_ROOT` (default `~/Documents/Github/nvim_plugins`), a
 source selection; `:checkhealth pairs` provides the plugin's own diagnostics. Plugin source
 is not copied into this repo.
 
-completion-tools owns the completion menu and loads Copilot through its native source
-only when requested, or through `:Copilot`. Command-line completion does not initialize
+completion-tools owns the completion menu and connects directly to the official
+Copilot Language Server, without copilot.lua. The server starts on a completion request
+or `:CompletionToolsCopilot auth`; the command lazy-loads completion-tools when needed. Command-line completion does not initialize
 pairing, snippets, or AI. LSP depends on completion-tools so capability negotiation is
 complete before servers start. With the AI feature enabled, Copilot is in the default
-source list and Alt-i toggles it for the current buffer.
+source list and Alt-i toggles it for the current buffer. Copilot status uses the original icons and a loading spinner in the completion window footer, updated by
+`User CompletionToolsCopilotStatus`. The statusline has no Copilot component; drawing
+either UI never starts the server.
 
 ui-tools owns the native bufferline, statusline and per-window winbar. Its winbar
 module manages window ownership, view preservation, filename/client caches and themes;

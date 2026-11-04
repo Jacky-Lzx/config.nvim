@@ -23,6 +23,7 @@ vim.notify = function(message, level, opts)
   end
   return notify(message, level, opts)
 end
+_G.config_test_real_lsp_start = vim.lsp.start
 _G.config_test_lsp_starts = {}
 vim.lsp.start = function(config)
   table.insert(_G.config_test_lsp_starts, vim.deepcopy(config))

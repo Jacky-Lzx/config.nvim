@@ -11,9 +11,12 @@ Alt-n/p 按 buffer 循环默认/单词（buffer + dictionary + spell）/snippets
 词典已接入 configs/dictionary.txt，输入至少 3 字符、最多 10 项，后台模糊检索；
 拼写已接入原生 spelllang/spellfile，仅在开启 spell 的窗口启用，保留匹配排序及纠错候选。
 两者均为 completion-tools 的独立来源，不加载对应 Blink 插件。
-Copilot 已通过 copilot.lua 原生接口接入，AI 功能启用时进入默认来源；Alt-i 按 buffer 开关。
+Copilot 已由 completion-tools 直接连接官方 Copilot Language Server；不再依赖 copilot.lua。
+AI 功能启用时进入默认来源，Alt-i 按 buffer 开关；最多三条紫色候选。
 建议复用菜单导航与 Tab/Enter 接受，多行内容保留；请求独立防抖并取消旧结果。
-Copilot 仅在请求该来源时加载，命令行不加载；独立 Copilot 命令/状态保留。
+服务端仅在补全请求或显式认证时启动；命令行补全保持冷启动。
+使用 :CompletionToolsCopilot auth/status/enable/disable/restart；状态以原来的 Copilot 图标显示在补全窗格底部，等待/生成时有点状旋转动画；状态栏不再显示 Copilot。
+运行环境需提供 copilot-language-server（本机已安装），账号凭据由官方服务端管理。
 命令行已接入独立补全：: 使用原生命令/参数补全，/ 与 ? 使用缓冲区单词。
 input-tools 继续绘制命令行与输入框；候选框通过公开布局 API 避让整个输入窗口。
 命令行支持自动显示、方向键/Ctrl-n/p/Alt-j/k、Alt-u/d 跳五项、Tab 接受和 Alt-/ 开关；Enter 保持执行/搜索。

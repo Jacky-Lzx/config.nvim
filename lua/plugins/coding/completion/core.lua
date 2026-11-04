@@ -5,6 +5,7 @@ return {
     name = "completion-tools.nvim",
     main = "completion-tools",
     event = { "InsertEnter", "CmdlineEnter" },
+    cmd = "CompletionToolsCopilot",
     opts = require("integrations.completion").options(),
     config = function(_, opts)
       require("completion-tools").setup(opts)

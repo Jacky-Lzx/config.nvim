@@ -29,7 +29,6 @@ local function check()
     "conform.nvim",
     "LuaSnip",
     "pairs.nvim",
-    "copilot.lua",
     "mini.ai",
     "mini.align",
     "mini.operators",
@@ -37,10 +36,17 @@ local function check()
     "todo-comments.nvim",
     "nvim-highlight-colors"
   )
+  assert(not plugins["copilot.lua"] and not package.loaded["copilot.client"])
   assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
   assert(not package.loaded["tex-tools"], "TeX tools loaded without a TeX buffer")
   assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
-  for _, command in ipairs({ "NvimTreeToggle", "OverseerToggle", "CodeCompanionChat", "LuaSnipEdit", "Copilot" }) do
+  for _, command in ipairs({
+    "NvimTreeToggle",
+    "OverseerToggle",
+    "CodeCompanionChat",
+    "LuaSnipEdit",
+    "CompletionToolsCopilot",
+  }) do
     assert(vim.fn.exists(":" .. command) == 2, "Missing cold command: " .. command)
   end
 
@@ -67,7 +73,7 @@ local function check()
     loaded("crates.nvim")
     loaded("pairs.nvim") -- Reading/creating a file enables rainbow before InsertEnter.
     assert(require("pairs.rainbow").status().enabled)
-    unloaded("nvim-dap", "nvim-tree.lua", "LuaSnip", "copilot.lua", "nvim-hlslens")
+    unloaded("nvim-dap", "nvim-tree.lua", "LuaSnip", "nvim-hlslens")
     for _, extension in ipairs({ "cpp", "swift" }) do
       vim.cmd.edit(temp .. "/lazy-file." .. extension)
       unloaded("nvim-dap", "nvim-dap-view", "nvim-tree.lua")
@@ -152,7 +158,7 @@ local function check()
     feed(":<Esc>")
     loaded("completion-tools.nvim")
     assert(not plugins["blink.cmp"] and not package.loaded["blink.cmp"])
-    unloaded("LuaSnip", "pairs.nvim", "copilot.lua")
+    unloaded("LuaSnip", "pairs.nvim")
     contents({ "" })
     vim.bo.filetype = "lua"
     feed("i(<CR>x<Esc>")
@@ -164,11 +170,19 @@ local function check()
     for _, provider in ipairs({ "blink-copilot", "blink-cmp-dictionary", "blink-cmp-spell", "colorful-menu.nvim" }) do
       assert(not plugins[provider], "Unadapted provider must stay absent: " .. provider)
     end
-    -- Requesting the native source loads Copilot; command-line setup stays cold.
-    local source = require("completion_tools.sources.copilot").new()
-    source.complete({ mode = "insert" }, function() end)
-    source.dispose()
-    loaded("copilot.lua")
+    -- Authentication/status share the completion plugin; no second AI plugin.
+    assert(vim.fn.exists(":CompletionToolsCopilot") == 2)
+    local notifications, notify = {}, vim.notify
+    vim.notify = function(message)
+      notifications[#notifications + 1] = message
+    end
+    vim.cmd("CompletionToolsCopilot status")
+    vim.notify = notify
+    assert(#notifications == 1)
+    assert(not package.loaded["copilot.client"] and not package.loaded["copilot.api"])
+    for _, client in ipairs(vim.lsp.get_clients()) do
+      assert(client.name ~= "completion-tools-copilot", "Status must not start the server")
+    end
   else
     error("Unknown lazy startup case: " .. tostring(case))
   end

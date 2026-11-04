@@ -36,7 +36,7 @@ function M.options()
       return require("features.completion").active_sources(M.source_config)
     end,
     providers = {
-      copilot = ai and { score_offset = 100 } or nil,
+      copilot = ai and { score_offset = 100, timeout_ms = 10000 } or nil,
       lsp = {
         score_offset = 60,
         transform_items = function(_, items)
@@ -50,6 +50,12 @@ function M.options()
       snippets = { score_offset = 60 },
       dictionary = { score_offset = 5 },
       spell = { score_offset = 10 },
+    },
+    copilot = {
+      command = { "copilot-language-server", "--stdio" },
+      debounce_ms = 150,
+      max_items = 3,
+      show_status = true,
     },
     path = {
       get_cwd = function()

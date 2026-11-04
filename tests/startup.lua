@@ -81,6 +81,8 @@ local function check()
   assert(completion_spec.providers.lazydev == nil)
   assert((completion_spec.providers.copilot ~= nil) == features.ai)
   assert((completion_spec.keymap["<A-i>"] ~= nil) == features.ai)
+  assert(not plugins["copilot.lua"] and not package.loaded["copilot.client"])
+  assert(vim.fn.exists(":CompletionToolsCopilot") == 2)
   assert(not plugins["blink.cmp"] and not package.loaded["blink.cmp"])
   for _, name in ipairs({ "blink-copilot", "blink-cmp-dictionary", "blink-cmp-spell", "colorful-menu.nvim" }) do
     assert(not plugins[name], "Unadapted Blink extension must not enter the active spec: " .. name)
