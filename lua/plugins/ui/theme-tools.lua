@@ -31,7 +31,6 @@ return {
           end,
         },
         integrations = {
-          barbar = true,
           flash = true,
           gitsigns = true,
           markdown = true,

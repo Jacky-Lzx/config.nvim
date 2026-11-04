@@ -43,18 +43,18 @@ local function check()
   local info = vim.fn.getwininfo(win)[1]
   assert(info.textoff == 9, "Expected separate symbol columns and one padding cell: " .. info.textoff)
   assert(
-    vim.fn.screenstring(info.winrow + info.winbar, info.wincol + info.textoff - 1) == " ",
+    vim.fn.screenstring(vim.fn.screenpos(win, 1, 1).row, info.wincol + info.textoff - 1) == " ",
     "Gutter padding missing"
   )
   local rows = assert(column.cache[win], "Source window with inherited column was not adopted")
   local diagnostic = assert(rows[3] and rows[3].diagnostic, "Native diagnostic sign missing")
   assert(diagnostic.sign_hl_group == "DiagnosticSignError", "Error must take precedence")
   local icon = diagnostic.sign_text:gsub("%s+$", "")
-  assert(vim.fn.screenstring(info.winrow + info.winbar + 2, info.wincol) == icon, "Diagnostic icon not drawn")
+  assert(vim.fn.screenstring(vim.fn.screenpos(win, 3, 1).row, info.wincol) == icon, "Diagnostic icon not drawn")
   vim.api.nvim_buf_set_mark(0, "a", 3, 0, {})
   column.refresh()
   vim.cmd("redraw!")
-  local diagnostic_row = info.winrow + info.winbar + 2
+  local diagnostic_row = vim.fn.screenpos(win, 3, 1).row
   assert(vim.fn.screenstring(diagnostic_row, info.wincol) == icon, "Mark hid the diagnostic")
   assert(vim.fn.screenstring(diagnostic_row, info.wincol + 1) == "a", "Mark missing from second symbol column")
   local sign_ns = vim.api.nvim_create_namespace("UiToolsConfiguredOtherSign")
@@ -74,7 +74,7 @@ local function check()
   vim.diagnostic.reset(diagnostic_ns, 0)
   column.refresh()
   assert(
-    vim.fn.screenstring(info.winrow + info.winbar, info.wincol + info.textoff + 120) == "",
+    vim.fn.screenstring(vim.fn.screenpos(win, 1, 1).row, info.wincol + info.textoff + 120) == "",
     "Configured column guide not visible"
   )
 
@@ -110,7 +110,7 @@ local function check()
   local fold_info = vim.fn.getwininfo(win)[1]
   assert(fold_info.textoff == 9, "Configured fold area and padding grew with nesting")
   for level = 1, 4 do
-    local row = fold_info.winrow + fold_info.winbar + level * 2 - 1
+    local row = vim.fn.screenpos(win, level * 2, 1).row
     local col = math.min(level, 2)
     assert(vim.fn.screenstring(row, fold_info.wincol + 5 + col) == "▾", "Missing fold level " .. level)
     if level > 1 then

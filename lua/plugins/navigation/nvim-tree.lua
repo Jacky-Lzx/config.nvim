@@ -2,22 +2,16 @@ return {
   {
     "nvim-tree/nvim-tree.lua",
     version = "*",
-    cmd = { "NvimTreeToggle", "NvimTreeOpen", "NvimTreeClose", "NvimTreeFocus", "NvimTreeFindFile", "NvimTreeRefresh" },
+    cmd = {
+      "NvimTreeToggle",
+      "NvimTreeOpen",
+      "NvimTreeClose",
+      "NvimTreeFocus",
+      "NvimTreeFindFile",
+      "NvimTreeRefresh",
+    },
     dependencies = {
       "nvim-tree/nvim-web-devicons",
-      -- NOTE: The barbar.nvim should be started before the nvim-tree.
-      --         Otherwise when opening files, the bufferline will not show. <2026.04.30, lzx>
-      {
-        "romgrk/barbar.nvim",
-        optional = true,
-        opts = {
-          -- Set the filetypes which barbar will offset itself for
-          sidebar_filetypes = {
-            -- Default values: {event = 'BufWinLeave', text = '', align = 'left'}
-            NvimTree = { text = "NvimTree", event = "BufWinLeave", align = "center" },
-          },
-        },
-      },
     },
     keys = {
       { "<leader>e", "<CMD>NvimTreeToggle<CR>", mode = { "n" }, desc = "[NvimTree] Toggle NvimTree" },

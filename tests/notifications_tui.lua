@@ -1,7 +1,7 @@
 -- Invoked by tests/tui.py after the full real configuration has started.
 local tools = require("notification-tools")
 local result = assert(vim.env.NVIM_LAZY_RESULT)
-local original_win, original_buf, notice, before
+local original_win, original_buf, notice, before, original_theme
 local buffer_done, buffer_value
 local failed = false
 local function finish(ok, message)
@@ -73,6 +73,7 @@ vim.api.nvim_create_autocmd("User", {
       tools.dismiss()
       tools.clear_tasks()
       tools.clear_history()
+      original_theme = vim.g.colors_name
       original_win = vim.api.nvim_get_current_win()
       original_buf = vim.api.nvim_create_buf(true, false)
       vim.api.nvim_win_set_buf(original_win, original_buf)
@@ -135,7 +136,7 @@ vim.api.nvim_create_autocmd("User", {
     later(1200, function()
       local text = capture()
       assert(text:find("Completed", 1, true))
-      assert(vim.g.colors_name:find("catppuccin", 1, true))
+      assert(vim.g.colors_name == original_theme, "Notification UI changed the selected theme")
       for _, item in ipairs(tools.history()) do
         assert(item.level ~= vim.log.levels.ERROR, item.message)
       end

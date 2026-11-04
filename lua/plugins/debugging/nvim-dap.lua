@@ -1,16 +1,6 @@
 return {
   {
     "igorlfs/nvim-dap-view",
-    specs = {
-      {
-        -- Solve the display issue with lualine
-        "nvim-lualine/lualine.nvim",
-        optional = true,
-        -- Keep exclusions contributed by the base UI (including lsp-tools results).
-        opts_extend = { "options.disabled_filetypes.winbar" },
-        opts = { options = { disabled_filetypes = { winbar = { "dap-view", "dap-view-term", "dap-repl" } } } },
-      },
-    },
     -- stylua: ignore
     keys = {
       { "<leader>Du", function() require("dap-view").toggle() end, desc = "[DAP view] Toggle dap-view" },

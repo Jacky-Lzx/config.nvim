@@ -97,9 +97,10 @@ local function verify()
   vim.cmd("normal! zt")
   vim.cmd.redraw({ bang = true })
   local origin = vim.fn.win_screenpos(0)
+  local winbar_height = vim.fn.getwininfo(vim.api.nvim_get_current_win())[1].winbar
   local text = {}
   for col = origin[2], origin[2] + vim.api.nvim_win_get_width(0) - 1 do
-    text[#text + 1] = vim.fn.screenstring(origin[1] + 2, col)
+    text[#text + 1] = vim.fn.screenstring(origin[1] + winbar_height + 2, col)
   end
   text = table.concat(text)
   assert(not text:find("left", 1, true) and not text:find("right", 1, true), "Math sizing was not concealed")

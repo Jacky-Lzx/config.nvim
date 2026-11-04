@@ -88,7 +88,13 @@ local function check()
   assert((plugins["nvim-dap"] ~= nil) == not not features.debugging)
   assert((plugins["overseer.nvim"] ~= nil) == not not features.tasks)
   assert((plugins["auto-session"] ~= nil) == not not features.sessions)
-  assert((plugins["copilot-lualine"] ~= nil) == not not features.ai)
+  for _, name in ipairs({ "barbar.nvim", "lualine.nvim", "copilot-lualine" }) do
+    assert(not plugins[name], "Old bar plugin remains configured: " .. name)
+  end
+  assert(require("ui_tools.bufferline").enabled and require("ui_tools.statusline").enabled)
+  for _, key in ipairs({ "<A-1>", "<A-9>", "<A-h>", "<A-l>", "<A-S-,>", "<A-S-.>", "<A-<>", "<A->>", "<A-w>", "<A-u>" }) do
+    assert(vim.fn.maparg(key, "n", false, true).callback, "Missing buffer mapping: " .. key)
+  end
   assert((plugins["codecompanion.nvim"] ~= nil) == not not features.ai)
   assert((plugins["tex-tools.nvim"] ~= nil) == require("languages").is_enabled("latex"))
   assert((plugins["lazydev.nvim"] ~= nil) == require("languages").is_enabled("lua"))
