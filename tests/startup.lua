@@ -80,25 +80,30 @@ local function check()
     end
     assert(vim.deep_equal(vim.tbl_deep_extend("force", actual, completion), actual), name)
   end
-  for _, name in ipairs(languages.servers) do
-    assert(vim.lsp.is_enabled(name), name .. " is not enabled")
-    assert(vim.lsp.config[name], name .. " has no native config")
-    check_completion(_G.config_test_lsp_enabled[name], name)
-  end
   assert(plugins["lsp-tools.nvim"]._.loaded and plugins["nvim-lspconfig"]._.loaded)
-  local managed = {}
+  local selected, active = {}, {}
   for _, server in ipairs(require("lsp-tools").server_status()) do
-    managed[server.name] = server.managed
+    selected[server.name] = server
   end
-  assert(vim.tbl_count(managed) == #languages.servers, "Only profile-selected servers may be managed")
+  assert(vim.tbl_count(selected) == #languages.servers, "Only profile-selected servers may be managed")
   for _, name in ipairs(languages.servers) do
-    assert(managed[name], name .. " must be managed by lsp-tools")
+    local server = assert(selected[name])
+    assert(vim.lsp.config[name], name .. " has no native config")
+    assert(server.enabled or server.pending, name .. " must be active or waiting for its filetype")
+    check_completion(vim.lsp.config[name].capabilities, name)
+    if server.enabled then
+      assert(server.managed, name .. " must be managed by lsp-tools")
+      check_completion(_G.config_test_lsp_enabled[name], name)
+      active[#active + 1] = name
+    else
+      assert(_G.config_test_lsp_enabled[name] == nil, name .. " enabled before its filetype")
+    end
   end
   local active_info = require("config").info()
   assert(vim.deep_equal(active_info.languages.servers, languages.servers))
-  assert(vim.deep_equal(active_info.lsp.enabled_servers, languages.servers))
+  assert(vim.deep_equal(active_info.lsp.enabled_servers, active))
   vim.api.nvim_exec_autocmds("InsertEnter", {})
-  for _, name in ipairs(languages.servers) do
+  for _, name in ipairs(active) do
     assert(vim.deep_equal(vim.lsp.config[name].capabilities, _G.config_test_lsp_enabled[name]), name)
   end
   for _, config in ipairs(_G.config_test_lsp_starts) do

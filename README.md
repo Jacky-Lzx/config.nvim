@@ -73,7 +73,9 @@ without matching descriptions or replacing the global Snacks mapping hook.
 `lua/plugins/coding/lsp-tools.lua` maps the selected language profiles to the
 plugin's `servers` options. It loads on `BufReadPre` / `BufNewFile` (or an explicit
 tool action), configures shared completion and file-operation capabilities, and
-enables servers through lsp-tools. nvim-lspconfig is a dependency that supplies
+enables matching servers through lsp-tools when their filetypes are opened
+(`server_activation = "filetype"`). Other selected configs remain pending until
+needed. nvim-lspconfig is a dependency that supplies
 maintained configs; it has no separate setup or activation hook. Existing
 `after/lsp/` settings and the custom `lsp/texquill.lua` config retain native merge
 semantics. Tool installation stays with toolchain-tools. `:checkhealth lsp-tools`

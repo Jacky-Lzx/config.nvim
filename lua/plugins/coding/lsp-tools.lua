@@ -174,6 +174,7 @@ return {
       },
     },
     opts = {
+      server_activation = "filetype",
       servers = servers,
       lightbulb = true,
       linked_editing = true,

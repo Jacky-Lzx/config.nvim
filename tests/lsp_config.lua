@@ -4,6 +4,7 @@ vim.opt.runtimepath:prepend(root)
 local provider = require("plugins.coding.nvim-lspconfig")[1]
 assert(provider.lazy and not provider.config and not provider.opts and not provider.event)
 local lsp = require("plugins.coding.lsp-tools")[1]
+assert(lsp.opts.server_activation == "filetype", "Servers must activate only when their filetypes are opened")
 assert(vim.list_contains(lsp.event, "BufReadPre") and vim.list_contains(lsp.event, "BufNewFile"))
 assert(vim.list_contains(lsp.dependencies, "neovim/nvim-lspconfig"))
 assert(vim.list_contains(lsp.dependencies, "completion-tools.nvim"))
