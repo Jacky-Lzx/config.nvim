@@ -92,18 +92,41 @@ local function check()
     assert(not plugins[name], "Old bar plugin remains configured: " .. name)
   end
   assert(require("ui_tools.bufferline").enabled and require("ui_tools.statusline").enabled)
-  for _, key in ipairs({ "<A-1>", "<A-9>", "<A-h>", "<A-l>", "<A-S-,>", "<A-S-.>", "<A-<>", "<A->>", "<A-w>", "<A-u>" }) do
+  for _, key in ipairs({
+    "<A-1>",
+    "<A-9>",
+    "<A-h>",
+    "<A-l>",
+    "<A-S-,>",
+    "<A-S-.>",
+    "<A-<>",
+    "<A->>",
+    "<A-w>",
+    "<A-u>",
+  }) do
     assert(vim.fn.maparg(key, "n", false, true).callback, "Missing buffer mapping: " .. key)
   end
   assert((plugins["codecompanion.nvim"] ~= nil) == not not features.ai)
   assert((plugins["tex-tools.nvim"] ~= nil) == require("languages").is_enabled("latex"))
   assert((plugins["lazydev.nvim"] ~= nil) == require("languages").is_enabled("lua"))
-  local tools = opts("mason.nvim")
+  assert(opts("mason.nvim").PATH == "append")
+  local tools = {}
+  for _, requirement in ipairs(opts("toolchain-tools.nvim").requirements()) do
+    tools[requirement.provider .. ":" .. requirement.name] = requirement
+  end
+  assert(tools["treesitter:regex"] and tools["mason:codespell"])
   for _, tool in ipairs(languages.tools) do
     if tool.mason then
-      assert(vim.list_contains(tools.ensure_installed, tool.mason), tool.mason)
+      assert(tools["mason:" .. tool.mason], tool.mason)
     end
   end
+  assert(not plugins["toolchain-tools.nvim"]._.loaded, "Installer UI should stay cold until requested")
+  vim.cmd("ToolchainPlan")
+  assert(plugins["toolchain-tools.nvim"]._.loaded)
+  assert(require("mason").has_setup)
+  assert(#require("toolchain").status() == 0, "Planning must not start installations")
+  assert(vim.bo.filetype == "toolchain")
+  vim.api.nvim_win_close(0, true)
 
   -- Exercise actual plugin setup, not just spec merging.
   require("lazy").load({ plugins = { "conform.nvim", "nvim-lint", "completion-tools.nvim" } })
@@ -180,7 +203,7 @@ local function check()
     assert(vim.bo.filetype == "vue")
     assert(vim.list_contains(vim.lsp.config.vtsls.filetypes, "vue"))
     assert(vim.lsp.is_enabled("vue_ls"))
-    assert(type(tools.post_install["vue-language-server"]) == "function")
+    assert(type(tools["mason:vue-language-server"].post_install_async) == "function")
   end
 
   -- Reapplying the theme must preserve user highlights.

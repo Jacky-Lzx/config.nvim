@@ -11,8 +11,15 @@ local fields = {
   linter_options = true,
   requires = true,
 }
-local tool_fields =
-  { mason = "string", executable = "string", resolve = "function", feature = "string", post_install = "function" }
+local tool_fields = {
+  mason = "string",
+  executable = "string",
+  resolve = "function",
+  feature = "string",
+  post_install = "function",
+  post_install_async = "function",
+  optional = "boolean",
+}
 local formatter_fields = {
   stop_after_first = "boolean",
   quiet = "boolean",
@@ -100,6 +107,9 @@ function M.validate(name, definition)
       )
     end
     check(not tool.post_install or tool.mason, tool_path .. ".post_install", "needs a Mason package name")
+    check(not tool.post_install_async or tool.mason, tool_path .. ".post_install_async", "needs a Mason package name")
+    check(not (tool.post_install and tool.post_install_async), tool_path, "choose one post-install hook")
+    check(tool.optional == nil or not tool.mason, tool_path .. ".optional", "only system requirements may be optional")
   end
   for i, spec in ipairs(definition.plugins or {}) do
     check(

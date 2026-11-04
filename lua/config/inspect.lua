@@ -41,6 +41,7 @@ function M.snapshot()
       name = tool.executable or tool.mason,
       mason = tool.mason,
       feature = tool.feature,
+      optional = tool.optional == true,
       path = path,
       available = path ~= nil,
     }

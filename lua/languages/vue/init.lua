@@ -4,8 +4,8 @@ return {
     {
       mason = "vue-language-server",
       executable = "vue-language-server",
-      post_install = function(package)
-        require("languages.vue.compatibility").ensure_typescript5(package:get_install_path())
+      post_install_async = function(package, done, log)
+        require("languages.vue.compatibility").ensure_typescript5(package:get_install_path(), done, log)
       end,
     },
     { mason = "vtsls", executable = "vtsls" },

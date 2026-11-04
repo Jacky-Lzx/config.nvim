@@ -90,18 +90,4 @@ function M.is_enabled(name)
   return vim.list_contains(M.current().names, name)
 end
 
-function M.mason_options()
-  local opts = { ensure_installed = {}, post_install = {}, tools = {} }
-  for _, tool in ipairs(M.current().tools) do
-    if tool.mason then
-      opts.ensure_installed[#opts.ensure_installed + 1] = tool.mason
-      opts.tools[tool.mason] = tool
-      if tool.post_install then
-        opts.post_install[tool.mason] = tool.post_install
-      end
-    end
-  end
-  return opts
-end
-
 return M

@@ -48,3 +48,18 @@ schema.validate("fixture", valid)
 assert(vim.deep_equal(valid, original), "Validation must not mutate declarations")
 assert(not package.loaded.lazy and not package.loaded.conform and not package.loaded.lint)
 print("Language binding schema rejects malformed lists and formatter options")
+
+for _, tool in ipairs({
+  { executable = "optional", optional = "yes" },
+  { mason = "managed", executable = "managed", optional = true },
+  { executable = "system", post_install_async = function() end },
+  { mason = "managed", executable = "managed", post_install = function() end, post_install_async = function() end },
+}) do
+  assert(not pcall(schema.validate, "fixture", { tools = { tool } }))
+end
+schema.validate("fixture", {
+  tools = {
+    { executable = "optional", optional = true },
+    { mason = "managed", executable = "managed", post_install_async = function() end },
+  },
+})

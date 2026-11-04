@@ -2,16 +2,7 @@ return {
   {
     "mfussenegger/nvim-lint",
     event = { "BufWritePost" },
-    dependencies = {
-      {
-        "mason-org/mason.nvim",
-        optional = true,
-        opts_extend = { "ensure_installed" },
-        opts = {
-          ensure_installed = { "codespell" },
-        },
-      },
-    },
+    dependencies = { "mason-org/mason.nvim" },
     opts = {
       linters = require("languages").current().linter_options,
       linters_by_ft = require("languages").current().linters,

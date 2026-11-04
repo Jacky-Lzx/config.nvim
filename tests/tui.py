@@ -17,7 +17,7 @@ def main():
     root = Path(os.environ["NVIM_CONFIG_ROOT"])
     case = sys.argv[1]
     env = dict(os.environ, NVIM_LAZY_CASE=case)
-    if case in ("notifications", "ui_tools", "completion_input", "bars"):
+    if case in ("notifications", "ui_tools", "completion_input", "bars", "toolchain"):
         # Isolate UI/adapter behavior from external AI servers disabled by setup.lua.
         env["NVIM_TEST_SCENARIO"] = "minimal"
     result = Path(env["NVIM_TEST_TMP"]) / ("lazy-startup-" + case + ".log")
@@ -27,7 +27,7 @@ def main():
     env["TERM"] = "xterm-256color"
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case in ("ui_tools", "bars") else 120, 0, 0))
-    test_file = {"notifications": "notifications_tui.lua", "ui_tools": "ui_tools_tui.lua", "bars": "bars_tui.lua", "completion_input": "completion_tui.lua", "keymaps": "keymaps_tui.lua"}.get(case, "lazy_startup.lua")
+    test_file = {"notifications": "notifications_tui.lua", "ui_tools": "ui_tools_tui.lua", "bars": "bars_tui.lua", "completion_input": "completion_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "lazy_startup.lua")
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
@@ -44,6 +44,7 @@ def main():
         "command_register": b":\x12", "command_register_apply": b"z", "command_cancel": b"\x1b",
     }
     handled = set()
+    toolchain_actions = {"plan": b"q", "install": b":ConfigToolsInstall\r", "tasks": b"\r", "retry": b"r", "close": b"q"}
     deadline = time.monotonic() + 30
     try:
         while process.poll() is None and time.monotonic() < deadline:
@@ -59,6 +60,12 @@ def main():
                 stage = stage_file.read_text().strip() if stage_file.exists() else ""
                 if stage in keymap_actions and stage not in handled:
                     os.write(master, keymap_actions[stage])
+                    handled.add(stage)
+            elif case == "toolchain":
+                stage_file = Path(env["NVIM_TEST_TMP"], "toolchain-stage")
+                stage = stage_file.read_text().strip() if stage_file.exists() else ""
+                if stage in toolchain_actions and stage not in handled:
+                    os.write(master, toolchain_actions[stage])
                     handled.add(stage)
         try:
             # PTYs can report EOF just before the child exit becomes observable.

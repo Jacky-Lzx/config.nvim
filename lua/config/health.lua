@@ -73,6 +73,8 @@ function M.check()
       seen[name] = true
       if tool.available then
         vim.health.ok(('%s: "%s"'):format(name, tool.path))
+      elseif tool.optional then
+        vim.health.info(name .. " is optional and unavailable; related features are disabled")
       else
         vim.health.warn(name .. " is unavailable; run :ConfigToolsInstall or configure its system path")
       end

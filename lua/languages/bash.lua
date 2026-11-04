@@ -3,7 +3,7 @@ return {
   tools = {
     { mason = "shfmt", executable = "shfmt" },
     { mason = "bash-language-server", executable = "bash-language-server" },
-    { executable = "fish" },
+    { executable = "fish", optional = true },
   },
   parsers = { "bash", "fish" },
   formatters = {

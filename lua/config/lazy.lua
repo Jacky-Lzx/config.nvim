@@ -90,6 +90,5 @@ require("lazy").setup(opts)
 vim.keymap.set("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "[Lazy] Open Lazy.nvim" })
 
 vim.api.nvim_create_user_command("ConfigToolsInstall", function()
-  vim.cmd("TSInstallConfigured")
-  vim.cmd("MasonToolsInstall")
+  require("integrations.toolchain").install()
 end, { desc = "Install tools and parsers for enabled language profiles", force = true })

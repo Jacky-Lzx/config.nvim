@@ -279,6 +279,12 @@ included in tool installation only when debugging is enabled. KDL currently has 
 
 Run `:ConfigToolsInstall` after changing profiles. Tool and parser installation is explicit and
 may access the network. Normal startup does not install Mason packages or Tree-sitter parsers.
+The command now uses the local `toolchain-tools.nvim` checkout under the development plugin root.
+`:ToolchainPlan` inspects requirements, `:Toolchain` shows tasks and logs, and `:ToolchainRetry`
+retries failed/unavailable tasks. The legacy `:MasonToolsInstall` and `:TSInstallConfigured`
+commands submit only their respective providers to the same queue. Extra `codespell` and
+`regex` requirements are preserved. Tree-sitter's highlighting, LaTeX parser override and
+`:TSUpdate` build hook remain configured separately.
 
 ## Adding a language
 
@@ -424,6 +430,10 @@ environment or `$NVIM_DEBUGPY_PYTHON`.
 The Vue Mason post-install hook may run `npm install typescript@5` inside the
 `vue-language-server` package when its bundled TypeScript 7 is incompatible. This only happens
 after an explicit `:ConfigToolsInstall` or `:MasonToolsInstall`.
+The task waits for npm, captures its output, and reports failure through the queue; retries
+repair an already-installed package without reinstalling it. Language tools support a Mason-only
+`post_install_async(package, done, log)` callback and system-only `optional = true` declarations.
+Fish and `html_beautify` are optional: absence appears as `unavailable` instead of a failed install.
 
 ## Health and testing
 
