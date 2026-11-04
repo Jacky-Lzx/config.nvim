@@ -2,7 +2,7 @@
 local M = {}
 local api = vim.api
 local expression = "%!v:lua.require'features.bars'.winbar()"
-local owned, blocked, cache, client_dirty = {}, {}, {}, {}
+local owned, blocked, buffers, cache, client_dirty = {}, {}, {}, {}, {}
 local counts, tasks_dirty = {}, true
 local queue, copilot_status, copilot_callback
 local excluded = { "lsp-tools-results", "dap-view", "dap-view-term", "dap-repl" }
@@ -117,14 +117,19 @@ local function update()
       if owned[win] ~= nil and vim.wo[win].winbar == expression then
         set_winbar(win, owned[win])
       end
-      owned[win] = nil
+      owned[win], buffers[win] = nil, nil
     elseif owned[win] ~= nil and vim.wo[win].winbar ~= expression then
-      owned[win], blocked[win] = nil, true
-    elseif not blocked[win] and (owned[win] ~= nil or vim.wo[win].winbar == "" or vim.wo[win].winbar == expression) then
-      if owned[win] == nil then
-        owned[win] = ""
-        set_winbar(win, expression)
+      -- A buffer switch may restore an empty native winbar. A deliberate
+      -- change in the same buffer or a custom provider still wins ownership.
+      if buffers[win] == buf or vim.wo[win].winbar ~= "" then
+        owned[win], buffers[win], blocked[win] = nil, nil, true
       end
+    end
+    if
+      suitable
+      and not blocked[win]
+      and (owned[win] ~= nil or vim.wo[win].winbar == "" or vim.wo[win].winbar == expression)
+    then
       local data = cache[buf]
       if not data or client_dirty[buf] then
         local clients = {}
@@ -138,11 +143,17 @@ local function update()
       local name = vim.fn.fnamemodify(api.nvim_buf_get_name(buf), ":t")
       data.name = bar.text(name == "" and "[No Name]" or name)
       used[buf] = true
+      owned[win], buffers[win] = owned[win] or "", buf
+      -- Changing visibility can redraw synchronously to preserve the view.
+      -- Populate the new buffer's data before exposing the bar to that redraw.
+      if vim.wo[win].winbar ~= expression then
+        set_winbar(win, expression)
+      end
     end
   end
   for win in pairs(owned) do
     if not api.nvim_win_is_valid(win) then
-      owned[win] = nil
+      owned[win], buffers[win] = nil, nil
     end
   end
   for win in pairs(blocked) do
@@ -194,7 +205,13 @@ function M.setup()
   queue = require("ui_tools.bar").scheduler(30, update)
   tasks_dirty = true
   local group = api.nvim_create_augroup("ConfigBars", { clear = true })
-  api.nvim_create_autocmd({ "BufWinEnter", "BufFilePost", "WinEnter", "WinClosed", "TabEnter", "FileType" }, {
+  api.nvim_create_autocmd({ "BufWinEnter", "BufFilePost", "WinEnter", "TabEnter", "FileType" }, {
+    group = group,
+    -- Restore window options and refresh buffer data before the first redraw.
+    -- Deferring this exposes a missing winbar or the previous buffer's cache.
+    callback = update,
+  })
+  api.nvim_create_autocmd("WinClosed", {
     group = group,
     callback = function()
       queue.request()

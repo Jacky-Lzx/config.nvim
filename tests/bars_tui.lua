@@ -13,16 +13,27 @@ local function check()
   end
   local buffers, status = require("ui_tools.bufferline"), require("ui_tools.statusline")
   assert(buffers.enabled and status.enabled)
+  local function winbar()
+    return vim.api.nvim_eval_statusline(vim.wo.winbar, { winid = 0, use_winbar = true, maxwidth = 160 }).str
+  end
+  local function check_winbar(name)
+    assert(vim.wo.winbar:find("features.bars", 1, true), "Missing winbar for " .. name)
+    assert(winbar():find(name, 1, true), "Missing winbar filename: " .. winbar())
+  end
   local paths, bufs = {}, {}
   for _, name in ipairs({ "first.txt", "中文%second.txt", "last.txt" }) do
     local path = vim.env.NVIM_TEST_TMP .. "/" .. name
     vim.fn.writefile({ name }, path)
     vim.cmd("edit " .. vim.fn.fnameescape(path))
     paths[#paths + 1], bufs[#bufs + 1] = path, vim.api.nvim_get_current_buf()
+    check_winbar(name)
+    pause(100)
+    check_winbar(name)
   end
   pause(100)
   local function at(buf)
     assert(vim.api.nvim_get_current_buf() == buf, "Wrong buffer after " .. tostring(last_keys))
+    check_winbar(vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":t"))
   end
   feed("[b")
   at(bufs[2])
@@ -57,8 +68,9 @@ local function check()
     "restore: " .. vim.api.nvim_buf_get_name(0) .. " expected " .. tostring(vim.uv.fs_realpath(paths[2]))
   )
   assert(vim.api.nvim_get_current_line() == "中文%second.txt")
-  -- Continuous edits/cursor motion must not rescan diagnostics or clients.
   pause(100)
+  check_winbar("中文%second.txt")
+  -- Continuous edits/cursor motion must not rescan diagnostics or clients.
   local count, clients = vim.diagnostic.count, vim.lsp.get_clients
   local queries, traces = 0, {}
   local function query()

@@ -170,4 +170,72 @@ require("lsp-tools").setup({
 vim.lsp.get_clients, vim.lsp.get_client_by_id, vim.lsp.buf_is_attached =
   original_clients, original_client, original_attached
 _G.require = original_require
+-- Real buffer switches restore native window-local values. Keep the winbar and
+-- its cache alive through :edit, :buffer, excluded buffers and inherited splits.
+local function check_winbar(name)
+  -- Check before yielding: an eventually correct bar can still flash blank.
+  assert(vim.wo.winbar:find("features.bars", 1, true), "Missing immediate winbar for " .. name)
+  assert(winbar():find(name, 1, true), "Missing immediate filename: " .. winbar())
+  settle()
+  assert(winbar():find(name, 1, true), "Missing settled filename: " .. winbar())
+end
+local path = vim.env.NVIM_TEST_TMP .. "/second%bar.txt"
+vim.fn.writefile({ "second file" }, path)
+vim.cmd.edit(vim.fn.fnameescape(path))
+check_winbar("second%bar.txt")
+local second = vim.api.nvim_get_current_buf()
+for _ = 1, 2 do
+  vim.api.nvim_set_current_buf(source)
+  check_winbar("bar%fixture.txt")
+  vim.api.nvim_set_current_buf(second)
+  check_winbar("second%bar.txt")
+end
+vim.cmd("enew")
+check_winbar("[No Name]")
+vim.bo.buftype = "nofile"
+vim.api.nvim_exec_autocmds("BufWinEnter", { buffer = 0 })
+settle()
+assert(vim.wo.winbar == "")
+vim.api.nvim_set_current_buf(second)
+check_winbar("second%bar.txt")
+vim.cmd("vsplit")
+check_winbar("second%bar.txt")
+vim.api.nvim_set_current_buf(source)
+check_winbar("bar%fixture.txt")
+vim.cmd("close")
+check_winbar("second%bar.txt")
+
+-- A deliberate clear in the same buffer still transfers ownership. Closing
+-- that window drops the block, and a new window may own a winbar again.
+vim.cmd("vsplit")
+check_winbar("second%bar.txt")
+vim.wo.winbar = ""
+vim.api.nvim_exec_autocmds("WinEnter", {})
+settle()
+assert(vim.wo.winbar == "")
+vim.cmd("enew")
+settle()
+assert(vim.wo.winbar == "")
+vim.cmd("close")
+check_winbar("second%bar.txt")
+
+-- Respect a later custom owner, including a buffer's saved custom winbar.
+vim.cmd("vsplit")
+check_winbar("second%bar.txt")
+vim.wo.winbar = "custom owner"
+vim.api.nvim_exec_autocmds("WinEnter", {})
+settle()
+assert(vim.wo.winbar == "custom owner")
+vim.cmd("close")
+check_winbar("second%bar.txt")
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  buffer = source,
+  once = true,
+  callback = function()
+    vim.wo.winbar = "saved custom owner"
+  end,
+})
+vim.api.nvim_set_current_buf(source)
+settle()
+assert(vim.wo.winbar == "saved custom owner")
 print("bars: " .. (vim.env.BARS_TEST or "after") .. " lazy providers, event caches, tasks, Copilot and winbar passed")
