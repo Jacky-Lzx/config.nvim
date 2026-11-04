@@ -137,7 +137,11 @@ local function check()
     assert(not plugins[name], "Unadapted Blink extension must not enter the active spec: " .. name)
   end
   assert((plugins["nvim-dap"] ~= nil) == not not features.debugging)
-  assert((plugins["overseer.nvim"] ~= nil) == not not features.tasks)
+  assert((plugins["task-tools.nvim"] ~= nil) == not not features.tasks)
+  assert(not plugins["overseer.nvim"] and not plugins["compile.nvim"])
+  assert(not opts("snacks.nvim").terminal.enabled)
+  assert((vim.fn.maparg("<A-i>", "n") ~= "") == not not features.tasks)
+  assert((vim.fn.maparg("<A-i>", "t") ~= "") == not not features.tasks)
   assert((plugins["auto-session"] ~= nil) == not not features.sessions)
   for _, name in ipairs({ "barbar.nvim", "lualine.nvim", "copilot-lualine" }) do
     assert(not plugins[name], "Old bar plugin remains configured: " .. name)

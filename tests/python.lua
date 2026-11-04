@@ -69,16 +69,11 @@ vim.api.nvim_buf_set_name(0, root .. "/a file's script.py")
 vim.bo.filetype = "python"
 dofile(root .. "/after/ftplugin/python.lua")
 vim.env.NVIM_PYTHON_MAKE = "/stale/interpreter"
-local template = dofile(root .. "/lua/overseer/template/user/python.lua")
+local task_spec = require("plugins.tasks.task-tools")[1]
 for _, interpreter in ipairs({ "/selected env/bin/python", "/another' env/bin/python" }) do
   selected = interpreter
   executables[selected] = true
-  local file = vim.fn.expand("%:p")
-  local params = { args = { "--name", "a b" } }
-  local task = template.builder(params)
-  assert(vim.deep_equal(task.cmd, { selected }))
-  assert(vim.deep_equal(task.args, { file, "--name", "a b" }))
-  assert(vim.deep_equal(params.args, { "--name", "a b" }))
+  assert(task_spec.opts.python() == selected, "Tasks must use the live interpreter provider")
   count = count + 1
 end
 -- Select after ftplugin load, then exercise real shell execution without Python.

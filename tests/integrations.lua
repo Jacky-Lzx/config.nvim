@@ -15,13 +15,9 @@ end
 assert(require("languages.vue.compatibility").server_path() == expected)
 vim.fn.exepath, vim.fn.resolve, vim.uv.fs_stat = exepath, resolve, stat
 
-local cpp = require("overseer.template.user.cpp.run")
-for _, name in ipairs({ "first.cpp", "second file.cpp" }) do
-  vim.api.nvim_buf_set_name(0, root .. "/" .. name)
-  assert(cpp.params().executable.default == "./" .. name:gsub("%.cpp$", ""))
-end
-local pdf = require("overseer.template.user.convert_md_to_pdf").builder()
-assert(pdf.args[6] == "CJKmainfont=华文黑体")
+local pdf = require("features.tasks").definitions({ filetype = "markdown", file = root .. "/a file.md" })[1]
+assert(pdf.cmd[7] == "CJKmainfont=华文黑体")
+assert(pdf.cmd[4] == root .. "/a file.pdf")
 
 dofile(root .. "/lua/integrations/neovide.lua")
 for mode, rhs in pairs({ n = '"+p', x = '"+P', i = "<C-R><C-O>+", c = "<C-R>+" }) do

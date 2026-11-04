@@ -48,7 +48,7 @@ runtime-path handling.
 - `lua/utils/`: shared helpers for resource paths, platform discovery, and system commands.
 - `ftplugin/`: settings needed before runtime ftplugins, such as style and mapping switches.
 - `after/ftplugin/`: buffer-local settings; `after/lsp/`: native server overrides.
-- `lua/snippets/`, `queries/`, and `lua/overseer/template/`: native discovery paths.
+- `lua/snippets/` and `queries/`: native discovery paths; `lua/features/tasks.lua`: personal task workflows.
 
 See [the architecture guide](docs/architecture.md) for ownership and lifecycle rules.
 
@@ -152,24 +152,42 @@ first entry; picker configuration and LSP attachment keep the result engine defe
 Other persistent panels use `q` / Escape to close. Server-dependent features are
 available only when a client advertises the corresponding methods.
 
-## Compile commands
+## Tasks and terminals
 
-With the `tasks` feature enabled, [compile.nvim](https://github.com/Jacky-Lzx/compile.nvim)
-provides asynchronous shell commands with output in quickfix. It uses lazy.nvim's
-`dev = true` to prefer `NVIM_DEV_PLUGIN_ROOT/compile.nvim`
-(default `~/Documents/Github/nvim_plugins/compile.nvim`). When that directory is absent,
-lazy.nvim falls back to the GitHub version pinned in `lazy-lock.json`.
+With `features.tasks = true`, the local `task-tools.nvim` checkout at
+`NVIM_DEV_PLUGIN_ROOT/task-tools.nvim` (default `~/Documents/Github/nvim_plugins`)
+owns builds, project task discovery, save watchers and interactive terminals.
+It replaces compile.nvim, Overseer and Snacks terminal. SnipRun remains available
+for snippet execution. With the tasks feature disabled, task commands and the
+normal/terminal `<A-i>` mapping are not registered.
 
-- `<leader>mc` / `:Compile`: enter a command, prefilled with the previous command.
-- `:Compile cargo build`: run a command directly.
-- `<leader>mr` / `:Recompile`: repeat it in its original working directory.
-- `<leader>ms` / `:CompileStop`: stop the active compilation.
-- `<leader>mo` / `:CompileOpen`: open the most recent compilation output.
+- `<leader>mc`: enter a manual build command (initially `make`).
+- `<leader>mr/ms/mo`: rerun/stop/show that manual build, even after other tasks or terminals run.
+- `<leader>mq`: export the manual build's current output into quickfix.
+- `<F17>` / `<leader>or` / `:TaskRun`: select a discovered task.
+- `<leader>ot`: toggle the task list; Enter opens output, r reruns, s stops, c exports quickfix.
+- `<leader>oa`: run the current Python/C/C++ file with arguments; C/C++ also prompts for an executable.
+- `<leader>os/oo/oq`: stop/show/export the latest task, including non-build tasks.
+- `<A-i>` (normal and terminal modes): toggle a persistent shell for the current directory.
 
-Output opens below the editor while the source window keeps focus. In quickfix,
-press Enter on a file location to jump there, or use the existing `<leader>J` /
-`<leader>K` mappings for the next/previous location. Relative paths resolve from
-the working directory at launch. See `:help compile.nvim` for plugin settings.
+Manual build output streams below the editor without taking focus. Enter jumps
+to a compiler location. Quickfix is an explicit snapshot (`:TaskQuickfix [id]`,
+output `gq`, or the mappings above); `<leader>J/K` navigate exported locations.
+New task output never overwrites the current quickfix list.
+
+Terminals default to centered rounded floats (90% width/height) and preserve their
+process while hidden. `Ctrl-]` enters terminal normal mode, then q hides the window.
+Configure position/size/border in `lua/plugins/tasks/task-tools.lua`. Python uses
+the live `languages.python.interpreter` provider. Argument input supports quotes,
+escaped spaces and empty quoted arguments, without shell expansion. Files run from
+disk; buffers are not automatically written. Pandoc PDF tasks retain the CJK font.
+
+Auto-session stores task definitions under `stdpath('state')/task-tools/sessions`,
+keyed by session name. Restoring a session registers choices without running any
+commands or watchers; deleting a session deletes its task bundle. Task panels are
+closed before saving, and native terminals remain excluded from sessionoptions.
+Process state, output, stdin and environment overrides are not persisted.
+See `:help task-tools` for project JSON, watch options and the Lua API.
 
 ## Folding
 

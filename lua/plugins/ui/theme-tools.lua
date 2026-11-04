@@ -59,7 +59,6 @@ return {
           nvim_surround = true,
           treesitter = true,
           treesitter_context = true,
-          overseer = true,
           rainbow_delimiters = true,
           render_markdown = true,
           snacks = {

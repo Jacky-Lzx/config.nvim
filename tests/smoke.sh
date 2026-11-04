@@ -60,13 +60,13 @@ native_checks() (
   printf '\nRunning native checks with isolated plugin data\n'
   nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/smoke.lua"
   run_tests lockfile schema selection info config platform core clipboard diagnostics \
-    completion math_conditions latex_forward_search commands python integrations image_activation open_at_cursor tooling toolchain lsp_config
+    completion math_conditions latex_forward_search commands python tasks integrations image_activation open_at_cursor tooling toolchain lsp_config
 )
 
 integration_checks() (
   cd -- "$root"
   printf '\nRunning integration checks with installed plugins\n'
-  run_tests toggles obsidian_local comments folding rust treesitter_runtime tools_runtime lsp_tools notifications image_preview bars git_tools column_guide toolchain_backend
+  run_tests toggles obsidian_local comments folding rust treesitter_runtime tools_runtime lsp_tools notifications image_preview bars git_tools column_guide toolchain_backend tasks_session
   NVIM_TEST_LINK_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   NVIM_TEST_REFERENCE_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   BARS_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/bars.lua"
@@ -117,7 +117,7 @@ integration_checks() (
     -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_tools.lua')"
 
   # A PTY supplies UIEnter, which Lazy needs to fire its actual VeryLazy event.
-  for scenario in boundaries boundaries_files editing completion ui_tools annotations bars folding keymaps \
+  for scenario in boundaries boundaries_files tasks editing completion ui_tools annotations bars folding keymaps \
     image_plain image_edit image_existing image_tex_reference image_typst_reference image_markdown_formula \
     image_disabled image_formula image_file; do
     python3 "$root/tests/tui.py" "$scenario"

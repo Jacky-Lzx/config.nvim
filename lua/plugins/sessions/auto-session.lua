@@ -21,7 +21,22 @@ return {
       -- Do not load the session if there's an error
       continue_restore_on_error = false,
       -- Buffers with matching filetypes will be closed before saving
-      close_filetypes_on_save = { "checkhealth" },
+      close_filetypes_on_save = { "checkhealth", "tasktools", "tasktoolsoutput" },
+      pre_save_cmds = {
+        function(name)
+          require("features.tasks").save_session(name)
+        end,
+      },
+      post_restore_cmds = {
+        function(name)
+          require("features.tasks").restore_session(name)
+        end,
+      },
+      post_delete_cmds = {
+        function(name)
+          require("features.tasks").delete_session(name)
+        end,
+      },
     },
 
     init = function()

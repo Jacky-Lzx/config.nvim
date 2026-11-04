@@ -3,7 +3,9 @@ local M = {}
 local api = vim.api
 local counts, tasks_dirty = {}, true
 local queue
-local task_symbols = { FAILURE = "󰅚 ", CANCELED = " ", SUCCESS = "󰄴 ", RUNNING = "󰑮 " }
+local task_symbols = { failure = "󰅚 ", stopped = " ", success = "󰄴 ", running = "󰑮 " }
+local task_colors =
+  { failure = "DiagnosticError", stopped = "Comment", success = "DiagnosticOk", running = "DiagnosticInfo" }
 
 local function features()
   return require("config.context").current().selection.features
@@ -19,12 +21,12 @@ function M.sections()
     z = { "location" },
   }
   if features().tasks then
-    for _, status in ipairs({ "FAILURE", "CANCELED", "SUCCESS", "RUNNING" }) do
+    for _, status in ipairs({ "failure", "stopped", "success", "running" }) do
       result.x[#result.x + 1] = {
         function()
           return (counts[status] or 0) > 0 and task_symbols[status] .. counts[status] or ""
         end,
-        color = "Overseer" .. status,
+        color = task_colors[status],
         priority = 60,
       }
     end
@@ -36,11 +38,10 @@ end
 local function update()
   if tasks_dirty then
     counts, tasks_dirty = {}, false
-    local tasks = features().tasks and package.loaded["overseer.task_list"]
+    local tasks = features().tasks and package.loaded.task_tools
     if tasks then
-      for _, task in ipairs(tasks.list_tasks({ include_ephemeral = true })) do
-        counts[task.status] = (counts[task.status] or 0) + 1
-      end
+      counts = tasks.status()
+      counts.running = counts.running + counts.stopping
     end
   end
   -- Refresh only custom text; cached diagnostic/LSP/Git snapshots stay valid.
@@ -67,8 +68,11 @@ function M.setup()
   local group = api.nvim_create_augroup("ConfigBars", { clear = true })
   api.nvim_create_autocmd("User", {
     group = group,
-    pattern = { "OverseerListUpdate", "LazyLoad" },
-    callback = function()
+    pattern = { "TaskToolsChanged", "LazyLoad" },
+    callback = function(event)
+      if event.match == "TaskToolsChanged" and event.data and event.data.kind == "output" then
+        return
+      end
       tasks_dirty = true
       queue.request()
     end,

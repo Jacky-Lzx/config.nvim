@@ -24,7 +24,7 @@ local function check()
     "nvim-dap",
     "nvim-dap-view",
     "file-tools.nvim",
-    "overseer.nvim",
+    "task-tools.nvim",
     "conform.nvim",
     "LuaSnip",
     "pairs.nvim",
@@ -47,7 +47,7 @@ local function check()
   assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
   for _, command in ipairs({
     "FileTools",
-    "OverseerToggle",
+    "TaskToggle",
     "CodeCompanionChat",
     "LuaSnipEdit",
     "CompletionToolsCopilot",
@@ -129,9 +129,9 @@ local function check()
     assert(not vim.uv.fs_stat(from) and vim.uv.fs_stat(to))
     assert(renamed and renamed.oldUri == vim.uri_from_fname(from), "First tree use missed rename notifications")
     vim.cmd("FileTools close")
-    vim.cmd("OverseerToggle")
-    loaded("overseer.nvim")
-    vim.cmd("OverseerClose")
+    vim.cmd("TaskToggle")
+    loaded("task-tools.nvim")
+    vim.cmd("TaskClose")
     feed(" b")
     loaded("nvim-dap")
     loaded("nvim-dap-view")

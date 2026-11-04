@@ -7,19 +7,19 @@ local installed = vim.fn.stdpath("data") .. "/lazy/"
 for _, path in ipairs({
   dev .. "/ui-tools.nvim",
   dev .. "/lsp-tools.nvim",
-  installed .. "overseer.nvim",
+  dev .. "/task-tools.nvim",
 }) do
   vim.opt.rtp:append(path)
 end
 vim.o.columns, vim.o.swapfile = 240, false
-vim.api.nvim_buf_set_name(0, vim.env.NVIM_TEST_TMP .. "/bar%fixture.txt")
+vim.api.nvim_buf_set_name(0, vim.env.NVIM_TEST_TMP .. "/bar%test.txt")
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "test_document_symbol", "" })
 vim.bo.modified = false
 local source = vim.api.nvim_get_current_buf()
 local allowed, attempted = {}, {}
 local original_require = require
 _G.require = function(name)
-  for _, prefix in ipairs({ "overseer", "copilot", "lsp-tools", "lualine", "dap", "catppuccin" }) do
+  for _, prefix in ipairs({ "task_tools", "copilot", "lsp-tools", "lualine", "dap", "catppuccin" }) do
     if (name == prefix or name:sub(1, #prefix + 1) == prefix .. ".") and not allowed[prefix] then
       attempted[#attempted + 1] = name
       error("Bar loaded a lazy provider: " .. name)
@@ -38,8 +38,8 @@ function client:request(method, _, callback)
 end
 function client:cancel_request() end
 local function providers()
-  allowed.overseer, allowed["lsp-tools"] = true, true
-  require("overseer").setup({ dap = false })
+  allowed.task_tools, allowed["lsp-tools"] = true, true
+  require("task_tools").setup({ open = false })
   vim.lsp.get_clients = function(opts)
     return opts and opts.bufnr == source and { client } or original_clients(opts)
   end
@@ -77,10 +77,10 @@ local function winbar(win)
   win = win or vim.api.nvim_get_current_win()
   return vim.api.nvim_eval_statusline(vim.wo[win].winbar, { winid = win, use_winbar = true, maxwidth = 240 }).str
 end
-assert(line():find("bar%fixture.txt", 1, true), line() .. " width=" .. vim.api.nvim_win_get_width(0))
-assert(winbar():find("bar%fixture.txt", 1, true))
+assert(line():find("bar%test.txt", 1, true), line() .. " width=" .. vim.api.nvim_win_get_width(0))
+assert(winbar():find("bar%test.txt", 1, true))
 if vim.env.BARS_TEST ~= "before" then
-  assert(not package.loaded.overseer and not package.loaded["lsp-tools"] and not package.loaded.copilot)
+  assert(not package.loaded.task_tools and not package.loaded["lsp-tools"] and not package.loaded.copilot)
   assert(symbol_calls == 0 and #attempted == 0)
   providers()
 end
@@ -105,46 +105,35 @@ vim.cmd("vsplit")
 local split_win = vim.api.nvim_get_current_win()
 vim.api.nvim_win_set_cursor(split_win, { 2, 0 })
 settle()
-assert(winbar(source_win):find("bar%fixture.txt", 1, true), winbar(source_win))
+assert(winbar(source_win):find("bar%test.txt", 1, true), winbar(source_win))
 assert(winbar(source_win):find("test_document_symbol", 1, true), winbar(source_win))
-assert(winbar(split_win):find("bar%fixture.txt", 1, true), winbar(split_win))
+assert(winbar(split_win):find("bar%test.txt", 1, true), winbar(split_win))
 assert(not winbar(split_win):find("test_document_symbol", 1, true), winbar(split_win))
 vim.api.nvim_set_current_win(source_win)
-assert(winbar(split_win):find("bar%fixture.txt", 1, true), winbar(split_win))
+assert(winbar(split_win):find("bar%test.txt", 1, true), winbar(split_win))
 assert(not winbar(split_win):find("test_document_symbol", 1, true), winbar(split_win))
 vim.api.nvim_win_close(split_win, false)
 settle()
-local tasks, fixtures = require("overseer.task_list"), {}
-local scans, list_tasks = 0, tasks.list_tasks
-tasks.list_tasks = function(opts)
+local tasks, fixtures = require("task_tools"), {}
+local scans, get_status = 0, tasks.status
+tasks.status = function()
   scans = scans + 1
-  return list_tasks(opts)
+  return get_status()
 end
-for i, state in ipairs({ "FAILURE", "CANCELED", "SUCCESS", "RUNNING", "RUNNING", "PENDING" }) do
-  local task = {
-    id = i,
-    name = "task" .. i,
-    status = state,
-    is_disposed = function()
-      return false
-    end,
-    is_running = function(self)
-      return self.status == "RUNNING"
-    end,
-  }
-  if i == 1 then
-    task.ephemeral = true
-  end
-  if i == 3 then
-    task.source = "jobstart"
-  end
-  fixtures[#fixtures + 1] = task
-  tasks.touch(task)
+for _, command in ipairs({
+  { "sh", "-c", "exit 2" },
+  { "sleep", "10" },
+  { "printf", "success" },
+  { "sleep", "10" },
+  { "sleep", "10" },
+}) do
+  fixtures[#fixtures + 1] = assert(tasks.run({ cmd = command }))
 end
+tasks.stop(fixtures[2])
 settle()
 assert(scans == 1, "Task bursts must share one snapshot: " .. scans)
 assert(line():find("󰑮 2", 1, true) and line():find("󰅚 1", 1, true), line())
-assert(not line():find("󰄴", 1, true), "Wrapped tasks must stay excluded")
+assert(line():find("󰄴 1", 1, true) and line():find(" 1", 1, true), line())
 local calls = symbol_calls
 for _ = 1, 50 do
   status.update()
@@ -159,8 +148,17 @@ assert(not line():find("", 1, true) and not line():find("", 1, true), line
 assert(not package.loaded["copilot.client"] and not package.loaded["copilot.status"])
 vim.api.nvim_win_set_cursor(0, { 2, 0 })
 assert(not winbar():find("test_document_symbol", 1, true), "Stale enclosing symbol")
-for _, task in ipairs(fixtures) do
-  tasks.remove(task)
+for _, id in ipairs(fixtures) do
+  local task = tasks.get(id)
+  if task.status == "running" then
+    tasks.stop(id)
+  end
+end
+assert(vim.wait(2000, function()
+  return tasks.status().running == 0 and tasks.status().stopping == 0
+end))
+for _, id in ipairs(fixtures) do
+  tasks.remove(id)
 end
 settle()
 assert(not line():find("󰑮", 1, true))
@@ -192,7 +190,7 @@ check_winbar("second%bar.txt")
 local second = vim.api.nvim_get_current_buf()
 for _ = 1, 2 do
   vim.api.nvim_set_current_buf(source)
-  check_winbar("bar%fixture.txt")
+  check_winbar("bar%test.txt")
   vim.api.nvim_set_current_buf(second)
   check_winbar("second%bar.txt")
 end
@@ -207,7 +205,7 @@ check_winbar("second%bar.txt")
 vim.cmd("vsplit")
 check_winbar("second%bar.txt")
 vim.api.nvim_set_current_buf(source)
-check_winbar("bar%fixture.txt")
+check_winbar("bar%test.txt")
 vim.cmd("close")
 check_winbar("second%bar.txt")
 

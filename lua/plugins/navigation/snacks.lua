@@ -130,18 +130,9 @@ return {
       statuscolumn = { enabled = false }, -- ui-tools owns the gutter.
       zen = { enabled = false },
       dim = { enabled = false },
-      terminal = { enabled = true },
+      terminal = { enabled = false }, -- task-tools owns interactive terminals.
       words = { enabled = false }, -- Reference highlighting/navigation is owned by lsp-tools.nvim.
       styles = {
-        terminal = {
-          relative = "editor",
-          border = "rounded",
-          position = "float",
-          backdrop = 60,
-          height = 0.9,
-          width = 0.9,
-          zindex = 50,
-        },
         -- Enable line wrapping in notification history
         notification_history = {
           wo = {
@@ -161,7 +152,6 @@ return {
     -- stylua: ignore
     keys = {
       -- { "<A-w>", function() require("snacks").bufdelete() end, desc = "[Snacks] Delete buffer", },
-      { "<A-i>", function() require("snacks").terminal() end, desc = "[Snacks] Toggle terminal", mode = { "n", "t" }, },
       -- Top Pickers & Explorer
       -- { "<leader><space>", function() require("snacks").picker.smart() end, desc = "[Snacks] Smart find files", },
       -- find

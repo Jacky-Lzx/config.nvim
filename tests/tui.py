@@ -28,6 +28,8 @@ def main():
         env.setdefault("NVIM_TEST_SCENARIO", "minimal")
     if case == "motion":
         Path(env["NVIM_TEST_TMP"], "motion-stage").unlink(missing_ok=True)
+    if case == "tasks":
+        Path(env["NVIM_TEST_TMP"], "tasks-stage").unlink(missing_ok=True)
     if case == "annotations":
         Path(env["NVIM_TEST_TMP"], "annotations-stage").unlink(missing_ok=True)
     result = Path(env["NVIM_TEST_TMP"]) / ("lazy-startup-" + case + ".log")
@@ -37,7 +39,7 @@ def main():
     env["TERM"] = "xterm-256color"
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case in ("ui_tools", "bars", "folding") else 120, 0, 0))
-    test_file = {"motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
+    test_file = {"tasks": "tasks_tui.lua", "motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
@@ -54,6 +56,7 @@ def main():
         "command_register": b":\x12", "command_register_apply": b"z", "command_cancel": b"\x1b",
     }
     annotation_actions = {"insert": b"3GA TODO: live #abcdef", "burst": b" " + b"x" * 200 + b" #00ff00", "normal": b"\x1b"}
+    task_actions = {'prompt': b' mc', 'command': b"\x15printf 'src/failure.c:2:3: error: demo\\n'\r", 'manual_output': b' mo', 'quickfix': b' mq', 'jump': b'\r', 'terminal': b'\x1bi', 'terminal_input': b"printf 'TASKS_PTY_OK\\n'\r", 'terminal_hide': b'\x1bi', 'terminal_reopen': b'\x1bi', 'terminal_hide_again': b'\x1bi', 'rerun': b' mr', 'list': b' ot', 'list_close': b'q', 'args_normal': bytes([29]), 'args_close': b'q', 'select_task': b' or', 'task_choice': b'Python: run file\r', 'run_args': b' oa', 'args': b'\'hello world\' ""\r'}
     output = bytearray()
     handled = set()
     motion_sentinel_at = None
@@ -73,7 +76,13 @@ def main():
                     output.extend(chunk)
                 except OSError:
                     break
-            if case == "motion":
+            if case == "tasks":
+                stage_file = Path(env["NVIM_TEST_TMP"], "tasks-stage")
+                stage = stage_file.read_text().strip() if stage_file.exists() else ""
+                if stage in task_actions and stage not in handled:
+                    os.write(master, task_actions[stage])
+                    handled.add(stage)
+            elif case == "motion":
                 stage_file = Path(env["NVIM_TEST_TMP"], "motion-stage")
                 stage = stage_file.read_text().splitlines() if stage_file.exists() else []
                 if len(stage) == 2 and stage[0] not in handled:
