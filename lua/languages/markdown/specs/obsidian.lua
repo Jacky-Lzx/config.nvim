@@ -1,6 +1,11 @@
 return {
   {
     "obsidian-nvim/obsidian.nvim",
+    init = function()
+      require("keymap_tools").register("obsidian", {
+        groups = { { prefix = "<leader>O", label = "[Obsidian]" } },
+      })
+    end,
     -- Workspaces are supplied by the vault's .lazy.lua after shared opts are merged.
     cond = function(plugin)
       local opts = require("lazy.core.plugin").values(plugin, "opts", false)
@@ -23,13 +28,6 @@ return {
         optional = true,
         opts = {
           insert = { directory = "assets/imgs" },
-        },
-      },
-      {
-        "keymap-tools.nvim",
-        optional = true,
-        opts = {
-          groups = { ["<leader>O"] = "[Obsidian]" },
         },
       },
     },

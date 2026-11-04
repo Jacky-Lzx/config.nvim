@@ -4,7 +4,7 @@ vim.opt.runtimepath:prepend(root)
 vim.g.maplocalleader = " "
 package.loaded["utils.platform"] = { executable = function() end }
 package.loaded["utils.latex_highlighting"] = { attach = function() end }
-package.loaded["keymap_tools"] = { add = function() end }
+package.loaded["keymap_tools"] = { register = function() end }
 package.loaded["integrations.bibtex_preview"] = { setup = function() end }
 package.loaded["languages.latex.linked_editing"] = { attach = function() end }
 local spec = require("languages.latex.plugins")

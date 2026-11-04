@@ -15,13 +15,21 @@ return {
           vim.keymap.set(mode, lhs, rhs, opts)
           for _, toggle in pairs(Snacks.toggle.toggles) do
             if opts.desc == "Toggle " .. toggle.opts.name then
-              require("keymap_tools").add({
-                {
-                  lhs,
-                  mode = mode,
-                  desc = function()
-                    return (toggle:get() and "Disable " or "Enable ") .. toggle.opts.name
-                  end,
+              require("keymap_tools").register("snacks.toggle." .. toggle.opts.id .. ":" .. lhs, {
+                modes = type(mode) == "table" and mode or { mode },
+                hints = {
+                  {
+                    keys = lhs,
+                    desc = function(ctx)
+                      if not ctx.win then
+                        return "Toggle " .. toggle.opts.name
+                      end
+                      local enabled = vim.api.nvim_win_call(ctx.win, function()
+                        return toggle:get()
+                      end)
+                      return (enabled and "Disable " or "Enable ") .. toggle.opts.name
+                    end,
+                  },
                 },
               })
               break
@@ -266,8 +274,8 @@ return {
           Snacks.toggle.profiler():map("<leader>tPp")
           -- Toggle the profiler highlights
           Snacks.toggle.profiler_highlights():map("<leader>tPh")
-          require("keymap_tools").add({
-            { "<leader>tP", group = "[profiler]" },
+          require("keymap_tools").register("snacks.profiler", {
+            groups = { { prefix = "<leader>tP", label = "[profiler]" } },
           })
         end,
       })

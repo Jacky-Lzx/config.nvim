@@ -62,7 +62,12 @@ prefix hints, operator-pending motions/textobjects, register/mark/spelling hints
 and `<leader>?`, with selection-tools providing the executable keymap picker.
 mini.ai publishes metadata through keymap-tools before first use and retains its
 native input/selection behavior. LaTeX publishes buffer-scoped groups. Snacks
-registers dynamic toggle descriptions. which-key is no longer a plugin dependency.
+registers dynamic toggle descriptions. Each integration registers named groups/hints
+under its own source ID; registrations have replace/dispose lifecycles. Native
+vim.keymap.set() owns real mappings. The picker shortcut is explicitly declared in
+its lazy.nvim spec. Dynamic descriptions use the supplied source context; list()
+provides read-only inspection without initializing UI. which-key is no longer a
+plugin dependency.
 
 Pairing declares `Jacky-Lzx/pairs.nvim` with lazy.nvim's `dev = true`. The shared `dev.path`
 comes from `NVIM_DEV_PLUGIN_ROOT` (default `~/Documents/Github/nvim_plugins`), and

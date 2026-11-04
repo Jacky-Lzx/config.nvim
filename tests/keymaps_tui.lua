@@ -15,7 +15,9 @@ local function check_owners()
   assert(plugins["keymap-tools.nvim"].dir == require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim")
   assert(not plugins["which-key.nvim"] and not package.loaded["which-key"], "legacy hint owner remains")
   assert(
-    require("keymap_tools.metadata").get(vim.api.nvim_get_current_buf(), "o")["if"],
+    vim.iter(require("keymap_tools").list({ mode = "o", prefix = "if", kinds = { "hint" } })):any(function(item)
+      return item.keys == "if" and item.source == "mini.ai"
+    end),
     "cold mini.ai descriptions missing"
   )
   for _, mode in ipairs({ "n", "x" }) do
@@ -82,8 +84,8 @@ timer:start(
       elseif stage == "executed" and picker.closed and vim.wo.wrap ~= previous_wrap then
         assert(api.nvim_get_current_win() == origin and api.nvim_get_mode().mode == "n")
         local description
-        for _, item in ipairs(require("keymap_tools").get_keymaps({ mode = "n" })) do
-          if item.keys == " tw" then
+        for _, item in ipairs(require("keymap_tools").list({ mode = "n", kinds = { "mapping" } })) do
+          if item.keys == "<Space>tw" then
             description = item.desc
           end
         end

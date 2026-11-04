@@ -1,19 +1,17 @@
 return {
   {
     "stevearc/overseer.nvim",
+    init = function()
+      require("keymap_tools").register("overseer", {
+        groups = { { prefix = "<leader>o", label = "[Overseer]" } },
+      })
+    end,
     specs = {
       {
         "rmagatti/auto-session",
         optional = true,
         opts_extend = { "close_filetypes_on_save" },
         opts = { close_filetypes_on_save = { "OverseerList" } },
-      },
-      {
-        "keymap-tools.nvim",
-        optional = true,
-        opts = {
-          groups = { ["<leader>o"] = "[Overseer]" },
-        },
       },
     },
     cmd = { "OverseerRun", "OverseerToggle", "OverseerOpen", "OverseerClose", "OverseerTaskAction", "OverseerShell" },

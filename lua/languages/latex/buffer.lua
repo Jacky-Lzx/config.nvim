@@ -10,8 +10,10 @@ function M.setup(bufnr)
     map(key, "<Plug>(TexTools" .. action .. ")", description, modes)
   end
 
-  require("keymap_tools").add({
-    { "<localleader>l", group = "LaTeX", buffer = bufnr },
+  require("keymap_tools").register("latex", {
+    buf = bufnr,
+    modes = { "n", "x", "o" },
+    groups = { { prefix = "<localleader>l", label = "LaTeX" } },
   })
 
   for _, entry in ipairs({
