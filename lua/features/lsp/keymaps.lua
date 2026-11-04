@@ -6,8 +6,8 @@ function M.attach(buffer)
   end
 
   map("<leader>d", function()
-    vim.diagnostic.open_float({ scope = "cursor", focus = true })
-  end, "Show diagnostic float")
+    vim.diagnostic.open_float({ scope = "line", focus = true })
+  end, "Show line diagnostics")
   map("<leader>gk", vim.lsp.buf.signature_help, "Signature help")
   map("gK", vim.lsp.buf.signature_help, "Signature help")
   map("<leader>rn", function()
