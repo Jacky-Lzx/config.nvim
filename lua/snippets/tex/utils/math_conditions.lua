@@ -804,12 +804,18 @@ function M.fn.is_latex()
   return vim.bo.filetype == "tex"
 end
 
-local cond_obj = require("luasnip.extras.conditions")
-M.obj = {}
--- traverse all key-value pairs in M.fn
-for k, v in pairs(M.fn) do
-  M.obj[k] = cond_obj.make_condition(v)
-end
+-- Native collections use M.fn without loading LuaSnip. The old definitions keep
+-- their composable condition objects, created only when accessed.
+M.obj = setmetatable({}, {
+  __index = function(objects, key)
+    local fn = M.fn[key]
+    if fn then
+      local condition = require("luasnip.extras.conditions").make_condition(fn)
+      rawset(objects, key, condition)
+      return condition
+    end
+  end,
+})
 
 ------------------------------------------------------------------------------
 -- NEOVIM INTEGRATION

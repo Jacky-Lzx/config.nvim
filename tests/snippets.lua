@@ -85,8 +85,8 @@ local ok, err = xpcall(function()
           if item._snippet_tools then own=own+1 end
           labels[item.label]=(labels[item.label] or 0)+1
         end
-        assert(own==12 and labels.bold==1 and labels.emph==1 and labels.todo==1)
-        assert(labels.date and #require('luasnip').get_snippets('tex')>0,'inherited snippets missing')
+        assert(own>=12 and labels.bold==1 and labels.emph==1 and labels.todo==1)
+        assert(labels.date and labels['^^'],'inherited snippets missing')
       end)
     ]])
   end)

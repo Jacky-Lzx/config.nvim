@@ -70,7 +70,7 @@ return {
       local ls = require("luasnip")
       ls.setup(opts)
 
-      -- Configure the active buffer's Markdown route before lazy collection loading.
+      -- Configure the active buffer's snippet route before lazy collection loading.
       require("integrations.snippets").configure_legacy()
 
       require("luasnip.loaders.from_lua").lazy_load({
@@ -98,16 +98,6 @@ return {
       ls.expand_auto = function(...)
         local integration = require("integrations.snippets")
         integration.configure_legacy()
-        if
-          integration.engine() == "snippet-tools"
-          and (vim.bo.filetype == "markdown" or vim.bo.filetype == "markdown_inline")
-        then
-          local before = vim.api.nvim_get_current_line():sub(1, vim.api.nvim_win_get_cursor(0)[2])
-          -- These inherited TeX triggers are owned by the migrated Markdown collection.
-          if before:sub(-2) == "mk" or before:sub(-2) == "dm" then
-            return
-          end
-        end
         return expand_auto(...)
       end
       -- Restore the shared Visual mapping regardless of engine load order.

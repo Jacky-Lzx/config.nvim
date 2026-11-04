@@ -1,10 +1,10 @@
 local M = {}
 local owners = {}
-local markdown = { markdown = true, markdown_inline = true }
+local migrated = { markdown = true, markdown_inline = true, tex = true }
 
 function M.engine(buf)
   buf = buf or vim.api.nvim_get_current_buf()
-  return vim.b[buf].snippet_engine or (markdown[vim.bo[buf].filetype] and "snippet-tools" or "luasnip")
+  return vim.b[buf].snippet_engine or (migrated[vim.bo[buf].filetype] and "snippet-tools" or "luasnip")
 end
 function M.configure_legacy()
   local ls = package.loaded.luasnip
@@ -12,8 +12,9 @@ function M.configure_legacy()
     return
   end
   local native = M.engine() == "snippet-tools"
-  ls.filetype_set("markdown", native and { "tex" } or { "markdown", "tex" })
-  ls.filetype_set("markdown_inline", native and { "tex" } or { "markdown_inline", "markdown", "tex" })
+  ls.filetype_set("tex", native and {} or { "tex" })
+  ls.filetype_set("markdown", native and {} or { "markdown", "tex" })
+  ls.filetype_set("markdown_inline", native and {} or { "markdown_inline", "markdown", "tex" })
 end
 local function legacy()
   local ls = require("luasnip")
@@ -160,6 +161,7 @@ function M.source()
 end
 function M.setup_native()
   local s = require("snippet_tools")
+  s.filetype_extend("markdown", { "tex" })
   s.filetype_extend("markdown_inline", { "markdown" })
   s.setup({
     keymap = false,
@@ -188,6 +190,8 @@ function M.switch(value)
     vim.b[key] = nil
   end
   M.configure_legacy()
+  -- Routing can change after FileType; load the destination before its first query.
+  require("luasnip.loaders").load_lazy_loaded(vim.api.nvim_get_current_buf())
   local cmp = package.loaded["completion_tools"]
   if cmp then
     cmp.hide()
