@@ -119,7 +119,7 @@ integration_checks() (
     -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_tools.lua')"
 
   # A PTY supplies UIEnter, which Lazy needs to fire its actual VeryLazy event.
-  for scenario in boundaries boundaries_files tasks editing completion ui_tools annotations bars folding keymaps \
+  for scenario in boundaries boundaries_files tasks editing editing_input completion ui_tools annotations bars folding keymaps \
     image_plain image_edit image_existing image_tex_reference image_typst_reference image_markdown_formula \
     image_disabled image_formula image_file; do
     python3 "$root/tests/tui.py" "$scenario"

@@ -370,8 +370,9 @@ by `features/treesitter.lua` and the TeX buffer policy. Toolchain now also regis
 filetype aliases and query predicate compatibility. The nvim-treesitter main plugin is no
 longer declared or loaded; Markdown rendering and CodeCompanion depend on toolchain instead.
 The independently installed runtime covers all 45 previously installed parser languages,
-including Vimdoc, XML, TSX and Svelte. `nvim-treesitter-textobjects` is a separate retained
-plugin. `:TSInstallConfigured` submits independent parser tasks. Query data is downloaded
+including Vimdoc, XML, TSX and Svelte. `editing-tools.nvim` owns text objects,
+editing operators and alignment. `nvim-treesitter-textobjects` remains a query-data
+dependency for languages beyond editing-tools' bundled queries. `:TSInstallConfigured` submits independent parser tasks. Query data is downloaded
 at a fixed nvim-treesitter commit without loading its Lua code; existing legacy checkout
 files are retained for rollback but are not required by these managed language bundles.
 When migrating an existing installation, old `site/queries` links to that checkout must
@@ -380,6 +381,14 @@ reads inheritance headers in lower-priority query files too. This machine retain
 links and their manifest under `toolchain-tools/legacy-queries` in the Neovim data directory.
 Use `:ToolchainLog` for build logs and `:ConfigToolsInstall` to check/install the current
 profile's pinned versions; the old plugin's other `:TS*` commands are no longer registered.
+
+Editing loads from the development plugin root on the first object/operator key or
+`:EditingTools`. `i`/`a`, `in`/`an`, `il`/`al` select objects; `cr`, `gx`, `gm`, `gs`,
+`g=` replace, exchange, duplicate, sort and evaluate arithmetic. `ga` opens an
+alignment preview: Enter applies, Esc cancels, and `d` changes the delimiter.
+Confirmed edits support `.` repeat and undo. `gX` keeps Vim's URI opener available.
+The former `gA` immediate-alignment mapping is no longer installed. Pair insertion
+and surround continue to belong to pairs.nvim; multicursor remains separate.
 
 Mason is no longer declared or loaded. Toolchain installs pinned release archives, isolated
 npm/Python packages, Cargo packages and selected source builds. It appends managed tool

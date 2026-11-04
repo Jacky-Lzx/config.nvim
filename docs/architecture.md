@@ -63,8 +63,12 @@ and `<leader>?`, with selection-tools providing the executable keymap picker.
 keymap-tools initializes at VimEnter, before the first input; early metadata
 registration uses deferred setup without loading the hint engine. Rendering loads
 on first display. selection-tools has its own setup owner and is required only by
-the executable picker. mini.ai publishes metadata at VimEnter and retains its
-native input/selection behavior. LaTeX publishes buffer-scoped groups. Snacks
+the executable picker. editing-tools publishes text-object metadata at VimEnter
+without initializing its implementation; it loads on the first editing key or
+:EditingTools command. It owns text objects, editing operators and alignment.
+mini.ai, mini.align and mini.operators are no longer declared. The retained
+nvim-treesitter-textobjects dependency supplies query data for additional languages,
+without taking ownership of input or selection. LaTeX publishes buffer-scoped groups. Snacks
 registers dynamic toggle descriptions. Each integration registers named groups/hints
 under its own source ID; registrations have replace/dispose lifecycles. Native
 vim.keymap.set() owns real mappings. The picker shortcut is explicitly declared in

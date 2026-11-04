@@ -26,9 +26,9 @@ local function check_owners()
   assert(not plugins["which-key.nvim"] and not package.loaded["which-key"], "legacy hint owner remains")
   assert(
     vim.iter(require("keymap_tools").list({ mode = "o", prefix = "if", kinds = { "hint" } })):any(function(item)
-      return item.keys == "if" and item.source == "mini.ai"
+      return item.keys == "if" and item.source == "editing-tools.nvim"
     end),
-    "cold mini.ai descriptions missing"
+    "cold editing-tools.nvim descriptions missing"
   )
   local tools = require("keymap_tools")
   local rows, info = tools.list({ mode = "n", prefix = "<leader>t" })
@@ -168,7 +168,7 @@ timer:start(
         mark("visual_escape")
         stage = "operator"
       elseif stage == "operator" and api.nvim_get_mode().mode == "n" then
-        -- mini.ai still handles selection; keymap-tools owns the waiting hints.
+        -- editing-tools.nvim still handles selection; keymap-tools owns the waiting hints.
         api.nvim_buf_set_lines(0, 0, -1, false, { "one (inner words) tail" })
         api.nvim_win_set_cursor(origin, { 1, 6 })
         mark("operator_prefix")
@@ -180,7 +180,7 @@ timer:start(
         mark("object_apply")
         stage = "operator_done"
       elseif stage == "operator_done" and api.nvim_get_current_line() == "one () tail" then
-        assert(package.loaded["mini.ai"], "mini.ai failed on first use")
+        assert(package.loaded["editing_tools"], "editing-tools.nvim failed on first use")
         vim.fn.setreg("z", "CONFIG")
         api.nvim_buf_set_lines(0, 0, -1, false, { "x" })
         api.nvim_win_set_cursor(0, { 1, 0 })
@@ -213,7 +213,7 @@ timer:start(
         timer:stop()
         timer:close()
         vim.fn.writefile({
-          "PASS configured startup without which-key/showkeys, opt-in screencast rendering and cleanup, bottom-right hints, executable picker, dynamic Wrap descriptions, Visual cancellation, cold mini.ai operator hints, and Insert/command-line register hints with the existing input UI",
+          "PASS configured startup without which-key/showkeys, opt-in screencast rendering and cleanup, bottom-right hints, executable picker, dynamic Wrap descriptions, Visual cancellation, cold editing-tools.nvim operator hints, and Insert/command-line register hints with the existing input UI",
         }, result)
         vim.cmd("qa!")
       end

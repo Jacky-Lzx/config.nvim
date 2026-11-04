@@ -39,7 +39,7 @@ def main():
     env["TERM"] = "xterm-256color"
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case in ("ui_tools", "bars", "folding") else 120, 0, 0))
-    test_file = {"tasks": "tasks_tui.lua", "motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
+    test_file = {"editing_input": "editing_tui.lua", "tasks": "tasks_tui.lua", "motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
@@ -82,8 +82,8 @@ def main():
                 if stage in task_actions and stage not in handled:
                     os.write(master, task_actions[stage])
                     handled.add(stage)
-            elif case == "motion":
-                stage_file = Path(env["NVIM_TEST_TMP"], "motion-stage")
+            elif case in ("motion", "editing_input"):
+                stage_file = Path(env["NVIM_TEST_TMP"], "editing-stage" if case == "editing_input" else "motion-stage")
                 stage = stage_file.read_text().splitlines() if stage_file.exists() else []
                 if len(stage) == 2 and stage[0] not in handled:
                     os.write(master, json.loads(stage[1]).encode())

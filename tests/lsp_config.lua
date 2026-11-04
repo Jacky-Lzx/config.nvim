@@ -176,6 +176,9 @@ opts.picker.actions.results_open.action(picker)
 assert(opened, "picker action must import results into lsp-tools")
 package.loaded["lsp-tools"] = original_tools
 
-local mini = require("plugins.editing.mini-ai")[1]
-assert(vim.list_contains(mini.dependencies, "nvim-treesitter/nvim-treesitter-textobjects"))
+local editing = require("plugins.editing.editing-tools")[1]
+assert(editing.name == "editing-tools.nvim" and editing.main == "editing_tools")
+assert(editing.dir == require("utils.platform").dev_plugin_root() .. "/editing-tools.nvim")
+assert(editing.cmd == "EditingTools" and editing.opts and not editing.event)
+assert(vim.list_contains(editing.dependencies, "nvim-treesitter/nvim-treesitter-textobjects"))
 print("LSP capability ordering and buffer-local feature checks passed")

@@ -28,12 +28,13 @@ local function check()
     "conform.nvim",
     "LuaSnip",
     "pairs.nvim",
-    "mini.ai",
-    "mini.align",
-    "mini.operators"
+    "editing-tools.nvim"
   )
   for _, name in ipairs({ "nvim-tree.lua", "nvim-lsp-file-operations", "yazi.nvim" }) do
     assert(not plugins[name], "Replaced file plugin still configured: " .. name)
+  end
+  for _, name in ipairs({ "mini.ai", "mini.align", "mini.operators" }) do
+    assert(not plugins[name] and not package.loaded[name], "Replaced editing owner remains: " .. name)
   end
   loaded("ui-tools.nvim")
   assert(not plugins["todo-comments.nvim"] and not plugins["nvim-highlight-colors"])
@@ -47,6 +48,7 @@ local function check()
   assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
   for _, command in ipairs({
     "FileTools",
+    "EditingTools",
     "TaskToggle",
     "CodeCompanionChat",
     "LuaSnipEdit",
@@ -138,19 +140,23 @@ local function check()
   elseif case == "editing" then
     contents({ "a=1", "long=2" })
     vim.fn.writefile({ "Running first alignment" }, vim.env.NVIM_LAZY_RESULT)
-    feed("VjgA=")
-    loaded("mini.align")
+    feed("Vjga")
+    loaded("editing-tools.nvim")
+    assert(require("editing_tools.align").is_active(), "First alignment did not open preview")
+    assert(vim.api.nvim_get_current_line() == "a=1", "Preview changed the source")
+    feed("<CR>")
+    assert(not require("editing_tools.align").is_active())
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     assert(lines[1]:find("=", 1, true) == lines[2]:find("=", 1, true), vim.inspect(lines))
     contents({ "word" })
     vim.fn.writefile({ "Running first multiply" }, vim.env.NVIM_LAZY_RESULT)
     feed("gmm")
-    loaded("mini.operators")
+    loaded("editing-tools.nvim")
     assert(vim.api.nvim_buf_line_count(0) == 2, "First multiply key did not duplicate the line")
     contents({ "(word)" })
     vim.fn.writefile({ "Running first textobject" }, vim.env.NVIM_LAZY_RESULT)
     feed("di(")
-    loaded("mini.ai")
+    loaded("editing-tools.nvim")
     assert(vim.api.nvim_get_current_line() == "()", "First textobject key did not operate")
     contents({ "(word)" })
     vim.fn.writefile({ "Running first surround" }, vim.env.NVIM_LAZY_RESULT)
