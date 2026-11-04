@@ -47,7 +47,7 @@ function M.options()
       },
       path = { score_offset = 95 },
       buffer = { score_offset = 20 },
-      snippets = { score_offset = 60 },
+      snippets = vim.tbl_extend("force", require("integrations.snippets").source(), { score_offset = 60 }),
       dictionary = { score_offset = 5 },
       spell = { score_offset = 10 },
     },
@@ -73,7 +73,7 @@ function M.options()
         end, vim.api.nvim_list_bufs())
       end,
     },
-    snippets = { preset = "luasnip" },
+    snippets = require("integrations.snippets").options(),
     dictionary = {
       files = { require("utils.paths").config("configs", "dictionary.txt") },
       min_keyword_length = 3,
@@ -160,7 +160,7 @@ function M.options()
       },
       ["<C-u>"] = { "scroll_documentation_up", "fallback" },
       ["<C-d>"] = { "scroll_documentation_down", "fallback" },
-      ["<Tab>"] = { "accept", "fallback" },
+      ["<Tab>"] = { "accept", "snippet_forward", "fallback" },
       ["<CR>"] = { "accept", M.newline, "fallback" },
       ["<S-CR>"] = {
         function(cmp)

@@ -1,0 +1,103 @@
+"""Exercise migrated Markdown and both engines through the configured terminal."""
+import fcntl
+import json
+import os
+from pathlib import Path
+import pty
+import select
+import shutil
+import struct
+import subprocess
+import tempfile
+import termios
+import time
+
+root = Path(__file__).resolve().parent.parent
+with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
+    task = Path(temporary)
+    shutil.copy2(root / "lazy-lock.json", task / "lazy-lock.json")
+    env = dict(os.environ, TERM="xterm-256color", NVIM_CONFIG_ROOT=str(root), NVIM_SMOKE_TEST="1",
+               NVIM_TEST_SCENARIO="writing", NVIM_SNIPPET_STATE=str(task / "state.json"),
+               NVIM_LAZY_LOCKFILE=str(task / "lazy-lock.json"), NVIM_LOG_FILE=str(task / "nvim.log"),
+               XDG_CACHE_HOME=str(task / "cache"), XDG_STATE_HOME=str(task / "state"))
+    (task / "trial.md").write_text("")
+    primary, secondary = pty.openpty()
+    fcntl.ioctl(secondary, termios.TIOCSWINSZ, struct.pack("HHHH", 36, 120, 0, 0))
+    child = subprocess.Popen(["nvim", "-i", "NONE", "--cmd",
+        "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')", "-u", str(root / "init.lua"),
+        "-c", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/snippets_tui.lua')", str(task / "trial.md")],
+        cwd=root,env=env,stdin=secondary,stdout=secondary,stderr=secondary,start_new_session=True)
+    os.close(secondary)
+    output, states = bytearray(), []
+
+    def send(keys):
+        os.write(primary, keys)
+
+    def wait(predicate, label):
+        deadline, latest = time.monotonic() + 5, None
+        while time.monotonic() < deadline:
+            if select.select([primary], [], [], .01)[0]:
+                try:
+                    output.extend(os.read(primary, 65536))
+                except OSError:
+                    break
+            try:
+                latest = json.loads((task / "state.json").read_text())
+            except (FileNotFoundError, json.JSONDecodeError):
+                continue
+            assert not latest["errors"], latest
+            if predicate(latest):
+                states.append(label)
+                return latest
+        raise AssertionError(f"{label}: {latest}; tail={output[-1600:]!r}")
+
+    def reset():
+        send(b"\x1b")
+        wait(lambda s: s["mode"] == "n", "normal")
+        send(b":lua snippet_config_reset()\r")
+        wait(lambda s: s["lines"] == [""] and s["mode"] == "n", "fresh Markdown")
+
+    try:
+        initial = wait(lambda s: s["mode"] == "n" and s["engine"] == "snippet-tools", "startup")
+        assert not initial["loaded"], "Opening Markdown eagerly loaded snippet runtime"
+        send(b"ibold")
+        wait(lambda s: s["menu"] and s.get("selected") == "bold", "native completion menu")
+        send(b"\t")
+        wait(lambda s: s["mode"] == "s" and "**BOLD**" in s["screen"], "rendered native field")
+        send(b"text\x1bl!")
+        wait(lambda s: s["lines"] == ["**text**!"], "native Alt-l")
+
+        reset()
+        send(b"itable2x2 ")
+        wait(lambda s: s["mode"] == "s" and s["lines"][:3] == ["| 1 | 2 |", "| - | - |", "| 3 | 4 |"], "generated table selection")
+        send(b"A\x1blB\x1blC\x1blD\x1bl!")
+        wait(lambda s: s["lines"] == ["| A | B |", "| - | - |", "| C | D |", "!"], "table input burst")
+
+        reset()
+        send(b"imkx\x1bl!")
+        wait(lambda s: s["lines"] == ["$x$!"], "native math single expansion")
+
+        reset()
+        send(b":SnippetEngine luasnip\r")
+        wait(lambda s: s["engine"] == "luasnip" and s["mode"] == "n", "legacy switch")
+        send(b"ibold")
+        wait(lambda s: s["menu"] and s.get("selected") == "bold", "legacy completion menu")
+        send(b"\t")
+        wait(lambda s: s["mode"] == "s", "legacy field")
+        send(b"old\x1bl!")
+        wait(lambda s: s["lines"] == ["**old**!"], "legacy field input")
+        send(b"\x1b:SnippetEngineToggle\r")
+        wait(lambda s: s["engine"] == "snippet-tools" and s["mode"] == "n", "native switch")
+
+        reset()
+        send(b"i#3 Title")
+        wait(lambda s: s["lines"] == ["### Title"], "native heading burst")
+        print(f"Configured snippet PTY: {len(states)} intermediate states passed")
+    finally:
+        if child.poll() is None:
+            child.terminate()
+            try:
+                child.wait(timeout=3)
+            except subprocess.TimeoutExpired:
+                child.kill(); child.wait()
+        os.close(primary)
