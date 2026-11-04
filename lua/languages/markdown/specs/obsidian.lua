@@ -26,12 +26,10 @@ return {
         },
       },
       {
-        "folke/which-key.nvim",
+        "keymap-tools.nvim",
         optional = true,
         opts = {
-          spec = {
-            { "<leader>O", group = "[Obsidian]" },
-          },
+          groups = { ["<leader>O"] = "[Obsidian]" },
         },
       },
     },

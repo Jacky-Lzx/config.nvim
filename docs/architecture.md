@@ -58,10 +58,11 @@ Snacks preserves the current diagnostic state.
 
 LSP configuration depends on blink.cmp so its native capability registration runs before
 `vim.lsp.enable()`. Completion has one setup owner. keymap-tools owns Normal/Visual
-prefix hints and `<leader>?`, with selection-tools providing the keymap picker.
-which-key remains restricted to operator-pending textobject hints for mini.ai and
-LaTeX; its Normal/Visual triggers and mark/register/spelling popups are disabled.
-Existing which-key metadata integrations retain their declared dependency lifecycle.
+prefix hints, operator-pending motions/textobjects, register/mark/spelling hints,
+and `<leader>?`, with selection-tools providing the executable keymap picker.
+mini.ai publishes metadata through keymap-tools before first use and retains its
+native input/selection behavior. LaTeX publishes buffer-scoped groups. Snacks
+registers dynamic toggle descriptions. which-key is no longer a plugin dependency.
 
 Pairing declares `Jacky-Lzx/pairs.nvim` with lazy.nvim's `dev = true`. The shared `dev.path`
 comes from `NVIM_DEV_PLUGIN_ROOT` (default `~/Documents/Github/nvim_plugins`), and

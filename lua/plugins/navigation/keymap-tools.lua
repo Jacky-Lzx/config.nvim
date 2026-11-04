@@ -8,6 +8,7 @@ return {
     dependencies = { "selection-tools.nvim" },
     opts = {
       delay = 200,
+      modes = { "n", "x", "o" },
       win = { width = 48, height = 16, border = "rounded" },
       picker = { key = "<leader>?" },
       groups = {

@@ -9,12 +9,10 @@ return {
         opts = { close_filetypes_on_save = { "OverseerList" } },
       },
       {
-        "folke/which-key.nvim",
+        "keymap-tools.nvim",
         optional = true,
         opts = {
-          spec = {
-            { "<leader>o", group = "[Overseer]" },
-          },
+          groups = { ["<leader>o"] = "[Overseer]" },
         },
       },
     },

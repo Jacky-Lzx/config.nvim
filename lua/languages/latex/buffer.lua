@@ -10,7 +10,7 @@ function M.setup(bufnr)
     map(key, "<Plug>(TexTools" .. action .. ")", description, modes)
   end
 
-  require("which-key").add({
+  require("keymap_tools").add({
     { "<localleader>l", group = "LaTeX", buffer = bufnr },
   })
 

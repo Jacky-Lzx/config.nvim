@@ -12,12 +12,10 @@ return {
     },
     specs = {
       {
-        "folke/which-key.nvim",
+        "keymap-tools.nvim",
         optional = true,
         opts = {
-          spec = {
-            { "<leader>m", group = "[Compile]" },
-          },
+          groups = { ["<leader>m"] = "[Compile]" },
         },
       },
     },

@@ -9,6 +9,26 @@ return {
     opts = {
       bigfile = { enabled = true },
       dashboard = { enabled = false }, -- ui-tools owns the start screen.
+      toggle = {
+        which_key = false,
+        map = function(mode, lhs, rhs, opts)
+          vim.keymap.set(mode, lhs, rhs, opts)
+          for _, toggle in pairs(Snacks.toggle.toggles) do
+            if opts.desc == "Toggle " .. toggle.opts.name then
+              require("keymap_tools").add({
+                {
+                  lhs,
+                  mode = mode,
+                  desc = function()
+                    return (toggle:get() and "Disable " or "Enable ") .. toggle.opts.name
+                  end,
+                },
+              })
+              break
+            end
+          end
+        end,
+      },
       explorer = { enabled = false },
       image = {
         enabled = false,
@@ -246,7 +266,7 @@ return {
           Snacks.toggle.profiler():map("<leader>tPp")
           -- Toggle the profiler highlights
           Snacks.toggle.profiler_highlights():map("<leader>tPh")
-          require("which-key").add({
+          require("keymap_tools").add({
             { "<leader>tP", group = "[profiler]" },
           })
         end,
