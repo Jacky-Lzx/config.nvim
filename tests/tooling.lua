@@ -11,11 +11,16 @@ package.loaded.conform = {
     formatted = opts
   end,
 }
-package.loaded.snacks = { toggle = {
-  new = function()
-    return { map = function() end }
+local format_registration
+package.loaded.keymap_tools = {
+  register = function(source, spec)
+    assert(source == "formatting")
+    format_registration = spec.toggles[1]
   end,
-} }
+}
+package.preload.snacks = function()
+  error("Formatting must not load Snacks")
+end
 local conform = require("plugins.coding.conform")[1]
 vim.g.enable_autoformat = false
 conform.init()
@@ -28,6 +33,9 @@ toggle_format()
 assert(vim.g.enable_autoformat == false, "Allow disabling formatting before Conform setup")
 conform.config(nil, vim.deepcopy(conform.opts))
 assert(vim.g.enable_autoformat == false, "Loading Conform must preserve the pre-save toggle")
+assert(not format_registration.get())
+assert(vim.fn.maparg("<leader>tf", "n", false, true).callback == toggle_format, "Conform replaced the owner mapping")
+assert(not package.loaded.snacks)
 toggle_format()
 assert(vim.g.enable_autoformat == true)
 local buf = vim.api.nvim_get_current_buf()

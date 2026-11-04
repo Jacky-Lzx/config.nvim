@@ -40,7 +40,7 @@ def main():
     os.close(slave)
     keymap_actions = {
         "prefix": b" ", "subgroup": b"s", "hint_cancel": b"\x1b", "picker": b" ?",
-        "filter": b"Wrap", "confirm": b"\r", "visual_picker": b"vj ?",
+        "filter": b"tw Wrap", "confirm": b"\r", "visual_picker": b"vj ?",
         "visual_cancel": b"\x1b", "visual_escape": b"\x1b", "operator_prefix": b"d", "object_prefix": b"i", "object_apply": b"(",
         "insert_register": b"i\x12", "insert_register_apply": b"z", "leave_insert": b"\x1b",
         "command_register": b":\x12", "command_register_apply": b"z", "command_cancel": b"\x1b",

@@ -59,6 +59,15 @@ Conform. Debugging loads on debugger keys; merely opening C/C++ or Swift does no
 initialize DAP. Pairing/snippets load on Insert mode, and optional completion providers
 load when used. VimTeX stays available at startup for headless inverse search.
 
+Toggle descriptions and state are registered with keymap-tools alongside their feature
+owners. Hints and the mapping picker share `Enable` / `Disable` descriptions, and
+`require("keymap_tools").list()` exposes `item.toggle.name` and `item.toggle.state`.
+Status reads do not activate lazy Git, pairing, Markdown or image providers; unavailable
+state displays a neutral `Toggle` description. Window, buffer, tab and session state
+follow the actual switch scope. Diagnostics and formatting keep their native mappings
+when Snacks or Conform loads. Snacks switches are registered by their explicit object,
+without matching descriptions or replacing the global Snacks mapping hook.
+
 ## LSP tools
 
 [lsp-tools.nvim](https://github.com/Jacky-Lzx/lsp-tools.nvim) supplies the code action

@@ -3,8 +3,30 @@ return {
     "MeanderingProgrammer/render-markdown.nvim",
     ft = { "markdown" },
     keys = {
-      { "<leader>tm", desc = "Enable render markdown" },
+      {
+        "<leader>tm",
+        function()
+          require("render-markdown").toggle()
+        end,
+        desc = "Toggle render markdown",
+      },
     },
+    init = function()
+      require("keymap_tools").register("render-markdown", {
+        toggles = {
+          {
+            keys = "<leader>tm",
+            name = "Render Markdown",
+            get = function()
+              local state = package.loaded["render-markdown.state"]
+              if state then
+                return state.enabled
+              end
+            end,
+          },
+        },
+      })
+    end,
     dependencies = {
       "toolchain-tools.nvim",
       "nvim-tree/nvim-web-devicons", -- if you prefer nvim-web-devicons
@@ -42,23 +64,6 @@ return {
     },
     config = function(_, opts)
       require("render-markdown").setup(opts)
-
-      require("snacks")
-        .toggle({
-          name = "Render Markdown",
-          get = function()
-            return require("render-markdown.state").enabled
-          end,
-          set = function(enabled)
-            local m = require("render-markdown")
-            if enabled then
-              m.enable()
-            else
-              m.disable()
-            end
-          end,
-        })
-        :map("<leader>tm")
     end,
   },
 }

@@ -25,6 +25,50 @@ local function check_owners()
     end),
     "cold mini.ai descriptions missing"
   )
+  local tools = require("keymap_tools")
+  local rows, info = tools.list({ mode = "n", prefix = "<leader>t" })
+  assert(#info.errors == 0, vim.inspect(info.errors))
+  local by_key = {}
+  for _, row in ipairs(rows) do
+    by_key[row.keys] = row
+  end
+  for _, key in ipairs({
+    "td",
+    "tV",
+    "tv",
+    "tf",
+    "tw",
+    "ts",
+    "tL",
+    "tl",
+    "tc",
+    "tb",
+    "th",
+    "ta",
+    "tS",
+    "tT",
+    "tPp",
+    "tPh",
+    "tG",
+    "tD",
+    "tp",
+    "tgb",
+    "tgw",
+    "tgs",
+    "to",
+  }) do
+    assert(by_key["<Space>" .. key] and by_key["<Space>" .. key].toggle, "Missing toggle metadata: " .. key)
+  end
+  assert(not plugins["conform.nvim"]._.loaded and not package.loaded.conform, "Status reads loaded the formatter")
+  assert(not plugins["pairs.nvim"]._.loaded and not package.loaded.pairs, "Status reads loaded pairing")
+  assert(not by_key["<Space>tp"].toggle.state, "Cold pairing should have unknown state")
+  local image_loaded = plugins["image-tools.nvim"]._.loaded
+  local image
+  for _, item in ipairs(tools.list({ mode = "n", prefix = "<leader>ui" })) do
+    image = item
+  end
+  assert(image and image.toggle.name == "Automatic image preview" and image.toggle.state == true)
+  assert(plugins["image-tools.nvim"]._.loaded == image_loaded, "Status reads loaded image-tools")
   for _, mode in ipairs({ "n", "x" }) do
     local map = vim.fn.maparg(" ?", mode, false, true)
     assert(map.desc == "Choose and execute buffer keymap", "old picker binding remains")
@@ -82,7 +126,7 @@ timer:start(
         picker = latest_picker
         mark("filter")
         stage = "confirm"
-      elseif stage == "confirm" and picker.query == "Wrap" then
+      elseif stage == "confirm" and picker.query == "tw Wrap" then
         assert(#picker.matches == 1)
         assert(picker:current().keys == " tw", "wrong real mapping selected")
         mark("confirm")
@@ -93,6 +137,7 @@ timer:start(
         for _, item in ipairs(require("keymap_tools").list({ mode = "n", kinds = { "mapping" } })) do
           if item.keys == "<Space>tw" then
             description = item.desc
+            assert(item.toggle.name == "Wrap" and item.toggle.state == vim.wo.wrap)
           end
         end
         assert(description == (vim.wo.wrap and "Disable " or "Enable ") .. "Wrap", "toggle description is stale")

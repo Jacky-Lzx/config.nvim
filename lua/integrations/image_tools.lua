@@ -122,6 +122,14 @@ function M.preview()
   return require("image_tools").hover()
 end
 
+function M.enabled()
+  local image = loaded()
+  if image then
+    return image.status().auto_preview
+  end
+  return automatic
+end
+
 function M.toggle()
   local image = loaded()
   if image then
@@ -167,6 +175,9 @@ function M.setup(opts, loader)
   -- Lazy keys proxy would load image-tools even for formula detection/toggle-off.
   vim.keymap.set("n", "<leader>si", M.preview, { desc = "[Image] Preview image or formula on current line" })
   vim.keymap.set("n", "<leader>ui", M.toggle, { desc = "[Image] Toggle automatic preview" })
+  require("keymap_tools").register("image-tools.toggle", {
+    toggles = { { keys = "<leader>ui", name = "Automatic image preview", get = M.enabled } },
+  })
   for _, buf in ipairs(api.nvim_list_bufs()) do
     watch(buf)
   end

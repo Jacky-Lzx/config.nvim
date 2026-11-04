@@ -11,6 +11,17 @@ return {
       vim.keymap.set("n", "<leader>tf", function()
         vim.g.enable_autoformat = not vim.g.enable_autoformat
       end, { desc = "Toggle auto format" })
+      require("keymap_tools").register("formatting", {
+        toggles = {
+          {
+            keys = "<leader>tf",
+            name = "Auto format",
+            get = function()
+              return vim.g.enable_autoformat
+            end,
+          },
+        },
+      })
     end,
     keys = {
       {
@@ -41,19 +52,6 @@ return {
     },
     config = function(_, opts)
       require("conform").setup(opts)
-
-      require("snacks").toggle
-        .new({
-          id = "auto_format",
-          name = "Auto format",
-          get = function()
-            return vim.g.enable_autoformat
-          end,
-          set = function(state)
-            vim.g.enable_autoformat = state
-          end,
-        })
-        :map("<leader>tf")
     end,
   },
 }

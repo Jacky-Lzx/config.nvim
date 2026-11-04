@@ -10,8 +10,20 @@ local function plugin_dir(plugin)
   return vim.uv.fs_stat(dev_dir) and dev_dir or vim.fn.stdpath("data") .. "/lazy/" .. name
 end
 vim.opt.rtp:prepend(plugin_dir(spec))
+vim.opt.rtp:prepend(require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim")
+local function toggle_state(key, buf)
+  local rows, info = require("keymap_tools").list({ mode = "n", buf = buf })
+  assert(#info.errors == 0, vim.inspect(info.errors))
+  for _, row in ipairs(rows) do
+    if row.keys == "<Space>" .. key then
+      return row.toggle.state
+    end
+  end
+  error("Missing toggle metadata: " .. key)
+end
 vim.o.swapfile = false
 vim.g.mapleader = " "
+spec.init()
 local fixture = assert(vim.env.NVIM_TEST_TMP) .. "/git-tools-config"
 vim.fn.mkdir(fixture, "p")
 local function git(...)
@@ -45,6 +57,13 @@ overlay()
 assert(vim.wait(5000, function()
   local s = require("git_tools.buffer").states[buf]
   return s.overlay and #s.hunks > 0
+end, 5))
+assert(toggle_state("to", buf) == true and toggle_state("ggP", buf) == true)
+local hidden = vim.api.nvim_create_buf(false, true)
+assert(toggle_state("to", hidden) == nil, "Overlay status must use the requested buffer")
+require("git_tools").toggle_overlay(buf)
+assert(vim.wait(5000, function()
+  return toggle_state("to", buf) == false
 end, 5))
 assert(not package.loaded.gitsigns and not package.loaded["mini.diff"] and not package.loaded.diffview)
 local snacks = dofile(root .. "/lua/plugins/navigation/snacks.lua")[1]

@@ -19,6 +19,22 @@ return {
     dev = true,
     event = { "BufReadPost", "BufNewFile", "InsertEnter" },
     cmd = { "PairsToggle", "PairsInspect", "PairsRainbowToggle" },
+    init = function()
+      require("keymap_tools").register("pairs.toggle", {
+        toggles = {
+          {
+            keys = "<leader>tp",
+            name = "Pairing",
+            get = function()
+              local pairs = package.loaded.pairs
+              if pairs then
+                return pairs.status().enabled
+              end
+            end,
+          },
+        },
+      })
+    end,
     keys = {
       -- Preserve the existing surround prefix and load on the first Normal/Visual action.
       { "s", "<NOP>", mode = { "n", "x", "o" } },

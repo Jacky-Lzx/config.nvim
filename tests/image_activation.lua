@@ -6,9 +6,19 @@ local api = vim.api
 local integration = require("integrations.image_tools")
 local loads, hovers, formulas = 0, 0, 0
 local image_automatic = true
+local registration
+package.loaded.keymap_tools = {
+  register = function(source, spec)
+    assert(source == "image-tools.toggle")
+    registration = spec.toggles[1]
+  end,
+}
 package.preload.image_tools = function()
   loads = loads + 1
   return {
+    status = function()
+      return { auto_preview = image_automatic }
+    end,
     hover = function()
       hovers = hovers + 1
     end,
@@ -37,6 +47,8 @@ integration.setup({ auto_preview = true, math = { enabled = false } }, function(
   require("image_tools")
   integration.configured()
 end)
+assert(registration.get == integration.enabled and registration.get())
+assert(loads == 0, "Reading automatic-preview state loaded the backend")
 local function buffer(ft, lines)
   vim.cmd("enew!")
   api.nvim_buf_set_lines(0, 0, -1, false, lines)
@@ -51,6 +63,7 @@ integration.preview()
 assert(formulas == 1)
 cold()
 assert(integration.toggle() == false and not formula_automatic)
+assert(not registration.get())
 api.nvim_buf_set_lines(0, 0, -1, false, { "\\includegraphics{figure.png}" })
 cold()
 assert(integration.options({ position = "bottom_right" }).auto_preview == false)
@@ -79,7 +92,9 @@ assert(hovers == 1 and loads == 1)
 -- A provider can also be toggled by its own command; do not infer its state
 -- from the integration's previous automatic-preview flag.
 image_automatic = false
+assert(not registration.get(), "Status ignored the backend command state")
 assert(integration.toggle() == true)
+assert(registration.get())
 assert(integration.toggle() == false)
 assert(vim.fn.exists("#ConfigImageActivation") == 0)
 print("Image activation: plain text, disabled preview, formula dispatch, stale edits and first reference passed")

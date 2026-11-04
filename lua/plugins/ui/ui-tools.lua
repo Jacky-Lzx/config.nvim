@@ -87,6 +87,44 @@ return {
       scrollbar = { handle = " ", blend = 100, cursor = true, cursor_char = "●" },
       context_menu = true,
     },
+    init = function()
+      local function focus_mode(mode)
+        return function()
+          local focus = package.loaded["ui_tools.focus"]
+          if focus then
+            local state = focus.state()
+            return state ~= nil and state.mode == mode
+          end
+        end
+      end
+      require("keymap_tools").register("ui-tools.toggles", {
+        toggles = {
+          { keys = "<leader>Z", name = "Zen Mode", get = focus_mode("zen") },
+          { keys = "<leader>z", name = "Zoom", get = focus_mode("zoom") },
+          {
+            keys = "<leader>tG",
+            name = "Indent guides",
+            get = function()
+              local indent = package.loaded["ui_tools.indent"]
+              if indent then
+                local render = package.loaded["ui_tools.render"]
+                return indent.enabled == true or (render ~= nil and render.sources.indent ~= nil)
+              end
+            end,
+          },
+          {
+            keys = "<leader>tD",
+            name = "Scope dimming",
+            get = function()
+              local focus = package.loaded["ui_tools.focus"]
+              if focus then
+                return focus.dimmed == true
+              end
+            end,
+          },
+        },
+      })
+    end,
     config = function(_, opts)
       require("ui_tools").setup(opts)
       require("features.bars").setup()

@@ -7,7 +7,7 @@ end
 
 local before = vim.deepcopy(vim.diagnostic.config())
 local diagnostics = require("features.lsp.diagnostics")
-local integration = require("integrations.snacks_diagnostics")
+local integration = require("integrations.diagnostic_toggles")
 assert(vim.deep_equal(vim.diagnostic.config(), before), "Requiring diagnostics must not apply settings")
 assert(vim.fn.maparg("<leader>td", "n") == "")
 diagnostics.setup()
@@ -40,40 +40,31 @@ assert(vim.diagnostic.config().virtual_text.format == nil)
 assert(vim.diagnostic.config().virtual_text.spacing == 4)
 assert(not package.loaded.snacks)
 
--- Once Snacks is loaded, its toggles must preserve the current diagnostic state.
+-- Metadata reads the same owner functions and never replaces native mappings.
+local registered
+package.loaded.keymap_tools = {
+  register = function(source, spec)
+    assert(source == "diagnostics")
+    registered = spec.toggles
+  end,
+}
+local owner = vim.fn.maparg("<leader>td", "n", false, true).callback
 toggle("<leader>tV")
 toggle("<leader>tv")
-local toggles, mapped = {}, {}
-local snacks = {
-  toggle = {
-    new = function(opts)
-      toggles[opts.id] = opts
-      return {
-        map = function(_, key)
-          mapped[key] = true
-        end,
-      }
-    end,
-  },
-}
-integration.setup(snacks)
-assert(mapped["<leader>td"] and mapped["<leader>tV"] and mapped["<leader>tv"])
-assert(toggles.diagnostics.get())
-toggles.diagnostics.set(false)
-assert(not diagnostics.enabled())
-toggles.diagnostics.set(true)
-assert(diagnostics.enabled())
-assert(toggles.virtual_lines.get() and not toggles.virtual_text.get(), "Snacks reset the fallback toggle state")
-toggles.virtual_lines.set(false)
-assert(not toggles.virtual_lines.get())
-toggles.virtual_lines.set(true)
-assert(toggles.virtual_lines.get() and vim.diagnostic.config().virtual_lines.current_line)
-toggles.virtual_text.set(true)
-assert(toggles.virtual_text.get())
-toggles.virtual_text.set(false)
-assert(not toggles.virtual_text.get())
-assert(vim.diagnostic.config().virtual_text.format({ message = "hidden" }) == "")
-assert(not package.loaded.snacks, "The integration must use its injected Snacks instance")
+integration.setup()
+assert(vim.fn.maparg("<leader>td", "n", false, true).callback == owner)
+assert(#registered == 3)
+assert(registered[1].get == diagnostics.enabled and registered[1].get())
+assert(registered[2].get == diagnostics.virtual_lines_enabled and registered[2].get())
+assert(registered[3].get == diagnostics.virtual_text_enabled and not registered[3].get())
+for _, entry in ipairs(registered) do
+  assert(entry.set == nil, "Registration must not own a setter")
+end
+toggle("<leader>td")
+assert(not registered[1].get())
+toggle("<leader>td")
+assert(registered[1].get())
+assert(not package.loaded.snacks, "Diagnostic registration must not load Snacks")
 
 -- Diagnostics from linters must be navigable without an attached LSP or mini.bracketed.
 local buffer = vim.api.nvim_create_buf(false, true)
@@ -125,4 +116,4 @@ vim.diagnostic.set(namespace, buffer, {
 vim.api.nvim_win_set_cursor(0, { 1, 0 })
 navigate("2<A-j>", 6, "second diagnostic")
 assert(not package.loaded["mini.bracketed"], "Diagnostic navigation must not load mini.bracketed")
-print("Diagnostic defaults, native navigation, floats and Snacks toggle checks passed")
+print("Diagnostic defaults, native navigation, floats and read-only toggle registration checks passed")

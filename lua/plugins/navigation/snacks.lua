@@ -9,34 +9,7 @@ return {
     opts = {
       bigfile = { enabled = true },
       dashboard = { enabled = false }, -- ui-tools owns the start screen.
-      toggle = {
-        which_key = false,
-        map = function(mode, lhs, rhs, opts)
-          vim.keymap.set(mode, lhs, rhs, opts)
-          for _, toggle in pairs(Snacks.toggle.toggles) do
-            if opts.desc == "Toggle " .. toggle.opts.name then
-              require("keymap_tools").register("snacks.toggle." .. toggle.opts.id .. ":" .. lhs, {
-                modes = type(mode) == "table" and mode or { mode },
-                hints = {
-                  {
-                    keys = lhs,
-                    desc = function(ctx)
-                      if not ctx.win then
-                        return "Toggle " .. toggle.opts.name
-                      end
-                      local enabled = vim.api.nvim_win_call(ctx.win, function()
-                        return toggle:get()
-                      end)
-                      return (enabled and "Disable " or "Enable ") .. toggle.opts.name
-                    end,
-                  },
-                },
-              })
-              break
-            end
-          end
-        end,
-      },
+      toggle = { which_key = false },
       explorer = { enabled = false },
       image = {
         enabled = false,
@@ -213,70 +186,13 @@ return {
           _G.dd = function(...)
             Snacks.debug.inspect(...)
           end
-          require("integrations.snacks_diagnostics").setup(Snacks)
 
           _G.bt = function()
             Snacks.debug.backtrace()
           end
           vim.print = _G.dd -- Override print to use snacks for `:=` command
 
-          Snacks.toggle
-            .new({
-              id = "Animation",
-              name = "Animation",
-              get = function()
-                return Snacks.animate.enabled()
-              end,
-              set = function(state)
-                vim.g.snacks_animate = state
-              end,
-            })
-            :map("<leader>ta")
-
-          Snacks.toggle
-            .new({
-              id = "scroll_anima",
-              name = "Scroll animation",
-              get = function()
-                return Snacks.scroll.enabled
-              end,
-              set = function(state)
-                if state then
-                  Snacks.scroll.enable()
-                else
-                  Snacks.scroll.disable()
-                end
-              end,
-            })
-            :map("<leader>tS")
-
-          -- Create some toggle mappings
-          Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>ts")
-          Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>tw")
-          Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>tL")
-          Snacks.toggle.line_number():map("<leader>tl")
-          Snacks.toggle
-            .option("conceallevel", { off = 0, on = vim.o.conceallevel > 0 and vim.o.conceallevel or 2 })
-            :map("<leader>tc")
-          Snacks.toggle.treesitter():map("<leader>tT")
-          Snacks.toggle.option("background", { off = "light", on = "dark", name = "Dark Background" }):map("<leader>tb")
-          Snacks.toggle
-            .inlay_hints({
-              get = function()
-                return vim.lsp.inlay_hint.is_enabled()
-              end,
-              set = function(state)
-                vim.lsp.inlay_hint.enable(state)
-              end,
-            })
-            :map("<leader>th")
-          -- Toggle the profiler
-          Snacks.toggle.profiler():map("<leader>tPp")
-          -- Toggle the profiler highlights
-          Snacks.toggle.profiler_highlights():map("<leader>tPh")
-          require("keymap_tools").register("snacks.profiler", {
-            groups = { { prefix = "<leader>tP", label = "[profiler]" } },
-          })
+          require("integrations.snacks_toggles").setup(Snacks)
         end,
       })
     end,

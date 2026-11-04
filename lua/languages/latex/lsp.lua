@@ -74,6 +74,21 @@ function M.attach(client, bufnr)
       vim.notify("Build on save: " .. tostring(settings.latex.build.onSave), vim.log.levels.INFO)
     end
   end, "Toggle build on save")
+  require("keymap_tools").register("latex.build-on-save", {
+    buf = bufnr,
+    priority = 10,
+    toggles = {
+      {
+        keys = "<localleader>la",
+        name = "Build on save",
+        get = function()
+          if vim.lsp.get_client_by_id(client.id) == client then
+            return client.settings.latex.build.onSave
+          end
+        end,
+      },
+    },
+  })
   map("<localleader>le", function()
     vim.diagnostic.setqflist()
   end, "Errors and warnings")
