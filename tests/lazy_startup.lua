@@ -1,5 +1,5 @@
 -- Invoked by tests/tui.py so Lazy's real UIEnter -> VeryLazy path runs.
-local temp = assert(vim.env.NVIM_TEST_TMP)
+local temp = assert(vim.uv.fs_realpath(assert(vim.env.NVIM_TEST_TMP)))
 local plugins = require("lazy.core.config").plugins
 local function unloaded(...)
   for _, name in ipairs({ ... }) do
@@ -23,8 +23,7 @@ local function check()
   unloaded(
     "nvim-dap",
     "nvim-dap-view",
-    "nvim-tree.lua",
-    "nvim-lsp-file-operations",
+    "file-tools.nvim",
     "overseer.nvim",
     "conform.nvim",
     "LuaSnip",
@@ -33,6 +32,9 @@ local function check()
     "mini.align",
     "mini.operators"
   )
+  for _, name in ipairs({ "nvim-tree.lua", "nvim-lsp-file-operations", "yazi.nvim" }) do
+    assert(not plugins[name], "Replaced file plugin still configured: " .. name)
+  end
   loaded("ui-tools.nvim")
   assert(not plugins["todo-comments.nvim"] and not plugins["nvim-highlight-colors"])
   assert(not package.loaded["todo-comments"] and not package.loaded["nvim-highlight-colors"])
@@ -44,7 +46,7 @@ local function check()
   assert(not package.loaded["tex-tools"], "TeX tools loaded without a TeX buffer")
   assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
   for _, command in ipairs({
-    "NvimTreeToggle",
+    "FileTools",
     "OverseerToggle",
     "CodeCompanionChat",
     "LuaSnipEdit",
@@ -57,7 +59,7 @@ local function check()
   -- Some installed plugins use silent! cleanup for absent legacy autocmds and
   -- dictionary watchers. These leave v:errmsg without reporting an error.
   vim.v.errmsg = ""
-  if case == "boundaries" or case == "boundaries_lfo" then
+  if case == "boundaries" or case == "boundaries_files" then
     -- First-save opt-out must not initialize Conform or trim whitespace.
     feed(" tf")
     assert(vim.g.enable_autoformat == false)
@@ -76,29 +78,35 @@ local function check()
     loaded("crates.nvim")
     loaded("pairs.nvim") -- Reading/creating a file enables rainbow before InsertEnter.
     assert(require("pairs.rainbow").status().enabled)
-    unloaded("nvim-dap", "nvim-tree.lua", "LuaSnip")
+    unloaded("nvim-dap", "LuaSnip")
+    loaded("file-tools.nvim")
+    assert(not package.loaded["file_tools.tree"], "LSP capabilities must not initialize the tree")
     for _, extension in ipairs({ "cpp", "swift" }) do
       vim.cmd.edit(temp .. "/lazy-file." .. extension)
-      unloaded("nvim-dap", "nvim-dap-view", "nvim-tree.lua")
+      unloaded("nvim-dap", "nvim-dap-view")
+      assert(not package.loaded["file_tools.tree"])
     end
     vim.api.nvim_exec_autocmds("LspAttach", { buffer = 0, data = { client_id = 999999 } })
-    unloaded("nvim-tree.lua", "nvim-lsp-file-operations", "nvim-dap")
+    unloaded("nvim-dap")
+    assert(not package.loaded["file_tools.tree"])
 
-    if case == "boundaries_lfo" then
-      vim.cmd("LFO create " .. vim.fn.fnameescape(temp .. "/lfo-file-" .. vim.uv.os_getpid()))
-      loaded("nvim-lsp-file-operations")
-      unloaded("nvim-tree.lua")
+    if case == "boundaries_files" then
+      vim.cmd("FileTools create " .. temp .. "/file-tools-created.txt")
+      assert(vim.uv.fs_stat(temp .. "/file-tools-created.txt"))
+      assert(not package.loaded["file_tools.tree"], "Core commands must not initialize the tree")
     end
-    -- Invoke the public command on the first use and verify tree event wiring.
-    vim.cmd("NvimTreeToggle")
-    loaded("nvim-tree.lua")
-    loaded("nvim-lsp-file-operations")
+    vim.cmd("FileTools open " .. temp)
+    loaded("file-tools.nvim")
     local renamed
     local get_clients = vim.lsp.get_clients
-    vim.lsp.get_clients = function()
+    vim.lsp.get_clients = function(opts)
+      if opts and opts.bufnr then
+        return {}
+      end
       return {
         {
-          initialized = true,
+          id = 999,
+          config = { root_dir = temp },
           server_capabilities = {
             workspace = {
               fileOperations = {
@@ -113,13 +121,14 @@ local function check()
         },
       }
     end
-    require("nvim-tree.events")._dispatch_node_renamed(temp .. "/old.txt", temp .. "/new.txt")
+    local from, to = temp .. "/" .. case .. "-old.txt", temp .. "/" .. case .. "-new.txt"
+    vim.fn.writefile({ "original" }, from)
+    local event, err = require("file_tools").rename(from, to)
     vim.lsp.get_clients = get_clients
-    assert(
-      renamed and renamed.oldUri == vim.uri_from_fname(temp .. "/old.txt"),
-      "First tree open missed rename notifications"
-    )
-    vim.cmd("NvimTreeClose")
+    assert(event, err)
+    assert(not vim.uv.fs_stat(from) and vim.uv.fs_stat(to))
+    assert(renamed and renamed.oldUri == vim.uri_from_fname(from), "First tree use missed rename notifications")
+    vim.cmd("FileTools close")
     vim.cmd("OverseerToggle")
     loaded("overseer.nvim")
     vim.cmd("OverseerClose")

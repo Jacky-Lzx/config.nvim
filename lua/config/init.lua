@@ -3,7 +3,7 @@ local M = {}
 function M.setup()
   assert(vim.fn.has("nvim-0.12") == 1, "This configuration requires Neovim 0.12 or newer")
 
-  -- required by nvim-tree
+  -- Use the configured file tree instead of the built-in file browser.
   vim.g.loaded_netrw = 1
   vim.g.loaded_netrwPlugin = 1
 

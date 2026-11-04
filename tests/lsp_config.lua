@@ -3,8 +3,28 @@ vim.opt.runtimepath:prepend(root)
 
 local lsp = require("plugins.coding.nvim-lspconfig")[1]
 assert(vim.list_contains(lsp.dependencies, "completion-tools.nvim"))
+assert(vim.list_contains(lsp.dependencies, "file-tools.nvim"))
 local completion_spec = require("plugins.coding.completion.core")[1]
 local original_completion = package.loaded["completion-tools"]
+local original_files = package.loaded.file_tools
+local file_capabilities = {
+  workspace = {
+    fileOperations = {
+      dynamicRegistration = true,
+      didCreate = true,
+      willCreate = true,
+      didRename = true,
+      willRename = true,
+      didDelete = true,
+      willDelete = true,
+    },
+  },
+}
+package.loaded.file_tools = {
+  capabilities = function()
+    return file_capabilities
+  end,
+}
 local original_config, original_enable = vim.lsp.config, vim.lsp.enable
 local configured, setup, enabled = false, false, false
 local capabilities = { textDocument = { completion = { completionItem = { snippetSupport = true } } } }
@@ -20,7 +40,10 @@ package.loaded["completion-tools"] = {
   end,
 }
 vim.lsp.config = function(name, opts)
-  assert(name == "*" and opts.capabilities == capabilities)
+  assert(name == "*")
+  assert(vim.deep_equal(opts.capabilities.textDocument, capabilities.textDocument))
+  assert(vim.deep_equal(opts.capabilities.workspace.fileOperations, file_capabilities.workspace.fileOperations))
+  assert(capabilities.workspace == nil, "Merging file capabilities mutated completion defaults")
   configured = true
 end
 vim.lsp.enable = function(servers)
@@ -112,6 +135,7 @@ vim.api.nvim_buf_call(unrelated, function()
 end)
 vim.lsp.config, vim.lsp.enable = original_config, original_enable
 package.loaded["completion-tools"] = original_completion
+package.loaded.file_tools = original_files
 vim.api.nvim_del_augroup_by_name("ConfigLsp")
 
 local original_tools = package.loaded["lsp-tools"]

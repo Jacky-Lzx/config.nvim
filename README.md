@@ -266,6 +266,16 @@ Core yank handling retains clipboard copying, with feedback owned by ui-tools.
 
 ## Search and navigation
 
+`lua/plugins/navigation/file-tools.lua` loads the local `file-tools.nvim` checkout
+from `NVIM_DEV_PLUGIN_ROOT` and uses `theme-tools.nvim` for shared tree colors.
+`<leader>e` toggles the tree, `<leader>E` reveals the current file, and `<leader>cw`
+opens the working directory. The tree's `a/r/d` create, move/rename and confirm
+permanent deletion; `y/x/p` copy, cut and paste. `h/l` fold or open directories.
+`:FileTools` exposes the same tree and file-operation APIs. The LSP configuration
+merges file-operation capabilities with completion capabilities before enabling
+servers. nvim-tree, its separate LSP file-operation adapter, and Yazi are removed.
+Sidebar bufferline spacing and progress-notification avoidance use `file-tools`.
+
 `lua/plugins/navigation/motion-tools.lua` loads the local motion-tools.nvim checkout
 from `utils.platform.dev_plugin_root()`. It replaces Flash, hlslens and mini.bracketed;
 search feedback is ready at startup, including the first native `/` or `?` search.
@@ -429,7 +439,7 @@ The following environment variables override local paths or commands:
 - `NVIM_DEV_PLUGIN_ROOT`
 
 macOS uses `open` and optionally Skim. Linux uses `xdg-open` and optionally Zathura. Missing
-Delta, Kitty, Yazi, and Skim degrade to built-in behavior or disable their integration.
+Delta, Kitty, and Skim degrade to built-in behavior or disable their integration.
 
 Obsidian workspaces belong to the vault's `.lazy.lua`, in the Obsidian spec's
 `opts.workspaces`. The shared spec keeps plugin behavior and mappings, and only enables
@@ -495,7 +505,7 @@ Required bootstrap dependencies are Neovim 0.12+, Git, and a usable POSIX shell.
 recommended for icons. `:ConfigToolsInstall` installs profile-managed tools through the independent toolchain backend, but
 some integrations still use system packages:
 
-- General: `fish`, `delta`, `lazygit`, `yazi`, `kitty`
+- General: `fish`, `delta`, `lazygit`, `kitty`
 - Web and Markdown: `deno`, `npm`, `gh`, `html_beautify`
 - Images: ImageMagick (`magick` or `convert`)
 - Native: `clang`, `clang-format`, `codelldb`, `cargo`, `rustfmt`, the Swift toolchain,

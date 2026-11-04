@@ -65,7 +65,7 @@ return {
           return ("Neovim loaded %d/%d plugins in %.2fms"):format(stats.loaded, stats.count, stats.startuptime)
         end,
       },
-      bufferline = { numbers = true, auto_hide = 1, sidebar_filetypes = { NvimTree = true } },
+      bufferline = { numbers = true, auto_hide = 1, sidebar_filetypes = { ["file-tools"] = true } },
       statusline = {
         sections = require("features.bars").sections(),
         inactive_sections = { c = { { "filename", path = "tail" } } },

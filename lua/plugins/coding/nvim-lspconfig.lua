@@ -4,8 +4,9 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      -- Completion capabilities must be installed before any server is enabled.
+      -- Completion and file-operation capabilities must be installed before enabling servers.
       "completion-tools.nvim",
+      "file-tools.nvim",
       "toolchain-tools.nvim",
     },
     opts = {
@@ -13,7 +14,12 @@ return {
     },
     config = function(_, opts)
       vim.lsp.config("*", {
-        capabilities = require("completion-tools").get_lsp_capabilities(),
+        capabilities = vim.tbl_deep_extend(
+          "force",
+          {},
+          require("completion-tools").get_lsp_capabilities(),
+          require("file_tools").capabilities()
+        ),
       })
       vim.lsp.enable(opts.servers)
     end,

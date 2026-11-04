@@ -60,6 +60,18 @@ local function check()
   local completion = require("completion-tools").get_lsp_capabilities().textDocument.completion
   local function check_completion(capabilities, name)
     local actual = capabilities.textDocument.completion
+    local operations = assert(capabilities.workspace.fileOperations, "Missing file operations: " .. tostring(name))
+    for _, key in ipairs({
+      "dynamicRegistration",
+      "didCreate",
+      "willCreate",
+      "didRename",
+      "willRename",
+      "didDelete",
+      "willDelete",
+    }) do
+      assert(operations[key] == true, "Missing file-operation capability: " .. tostring(name) .. "/" .. key)
+    end
     assert(vim.deep_equal(vim.tbl_deep_extend("force", actual, completion), actual), name)
   end
   for _, name in ipairs(languages.servers) do

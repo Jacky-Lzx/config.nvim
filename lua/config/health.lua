@@ -52,7 +52,7 @@ function M.check()
   end
 
   vim.health.start("Optional integrations")
-  for _, executable in ipairs({ "delta", "lazygit", "yazi", "kitty", "magick" }) do
+  for _, executable in ipairs({ "delta", "lazygit", "kitty", "magick" }) do
     check_executable(executable, false)
   end
   if platform.is("macos") then
