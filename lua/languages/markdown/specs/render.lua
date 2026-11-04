@@ -14,6 +14,8 @@ return {
     opts = {
       -- Disable by default, use keymap to toggle
       enabled = false,
+      -- Clear native Tree-sitter conceal marks left behind before lazy loading.
+      restart_highlighter = true,
       -- Use native LSP completions; no completion-engine-specific adapter.
       completions = {
         lsp = { enabled = true },
