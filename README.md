@@ -283,8 +283,17 @@ The command now uses the local `toolchain-tools.nvim` checkout under the develop
 `:ToolchainPlan` inspects requirements, `:Toolchain` shows tasks and logs, and `:ToolchainRetry`
 retries failed/unavailable tasks. The legacy `:MasonToolsInstall` and `:TSInstallConfigured`
 commands submit only their respective providers to the same queue. Extra `codespell` and
-`regex` requirements are preserved. Tree-sitter's highlighting, LaTeX parser override and
-`:TSUpdate` build hook remain configured separately.
+`regex` requirements are preserved. Parser requirements now use the independent `parser`
+backend: pinned Git sources, matched query data, CLI compilation and validation, with
+version receipts and repair on explicit installation. The custom LaTeX grammar is pinned
+in `languages/latex/plugins.lua`. Restart Neovim after parser installation to activate it.
+
+Toolchain activates immutable parser/query runtime paths at startup; highlighting is owned
+by `features/treesitter.lua` and the TeX buffer policy. The nvim-treesitter plugin currently
+remains as a transitional provider of filetype aliases, query predicates and fallback
+runtime files. Its installation API and automatic `:TSUpdate` build hook are no longer used
+by the configuration. `:TSInstallConfigured` submits independent parser tasks. Query data
+is downloaded at a fixed nvim-treesitter commit, without executing its installer.
 
 ## Adding a language
 

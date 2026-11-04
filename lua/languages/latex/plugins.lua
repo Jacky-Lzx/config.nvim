@@ -2,21 +2,21 @@ local platform = require("utils.platform")
 
 return {
   {
-    "nvim-treesitter/nvim-treesitter",
+    "toolchain-tools.nvim",
     optional = true,
-    init = function()
-      vim.api.nvim_create_autocmd("User", {
-        group = vim.api.nvim_create_augroup("lzx_treesitter_latex", { clear = true }),
-        pattern = "TSUpdate",
-        callback = function()
-          require("nvim-treesitter.parsers").latex.install_info = {
-            url = "https://github.com/Jacky-Lzx/tree-sitter-latex",
-            branch = "master",
-            generate = true,
-          }
-        end,
-      })
-    end,
+    opts = {
+      parsers = {
+        sources = {
+          latex = {
+            parser = {
+              url = "https://github.com/Jacky-Lzx/tree-sitter-latex",
+              revision = "921e4a5d8903e50735e8f613d85586f44e857b01",
+              generate = true,
+            },
+          },
+        },
+      },
+    },
   },
   {
     "Jacky-Lzx/tex-tools.nvim",

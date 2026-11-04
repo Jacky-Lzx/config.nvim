@@ -4,11 +4,11 @@ local M = {}
 function M.requirements(provider)
   local languages = require("languages").current()
   local requirements = {
-    { provider = "treesitter", name = "regex" },
+    { provider = "parser", name = "regex" },
     { provider = "mason", name = "codespell", executable = "codespell" },
   }
   for _, name in ipairs(languages.parsers) do
-    requirements[#requirements + 1] = { provider = "treesitter", name = name }
+    requirements[#requirements + 1] = { provider = "parser", name = name }
   end
   for _, tool in ipairs(languages.tools) do
     requirements[#requirements + 1] = {

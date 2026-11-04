@@ -114,17 +114,29 @@ local function check()
   for _, requirement in ipairs(opts("toolchain-tools.nvim").requirements()) do
     tools[requirement.provider .. ":" .. requirement.name] = requirement
   end
-  assert(tools["treesitter:regex"] and tools["mason:codespell"])
+  assert(tools["parser:regex"] and tools["mason:codespell"])
   for _, tool in ipairs(languages.tools) do
     if tool.mason then
       assert(tools["mason:" .. tool.mason], tool.mason)
     end
   end
-  assert(not plugins["toolchain-tools.nvim"]._.loaded, "Installer UI should stay cold until requested")
+  assert(plugins["toolchain-tools.nvim"]._.loaded, "Managed parser versions must activate before editing")
+  assert(not package.loaded["nvim-treesitter"], "Startup must not invoke the legacy installer API")
   vim.cmd("ToolchainPlan")
   assert(plugins["toolchain-tools.nvim"]._.loaded)
   assert(require("mason").has_setup)
   assert(#require("toolchain").status() == 0, "Planning must not start installations")
+  local parser = require("toolchain.parsers").info("lua")
+  assert(parser.session and parser.intact, "Managed Lua parser/query version must be active")
+  assert(vim.api.nvim_get_runtime_file("parser/lua.so", false)[1] == parser.session .. "/parser/lua.so")
+  for _, requirement in pairs(tools) do
+    if requirement.provider == "parser" then
+      assert(
+        require("toolchain.parsers").info(requirement.name).intact,
+        "Managed artifacts are not current: " .. requirement.name
+      )
+    end
+  end
   assert(vim.bo.filetype == "toolchain")
   vim.api.nvim_win_close(0, true)
 

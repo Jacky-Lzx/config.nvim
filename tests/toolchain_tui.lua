@@ -17,7 +17,7 @@ local function check()
     source_buf, source_win = api.nvim_get_current_buf(), api.nvim_get_current_win()
     api.nvim_buf_set_lines(source_buf, 0, -1, false, { "local value = 1", "-- unsaved source" })
     vim.bo[source_buf].filetype = "lua"
-    assert(not package.loaded.toolchain)
+    assert(package.loaded.toolchain and #require("toolchain").status() == 0)
     vim.cmd("ToolchainPlan")
     assert(require("mason").has_setup and #require("toolchain").status() == 0)
     assert(vim.bo.filetype == "toolchain")

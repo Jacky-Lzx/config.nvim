@@ -3,6 +3,7 @@ return {
     dir = require("utils.platform").dev_plugin_root() .. "/toolchain-tools.nvim",
     name = "toolchain-tools.nvim",
     main = "toolchain",
+    lazy = false, -- pin complete parser/query versions before FileType handling
     cmd = {
       "Toolchain",
       "ToolchainPlan",
@@ -22,7 +23,7 @@ return {
     },
     config = function(_, opts)
       require("toolchain").setup(opts)
-      for command, provider in pairs({ MasonToolsInstall = "mason", TSInstallConfigured = "treesitter" }) do
+      for command, provider in pairs({ MasonToolsInstall = "mason", TSInstallConfigured = "parser" }) do
         vim.api.nvim_create_user_command(command, function()
           require("integrations.toolchain").install(provider)
         end, {
