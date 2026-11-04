@@ -70,8 +70,9 @@ end
 local function line()
   return vim.api.nvim_eval_statusline(vim.wo.statusline, { winid = 0, maxwidth = 240 }).str
 end
-local function winbar()
-  return vim.api.nvim_eval_statusline(vim.wo.winbar, { winid = 0, use_winbar = true, maxwidth = 240 }).str
+local function winbar(win)
+  win = win or vim.api.nvim_get_current_win()
+  return vim.api.nvim_eval_statusline(vim.wo[win].winbar, { winid = win, use_winbar = true, maxwidth = 240 }).str
 end
 assert(line():find("bar%fixture.txt", 1, true), line() .. " width=" .. vim.api.nvim_win_get_width(0))
 assert(winbar():find("bar%fixture.txt", 1, true))
@@ -93,6 +94,23 @@ symbol_callback(nil, {
 settle()
 assert(winbar():find("test_document_symbol", 1, true), winbar())
 assert(winbar():find("fixture-ls", 1, true), winbar())
+
+-- Both splits retain their filename and read breadcrumbs at their own cursor,
+-- including when they share the same buffer and only one window has focus.
+local source_win = vim.api.nvim_get_current_win()
+vim.cmd("vsplit")
+local split_win = vim.api.nvim_get_current_win()
+vim.api.nvim_win_set_cursor(split_win, { 2, 0 })
+settle()
+assert(winbar(source_win):find("bar%fixture.txt", 1, true), winbar(source_win))
+assert(winbar(source_win):find("test_document_symbol", 1, true), winbar(source_win))
+assert(winbar(split_win):find("bar%fixture.txt", 1, true), winbar(split_win))
+assert(not winbar(split_win):find("test_document_symbol", 1, true), winbar(split_win))
+vim.api.nvim_set_current_win(source_win)
+assert(winbar(split_win):find("bar%fixture.txt", 1, true), winbar(split_win))
+assert(not winbar(split_win):find("test_document_symbol", 1, true), winbar(split_win))
+vim.api.nvim_win_close(split_win, false)
+settle()
 local tasks, fixtures = require("overseer.task_list"), {}
 local scans, list_tasks = 0, tasks.list_tasks
 tasks.list_tasks = function(opts)

@@ -183,7 +183,7 @@ end
 
 function M.winbar()
   local win = tonumber(vim.g.statusline_winid) or api.nvim_get_current_win()
-  if not api.nvim_win_is_valid(win) or win ~= api.nvim_get_current_win() then
+  if not api.nvim_win_is_valid(win) then
     return " "
   end
   local data = cache[api.nvim_win_get_buf(win)]
