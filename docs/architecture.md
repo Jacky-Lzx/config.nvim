@@ -98,8 +98,18 @@ suffix and keeps the `zS`/`zK` mappings. `features/folding.lua` is only a forwar
 compatibility entry for old session foldtext expressions.
 
 Use `specs` for optional configuration contributions and `dependencies` only when
-loading order is required. Language DAP contributions supply options without adding
-filetype triggers. The file tree configures its file-operation integration before
+loading order is required. Obsidian's image options use `specs`; lsp-tools requests
+picker/diff APIs only on use. tex-tools requests image-tools only when a compiled
+formula is ready for display. `integrations/image_tools.lua` installs lightweight
+reference-candidate watchers for automatic preview without loading the backend
+for plain documents. Changes inspect only the edited lines, and activation is
+scheduled outside textlock and rechecked before loading. These hints do not
+resolve paths or replace the plugin's authoritative reference parser. Preview
+and toggle mappings dispatch before requesting a provider; disabling automatic
+preview while the backend is unloaded does not initialize it. Markdown formula
+candidates retain image-tools' existing math-preview activation unless disabled.
+Language DAP contributions supply options without adding filetype triggers.
+The file tree configures its file-operation integration before
 the first tree window opens; LSP attachment alone does not load the tree.
 
 VimTeX loads at startup so headless inverse-search clients can invoke its global

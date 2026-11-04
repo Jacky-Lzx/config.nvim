@@ -16,7 +16,12 @@ return {
       return vim.uv.fs_stat(directory .. "/lua/image_tools/init.lua") ~= nil
     end,
     lazy = true,
-    ft = { "markdown", "tex", "latex", "plaintex", "typst", "html" },
+    init = function(plugin)
+      local opts = require("lazy.core.plugin").values(plugin, "opts", false)
+      require("integrations.image_tools").setup(opts, function()
+        require("image_tools")
+      end)
+    end,
     -- Load and replay the read event before binary file contents are read.
     event = { { event = "BufReadCmd", pattern = image_patterns } },
     cmd = {
@@ -103,33 +108,6 @@ return {
         end,
         desc = "[Image] Import image file",
       },
-      {
-        "<leader>si",
-        function()
-          if vim.tbl_contains({ "tex", "plaintex", "latex" }, vim.bo.filetype) then
-            local tex = require("tex-tools")
-            if tex.formula_at() then
-              tex.preview_formula()
-              return
-            end
-          end
-          require("image_tools").hover()
-        end,
-        desc = "[Image] Preview image or formula on current line",
-      },
-      {
-        "<leader>ui",
-        function()
-          local enabled = require("image_tools").toggle()
-          if vim.tbl_contains({ "tex", "plaintex", "latex" }, vim.bo.filetype) then
-            local tex = require("tex-tools")
-            if tex.formula_info().enabled ~= enabled then
-              tex.toggle_formula_preview()
-            end
-          end
-        end,
-        desc = "[Image] Toggle automatic preview",
-      },
     },
     opts = {
       -- The old plugin saved in cwd/Figures and emitted document-relative paths.
@@ -181,8 +159,10 @@ return {
       max_height = 30,
     },
     config = function(_, opts)
+      local integration = require("integrations.image_tools")
       local image = require("image_tools")
-      image.setup(opts)
+      image.setup(integration.options(opts))
+      integration.configured()
       -- Preserve :ImageInsert's original clipboard-or-reference behavior.
       vim.api.nvim_create_user_command("ImageInsert", function(args)
         if args.args == "" then

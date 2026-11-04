@@ -22,7 +22,7 @@ return {
     "Jacky-Lzx/tex-tools.nvim",
     dev = true,
     main = "tex-tools",
-    dependencies = { "image-tools.nvim" },
+    -- Formula display requires image-tools only after a preview is ready.
     ft = { "tex", "plaintex" },
     init = function()
       vim.g.tex_flavor = "latex"

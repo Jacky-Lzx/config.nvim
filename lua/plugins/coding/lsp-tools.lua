@@ -3,10 +3,7 @@ return {
     "Jacky-Lzx/lsp-tools.nvim",
     url = "git@github.com:Jacky-Lzx/lsp-tools.nvim.git",
     dev = true,
-    dependencies = {
-      "Jacky-Lzx/selection-tools.nvim",
-      "Jacky-Lzx/git-tools.nvim",
-    },
+    -- Picker and diff backends load through their APIs on first use.
     event = "LspAttach",
     cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },
     keys = {

@@ -395,11 +395,18 @@ composes Enter after completion confirmation. Use `:checkhealth pairs` for plugi
 
 ## Image insertion
 
-Image tools load on demand for Markdown, LaTeX, Typst and HTML filetypes, image
-commands, image mappings, and picker preview/API calls. Empty sessions and other
-filetypes leave the plugin unloaded. A `BufReadCmd` trigger also handles image/PDF
-files passed at startup, including uppercase extensions, before reading their
-binary content. Keep those patterns in sync with custom `buffer.formats`.
+Image tools load on image commands, image mappings and picker preview/API calls.
+For automatic preview, a lightweight configuration adapter watches Markdown,
+LaTeX, Typst and HTML for image-reference candidates, including later edits.
+Markdown formula candidates also activate its existing math-preview backend.
+Plain documents and disabled automatic preview leave the plugin unloaded;
+image-tools still owns syntax exclusions, reference parsing and rendering.
+Formula previews request the image backend only after compilation succeeds.
+The shared preview/toggle mappings do not initialize the image backend merely
+to inspect a formula or turn automatic preview off. A `BufReadCmd` trigger
+handles image/PDF files passed at startup, including uppercase extensions,
+before reading their binary content. Keep those patterns in sync with custom
+`buffer.formats`.
 
 `lua/plugins/navigation/images.lua` uses the local `image-tools.nvim` checkout and preserves
 these behaviors from the former `image-insert.nvim` configuration:

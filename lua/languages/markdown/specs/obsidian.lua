@@ -12,7 +12,8 @@ return {
       return type(opts.workspaces) == "table" and #opts.workspaces > 0
     end,
     version = "*", -- Recommended, use latest release instead of latest commit
-    dependencies = {
+    -- These only contribute options; opening a vault does not need image APIs.
+    specs = {
       -- Modified img-clip configs for obsidian vaults
       {
         "HakonHarnes/img-clip.nvim",

@@ -44,11 +44,18 @@ vim.secure.read = function(path)
   return table.concat(vim.fn.readfile(path), "\n")
 end
 local local_spec = assert(Plugin.find_local_spec(), "Lazy must find the vault's .lazy.lua from a subdirectory")
-local resolved = Plugin.Spec.new({ vim.deepcopy(shared), local_spec }, { pkg = false })
+local resolved = Plugin.Spec.new({
+  vim.deepcopy(shared),
+  local_spec,
+  { dir = temp .. "/image-tools.nvim", name = "image-tools.nvim", lazy = true },
+}, { pkg = false })
 vim.secure.read = secure_read
 assert(reads == 1 and #resolved.notifs == 0, vim.inspect(resolved.notifs))
 local plugin = assert(resolved.plugins["obsidian.nvim"], "Local workspace must enable Obsidian")
 local opts = Plugin.values(plugin, "opts", false)
+assert(not plugin.dependencies, "Vault image options must not become eager loading dependencies")
+local image = assert(resolved.plugins["image-tools.nvim"])
+assert(image.lazy and Plugin.values(image, "opts", false).insert.directory == "assets/imgs")
 assert(vim.deep_equal(opts.workspaces, { { name = "Fixture", path = vault } }))
 assert(plugin.lazy == false and not plugin.optional, "Local optional spec must extend the shared plugin")
 assert(opts.daily_notes.template == "daily-note.md" and opts.daily_notes.folder == "dailies")
