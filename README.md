@@ -75,7 +75,10 @@ plugin's `servers` options. It loads on `BufReadPre` / `BufNewFile` (or an expli
 tool action), configures shared completion and file-operation capabilities, and
 enables matching servers through lsp-tools when their filetypes are opened
 (`server_activation = "filetype"`). Other selected configs remain pending until
-needed. nvim-lspconfig is a dependency that supplies
+needed. Completion's pure capability API is available before LSP startup; its
+interactive setup waits for `InsertEnter`, `CmdlineEnter`, or an explicit completion command.
+Requiring the capability API does not initialize completion sources or timers.
+nvim-lspconfig is a dependency that supplies
 maintained configs; it has no separate setup or activation hook. Existing
 `after/lsp/` settings and the custom `lsp/texquill.lua` config retain native merge
 semantics. Tool installation stays with toolchain-tools. `:checkhealth lsp-tools`

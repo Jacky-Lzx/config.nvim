@@ -7,7 +7,7 @@ local lsp = require("plugins.coding.lsp-tools")[1]
 assert(lsp.opts.server_activation == "filetype", "Servers must activate only when their filetypes are opened")
 assert(vim.list_contains(lsp.event, "BufReadPre") and vim.list_contains(lsp.event, "BufNewFile"))
 assert(vim.list_contains(lsp.dependencies, "neovim/nvim-lspconfig"))
-assert(vim.list_contains(lsp.dependencies, "completion-tools.nvim"))
+assert(not vim.list_contains(lsp.dependencies, "completion-tools.nvim"), "LSP must not initialize the completion UI")
 assert(vim.list_contains(lsp.dependencies, "file-tools.nvim"))
 assert(vim.list_contains(lsp.dependencies, "toolchain-tools.nvim"))
 local selected = require("languages").current().servers
@@ -16,6 +16,7 @@ for _, name in ipairs(selected) do
   assert(lsp.opts.servers[name] == true, "Profile server missing from lsp-tools: " .. name)
 end
 local completion_spec = require("plugins.coding.completion.core")[1]
+assert(completion_spec.module == false and type(completion_spec.init) == "function")
 local original_completion = package.loaded["completion-tools"]
 local original_files = package.loaded.file_tools
 local file_capabilities = {
@@ -46,7 +47,7 @@ package.loaded["completion-tools"] = {
     setup = true
   end,
   get_lsp_capabilities = function(override, defaults)
-    assert(setup, "Completion must load before LSP configuration")
+    assert(not setup, "Capabilities must be available before completion setup")
     assert(override == nil and defaults == nil, "completion-tools includes Neovim defaults")
     return capabilities
   end,
@@ -72,12 +73,10 @@ vim.lsp.enable = function()
   assert(configured, "capabilities must be finalized before enabling servers")
   error("Plugin specs must leave activation to lsp-tools")
 end
-(completion_spec.config or function(_, opts)
-  require("completion-tools").setup(opts)
-end)(nil, completion_spec.opts)
-assert(not configured, "Completion setup must not separately configure capabilities")
 lsp.config(nil, lsp.opts)
-assert(configured and enabled)
+assert(configured and enabled and not setup, "LSP setup must not initialize interactive completion")
+completion_spec.config(completion_spec, completion_spec.opts)
+assert(setup, "Completion still initializes through its input-event configuration")
 package.loaded["lsp-tools"] = original_manager
 
 -- Editor mappings must not overwrite completion capabilities.

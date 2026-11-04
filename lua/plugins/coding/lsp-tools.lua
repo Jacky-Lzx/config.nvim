@@ -12,8 +12,7 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "neovim/nvim-lspconfig",
-      -- Finalize completion/file-operation capabilities before enabling servers.
-      "completion-tools.nvim",
+      -- Completion's capability API is available without initializing its UI.
       "file-tools.nvim",
       "toolchain-tools.nvim",
     },

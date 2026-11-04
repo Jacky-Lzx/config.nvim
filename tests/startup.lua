@@ -56,14 +56,16 @@ local function check()
   local function opts(name)
     return require("lazy.core.plugin").values(assert(plugins[name], name), "opts", false)
   end
-  -- Opening a file must configure completion before LSP enable/start, without
-  -- manually loading either plugin or entering Insert mode first.
+  -- Opening a file must supply completion capabilities before LSP enable/start;
+  -- interactive completion waits for the first input event.
   vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.py")
   if vim.v.errmsg == "E31: No such mapping" then
     vim.v.errmsg = ""
   end
-  assert(plugins["completion-tools.nvim"]._.loaded, "Completion loaded after LSP enable")
-  local completion = require("completion-tools").get_lsp_capabilities().textDocument.completion
+  assert(not plugins["completion-tools.nvim"]._.loaded, "Opening a file initialized completion UI")
+  local cmp = require("completion-tools")
+  assert(not cmp.get_status().configured, "Capability lookup initialized the completion engine")
+  local completion = cmp.get_lsp_capabilities().textDocument.completion
   local function check_completion(capabilities, name)
     local actual = capabilities.textDocument.completion
     local operations = assert(capabilities.workspace.fileOperations, "Missing file operations: " .. tostring(name))
@@ -103,6 +105,17 @@ local function check()
   assert(vim.deep_equal(active_info.languages.servers, languages.servers))
   assert(vim.deep_equal(active_info.lsp.enabled_servers, active))
   vim.api.nvim_exec_autocmds("InsertEnter", {})
+  assert(
+    plugins["completion-tools.nvim"]._.loaded and cmp.get_status().configured,
+    "First InsertEnter must initialize completion"
+  )
+  local runtime_count = 0
+  for _, path in ipairs(vim.opt.rtp:get()) do
+    if path == plugins["completion-tools.nvim"].dir then
+      runtime_count = runtime_count + 1
+    end
+  end
+  assert(runtime_count == 1, "Completion runtime must not be duplicated after input initialization")
   for _, name in ipairs(active) do
     assert(vim.deep_equal(vim.lsp.config[name].capabilities, _G.config_test_lsp_enabled[name]), name)
   end
