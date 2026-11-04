@@ -38,8 +38,8 @@ function M.snapshot()
       path = platform.executable(tool.executable)
     end
     result.tools[#result.tools + 1] = {
-      name = tool.executable or tool.mason,
-      mason = tool.mason,
+      name = tool.executable or tool.package,
+      package = tool.package,
       feature = tool.feature,
       optional = tool.optional == true,
       path = path,

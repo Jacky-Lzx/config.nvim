@@ -178,13 +178,13 @@ A language may declare:
 | --- | --- |
 | `servers` | nvim-lspconfig enables these native LSP config names |
 | `parsers` | Tree-sitter's explicit installation command |
-| `tools` | Mason installation and `checkhealth config` |
+| `tools` | Toolchain installation and `checkhealth config` |
 | `formatters`, `formatter_options` | Conform filetype assignments and custom formatter settings |
 | `linters`, `linter_options` | nvim-lint assignments and static custom linter settings |
 | `plugins` | Native lazy.nvim specs or targeted imports for complex integrations |
 | `requires` | Optional executable requirements for filetype formatter/linter bindings |
 
-A tool has a `mason` package name (optional), an `executable` name or a `resolve` function,
+A tool has a `package` name (optional), an `executable` name or a `resolve` function,
 an optional `feature` requirement, and an optional `post_install` callback. System requirements
 and managed packages are deduplicated separately so a system requirement cannot suppress a
 later language's package installation. Health checks deduplicate executable checks.
@@ -206,7 +206,7 @@ platform resolver and probes each requirement once per resolution.
 
 ## Preserved defaults and deliberate corrections
 
-All existing default profiles, including `optional`, remain enabled. Default plugin, Mason,
+All existing default profiles, including `optional`, remain enabled. Default plugin, managed-tool,
 parser, formatter, linter, and DAP selections were compared with the original resolved specs.
 
 - KDL no longer falls back to being treated as an LSP server name.

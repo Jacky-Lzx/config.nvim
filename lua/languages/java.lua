@@ -1,7 +1,7 @@
 return {
   servers = { "jdtls" },
   tools = {
-    { mason = "jdtls", executable = "jdtls" },
+    { package = "jdtls", executable = "jdtls" },
   },
   parsers = { "java" },
 }

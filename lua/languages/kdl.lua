@@ -1,6 +1,6 @@
 return {
   tools = {
-    { mason = "kdlfmt", executable = "kdlfmt" },
+    { package = "kdlfmt", executable = "kdlfmt" },
   },
   parsers = { "kdl" },
   formatters = {

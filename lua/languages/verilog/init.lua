@@ -1,7 +1,7 @@
 return {
   servers = { "verible" },
   tools = {
-    { mason = "verible", executable = "verible-verilog-ls" },
+    { package = "verible", executable = "verible-verilog-ls" },
     { executable = "verible-verilog-format" },
     { executable = "iverilog" },
   },

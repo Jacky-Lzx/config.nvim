@@ -28,6 +28,8 @@ for _, name in ipairs({
   "SHELL",
   "NVIM_PYTHON3_HOST_PROG",
   "NVIM_DEBUGPY_PYTHON",
+  "NVIM_JDTLS_JAVA_HOME",
+  "JAVA_HOME",
   "NVIM_OPEN_CMD",
   "NVIM_EXTERNAL_TERMINAL",
   "NVIM_SKIM_DISPLAYLINE",
@@ -88,12 +90,15 @@ assert(platform.python() == "pypy3", "A default interpreter must not survive a l
 assert(platform.open("target"))
 assert(vim.deep_equal(jobs[#jobs].command, { "/system/viewer", "--wait", "target" }))
 assert(vim.deep_equal(settings.linux.opener, { "viewer", "--wait" }))
-local mason_tool = vim.fs.joinpath(vim.fn.stdpath("data"), settings.defaults.mason_bin, "tool")
-executables[mason_tool] = true
-assert(platform.executable("tool") == mason_tool)
+assert(platform.executable("tool") == nil)
 paths.tool = "/system/tool"
 assert(platform.executable("tool") == "/system/tool")
 assert(platform.executable("missing") == nil)
+executables["/jdk/bin/java"] = true
+vim.env.NVIM_JDTLS_JAVA_HOME = "/jdk"
+assert(platform.jdtls_java_home() == "/jdk")
+vim.env.NVIM_JDTLS_JAVA_HOME = nil
+assert(platform.jdtls_java_home() == nil)
 
 -- Environment overrides remain live after module loading, with existing fallbacks.
 executables["/override/shell"] = true
@@ -113,8 +118,15 @@ executables[provider], executables["/override/provider"] = true, true
 assert(platform.python_host() == provider)
 vim.env.NVIM_PYTHON3_HOST_PROG = "/override/provider"
 assert(platform.python_host() == "/override/provider")
-local debugpy = vim.fs.joinpath(vim.fn.stdpath("data"), settings.defaults.debugpy_python)
+local debugpy = "/managed/debugpy/venv/bin/python"
 executables[debugpy], executables["/override/debugpy"] = true, true
+assert(platform.debugpy_python() == nil)
+package.loaded["toolchain.tools"] = {
+  path = function(name, resource)
+    assert(name == "debugpy" and resource == "python")
+    return debugpy
+  end,
+}
 assert(platform.debugpy_python() == debugpy)
 vim.env.NVIM_DEBUGPY_PYTHON = "/override/debugpy"
 assert(platform.debugpy_python() == "/override/debugpy")

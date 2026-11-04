@@ -1,12 +1,12 @@
 return {
   servers = { "marksman", "harper_ls", "typos_lsp" },
   tools = {
-    { mason = "marksman", executable = "marksman" },
-    { mason = "harper-ls", executable = "harper-ls" },
-    { mason = "prettierd", executable = "prettierd" },
-    { mason = "prettier", executable = "prettier" },
-    { mason = "mmdc", executable = "mmdc" },
-    { mason = "typos-lsp", executable = "typos-lsp" },
+    { package = "marksman", executable = "marksman" },
+    { package = "harper-ls", executable = "harper-ls" },
+    { package = "prettierd", executable = "prettierd" },
+    { package = "prettier", executable = "prettier" },
+    { package = "mmdc", executable = "mmdc" },
+    { package = "typos-lsp", executable = "typos-lsp" },
     { executable = "deno" },
     { executable = "gh" },
   },

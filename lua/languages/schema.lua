@@ -12,7 +12,7 @@ local fields = {
   requires = true,
 }
 local tool_fields = {
-  mason = "string",
+  package = "string",
   executable = "string",
   resolve = "function",
   feature = "string",
@@ -98,7 +98,7 @@ function M.validate(name, definition)
       end
     end
     check(tool.executable or tool.resolve, tool_path, "needs an executable or resolver")
-    check(tool.executable or tool.mason, tool_path, "resolver-only tools need a Mason package name")
+    check(tool.executable or tool.package, tool_path, "resolver-only tools need a managed package name")
     if tool.feature then
       check(
         vim.list_contains(require("config.features").names, tool.feature),
@@ -106,10 +106,18 @@ function M.validate(name, definition)
         "unknown feature"
       )
     end
-    check(not tool.post_install or tool.mason, tool_path .. ".post_install", "needs a Mason package name")
-    check(not tool.post_install_async or tool.mason, tool_path .. ".post_install_async", "needs a Mason package name")
+    check(not tool.post_install or tool.package, tool_path .. ".post_install", "needs a managed package name")
+    check(
+      not tool.post_install_async or tool.package,
+      tool_path .. ".post_install_async",
+      "needs a managed package name"
+    )
     check(not (tool.post_install and tool.post_install_async), tool_path, "choose one post-install hook")
-    check(tool.optional == nil or not tool.mason, tool_path .. ".optional", "only system requirements may be optional")
+    check(
+      tool.optional == nil or not tool.package,
+      tool_path .. ".optional",
+      "only system requirements may be optional"
+    )
   end
   for i, spec in ipairs(definition.plugins or {}) do
     check(

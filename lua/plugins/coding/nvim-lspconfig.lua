@@ -6,7 +6,7 @@ return {
     dependencies = {
       -- Completion capabilities must be installed before any server is enabled.
       "completion-tools.nvim",
-      "mason-org/mason.nvim",
+      "toolchain-tools.nvim",
     },
     opts = {
       servers = require("languages").current().servers,

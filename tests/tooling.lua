@@ -94,9 +94,9 @@ vim.fn.executable, vim.lsp.get_clients = executable, clients
 local function definition(language)
   return require("languages." .. language)
 end
-local function has_tool(language, mason)
+local function has_tool(language, package_name)
   for _, tool in ipairs(definition(language).tools) do
-    if tool.mason == mason then
+    if tool.package == package_name then
       return true
     end
   end

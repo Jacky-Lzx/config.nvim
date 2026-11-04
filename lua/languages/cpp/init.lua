@@ -1,8 +1,8 @@
 return {
   servers = { "clangd" },
   tools = {
-    { mason = "clangd", executable = "clangd" },
-    { mason = "codelldb", executable = "codelldb", feature = "debugging" },
+    { package = "clangd", executable = "clangd" },
+    { package = "codelldb", executable = "codelldb", feature = "debugging" },
     { executable = "clang-format" },
   },
   parsers = { "cpp", "c", "cuda" },

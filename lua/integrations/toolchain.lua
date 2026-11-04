@@ -5,15 +5,15 @@ function M.requirements(provider)
   local languages = require("languages").current()
   local requirements = {
     { provider = "parser", name = "regex" },
-    { provider = "mason", name = "codespell", executable = "codespell" },
+    { provider = "tool", name = "codespell", executable = "codespell" },
   }
   for _, name in ipairs(languages.parsers) do
     requirements[#requirements + 1] = { provider = "parser", name = name }
   end
   for _, tool in ipairs(languages.tools) do
     requirements[#requirements + 1] = {
-      provider = tool.mason and "mason" or "system",
-      name = tool.mason or tool.executable,
+      provider = tool.package and "tool" or "system",
+      name = tool.package or tool.executable,
       executable = tool.executable,
       resolve = tool.resolve,
       post_install = tool.post_install,

@@ -1,8 +1,8 @@
 return {
   servers = { "tinymist" },
   tools = {
-    { mason = "typstyle", executable = "typstyle" },
-    { mason = "tinymist", executable = "tinymist" },
+    { package = "typstyle", executable = "typstyle" },
+    { package = "tinymist", executable = "tinymist" },
   },
   parsers = { "typst" },
   formatters = {
@@ -19,7 +19,7 @@ return {
       ft = "typst",
       version = "1.*",
       opts = {
-        -- Use tinymist installed from Mason
+        -- Use tinymist installed by toolchain
         dependencies_bin = {
           ["tinymist"] = "tinymist",
         },

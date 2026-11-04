@@ -1,8 +1,8 @@
 return {
   servers = { "lua_ls" },
   tools = {
-    { mason = "lua-language-server", executable = "lua-language-server" },
-    { mason = "stylua", executable = "stylua" },
+    { package = "lua-language-server", executable = "lua-language-server" },
+    { package = "stylua", executable = "stylua" },
   },
   parsers = { "lua" },
   formatters = {

@@ -33,7 +33,6 @@ return {
           flash = true,
           gitsigns = true,
           markdown = true,
-          mason = true,
           noice = true,
           copilot_vim = true,
           dap = true,

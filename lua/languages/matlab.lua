@@ -1,8 +1,8 @@
 return {
   servers = { "matlab_ls" },
   tools = {
-    { mason = "matlab-language-server", executable = "matlab-language-server" },
-    { mason = "miss_hit", executable = "mh_style" },
+    { package = "matlab-language-server", executable = "matlab-language-server" },
+    { package = "miss_hit", executable = "mh_style" },
   },
   parsers = { "matlab" },
   formatters = {

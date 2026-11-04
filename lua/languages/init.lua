@@ -54,7 +54,7 @@ function M.resolve(selection, capabilities)
         end
         for _, tool in ipairs(definition.tools or {}) do
           if not tool.feature or selection.features[tool.feature] then
-            local key = tool.mason and ("mason:" .. tool.mason) or ("system:" .. tool.executable)
+            local key = tool.package and ("tool:" .. tool.package) or ("system:" .. tool.executable)
             assert(
               not tools[key] or vim.deep_equal(tools[key], tool),
               ("Conflicting tool %s in languages %s and %s"):format(key, owners[key] or name, name)

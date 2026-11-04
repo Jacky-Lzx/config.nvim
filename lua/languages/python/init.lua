@@ -1,10 +1,10 @@
 return {
   servers = { "basedpyright" },
   tools = {
-    { mason = "ruff", executable = "ruff" },
-    { mason = "basedpyright", executable = "basedpyright" },
+    { package = "ruff", executable = "ruff" },
+    { package = "basedpyright", executable = "basedpyright" },
     {
-      mason = "debugpy",
+      package = "debugpy",
       resolve = function()
         return require("utils.platform").debugpy_python()
       end,

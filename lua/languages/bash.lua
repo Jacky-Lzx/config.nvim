@@ -1,8 +1,8 @@
 return {
   servers = { "bashls" },
   tools = {
-    { mason = "shfmt", executable = "shfmt" },
-    { mason = "bash-language-server", executable = "bash-language-server" },
+    { package = "shfmt", executable = "shfmt" },
+    { package = "bash-language-server", executable = "bash-language-server" },
     { executable = "fish", optional = true },
   },
   parsers = { "bash", "fish" },

@@ -1,7 +1,7 @@
 return {
   servers = { "taplo" },
   tools = {
-    { mason = "taplo", executable = "taplo" },
+    { package = "taplo", executable = "taplo" },
   },
   parsers = { "toml" },
   formatters = {

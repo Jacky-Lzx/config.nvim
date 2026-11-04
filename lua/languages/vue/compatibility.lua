@@ -1,5 +1,5 @@
 -- Vue LSP (vtsls + vue_ls) shared setup
--- - Resolves the @vue/language-server package dir (Homebrew / npm -g / mason)
+-- - Resolves the @vue/language-server package dir (Homebrew / npm -g / toolchain)
 -- - Used by the vtsls and ts_ls configs in after/lsp/
 -- Reference: https://github.com/vuejs/language-tools/wiki/Neovim
 
@@ -46,10 +46,8 @@ function M.server_path()
     end
   end
 
-  -- mason fallback
-  return first_existing({
-    vim.fn.stdpath("data") .. "/mason/packages/vue-language-server/node_modules/@vue/language-server",
-  })
+  local tools = package.loaded["toolchain.tools"]
+  return tools and tools.path("vue-language-server", "server") or nil
 end
 
 --- Pin an incompatible bundled TypeScript version during explicit tool installation.

@@ -109,22 +109,23 @@ local function check()
   assert((plugins["codecompanion.nvim"] ~= nil) == not not features.ai)
   assert((plugins["tex-tools.nvim"] ~= nil) == require("languages").is_enabled("latex"))
   assert((plugins["lazydev.nvim"] ~= nil) == require("languages").is_enabled("lua"))
-  assert(opts("mason.nvim").PATH == "append")
+  assert(not plugins["mason.nvim"] and not package.loaded.mason)
+  assert(opts("toolchain-tools.nvim").tools.path == "append")
   local tools = {}
   for _, requirement in ipairs(opts("toolchain-tools.nvim").requirements()) do
     tools[requirement.provider .. ":" .. requirement.name] = requirement
   end
-  assert(tools["parser:regex"] and tools["mason:codespell"])
+  assert(tools["parser:regex"] and tools["tool:codespell"])
   for _, tool in ipairs(languages.tools) do
-    if tool.mason then
-      assert(tools["mason:" .. tool.mason], tool.mason)
+    if tool.package then
+      assert(tools["tool:" .. tool.package], tool.package)
     end
   end
   assert(plugins["toolchain-tools.nvim"]._.loaded, "Managed parser versions must activate before editing")
   assert(not package.loaded["nvim-treesitter"], "Startup must not invoke the legacy installer API")
   vim.cmd("ToolchainPlan")
   assert(plugins["toolchain-tools.nvim"]._.loaded)
-  assert(require("mason").has_setup)
+  assert(not package.loaded.mason and not package.loaded["mason-registry"])
   assert(#require("toolchain").status() == 0, "Planning must not start installations")
   local parser = require("toolchain.parsers").info("lua")
   assert(parser.session and parser.intact, "Managed Lua parser/query version must be active")
@@ -215,7 +216,7 @@ local function check()
     assert(vim.bo.filetype == "vue")
     assert(vim.list_contains(vim.lsp.config.vtsls.filetypes, "vue"))
     assert(vim.lsp.is_enabled("vue_ls"))
-    assert(type(tools["mason:vue-language-server"].post_install_async) == "function")
+    assert(type(tools["tool:vue-language-server"].post_install_async) == "function")
   end
 
   -- Reapplying the theme must preserve user highlights.

@@ -21,8 +21,7 @@ function M.executable(name)
     return path
   end
 
-  local mason_path = vim.fs.joinpath(vim.fn.stdpath("data"), config.mason_bin, name)
-  return vim.fn.executable(mason_path) == 1 and mason_path or nil
+  return nil
 end
 
 local function executable_path(path)
@@ -70,10 +69,22 @@ function M.python(selected_path)
 end
 
 function M.debugpy_python()
-  return executable_path(vim.env.NVIM_DEBUGPY_PYTHON)
-    or (
-      config.debugpy_python and executable_path(vim.fs.joinpath(vim.fn.stdpath("data"), config.debugpy_python)) or nil
-    )
+  local override = executable_path(vim.env.NVIM_DEBUGPY_PYTHON)
+  if override then
+    return override
+  end
+  local tools = package.loaded["toolchain.tools"]
+  return tools and executable_path(tools.path("debugpy", "python")) or nil
+end
+
+function M.jdtls_java_home()
+  local candidates = { vim.env.NVIM_JDTLS_JAVA_HOME or false, vim.env.JAVA_HOME or false }
+  vim.list_extend(candidates, config.jdtls_java_home or {})
+  for _, directory in ipairs(candidates) do
+    if directory and directory ~= "" and executable_path(directory .. "/bin/java") then
+      return vim.fn.expand(directory)
+    end
+  end
 end
 
 function M.opener()

@@ -42,14 +42,14 @@ assert(vim.deep_equal(python.servers, { "basedpyright" }))
 assert(vim.deep_equal(python.formatters.python, { "ruff_fix", "ruff_organize_imports", "ruff_format" }))
 assert(vim.deep_equal(python.linters.python, { "ruff" }))
 for _, tool in ipairs(python.tools) do
-  assert(tool.mason ~= "debugpy")
+  assert(tool.package ~= "debugpy")
 end
 local debug = languages.resolve(selection({ "data", "native" }, true))
 local tools = {}
 for _, tool in ipairs(debug.tools) do
-  if tool.mason then
-    assert(not tools[tool.mason], "Duplicate Mason package: " .. tool.mason)
-    tools[tool.mason] = tool
+  if tool.package then
+    assert(not tools[tool.package], "Duplicate managed package: " .. tool.package)
+    tools[tool.package] = tool
   end
 end
 assert(tools.debugpy and tools.codelldb)
@@ -68,8 +68,8 @@ assert(vim.g.tex_flavor == nil, "Reading language metadata changed globals")
 local combined = languages.resolve(selection({ "base", "web", "writing" }))
 local managed = {}
 for _, tool in ipairs(combined.tools) do
-  if tool.mason then
-    managed[tool.mason] = true
+  if tool.package then
+    managed[tool.package] = true
   end
 end
 assert(managed.prettierd and managed.prettier)
@@ -110,7 +110,7 @@ for _, bad in ipairs({
   { definition = { tools = { { executable = "tool", feature = "typo" } } }, message = ".feature: unknown feature" },
   {
     definition = { tools = { { resolve = function() end } } },
-    message = "resolver-only tools need a Mason package name",
+    message = "resolver-only tools need a managed package name",
   },
   { definition = { requires = { formatters = { lua = "stylua" } } }, message = "has no binding" },
 }) do
@@ -126,7 +126,7 @@ package.loaded["languages.cpp"] = conflicting
 local conflict_ok, conflict_err = pcall(languages.resolve, selection({ "native" }, true))
 package.loaded["languages.cpp"] = cpp
 assert(
-  not conflict_ok and tostring(conflict_err):find("Conflicting tool mason:codelldb in languages cpp and rust", 1, true)
+  not conflict_ok and tostring(conflict_err):find("Conflicting tool tool:codelldb in languages cpp and rust", 1, true)
 )
 
 rejects(function()

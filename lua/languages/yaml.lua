@@ -1,8 +1,8 @@
 return {
   servers = { "yamlls" },
   tools = {
-    { mason = "yaml-language-server", executable = "yaml-language-server" },
-    { mason = "prettierd", executable = "prettierd" },
+    { package = "yaml-language-server", executable = "yaml-language-server" },
+    { package = "prettierd", executable = "prettierd" },
   },
   parsers = { "yaml" },
   formatters = {

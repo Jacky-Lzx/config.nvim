@@ -1,7 +1,7 @@
 return {
   servers = { "superhtml" },
   tools = {
-    { mason = "superhtml", executable = "superhtml" },
+    { package = "superhtml", executable = "superhtml" },
     { executable = "html_beautify", optional = true },
   },
   parsers = { "html" },

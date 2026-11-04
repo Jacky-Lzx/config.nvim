@@ -19,7 +19,7 @@ local function check()
     vim.bo[source_buf].filetype = "lua"
     assert(package.loaded.toolchain and #require("toolchain").status() == 0)
     vim.cmd("ToolchainPlan")
-    assert(require("mason").has_setup and #require("toolchain").status() == 0)
+    assert(not package.loaded.mason and #require("toolchain").status() == 0)
     assert(vim.bo.filetype == "toolchain")
     mark("plan")
   elseif stage == "plan" and api.nvim_get_current_win() == source_win then

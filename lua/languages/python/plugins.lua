@@ -38,7 +38,7 @@ return {
           else
             local python = require("utils.platform").debugpy_python()
             if not python then
-              vim.notify("debugpy is not installed; run :MasonToolsInstall", vim.log.levels.ERROR)
+              vim.notify("debugpy is not installed; run :ConfigToolsInstall", vim.log.levels.ERROR)
               return
             end
             cb({

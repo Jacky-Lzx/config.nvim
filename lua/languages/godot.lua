@@ -1,8 +1,8 @@
 return {
   servers = { "gdscript" },
   tools = {
-    { mason = "gdscript-formatter", executable = "gdscript-formatter" },
-    { mason = "gdtoolkit", executable = "gdlint" },
+    { package = "gdscript-formatter", executable = "gdscript-formatter" },
+    { package = "gdtoolkit", executable = "gdlint" },
     { executable = "gdformat" },
   },
   parsers = { "gdscript", "godot_resource" },

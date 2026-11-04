@@ -1,7 +1,7 @@
 return {
   servers = { "texquill" },
   tools = {
-    { mason = "tex-fmt", executable = "tex-fmt" },
+    { package = "tex-fmt", executable = "tex-fmt" },
     {
       executable = "texquill",
       resolve = function()

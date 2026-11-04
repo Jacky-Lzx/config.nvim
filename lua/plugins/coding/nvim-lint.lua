@@ -2,7 +2,7 @@ return {
   {
     "mfussenegger/nvim-lint",
     event = { "BufWritePost" },
-    dependencies = { "mason-org/mason.nvim" },
+    dependencies = { "toolchain-tools.nvim" },
     opts = {
       linters = require("languages").current().linter_options,
       linters_by_ft = require("languages").current().linters,

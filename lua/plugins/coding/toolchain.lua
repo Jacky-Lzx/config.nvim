@@ -14,16 +14,16 @@ return {
       "MasonToolsInstall",
       "TSInstallConfigured",
     },
-    dependencies = { "mason-org/mason.nvim" },
     opts = {
       concurrency = 2,
+      tools = { path = "append" },
       requirements = function()
         return require("integrations.toolchain").requirements()
       end,
     },
     config = function(_, opts)
       require("toolchain").setup(opts)
-      for command, provider in pairs({ MasonToolsInstall = "mason", TSInstallConfigured = "parser" }) do
+      for command, provider in pairs({ MasonToolsInstall = "tool", TSInstallConfigured = "parser" }) do
         vim.api.nvim_create_user_command(command, function()
           require("integrations.toolchain").install(provider)
         end, {

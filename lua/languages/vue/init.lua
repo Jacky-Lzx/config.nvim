@@ -2,15 +2,15 @@ return {
   servers = { "vtsls", "vue_ls" },
   tools = {
     {
-      mason = "vue-language-server",
+      package = "vue-language-server",
       executable = "vue-language-server",
       post_install_async = function(package, done, log)
-        require("languages.vue.compatibility").ensure_typescript5(package:get_install_path(), done, log)
+        require("languages.vue.compatibility").ensure_typescript5(package.path, done, log)
       end,
     },
-    { mason = "vtsls", executable = "vtsls" },
+    { package = "vtsls", executable = "vtsls" },
     { executable = "npm" },
-    { mason = "prettierd", executable = "prettierd" },
+    { package = "prettierd", executable = "prettierd" },
     { executable = "prettier" },
   },
   parsers = { "vue", "javascript", "typescript", "html", "css" },

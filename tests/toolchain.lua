@@ -9,14 +9,14 @@ local by_id = {}
 for _, requirement in ipairs(integration.requirements()) do
   by_id[requirement.provider .. ":" .. requirement.name] = requirement
 end
-assert(by_id["parser:regex"] and by_id["mason:codespell"])
+assert(by_id["parser:regex"] and by_id["tool:codespell"])
 assert(by_id["parser:latex"] and by_id["parser:bibtex"])
 assert(by_id["system:html_beautify"].optional and by_id["system:fish"].optional)
-assert(type(by_id["mason:debugpy"].resolve) == "function")
-assert(type(by_id["mason:vue-language-server"].post_install_async) == "function")
-assert(by_id["mason:vue-language-server"].post_install == nil)
-for _, requirement in ipairs(integration.requirements("mason")) do
-  assert(requirement.provider == "mason")
+assert(type(by_id["tool:debugpy"].resolve) == "function")
+assert(type(by_id["tool:vue-language-server"].post_install_async) == "function")
+assert(by_id["tool:vue-language-server"].post_install == nil)
+for _, requirement in ipairs(integration.requirements("tool")) do
+  assert(requirement.provider == "tool")
 end
 assert(not package.loaded.toolchain and not package.loaded.mason and not package.loaded["nvim-treesitter"])
 
@@ -33,7 +33,7 @@ package.loaded.toolchain = {
 local spec = require("plugins.coding.toolchain")[1]
 spec.config(nil, spec.opts)
 assert(configured.concurrency == 2 and type(configured.requirements) == "function")
-for command, provider in pairs({ MasonToolsInstall = "mason", TSInstallConfigured = "parser" }) do
+for command, provider in pairs({ MasonToolsInstall = "tool", TSInstallConfigured = "parser" }) do
   vim.cmd(command)
   assert(#installed > 0)
   for _, requirement in ipairs(installed) do
@@ -42,8 +42,8 @@ for command, provider in pairs({ MasonToolsInstall = "mason", TSInstallConfigure
 end
 integration.install()
 assert(vim.deep_equal(installed, integration.requirements()))
-assert(require("plugins.coding.mason")[1].opts.PATH == "append")
-assert(vim.deep_equal(spec.dependencies, { "mason-org/mason.nvim" }), "Toolchain must not depend on the legacy runtime")
+assert(spec.opts.tools.path == "append")
+assert(not spec.dependencies, "Toolchain must not depend on the legacy runtimes")
 
 -- The actual Vue repair helper must complete every no-op path immediately,
 -- and report child-process completion through the queue callback.

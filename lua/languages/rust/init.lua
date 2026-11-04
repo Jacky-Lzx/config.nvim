@@ -1,8 +1,8 @@
 return {
   servers = { "rust_analyzer" },
   tools = {
-    { mason = "codelldb", executable = "codelldb", feature = "debugging" },
-    { mason = "rust-analyzer", executable = "rust-analyzer" },
+    { package = "codelldb", executable = "codelldb", feature = "debugging" },
+    { package = "rust-analyzer", executable = "rust-analyzer" },
     { executable = "rustfmt" },
     { executable = "cargo" },
   },

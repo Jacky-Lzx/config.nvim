@@ -18,8 +18,8 @@ For a read-only deployment such as the Nix store, startup seeds or resets
 `stdpath("state")/lazy/lazy-lock.json` from the committed lock. Runtime updates
 do not change the deployed source. Deploying or rolling back configuration does
 not reconcile already installed plugin checkouts; run `:Lazy restore` as well.
-Plugins, parsers and Mason tools remain runtime installations, outside the Nix
-closure. Nix/system executables take priority over Mason's optional fallback.
+Plugins, parsers and managed tools remain runtime installations, outside the Nix
+closure. Nix/system executables take priority over toolchain's optional fallback.
 
 The consuming Nix repository pins this repository's commit and deploys its root
 as `xdg.configFile."nvim".source`. Publish the tested commit before updating that
@@ -177,7 +177,7 @@ highlighting and pull diagnostics for TeX and BibTeX. Texlab is not enabled on t
 Ensure the installation directory (for example, `~/.cargo/bin`) is on Neovim's PATH.
 Set `NVIM_TEXQUILL` to use another executable, including a local development build.
 After updating the server, restart Neovim (or the LSP client).
-`:ConfigInfo` reports the resolved binary. No Mason package is needed for this server.
+`:ConfigInfo` reports the resolved binary. No managed package is needed for this server.
 
 The default compiler is **latexmk**, with `build.onSave = true`. The server honors
 the project `.latexmkrc` output directory, falling back to `build/texquill/` beside
@@ -278,11 +278,11 @@ plugins. Basic filetype settings and shared snippets remain available. Debug ada
 included in tool installation only when debugging is enabled. KDL currently has no LSP.
 
 Run `:ConfigToolsInstall` after changing profiles. Tool and parser installation is explicit and
-may access the network. Normal startup does not install Mason packages or Tree-sitter parsers.
+may access the network. Normal startup does not install tools or Tree-sitter parsers.
 The command now uses the local `toolchain-tools.nvim` checkout under the development plugin root.
 `:ToolchainPlan` inspects requirements, `:Toolchain` shows tasks and logs, and `:ToolchainRetry`
 retries failed/unavailable tasks. The legacy `:MasonToolsInstall` and `:TSInstallConfigured`
-commands submit only their respective providers to the same queue. Extra `codespell` and
+commands submit only the independent `tool` and `parser` providers to the same queue. Extra `codespell` and
 `regex` requirements are preserved. Parser requirements now use the independent `parser`
 backend: pinned Git sources, matched query data, CLI compilation and validation, with
 version receipts and repair on explicit installation. The custom LaTeX grammar is pinned
@@ -304,6 +304,13 @@ links and their manifest under `toolchain-tools/legacy-queries` in the Neovim da
 Use `:ToolchainLog` for build logs and `:ConfigToolsInstall` to check/install the current
 profile's pinned versions; the old plugin's other `:TS*` commands are no longer registered.
 
+Mason is no longer declared or loaded. Toolchain installs pinned release archives, isolated
+npm/Python packages, Cargo packages and selected source builds. It appends managed tool
+directories after the existing PATH. Old Mason packages remain untouched for rollback but
+are not consulted. New npm/Python installs record resolved dependency locks, reused during
+repairs; initial transitive resolutions are not globally locked. `:MasonToolsInstall` remains
+a compatibility alias. Use `:Toolchain` and `:ToolchainLog` instead of other `:Mason*` commands.
+
 ## Adding a language
 
 1. Add `lua/languages/<name>.lua` returning metadata (see `lua/languages/json.lua`).
@@ -314,7 +321,7 @@ profile's pinned versions; the old plugin's other `:TS*` commands are no longer 
    in `ftplugin/<filetype>.lua` so they are set before the built-in scripts run.
 4. Run `./tests/smoke.sh`, restart Neovim, and explicitly install any new tools.
 
-Language `tools` entries distinguish Mason package names from executable names. Omit `mason`
+Language `tools` entries distinguish managed `package` names from executable names. Omit `package`
 for system-managed tools; use `resolve` for non-PATH tools such as debugpy's Python interpreter.
 Installation and health checks consume this same list. Language definitions must not install
 anything or register editor behavior while being read; use plugin lifecycle hooks instead.
@@ -331,7 +338,7 @@ hover, definitions, references, renaming, and code actions.
 
 Run `:ConfigToolsInstall` to install the parser and `nil` (building it requires Cargo and Nix). Install
 `nixfmt` separately: `brew install nixfmt` on macOS, or add `nil` and `nixfmt` to your
-NixOS/Home Manager packages. Mason currently only ships `nixfmt` for Linux, so it is
+NixOS/Home Manager packages. The configuration uses a system `nixfmt`, which is
 registered as a system tool.
 
 Basic diagnostics, local completion, navigation, and formatting work without Nix.
@@ -356,8 +363,8 @@ linux = {
 ```
 
 Overrides replace entire fields, including command lists. `sysname` matches the operating
-system name reported by libuv. `mason_bin` and `debugpy_python` are relative to Neovim's data
-directory; user paths support `~`. Restart Neovim after changing these settings.
+system name reported by libuv. Managed package/resource paths are resolved by toolchain;
+user paths support `~`. Restart Neovim after changing these settings.
 
 `lua/utils/platform.lua` selects the platform, resolves executables, and runs system commands.
 Consumers use `require("utils.platform")`. Unknown operating systems use `other` and the shared defaults.
@@ -428,7 +435,7 @@ platform backend such as `pbctl` or `pngpaste` on macOS.
 ## Dependencies
 
 Required bootstrap dependencies are Neovim 0.12+, Git, and a usable POSIX shell. A Nerd Font is
-recommended for icons. `:ConfigToolsInstall` installs profile-managed tools through Mason, but
+recommended for icons. `:ConfigToolsInstall` installs profile-managed tools through the independent toolchain backend, but
 some integrations still use system packages:
 
 - General: `fish`, `delta`, `lazygit`, `yazi`, `kitty`
@@ -442,15 +449,19 @@ some integrations still use system packages:
 
 The preferred Python provider is `$NVIM_PYTHON3_HOST_PROG`, followed by
 `~/.uv/neovim/bin/python3`. If neither exists, Neovim performs its normal provider discovery.
-The selected provider must contain the `pynvim` package. Python debugging uses Mason's debugpy
-environment or `$NVIM_DEBUGPY_PYTHON`.
+The selected provider must contain the `pynvim` package. Python debugging uses toolchain's isolated debugpy
+environment or `$NVIM_DEBUGPY_PYTHON`. JDTLS needs Java 21 or newer;
+`$NVIM_JDTLS_JAVA_HOME` overrides its JDK, followed by `$JAVA_HOME` and platform
+candidates. macOS also checks existing Homebrew OpenJDK installations without
+changing the shell's Java version.
 
-The Vue Mason post-install hook may run `npm install typescript@5` inside the
+The Vue post-install hook may run `npm install typescript@5` inside the
 `vue-language-server` package when its bundled TypeScript 7 is incompatible. This only happens
 after an explicit `:ConfigToolsInstall` or `:MasonToolsInstall`.
 The task waits for npm, captures its output, and reports failure through the queue; retries
-repair an already-installed package without reinstalling it. Language tools support a Mason-only
-`post_install_async(package, done, log)` callback and system-only `optional = true` declarations.
+build a fresh version before publication. Intact installations skip their hooks. Language tools
+support `post_install_async(package, done, log)` with a neutral `{ name, path, version, resources }`
+package record and system-only `optional = true` declarations.
 Fish and `html_beautify` are optional: absence appears as `unavailable` instead of a failed install.
 
 ## Health and testing
@@ -492,7 +503,7 @@ command-line-first completion loading, paired Enter/Backspace, and development c
 
 Tests isolate cache/state/log files, disable session saving and WakaTime, stub external LSP
 startup, and set `NVIM_SMOKE_TEST=1` to disable project-local configuration and dependency
-installation. They never invoke Mason or Tree-sitter installation commands. The full default
+installation. They never invoke tool or Tree-sitter installation commands. The full default
 pass requires the configured plugins and LaTeX parser to be installed. It verifies local
 configuration and plugin setup, not live LSP responses, a running debugger, or PDF compilation.
 
