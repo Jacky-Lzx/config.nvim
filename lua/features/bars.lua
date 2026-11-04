@@ -73,6 +73,15 @@ function M.sections()
   return result
 end
 
+local function winbar_highlights(colors)
+  local normal = api.nvim_get_hl(0, { name = "Normal", link = false })
+  -- Some themes omit WinBar and leave Neovim's dark default behind. Use the
+  -- theme's base background even when the editor itself is transparent.
+  local bg = colors and (colors.ui.bg ~= "NONE" and colors.ui.bg or colors.palette.bg) or normal.bg or "NONE"
+  api.nvim_set_hl(0, "WinBar", { fg = colors and colors.ui.fg or normal.fg, bg = bg })
+  api.nvim_set_hl(0, "WinBarNC", { fg = colors and colors.ui.muted or normal.fg, bg = bg })
+end
+
 local function set_winbar(win, value)
   local old = vim.wo[win].winbar
   if (old == "") ~= (value == "") then
@@ -204,6 +213,7 @@ function M.setup()
   copilot_status, copilot_callback = nil, nil
   queue = require("ui_tools.bar").scheduler(30, update)
   tasks_dirty = true
+  require("ui_tools.theme").bind("ConfigWinbar", winbar_highlights)
   local group = api.nvim_create_augroup("ConfigBars", { clear = true })
   api.nvim_create_autocmd({ "BufWinEnter", "BufFilePost", "WinEnter", "TabEnter", "FileType" }, {
     group = group,
