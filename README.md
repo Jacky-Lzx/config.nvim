@@ -92,9 +92,8 @@ LSP tools also owns the code-action indicator and linked editing (including
 LaTeX environment names with stars and Unicode); nvim-lightbulb and the former
 configuration-side linked-editing adapter are no longer needed.
 
-- `<leader>d`: persistent diagnostic details, related locations and previewed fixes.
-  In the panel, `a` fixes; `A` fixes and continues after a confirmed diagnostic refresh.
-  `<A-j>` / `<A-k>` retain quick diagnostic navigation and native floats.
+- `<leader>d`: show diagnostics at the cursor in a native floating window; press
+  again to enter it. `<A-j>` / `<A-k>` navigate diagnostics and show the same native floats.
 - `<leader>gH`: pin hover documentation; `r` refreshes, `f` follows the source cursor,
   `y` copies, and `gx` opens a documentation link. `K` keeps ordinary hover.
 - `go` in Normal mode: open the LSP document link, falling back to the existing

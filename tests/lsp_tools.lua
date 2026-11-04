@@ -129,8 +129,37 @@ feed(vim.g.mapleader .. "rn")
 assert(rename_calls == 1, "Attached rename mapping must reach lsp-tools once")
 require("lsp-tools").rename = original_rename
 local tools = require("lsp-tools")
+local diagnostic_ns = vim.api.nvim_create_namespace("ConfiguredDiagnosticFloat")
+local source_win, source_buf = vim.api.nvim_get_current_win(), vim.api.nvim_get_current_buf()
+local layout = vim.fn.winlayout()
+vim.diagnostic.set(diagnostic_ns, source_buf, {
+  { lnum = 0, col = 0, end_col = 3, message = "Diagnostic at cursor", severity = vim.diagnostic.severity.ERROR },
+})
+vim.api.nvim_win_set_cursor(source_win, { 1, 0 })
+feed("<leader>d")
+local float
+for _, win in ipairs(vim.api.nvim_list_wins()) do
+  if vim.api.nvim_win_get_config(win).relative ~= "" then
+    local lines = vim.api.nvim_buf_get_lines(vim.api.nvim_win_get_buf(win), 0, -1, false)
+    if table.concat(lines, "\n"):find("Diagnostic at cursor", 1, true) then
+      float = win
+    end
+  end
+end
+assert(float, "Space d must show the diagnostic in a floating window")
+assert(vim.api.nvim_get_current_win() == source_win, "Diagnostic float must preserve editing focus")
+assert(vim.api.nvim_get_current_buf() == source_buf, "Diagnostic float must preserve the source buffer")
+assert(vim.deep_equal(layout, vim.fn.winlayout()), "Space d must preserve the split layout")
+assert(not require("lsp-tools.panel").get("diagnostics"), "Space d must not open the persistent panel")
+feed("<leader>d")
+assert(vim.api.nvim_get_current_win() == float, "Second Space d must enter the existing diagnostic float")
+assert(vim.deep_equal(layout, vim.fn.winlayout()), "Entering the float must preserve the split layout")
+vim.api.nvim_win_close(float, true)
+assert(vim.api.nvim_get_current_win() == source_win, "Closing the float must restore editing focus")
+vim.diagnostic.reset(diagnostic_ns, source_buf)
+feed("<leader>d")
+assert(vim.deep_equal(layout, vim.fn.winlayout()), "Space d without diagnostics must preserve the layout")
 for _, binding in ipairs({
-  { "<leader>d", "diagnostic" },
   { "<leader>gd", "diagnostics" },
   { "<leader>gl", "locations" },
   { "<leader>gL", "loclist" },
