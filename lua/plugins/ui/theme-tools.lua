@@ -82,7 +82,7 @@ return {
       },
       themes = {
         "theme-tools-mocha",
-        "dracula",
+        "theme-tools-dracula",
         "catppuccin-mocha",
         "catppuccin-latte",
         "catppuccin-frappe",
