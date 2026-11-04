@@ -17,7 +17,7 @@ local function check()
     return vim.api.nvim_eval_statusline(vim.wo.winbar, { winid = 0, use_winbar = true, maxwidth = 160 }).str
   end
   local function check_winbar(name)
-    assert(vim.wo.winbar:find("features.bars", 1, true), "Missing winbar for " .. name)
+    assert(vim.wo.winbar:find("ui_tools.winbar", 1, true), "Missing winbar for " .. name)
     assert(winbar():find(name, 1, true), "Missing winbar filename: " .. winbar())
   end
   local paths, bufs = {}, {}
@@ -77,7 +77,11 @@ local function check()
     -- Native default statuslines in other windows may run luaeval() during
     -- redrawstatus. Check the direct owner, not that redraw's ancestor stack.
     local owner = debug.getinfo(3, "S").source
-    if owner:find("/ui_tools/statusline.lua", 1, true) or owner:find("/features/bars.lua", 1, true) then
+    if
+      owner:find("/ui_tools/statusline.lua", 1, true)
+      or owner:find("/ui_tools/winbar.lua", 1, true)
+      or owner:find("/features/bars.lua", 1, true)
+    then
       queries = queries + 1
       traces[#traces + 1] = debug.traceback()
     end
@@ -130,7 +134,7 @@ local function check()
   vim.cmd("vsplit")
   pause(100)
   assert(vim.wo.statusline:find("ui_tools.statusline", 1, true))
-  assert(vim.wo.winbar:find("features.bars", 1, true))
+  assert(vim.wo.winbar:find("ui_tools.winbar", 1, true))
   local split = vim.api.nvim_get_current_win()
   vim.cmd("edit " .. vim.fn.fnameescape(paths[1]))
   pause(100)

@@ -62,8 +62,12 @@ if vim.env.BARS_TEST == "before" then
   providers()
 end
 local bars, status = require("features.bars"), require("ui_tools.statusline")
-require("ui_tools").setup({ statusline = { globalstatus = true, sections = bars.sections() } })
+require("ui_tools").setup({
+  statusline = { globalstatus = true, sections = bars.sections() },
+  winbar = bars.winbar_options(),
+})
 bars.setup()
+assert(require("ui_tools.winbar").enabled)
 local function settle()
   vim.wait(100)
 end
@@ -192,7 +196,7 @@ _G.require = original_require
 -- its cache alive through :edit, :buffer, excluded buffers and inherited splits.
 local function check_winbar(name)
   -- Check before yielding: an eventually correct bar can still flash blank.
-  assert(vim.wo.winbar:find("features.bars", 1, true), "Missing immediate winbar for " .. name)
+  assert(vim.wo.winbar:find("ui_tools.winbar", 1, true), "Missing immediate winbar for " .. name)
   assert(winbar():find(name, 1, true), "Missing immediate filename: " .. winbar())
   settle()
   assert(winbar():find(name, 1, true), "Missing settled filename: " .. winbar())
@@ -228,8 +232,7 @@ check_winbar("second%bar.txt")
 local exec, temporary_redraws = vim.api.nvim_exec2, {}
 vim.api.nvim_exec2 = function(command, ...)
   if
-    command == "redrawstatus"
-    and (vim.fn.win_gettype() == "autocmd" or vim.api.nvim_win_get_config(0).relative ~= "")
+    command == "redrawstatus" and (vim.fn.win_gettype() == "autocmd" or vim.api.nvim_win_get_config(0).relative ~= "")
   then
     temporary_redraws[#temporary_redraws + 1] = debug.traceback()
   end

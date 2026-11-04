@@ -70,6 +70,7 @@ return {
         sections = require("features.bars").sections(),
         inactive_sections = { c = { { "filename", path = "tail" } } },
       },
+      winbar = require("features.bars").winbar_options(),
       indent = { only_scope = true, chunk = false },
       statuscolumn = {
         slot_width = 1,

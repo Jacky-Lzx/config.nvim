@@ -86,6 +86,12 @@ pairing, snippets, or AI. LSP depends on completion-tools so capability negotiat
 complete before servers start. With the AI feature enabled, Copilot is in the default
 source list and Alt-i toggles it for the current buffer.
 
+ui-tools owns the native bufferline, statusline and per-window winbar. Its winbar
+module manages window ownership, view preservation, filename/client caches and themes;
+inactive splits retain their own filename and cursor-specific breadcrumbs.
+`features/bars.lua` supplies component options, a lazy lsp-tools breadcrumb callback
+and task-status snapshots. It does not draw bars or manage window-local options.
+
 Use `specs` for optional configuration contributions and `dependencies` only when
 loading order is required. Language DAP contributions supply options without adding
 filetype triggers. The file tree configures its file-operation integration before
