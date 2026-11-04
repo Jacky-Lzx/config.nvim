@@ -49,30 +49,6 @@ return {
           },
           { key = "n", icon = " ", desc = "New File", action = "enew | startinsert" },
           {
-            key = "g",
-            icon = " ",
-            desc = "Find Text",
-            action = function()
-              require("selection_tools").grep({ regex = true })
-            end,
-          },
-          {
-            key = "r",
-            icon = " ",
-            desc = "Recent Files",
-            action = function()
-              require("selection_tools").recent()
-            end,
-          },
-          {
-            key = "c",
-            icon = " ",
-            desc = "Config",
-            action = function()
-              require("selection_tools").files({ cwd = vim.fn.stdpath("config") })
-            end,
-          },
-          {
             key = "s",
             icon = " ",
             desc = "Restore Session",
