@@ -217,9 +217,17 @@ function M.setup()
   local group = api.nvim_create_augroup("ConfigBars", { clear = true })
   api.nvim_create_autocmd({ "BufWinEnter", "BufFilePost", "WinEnter", "TabEnter", "FileType" }, {
     group = group,
-    -- Restore window options and refresh buffer data before the first redraw.
-    -- Deferring this exposes a missing winbar or the previous buffer's cache.
-    callback = update,
+    callback = function()
+      -- FileType and non-entering float creation can temporarily select an
+      -- autocmd/float window. Redrawing there exposes native bars or inactive
+      -- editor sections; wait until the caller restores the editing window.
+      if vim.fn.win_gettype() == "autocmd" or api.nvim_win_get_config(0).relative ~= "" then
+        queue.request()
+      else
+        -- Real buffer switches need fresh data before their first redraw.
+        update()
+      end
+    end,
   })
   api.nvim_create_autocmd("WinClosed", {
     group = group,

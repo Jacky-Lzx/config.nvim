@@ -205,6 +205,37 @@ check_winbar("bar%fixture.txt")
 vim.cmd("close")
 check_winbar("second%bar.txt")
 
+-- Scratch FileType and non-entering float creation run in temporary window
+-- contexts. A synchronous redraw there can flush native/inactive editor bars.
+local exec, temporary_redraws = vim.api.nvim_exec2, {}
+vim.api.nvim_exec2 = function(command, ...)
+  if
+    command == "redrawstatus"
+    and (vim.fn.win_gettype() == "autocmd" or vim.api.nvim_win_get_config(0).relative ~= "")
+  then
+    temporary_redraws[#temporary_redraws + 1] = debug.traceback()
+  end
+  return exec(command, ...)
+end
+local editing_win = vim.api.nvim_get_current_win()
+local scratch = vim.api.nvim_create_buf(false, true)
+vim.bo[scratch].filetype = "bar-status-fixture"
+local float = vim.api.nvim_open_win(scratch, false, {
+  relative = "editor",
+  row = 2,
+  col = 2,
+  width = 20,
+  height = 1,
+  style = "minimal",
+})
+vim.bo[scratch].filetype = "bar-menu-fixture"
+vim.api.nvim_win_close(float, true)
+vim.api.nvim_buf_delete(scratch, { force = true })
+vim.api.nvim_exec2 = exec
+assert(#temporary_redraws == 0, "Bars redrew in temporary windows: " .. table.concat(temporary_redraws, "\n"))
+assert(vim.api.nvim_get_current_win() == editing_win)
+check_winbar("second%bar.txt")
+
 -- A deliberate clear in the same buffer still transfers ownership. Closing
 -- that window drops the block, and a new window may own a winbar again.
 vim.cmd("vsplit")
