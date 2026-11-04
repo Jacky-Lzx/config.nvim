@@ -57,7 +57,8 @@ timer:start(
       elseif stage == "hint" and view and view.win then
         local pos = vim.fn.win_screenpos(view.win)
         local cfg = api.nvim_win_get_config(view.win)
-        assert(pos[1] > 10 and pos[2] > 50, "hint is not at the bottom right")
+        assert(pos[1] > 10 and pos[2] + cfg.width + 1 == vim.o.columns - 1, "hint is not at the bottom right")
+        assert(view.frame.columns == 2, "configured hints should use two columns")
         assert(cfg.anchor == "SE" and not cfg.focusable)
         assert(not package.loaded["which-key"], "legacy hint owner loaded")
         mark("subgroup")

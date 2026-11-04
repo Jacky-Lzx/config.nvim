@@ -18,7 +18,7 @@ return {
     },
     opts = {
       hints = { delay = 200 },
-      window = { width = 48, height = 16, border = "rounded" },
+      window = { width = 80, height = 16, border = "rounded" },
     },
     config = function(_, opts)
       local keymaps = require("keymap_tools")
