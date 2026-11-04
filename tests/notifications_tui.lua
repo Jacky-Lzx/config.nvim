@@ -37,7 +37,7 @@ local function assert_input_position()
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "input-tools-command" then
       local geometry = vim.api.nvim_win_get_config(win)
-      assert(geometry.row == 3, "Input must use the old Noice command_palette top offset")
+      assert(geometry.row == 3, "Input must use the configured command palette top offset")
       assert(
         geometry.col == math.floor((vim.o.columns - geometry.width - 2) / 2),
         "Input must stay horizontally centered"

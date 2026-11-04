@@ -6,7 +6,7 @@ return {
     lazy = false,
     priority = 1000,
     opts = {
-      window = { row = 3 }, -- Match the previous Noice command_palette position.
+      window = { row = 3 }, -- Top-centered command palette.
     },
   },
 }

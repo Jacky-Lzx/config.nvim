@@ -92,9 +92,9 @@ end, 10))
 feed("q")
 feed(" sN")
 assert(vim.wait(500, function()
-  return vim.bo.filetype == "notification-tools-history"
+  return vim.bo.filetype == "selection_tools_input"
 end, 10))
-feed("q")
+feed("<Esc>")
 tools.notify("Dismiss me", nil, { timeout = 0 })
 feed(" un")
 assert(vim.wait(500, function()

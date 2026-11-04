@@ -528,7 +528,8 @@ nvim --clean --headless -i NONE -l tests/latex_build.lua
 
 `notification-tools.nvim` owns `vim.notify`: ordinary notifications appear at the
 top right and LSP/background task progress at the bottom right. `<leader>n` and
-`<leader>sn` open notification history; `<leader>un` dismisses ordinary notifications.
+`<leader>sn` open notification history; `<leader>sN` opens its fuzzy-search picker
+with full previews; `<leader>un` dismisses ordinary notifications.
 `:NotificationToolsDemo` previews both areas. Successful native file-write status
 messages are filtered from notifications/history; errors and other sources remain visible.
 
@@ -544,9 +545,10 @@ menus. It also prefers the local development checkout through lazy.nvim's shared
 `dev.path`. `messages.enabled = true` lets it hand non-interactive messages to
 notification-tools after its renderer is ready. Both plugins load at startup;
 notifications load first (priority 1100), then input-tools (priority 1000).
-Reconfiguring either plugin reacquires the handoff. Noice is disabled to avoid
-competing UI owners. Its old `<leader>N` / `<leader>sN` history keys now open
-notification history too. Native LSP show-message notices still use `vim.notify`.
+Reconfiguring either plugin reacquires the handoff. `<leader>N` also opens
+notification history. `:NotificationsPick` uses selection-tools to search complete
+messages and details; Enter opens the selected record for reading. Native LSP
+show-message notices still use `vim.notify`.
 
 CodeCompanion hooks live
 in `integrations.codecompanion_notifications` and create/finish tasks through the

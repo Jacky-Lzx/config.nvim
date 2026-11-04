@@ -104,6 +104,7 @@ integration_checks() (
     -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_highlighting.lua')"
 
   python3 "$root/tests/tui.py" notifications
+  python3 "$root/tests/tui.py" notification_picker
   python3 "$root/tests/tui.py" completion_input
   python3 "$root/tests/tui.py" toolchain
   python3 "$root/tests/treesitter_tui.py"

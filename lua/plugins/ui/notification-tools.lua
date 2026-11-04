@@ -24,7 +24,7 @@ return {
     },
     keys = {
       { "<leader>N", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
-      { "<leader>sN", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
+      { "<leader>sN", "<Cmd>NotificationsPick<CR>", desc = "[Notifications] Search history" },
       { "<leader>sn", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
       { "<leader>n", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
       { "<leader>un", "<Cmd>NotificationsDismiss<CR>", desc = "[Notifications] Dismiss" },

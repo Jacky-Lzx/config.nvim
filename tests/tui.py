@@ -19,7 +19,7 @@ def main():
     env = dict(os.environ, NVIM_LAZY_CASE=case)
     if case.startswith("image_"):
         env["NVIM_TEST_SCENARIO"] = "writing"
-    if case in ("notifications", "ui_tools", "completion_input", "bars", "folding", "toolchain"):
+    if case in ("notifications", "notification_picker", "ui_tools", "completion_input", "bars", "folding", "toolchain"):
         # Isolate UI/adapter behavior from external AI servers disabled by setup.lua.
         env["NVIM_TEST_SCENARIO"] = "minimal"
     result = Path(env["NVIM_TEST_TMP"]) / ("lazy-startup-" + case + ".log")
@@ -29,7 +29,7 @@ def main():
     env["TERM"] = "xterm-256color"
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case in ("ui_tools", "bars", "folding") else 120, 0, 0))
-    test_file = {"notifications": "notifications_tui.lua", "ui_tools": "ui_tools_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
+    test_file = {"notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
