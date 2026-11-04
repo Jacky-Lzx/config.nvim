@@ -21,13 +21,15 @@ def main():
     env = dict(os.environ, NVIM_LAZY_CASE=case)
     if case.startswith("image_"):
         env["NVIM_TEST_SCENARIO"] = "writing"
-    if case in ("notifications", "notification_picker", "ui_tools", "completion_input", "bars", "folding", "toolchain"):
+    if case in ("notifications", "notification_picker", "ui_tools", "completion_input", "bars", "folding", "toolchain", "annotations"):
         # Isolate UI/adapter behavior from external AI servers disabled by setup.lua.
         env["NVIM_TEST_SCENARIO"] = "minimal"
     if case == "motion":
         env.setdefault("NVIM_TEST_SCENARIO", "minimal")
     if case == "motion":
         Path(env["NVIM_TEST_TMP"], "motion-stage").unlink(missing_ok=True)
+    if case == "annotations":
+        Path(env["NVIM_TEST_TMP"], "annotations-stage").unlink(missing_ok=True)
     result = Path(env["NVIM_TEST_TMP"]) / ("lazy-startup-" + case + ".log")
     if result.exists():
         result.unlink()
@@ -35,7 +37,7 @@ def main():
     env["TERM"] = "xterm-256color"
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case in ("ui_tools", "bars", "folding") else 120, 0, 0))
-    test_file = {"motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
+    test_file = {"motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
@@ -51,6 +53,7 @@ def main():
         "insert_register": b"i\x12", "insert_register_apply": b"z", "leave_insert": b"\x1b",
         "command_register": b":\x12", "command_register_apply": b"z", "command_cancel": b"\x1b",
     }
+    annotation_actions = {"insert": b"3GA TODO: live #abcdef", "burst": b" " + b"x" * 200 + b" #00ff00", "normal": b"\x1b"}
     output = bytearray()
     handled = set()
     motion_sentinel_at = None
@@ -82,6 +85,12 @@ def main():
                 stage = stage_file.read_text().strip() if stage_file.exists() else ""
                 if stage in keymap_actions and stage not in handled:
                     os.write(master, keymap_actions[stage])
+                    handled.add(stage)
+            elif case == "annotations":
+                stage_file = Path(env["NVIM_TEST_TMP"], "annotations-stage")
+                stage = stage_file.read_text().strip() if stage_file.exists() else ""
+                if stage in annotation_actions and stage not in handled:
+                    os.write(master, annotation_actions[stage])
                     handled.add(stage)
             elif case == "toolchain":
                 stage_file = Path(env["NVIM_TEST_TMP"], "toolchain-stage")

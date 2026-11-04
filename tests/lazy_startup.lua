@@ -31,10 +31,12 @@ local function check()
     "pairs.nvim",
     "mini.ai",
     "mini.align",
-    "mini.operators",
-    "todo-comments.nvim",
-    "nvim-highlight-colors"
+    "mini.operators"
   )
+  loaded("ui-tools.nvim")
+  assert(not plugins["todo-comments.nvim"] and not plugins["nvim-highlight-colors"])
+  assert(not package.loaded["todo-comments"] and not package.loaded["nvim-highlight-colors"])
+  assert(require("ui_tools.colors").enabled and require("ui_tools.todo").enabled)
   loaded("motion-tools.nvim")
   assert(not plugins["flash.nvim"] and not plugins["nvim-hlslens"] and not plugins["mini.bracketed"])
   assert(not plugins["copilot.lua"] and not package.loaded["copilot.client"])
