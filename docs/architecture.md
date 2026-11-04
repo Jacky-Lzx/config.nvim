@@ -60,7 +60,10 @@ LSP configuration depends on blink.cmp so its native capability registration run
 `vim.lsp.enable()`. Completion has one setup owner. keymap-tools owns Normal/Visual
 prefix hints, operator-pending motions/textobjects, register/mark/spelling hints,
 and `<leader>?`, with selection-tools providing the executable keymap picker.
-mini.ai publishes metadata through keymap-tools before first use and retains its
+keymap-tools initializes at VimEnter, before the first input; early metadata
+registration uses deferred setup without loading the hint engine. Rendering loads
+on first display. selection-tools has its own setup owner and is required only by
+the executable picker. mini.ai publishes metadata at VimEnter and retains its
 native input/selection behavior. LaTeX publishes buffer-scoped groups. Snacks
 registers dynamic toggle descriptions. Each integration registers named groups/hints
 under its own source ID; registrations have replace/dispose lifecycles. Native

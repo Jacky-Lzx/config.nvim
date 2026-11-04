@@ -61,10 +61,16 @@ return {
   {
     -- Extende `a`/`i` textobjects
     "echasnovski/mini.ai",
-    dependencies = { "keymap-tools.nvim", "nvim-treesitter/nvim-treesitter-textobjects" },
+    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
     version = "*",
     init = function()
-      describe({})
+      -- Publish before the first input without requiring the hint engine in init.
+      vim.api.nvim_create_autocmd("VimEnter", {
+        once = true,
+        callback = function()
+          describe({})
+        end,
+      })
     end,
     keys = {
       { "a", mode = { "o", "x" } },

@@ -3,6 +3,11 @@ local directory = assert(vim.env.NVIM_TEST_TMP)
 local result = assert(vim.env.NVIM_LAZY_RESULT)
 local api = vim.api
 local stage, ticks, finished = "startup", 0, false
+if vim.v.vim_did_enter == 0 then
+  for _, name in ipairs({ "keymap_tools.hints", "keymap_tools.view", "keymap_tools.picker" }) do
+    assert(not package.loaded[name], name .. " loaded before VimEnter")
+  end
+end
 local origin, picker, visual_picker, previous_wrap
 local latest_picker
 local function mark(value)

@@ -3,9 +3,7 @@ return {
     dir = require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim",
     name = "keymap-tools.nvim",
     main = "keymap_tools",
-    lazy = false,
-    priority = 850,
-    dependencies = { "selection-tools.nvim" },
+    event = "VimEnter",
     keys = {
       {
         "<leader>?",
@@ -17,6 +15,7 @@ return {
       },
     },
     opts = {
+      defer = true,
       hints = { delay = 200 },
       window = { width = 80, height = 16, border = "rounded" },
     },
