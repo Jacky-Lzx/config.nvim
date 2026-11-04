@@ -253,9 +253,28 @@ when auto-session is enabled. Open it manually with `:lua require("ui_tools").da
 
 Snacks dashboard/indent/statuscolumn/Zen/dim are disabled. Snacks still provides its other
 features, including scope textobjects. Native folding remains in
-`lua/features/folding.lua`. hlslens keeps its match lens and search keys; search
-markers and the optional GitTools hunk adapter are provided by ui-tools.
+`lua/features/folding.lua`. motion-tools provides the match lens and search keys;
+search markers and the optional GitTools hunk adapter are provided by ui-tools.
 Core yank handling retains clipboard copying, with feedback owned by ui-tools.
+
+## Search and navigation
+
+`lua/plugins/navigation/motion-tools.lua` loads the local motion-tools.nvim checkout
+from `utils.platform.dev_plugin_root()`. It replaces Flash, hlslens and mini.bracketed;
+search feedback is ready at startup, including the first native `/` or `?` search.
+
+`<leader>f` searches literal text: type a query, Enter/Tab, then a displayed label.
+`<leader>j` and `<leader>k` label nonblank line starts. `<leader>F` chooses an ancestor
+syntax node in Normal mode; in Visual/operator mode it searches text and selects
+the matching syntax node. `<C-f>` in `/` or `?` chooses a label for that search.
+Escape cancels and restores the source view. Normal jumps can cross windows;
+Visual and operator jumps stay in their source window.
+
+`n/N/*/#/g*/g#` retain native search behavior and show a match counter. Bracket
+keys navigate diagnostics (`d`), quickfix/location (`q/l`), jumplist (`j`) and
+syntax boundaries (`t`); uppercase suffixes seek the first/last target. `[i`/`]i`
+seek more indentation, `[o`/`]o` less. `[b`/`]b` remain owned by ui-tools and follow
+bufferline order; `[B`/`]B` select the first/last listed buffer.
 
 ## Profiles and features
 

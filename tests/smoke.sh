@@ -107,6 +107,8 @@ integration_checks() (
   python3 "$root/tests/tui.py" notification_picker
   python3 "$root/tests/tui.py" completion_input
   python3 "$root/tests/tui.py" toolchain
+  python3 "$root/tests/tui.py" motion
+  NVIM_TEST_SCENARIO=default python3 "$root/tests/tui.py" motion
   python3 "$root/tests/treesitter_tui.py"
   python3 "$root/tests/lsp_native_tui.py"
 

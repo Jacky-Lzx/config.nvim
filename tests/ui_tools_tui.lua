@@ -171,7 +171,7 @@ local function check()
   assert(vim.deep_equal(layout, vim.fn.winlayout()))
 
   feed("/body<CR>")
-  assert(plugins["nvim-hlslens"]._.loaded, "Search lens must remain functional")
+  assert(plugins["motion-tools.nvim"]._.loaded, "Search lens must remain functional")
   local scrollbar = require("ui_tools.scrollbar")
   scrollbar.refresh()
   assert(vim.tbl_count(scrollbar.bars) == 2)

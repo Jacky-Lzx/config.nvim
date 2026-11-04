@@ -32,10 +32,11 @@ local function check()
     "mini.ai",
     "mini.align",
     "mini.operators",
-    "nvim-hlslens",
     "todo-comments.nvim",
     "nvim-highlight-colors"
   )
+  loaded("motion-tools.nvim")
+  assert(not plugins["flash.nvim"] and not plugins["nvim-hlslens"] and not plugins["mini.bracketed"])
   assert(not plugins["copilot.lua"] and not package.loaded["copilot.client"])
   assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
   assert(not package.loaded["tex-tools"], "TeX tools loaded without a TeX buffer")
@@ -73,7 +74,7 @@ local function check()
     loaded("crates.nvim")
     loaded("pairs.nvim") -- Reading/creating a file enables rainbow before InsertEnter.
     assert(require("pairs.rainbow").status().enabled)
-    unloaded("nvim-dap", "nvim-tree.lua", "LuaSnip", "nvim-hlslens")
+    unloaded("nvim-dap", "nvim-tree.lua", "LuaSnip")
     for _, extension in ipairs({ "cpp", "swift" }) do
       vim.cmd.edit(temp .. "/lazy-file." .. extension)
       unloaded("nvim-dap", "nvim-dap-view", "nvim-tree.lua")
@@ -150,7 +151,7 @@ local function check()
     contents({ "match match" })
     vim.fn.writefile({ "Running first search" }, vim.env.NVIM_LAZY_RESULT)
     feed("/match<CR>")
-    loaded("nvim-hlslens")
+    loaded("motion-tools.nvim")
     assert(not plugins["nvim-scrollbar"] and not package.loaded.scrollbar)
     assert(require("ui_tools.scrollbar").options.search, "ui-tools search markers must stay enabled")
     require("ui_tools.scrollbar").refresh()
