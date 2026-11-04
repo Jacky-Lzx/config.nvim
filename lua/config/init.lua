@@ -24,7 +24,6 @@ function M.setup()
   require("extra.profiling").setup()
 
   require("features.lsp").setup()
-  require("features.folding").setup()
   require("features.treesitter").setup()
 
   if vim.g.neovide then

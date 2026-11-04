@@ -45,7 +45,7 @@ function M.setup()
     vim.wo.foldlevel = vim.v.count
   end, { desc = "Set foldlevel" })
   map("n", "zK", function()
-    require("features.folding").preview()
+    require("ui_tools.fold").preview()
   end, { desc = "Preview closed fold; repeat to focus" })
 
   map({ "n", "x" }, "Q", "<Cmd>qa<CR>", { desc = "Quit Neovim" })

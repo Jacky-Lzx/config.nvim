@@ -8,9 +8,10 @@ vim.cmd("filetype plugin on")
 vim.o.shiftwidth = 2
 local before = #vim.api.nvim_get_autocmds({})
 local native_k = vim.fn.maparg("K", "n", false, true)
-local folding = require("features.folding")
+vim.opt.runtimepath:append(require("utils.platform").dev_plugin_root() .. "/ui-tools.nvim")
+local folding = require("ui_tools.fold")
 assert(#vim.api.nvim_get_autocmds({}) == before, "Requiring folding must be pure")
-folding.setup()
+folding.setup({ suffix = "  󰁂 %d" })
 
 local function normal(keys)
   vim.cmd("normal! " .. keys)
@@ -49,6 +50,12 @@ normal("zM")
 vim.treesitter.start(buf)
 local text = vim.fn.foldtextresult(1)
 assert(text == "local function outer()  󰁂 5", "Fold count must follow text with exactly two spaces")
+-- Existing sessions may still contain the old config-owned expression.
+assert(require("features.folding") == folding)
+local current_text = vim.wo.foldtext
+vim.wo.foldtext = "v:lua.require'features.folding'.text()"
+assert(vim.fn.foldtextresult(1) == text)
+vim.wo.foldtext = current_text
 local colors
 local original_text = folding.text
 folding.text = function()

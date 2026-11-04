@@ -3,6 +3,7 @@ local function check()
   local plugins = require("lazy.core.config").plugins
   assert(not plugins["nvim-ufo"] and not plugins["promise-async"])
   assert(not package.loaded.ufo)
+  assert(require("ui_tools.fold").enabled, "ui-tools must own folding")
   for _, key in ipairs({ "zM", "zR", "zm", "zr", "zx", "zX", "zE" }) do
     assert(vim.fn.maparg(key, "n") == "", "Native key overridden: " .. key)
   end
@@ -48,6 +49,12 @@ local function check()
     end
   end
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
+  if vim.env.NVIM_FOLD_RESULT then
+    vim.fn.writefile(
+      { "folding startup passed: " .. (vim.env.NVIM_TEST_SCENARIO or "default") },
+      vim.env.NVIM_FOLD_RESULT
+    )
+  end
   print("Real startup folding and preview passed: " .. (vim.env.NVIM_TEST_SCENARIO or "default"))
 end
 

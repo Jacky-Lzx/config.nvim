@@ -92,6 +92,11 @@ inactive splits retain their own filename and cursor-specific breadcrumbs.
 `features/bars.lua` supplies component options, a lazy lsp-tools breadcrumb callback
 and task-status snapshots. It does not draw bars or manage window-local options.
 
+ui-tools also owns native folding sources, highlighted fold text, preview floats
+and per-window initialization/restoration. The config chooses the fold-count
+suffix and keeps the `zS`/`zK` mappings. `features/folding.lua` is only a forwarding
+compatibility entry for old session foldtext expressions.
+
 Use `specs` for optional configuration contributions and `dependencies` only when
 loading order is required. Language DAP contributions supply options without adding
 filetype triggers. The file tree configures its file-operation integration before
