@@ -6,10 +6,9 @@ return {
     name = "theme-tools.nvim",
     main = "theme_tools",
     lazy = false,
-    priority = 800, -- Restore after selection-tools initializes.
-    dependencies = {
-      { dir = root .. "/selection-tools.nvim", name = "selection-tools.nvim" },
-    },
+    -- Apply the saved theme before UI plugins can redraw the default background.
+    priority = 1200,
+    -- selection-tools has its own startup spec; the picker only needs it on use.
     opts = {
       dracula = { transparent_bg = true },
       catppuccin = {
