@@ -17,6 +17,7 @@ return {
     opts = {
       defer = true,
       hints = { delay = 200 },
+      showkeys = { enabled = false, maxkeys = 5 },
       window = { width = 80, height = 16, border = "rounded" },
     },
     config = function(_, opts)

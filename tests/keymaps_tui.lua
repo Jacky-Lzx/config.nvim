@@ -16,6 +16,11 @@ end
 local function check_owners()
   local plugins = require("lazy.core.config").plugins
   assert(plugins["keymap-tools.nvim"]._.loaded, "keymap-tools did not load at startup")
+  assert(not plugins.showkeys and not package.loaded.showkeys, "Legacy screencast owner remains")
+  assert(vim.fn.exists(":ShowkeysToggle") == 0)
+  assert(not require("keymap_tools").showkeys.is_enabled())
+  assert(not package.loaded["keymap_tools.showkeys"], "Screencast loaded before being enabled")
+  assert(require("keymap_tools.config").get().showkeys.maxkeys == 5)
   assert(plugins["selection-tools.nvim"]._.loaded, "selection-tools missing")
   assert(plugins["keymap-tools.nvim"].dir == require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim")
   assert(not plugins["which-key.nvim"] and not package.loaded["which-key"], "legacy hint owner remains")
@@ -101,9 +106,19 @@ timer:start(
           latest_picker = select_items(...)
           return latest_picker
         end
+        vim.cmd("KeymapTools showkeys enable")
+        assert(require("keymap_tools").showkeys.is_enabled())
         mark("prefix")
         stage = "hint"
       elseif stage == "hint" and view and view.win then
+        local cast = require("keymap_tools.showkeys")
+        if not cast.win then
+          return
+        end
+        vim.cmd.redraw()
+        assert(api.nvim_buf_get_lines(cast.buf, 0, 1, false)[1] == " ␣ ", "Screencast lost the typed prefix")
+        assert(vim.fn.win_screenpos(cast.win)[1] + 2 < vim.fn.win_screenpos(view.win)[1], "Screencast covers hints")
+        assert(api.nvim_get_current_win() == origin, "Screencast stole editor focus")
         local pos = vim.fn.win_screenpos(view.win)
         local cfg = api.nvim_win_get_config(view.win)
         assert(pos[1] > 10 and pos[2] + cfg.width + 1 == vim.o.columns - 1, "hint is not at the bottom right")
@@ -189,12 +204,16 @@ timer:start(
         mark("command_cancel")
         stage = "done"
       elseif stage == "done" and api.nvim_get_mode().mode == "n" then
+        vim.cmd("KeymapTools showkeys")
+        assert(not require("keymap_tools").showkeys.is_enabled())
+        local cast = require("keymap_tools.showkeys")
+        assert(not cast.win and not cast.buf, "Disabling screencast leaked its UI")
         assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
         finished = true
         timer:stop()
         timer:close()
         vim.fn.writefile({
-          "PASS configured startup without which-key, bottom-right hints, executable picker, dynamic Wrap descriptions, Visual cancellation, cold mini.ai operator hints, and Insert/command-line register hints with the existing input UI",
+          "PASS configured startup without which-key/showkeys, opt-in screencast rendering and cleanup, bottom-right hints, executable picker, dynamic Wrap descriptions, Visual cancellation, cold mini.ai operator hints, and Insert/command-line register hints with the existing input UI",
         }, result)
         vim.cmd("qa!")
       end

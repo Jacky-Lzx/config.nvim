@@ -20,6 +20,12 @@ local function check()
   end
   local plugins = require("lazy.core.config").plugins
   assert(info.plugins.initialized)
+  assert(not plugins.showkeys and not package.loaded.showkeys, "Screencast must use keymap-tools")
+  assert(vim.fn.exists(":ShowkeysToggle") == 0, "Legacy showkeys command remains")
+  local screencast = require("keymap_tools.config").get().showkeys
+  assert(not screencast.enabled and screencast.maxkeys == 5, "Screencast must remain opt-in with five keys")
+  assert(not require("keymap_tools").showkeys.is_enabled())
+  assert(not package.loaded["keymap_tools.showkeys"], "Inactive screencast must stay lazy")
   for _, entry in ipairs(info.plugins.entries) do
     local plugin = assert(plugins[entry.name])
     assert(entry.directory == plugin.dir and entry.loaded == not not plugin._.loaded)
