@@ -289,11 +289,20 @@ version receipts and repair on explicit installation. The custom LaTeX grammar i
 in `languages/latex/plugins.lua`. Restart Neovim after parser installation to activate it.
 
 Toolchain activates immutable parser/query runtime paths at startup; highlighting is owned
-by `features/treesitter.lua` and the TeX buffer policy. The nvim-treesitter plugin currently
-remains as a transitional provider of filetype aliases, query predicates and fallback
-runtime files. Its installation API and automatic `:TSUpdate` build hook are no longer used
-by the configuration. `:TSInstallConfigured` submits independent parser tasks. Query data
-is downloaded at a fixed nvim-treesitter commit, without executing its installer.
+by `features/treesitter.lua` and the TeX buffer policy. Toolchain now also registers parser
+filetype aliases and query predicate compatibility. The nvim-treesitter main plugin is no
+longer declared or loaded; Markdown rendering and CodeCompanion depend on toolchain instead.
+The independently installed runtime covers all 45 previously installed parser languages,
+including Vimdoc, XML, TSX and Svelte. `nvim-treesitter-textobjects` is a separate retained
+plugin. `:TSInstallConfigured` submits independent parser tasks. Query data is downloaded
+at a fixed nvim-treesitter commit without loading its Lua code; existing legacy checkout
+files are retained for rollback but are not required by these managed language bundles.
+When migrating an existing installation, old `site/queries` links to that checkout must
+be moved outside the runtime path after their languages have managed bundles: Neovim
+reads inheritance headers in lower-priority query files too. This machine retains those
+links and their manifest under `toolchain-tools/legacy-queries` in the Neovim data directory.
+Use `:ToolchainLog` for build logs and `:ConfigToolsInstall` to check/install the current
+profile's pinned versions; the old plugin's other `:TS*` commands are no longer registered.
 
 ## Adding a language
 

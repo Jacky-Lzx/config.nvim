@@ -43,7 +43,7 @@ end
 integration.install()
 assert(vim.deep_equal(installed, integration.requirements()))
 assert(require("plugins.coding.mason")[1].opts.PATH == "append")
-assert(require("plugins.coding.treesitter")[1].build == nil, "The legacy installer must not run as a build hook")
+assert(vim.deep_equal(spec.dependencies, { "mason-org/mason.nvim" }), "Toolchain must not depend on the legacy runtime")
 
 -- The actual Vue repair helper must complete every no-op path immediately,
 -- and report child-process completion through the queue callback.

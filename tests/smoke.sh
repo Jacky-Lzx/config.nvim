@@ -66,7 +66,7 @@ native_checks() (
 integration_checks() (
   cd -- "$root"
   printf '\nRunning integration checks with installed plugins\n'
-  run_tests obsidian_local comments folding rust lsp_tools notifications image_preview bars git_tools column_guide toolchain_backend
+  run_tests obsidian_local comments folding rust treesitter_runtime lsp_tools notifications image_preview bars git_tools column_guide toolchain_backend
   NVIM_TEST_LINK_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   NVIM_TEST_REFERENCE_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   BARS_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/bars.lua"
@@ -106,6 +106,7 @@ integration_checks() (
   python3 "$root/tests/tui.py" notifications
   python3 "$root/tests/tui.py" completion_input
   python3 "$root/tests/tui.py" toolchain
+  python3 "$root/tests/treesitter_tui.py"
 
   NVIM_TEST_SCENARIO=writing nvim --headless -i NONE \
     --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \

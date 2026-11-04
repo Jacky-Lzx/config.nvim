@@ -14,7 +14,7 @@ return {
       "MasonToolsInstall",
       "TSInstallConfigured",
     },
-    dependencies = { "mason-org/mason.nvim", "nvim-treesitter/nvim-treesitter" },
+    dependencies = { "mason-org/mason.nvim" },
     opts = {
       concurrency = 2,
       requirements = function()

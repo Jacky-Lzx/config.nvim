@@ -1,9 +1,9 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.runtimepath:prepend(root)
-vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/lazy/nvim-treesitter/runtime")
+vim.opt.runtimepath:append(require("utils.platform").dev_plugin_root() .. "/toolchain-tools.nvim")
+require("toolchain").setup({ notify = false, log_file = false })
 require("config.context").initialize({ profiles = {}, features = {} })
--- nvim-treesitter normally registers this filetype alias at startup.
-vim.treesitter.language.register("latex", "tex")
+assert(vim.treesitter.language.get_lang("tex") == "latex")
 vim.cmd("filetype plugin on")
 vim.o.shiftwidth = 2
 local before = #vim.api.nvim_get_autocmds({})

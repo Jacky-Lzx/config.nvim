@@ -6,7 +6,7 @@ return {
       { "<leader>tm", desc = "Enable render markdown" },
     },
     dependencies = {
-      "nvim-treesitter/nvim-treesitter",
+      "toolchain-tools.nvim",
       "nvim-tree/nvim-web-devicons", -- if you prefer nvim-web-devicons
     },
     ---@module 'render-markdown'
