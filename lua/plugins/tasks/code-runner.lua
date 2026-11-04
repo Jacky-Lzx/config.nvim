@@ -3,6 +3,8 @@ return {
     "michaelb/sniprun",
     branch = "master",
 
+    enabled = false,
+
     build = "sh install.sh",
     cmd = { "SnipRun" },
     -- do 'sh install.sh 1' if you want to force compile locally
