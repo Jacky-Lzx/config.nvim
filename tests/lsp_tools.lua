@@ -114,8 +114,8 @@ assert(opts.outline.width == 0.15 and not opts.outline.focus_on_open, "Outline l
 assert(opts.outline.icons.Key.icon == "󰌆" and opts.outline.icons.Event.icon == "󱐋", "Outline icons changed")
 assert(opts.rename.input == nil, "Rename must use lsp-tools' automatic general input API")
 assert(require("input-tools").is_enabled(), "General input renderer must be enabled")
-assert(opts.rename.backend == "delta", "Rename must use the configured delta backend")
-assert(vim.deep_equal(opts.rename.delta.args, opts.code_actions.delta.args), "Rename/code action diff styles differ")
+assert(opts.rename.backend == "native", "Rename must use the native diff backend")
+assert(vim.deep_equal(opts.rename.native, opts.code_actions.native), "Rename/code action diff styles differ")
 for _, feature in ipairs({ "diagnostics", "hover", "links", "inspect", "hierarchy", "results" }) do
   assert(opts[feature], feature .. " must be enabled")
 end
@@ -236,14 +236,9 @@ for _, binding in ipairs({
 end
 assert(opts.pickers == true, "Search pickers must be enabled")
 
-assert(opts.code_actions.backend == "delta", "Delta backend was lost during migration")
-assert(
-  vim.deep_equal(opts.code_actions.delta.args, {
-    "--file-style=omit",
-    "--hunk-header-style=file line-number syntax",
-  }),
-  "Delta arguments changed during migration"
-)
+assert(opts.code_actions.backend == "native", "Code actions must use the native diff backend")
+assert(opts.code_actions.native.file_header == false, "Native previews must omit redundant file headers")
+
 print(
   "lsp_tools: "
     .. (spec._.is_local and "dev" or "GitHub fallback")

@@ -48,7 +48,7 @@ printf '<script setup lang="ts">const count = 1</script>\n' >"$test_tmp/sample.v
 run_tests() {
   for test in "$@"; do
     printf '\nRunning tests/%s.lua\n' "$test"
-    nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/$test.lua"
+    nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/checked.lua" "$root/tests/$test.lua"
   done
 }
 
@@ -107,6 +107,7 @@ integration_checks() (
   python3 "$root/tests/tui.py" completion_input
   python3 "$root/tests/tui.py" toolchain
   python3 "$root/tests/treesitter_tui.py"
+  python3 "$root/tests/lsp_native_tui.py"
 
   NVIM_TEST_SCENARIO=writing nvim --headless -i NONE \
     --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
