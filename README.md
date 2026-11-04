@@ -70,6 +70,15 @@ without matching descriptions or replacing the global Snacks mapping hook.
 
 ## LSP tools
 
+`lua/plugins/coding/lsp-tools.lua` maps the selected language profiles to the
+plugin's `servers` options. It loads on `BufReadPre` / `BufNewFile` (or an explicit
+tool action), configures shared completion and file-operation capabilities, and
+enables servers through lsp-tools. nvim-lspconfig is a dependency that supplies
+maintained configs; it has no separate setup or activation hook. Existing
+`after/lsp/` settings and the custom `lsp/texquill.lua` config retain native merge
+semantics. Tool installation stays with toolchain-tools. `:checkhealth lsp-tools`
+and `:LspToolsInfo` show selected server configuration and attachment state.
+
 [lsp-tools.nvim](https://github.com/Jacky-Lzx/lsp-tools.nvim) supplies the code action
 picker and previews, replacing code-actions.nvim. `<leader>a` works in Normal and
 Visual mode; `<A-a>` works in Insert mode. Enter applies the action, Escape cancels.

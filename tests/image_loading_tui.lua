@@ -48,14 +48,19 @@ local function check()
   assert(vim.g.did_very_lazy, "This test requires the real terminal startup lifecycle")
   cold()
   assert(not plugins["tex-tools.nvim"].dependencies)
-  assert(not plugins["lsp-tools.nvim"].dependencies)
+  for _, name in ipairs(plugins["lsp-tools.nvim"].dependencies or {}) do
+    assert(
+      name ~= "image-tools.nvim" and name ~= "git-tools.nvim" and name ~= "selection-tools.nvim",
+      "LSP setup must keep image, diff and picker backends deferred"
+    )
+  end
   if case == "image_plain" then
     for _, ft in ipairs({ "markdown", "tex", "plaintex", "typst", "html" }) do
       document(ft)
       vim.wait(50)
       cold()
     end
-    api.nvim_exec_autocmds("LspAttach", { buffer = 0, data = { client_id = 999999 } })
+    api.nvim_exec_autocmds("BufReadPre", { buffer = 0 })
     assert(plugins["lsp-tools.nvim"]._.loaded)
     assert(not plugins["git-tools.nvim"]._.loaded, "LSP setup must not initialize its optional diff backend")
   elseif case == "image_edit" then

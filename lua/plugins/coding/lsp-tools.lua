@@ -1,10 +1,23 @@
+local servers = {}
+for _, name in ipairs(require("languages").current().servers) do
+  servers[name] = true
+end
+
 return {
   {
     "Jacky-Lzx/lsp-tools.nvim",
     url = "git@github.com:Jacky-Lzx/lsp-tools.nvim.git",
     dev = true,
+    -- Register servers before attachment; keep empty-editor startup lightweight.
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "neovim/nvim-lspconfig",
+      -- Finalize completion/file-operation capabilities before enabling servers.
+      "completion-tools.nvim",
+      "file-tools.nvim",
+      "toolchain-tools.nvim",
+    },
     -- Picker and diff backends load through their APIs on first use.
-    event = "LspAttach",
     cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },
     keys = {
       {
@@ -161,6 +174,7 @@ return {
       },
     },
     opts = {
+      servers = servers,
       lightbulb = true,
       linked_editing = true,
       diagnostics = true,
@@ -192,6 +206,14 @@ return {
       },
     },
     config = function(_, opts)
+      vim.lsp.config("*", {
+        capabilities = vim.tbl_deep_extend(
+          "force",
+          {},
+          require("completion-tools").get_lsp_capabilities(),
+          require("file_tools").capabilities()
+        ),
+      })
       local tools = require("lsp-tools")
       tools.setup(opts)
       vim.api.nvim_create_user_command("LspToolsInfo", function()

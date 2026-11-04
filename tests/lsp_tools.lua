@@ -22,6 +22,8 @@ else
   assert(not spec._.is_local, "Absent local project must fall back to the GitHub checkout")
 end
 assert(spec.dir == expected_directory, "Plugin resolved the wrong development/fallback directory")
+assert(vim.list_contains(spec.dependencies, "nvim-lspconfig"), "Server config provider must load before lsp-tools")
+assert(not plugins["nvim-lspconfig"].config, "Config provider must not enable servers separately")
 if vim.env.NVIM_TEST_LINK_FIRST == "1" then
   local opener = require("utils.open")
   local original_open, fallback_calls = opener.open_at_cursor, 0

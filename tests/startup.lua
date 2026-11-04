@@ -85,6 +85,15 @@ local function check()
     assert(vim.lsp.config[name], name .. " has no native config")
     check_completion(_G.config_test_lsp_enabled[name], name)
   end
+  assert(plugins["lsp-tools.nvim"]._.loaded and plugins["nvim-lspconfig"]._.loaded)
+  local managed = {}
+  for _, server in ipairs(require("lsp-tools").server_status()) do
+    managed[server.name] = server.managed
+  end
+  assert(vim.tbl_count(managed) == #languages.servers, "Only profile-selected servers may be managed")
+  for _, name in ipairs(languages.servers) do
+    assert(managed[name], name .. " must be managed by lsp-tools")
+  end
   local active_info = require("config").info()
   assert(vim.deep_equal(active_info.languages.servers, languages.servers))
   assert(vim.deep_equal(active_info.lsp.enabled_servers, languages.servers))

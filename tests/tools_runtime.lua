@@ -15,8 +15,13 @@ local commands = vim.api.nvim_get_commands({})
 assert(commands.Mason ~= nil and commands.MasonToolsInstall ~= nil)
 local java_home = require("utils.platform").jdtls_java_home()
 if java_home and plugins["nvim-lspconfig"] then
-  require("lazy").load({ plugins = { "nvim-lspconfig" } })
+  require("lazy").load({ plugins = { "lsp-tools.nvim" } })
   assert(vim.lsp.config.jdtls.cmd_env.JAVA_HOME == java_home)
+  local owned = {}
+  for _, server in ipairs(require("lsp-tools").server_status()) do
+    owned[server.name] = server.managed
+  end
+  assert(owned.jdtls, "lsp-tools must manage the selected Java server")
 end
 local tools = require("toolchain.tools")
 local count = 0

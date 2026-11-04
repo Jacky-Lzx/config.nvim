@@ -1,9 +1,19 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT, "NVIM_CONFIG_ROOT is required")
 vim.opt.runtimepath:prepend(root)
 
-local lsp = require("plugins.coding.nvim-lspconfig")[1]
+local provider = require("plugins.coding.nvim-lspconfig")[1]
+assert(provider.lazy and not provider.config and not provider.opts and not provider.event)
+local lsp = require("plugins.coding.lsp-tools")[1]
+assert(vim.list_contains(lsp.event, "BufReadPre") and vim.list_contains(lsp.event, "BufNewFile"))
+assert(vim.list_contains(lsp.dependencies, "neovim/nvim-lspconfig"))
 assert(vim.list_contains(lsp.dependencies, "completion-tools.nvim"))
 assert(vim.list_contains(lsp.dependencies, "file-tools.nvim"))
+assert(vim.list_contains(lsp.dependencies, "toolchain-tools.nvim"))
+local selected = require("languages").current().servers
+assert(vim.tbl_count(lsp.opts.servers) == #selected)
+for _, name in ipairs(selected) do
+  assert(lsp.opts.servers[name] == true, "Profile server missing from lsp-tools: " .. name)
+end
 local completion_spec = require("plugins.coding.completion.core")[1]
 local original_completion = package.loaded["completion-tools"]
 local original_files = package.loaded.file_tools
@@ -26,6 +36,7 @@ package.loaded.file_tools = {
   end,
 }
 local original_config, original_enable = vim.lsp.config, vim.lsp.enable
+local original_manager = package.loaded["lsp-tools"]
 local configured, setup, enabled = false, false, false
 local capabilities = { textDocument = { completion = { completionItem = { snippetSupport = true } } } }
 package.loaded["completion-tools"] = {
@@ -46,10 +57,19 @@ vim.lsp.config = function(name, opts)
   assert(capabilities.workspace == nil, "Merging file capabilities mutated completion defaults")
   configured = true
 end
-vim.lsp.enable = function(servers)
+package.loaded["lsp-tools"] = {
+  setup = function(opts)
+    assert(configured, "capabilities must be finalized before configuring lsp-tools")
+    assert(opts == lsp.opts)
+    enabled = true
+  end,
+  inspect = function() end,
+  toggle_outline = function() end,
+  open_outline = function() end,
+}
+vim.lsp.enable = function()
   assert(configured, "capabilities must be finalized before enabling servers")
-  assert(servers == lsp.opts.servers)
-  enabled = true
+  error("Plugin specs must leave activation to lsp-tools")
 end
 (completion_spec.config or function(_, opts)
   require("completion-tools").setup(opts)
@@ -57,6 +77,7 @@ end)(nil, completion_spec.opts)
 assert(not configured, "Completion setup must not separately configure capabilities")
 lsp.config(nil, lsp.opts)
 assert(configured and enabled)
+package.loaded["lsp-tools"] = original_manager
 
 -- Editor mappings must not overwrite completion capabilities.
 vim.lsp.config = function()
