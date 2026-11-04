@@ -86,6 +86,8 @@ return {
       focus = { width = 100, height = 0.9, dim = true },
       scrollbar = { handle = " ", blend = 100, cursor = true, cursor_char = "●" },
       context_menu = true,
+      colors = { style = "inline", symbol = "■" },
+      todo = true,
     },
     init = function()
       local function focus_mode(mode)

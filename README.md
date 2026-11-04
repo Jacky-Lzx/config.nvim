@@ -237,7 +237,14 @@ row/column editing and section promotion/demotion are available as TexTools comm
 `lua/plugins/ui/ui-tools.lua` loads the local ui-tools.nvim checkout through
 `utils.platform.dev_plugin_root()`. It owns indentation/chunk guides, the status
 column, the column-121 `` guide, transient line/yank highlighting, Zen/Zoom,
-scope dimming, the scrollbar and the startup dashboard. Theme colors live in `lua/config/highlights.lua`.
+scope dimming, the scrollbar, inline color previews, TODO annotations and the startup
+dashboard. Theme colors live in `lua/config/highlights.lua`.
+
+Color literals use inline `■` swatches. TODO/FIX/NOTE and related tags use
+syntax-aware badges, description colors and gutter signs. Configure `colors` and
+`todo` in the ui-tools spec; their previous nvim-highlight-colors and
+todo-comments.nvim renderers are no longer loaded. Project TODO searches remain
+on `<leader>st` and `<leader>sT` through selection-tools.
 
 Existing keys are retained: `<leader><leader>` pulses the current line,
 `<leader>Z` toggles Zen, `<leader>z` toggles Zoom, `<leader>tG` toggles indent
