@@ -12,7 +12,12 @@ local function check()
   local snacks = require("lazy.core.plugin").values(plugins["snacks.nvim"], "opts", false)
   assert(not snacks.indent.enabled and not snacks.statuscolumn.enabled)
   assert(not snacks.zen.enabled and not snacks.dim.enabled)
-  for _, name in ipairs({ "indent", "statuscolumn", "zen", "dim" }) do
+  assert(not snacks.scope.enabled, "Indentation scope must stay with editing/motion/UI tools")
+  assert(
+    not snacks.picker.actions.results_open and not snacks.picker.win.input.keys["<c-t>"],
+    "Obsolete Snacks results bridge remains"
+  )
+  for _, name in ipairs({ "indent", "statuscolumn", "zen", "dim", "scope" }) do
     assert(not package.loaded["snacks." .. name], "Competing Snacks UI loaded: " .. name)
   end
   local ui = require("ui_tools")

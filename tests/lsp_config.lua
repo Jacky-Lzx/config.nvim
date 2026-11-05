@@ -159,23 +159,6 @@ package.loaded["completion-tools"] = original_completion
 package.loaded.file_tools = original_files
 vim.api.nvim_del_augroup_by_name("ConfigLsp")
 
-local original_tools = package.loaded["lsp-tools"]
-local picker, opened = {}, false
-package.loaded["lsp-tools"] = {
-  from_picker = function(actual, opts)
-    assert(actual == picker and opts.type == "smart")
-    opened = true
-  end,
-}
-local snacks = require("plugins.coding.lsp-tools")[2]
-local opts = snacks.opts(nil, { picker = { enabled = true } })
-assert(not opened, "configuring Snacks must not open or initialize result lists")
-assert(opts.picker.enabled)
-assert(opts.picker.win.input.keys["<c-t>"][1] == "results_open")
-opts.picker.actions.results_open.action(picker)
-assert(opened, "picker action must import results into lsp-tools")
-package.loaded["lsp-tools"] = original_tools
-
 local editing = require("plugins.editing.editing-tools")[1]
 assert(editing.name == "editing-tools.nvim" and editing.main == "editing_tools")
 assert(editing.dir == require("utils.platform").dev_plugin_root() .. "/editing-tools.nvim")

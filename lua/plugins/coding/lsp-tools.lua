@@ -226,29 +226,4 @@ return {
       end, { force = true })
     end,
   },
-  {
-    "folke/snacks.nvim",
-    optional = true,
-    opts = function(_, opts)
-      return vim.tbl_deep_extend("force", opts or {}, {
-        picker = {
-          actions = {
-            results_open = {
-              action = function(picker)
-                require("lsp-tools").from_picker(picker, { type = "smart" })
-              end,
-              desc = "Open results in LSP tools",
-            },
-          },
-          win = {
-            input = {
-              keys = {
-                ["<c-t>"] = { "results_open", mode = { "n", "i" } },
-              },
-            },
-          },
-        },
-      })
-    end,
-  },
 }

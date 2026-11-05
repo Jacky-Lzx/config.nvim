@@ -116,17 +116,7 @@ return {
       },
       quickfile = { enabled = true },
       -- editing-tools owns indentation objects; motion-tools owns indentation jumps.
-      scope = {
-        enabled = true,
-        cursor = true,
-        keys = {
-          textobject = { ii = false, ai = false },
-          jump = {
-            ["[i"] = false,
-            ["]i"] = false,
-          },
-        },
-      },
+      scope = { enabled = false },
       scroll = { enabled = false },
       statuscolumn = { enabled = false }, -- ui-tools owns the gutter.
       zen = { enabled = false },
