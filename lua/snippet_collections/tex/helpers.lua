@@ -1,45 +1,8 @@
 local s = require("snippet_tools")
 local M = {}
 
--- Templates contain literal TeX and <> node slots; no snippet-string escaping.
-function M.format(template, fields)
-  local lines = vim.split(template, "\n", { plain = true })
-  while #lines > 0 and lines[1]:match("^%s*$") do
-    table.remove(lines, 1)
-  end
-  while #lines > 0 and lines[#lines]:match("^%s*$") do
-    table.remove(lines)
-  end
-  local indent = math.huge
-  for _, line in ipairs(lines) do
-    if line:find("%S") then
-      indent = math.min(indent, #line:match("^%s*"))
-    end
-  end
-  for index, line in ipairs(lines) do
-    lines[index] = line:sub(math.min(indent, #line) + 1)
-  end
-  template = table.concat(lines, "\n")
-  local result, offset, index = {}, 1, 0
-  while true do
-    local first, last = template:find("<>", offset, true)
-    if not first then
-      if offset <= #template then
-        result[#result + 1] = s.t(template:sub(offset))
-      end
-      break
-    end
-    if first > offset then
-      result[#result + 1] = s.t(template:sub(offset, first - 1))
-    end
-    index = index + 1
-    local field = assert(fields[index], "Missing TeX template field " .. index)
-    vim.list_extend(result, field.kind and { field } or field)
-    offset = last + 1
-  end
-  assert(index == #fields, "Unused TeX template fields")
-  return result
-end
+-- Templates contain literal TeX and <> node slots; formatting belongs to the engine.
+M.format = s.fmta
 
 function M.define(trigger, description, body, options)
   return vim.tbl_extend("force", { trigger = trigger, description = description, body = body }, options or {})
