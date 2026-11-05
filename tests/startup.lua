@@ -142,7 +142,8 @@ local function check()
   assert(not opts("snacks.nvim").terminal.enabled)
   assert((vim.fn.maparg("<A-i>", "n") ~= "") == not not features.tasks)
   assert((vim.fn.maparg("<A-i>", "t") ~= "") == not not features.tasks)
-  assert((plugins["auto-session"] ~= nil) == not not features.sessions)
+  assert((plugins["workspace-tools.nvim"] ~= nil) == not not features.sessions)
+  assert(not plugins["auto-session"] and not package.loaded["auto-session"])
   for _, name in ipairs({ "barbar.nvim", "lualine.nvim", "copilot-lualine" }) do
     assert(not plugins[name], "Old bar plugin remains configured: " .. name)
   end

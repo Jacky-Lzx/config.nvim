@@ -183,12 +183,36 @@ the live `languages.python.interpreter` provider. Argument input supports quotes
 escaped spaces and empty quoted arguments, without shell expansion. Files run from
 disk; buffers are not automatically written. Pandoc PDF tasks retain the CJK font.
 
-Auto-session stores task definitions under `stdpath('state')/task-tools/sessions`,
-keyed by session name. Restoring a session registers choices without running any
-commands or watchers; deleting a session deletes its task bundle. Task panels are
+workspace-tools stores task definitions under `stdpath('state')/task-tools/sessions`,
+keyed by workspace ID. Restoring a workspace registers choices without running any
+commands or watchers; deleting a workspace deletes its task bundle. Task panels are
 closed before saving, and native terminals remain excluded from sessionoptions.
 Process state, output, stdin and environment overrides are not persisted.
 See `:help task-tools` for project JSON, watch options and the Lua API.
+
+## Workspaces
+
+`workspace-tools.nvim` owns workspace persistence and history search when
+`features.sessions` is enabled. The local checkout comes from `NVIM_DEV_PLUGIN_ROOT`
+(or the default development plugin directory).
+
+| Key | Action |
+| --- | --- |
+| `<leader>pw` | Save current workspace (`:WorkspaceSave [name]`) |
+| `<leader>ps` | Restore current workspace (`:WorkspaceRestore [name-or-id]`) |
+| `<leader>pS` | Fuzzy-search history (`:WorkspaceSearch [query]`) |
+| `<leader>pD` | Delete a saved workspace, with confirmation |
+
+The dashboard's `s` action restores the current workspace. Search uses
+selection-tools. Workspace files, tabs, splits, views and folds are saved on
+exit; startup restoration remains disabled. Home, `~/Projects`, `~/Downloads`
+and `/` are excluded from automatic operations. Modified buffers must be saved
+or discarded before restoring. `:WorkspaceStop` pauses exit saving and
+`:WorkspaceStart` resumes it. Named workspaces can share the same directory.
+
+Records live under `stdpath('state')/workspace-tools`; task definition hooks use
+the stable workspace ID. `:WorkspaceLast` restores the most recently used record.
+See `:help workspace-tools` for the API, save guards and storage behavior.
 
 ## Folding
 
@@ -296,7 +320,7 @@ Set dashboard `layout = "vertical"` for art above the menu or `"horizontal"`
 for art on the left. Both layouts fit automatically as the terminal resizes.
 The dashboard retains the header art and `f`/`n`/`g`/`r`/`c`/`s`/`L`/`q` actions;
 file, grep and recent-file actions use selection-tools. Session restore appears
-when auto-session is enabled. Open it manually with `:lua require("ui_tools").dashboard()`.
+when the `sessions` feature enables workspace-tools. Open it manually with `:lua require("ui_tools").dashboard()`.
 
 Snacks dashboard/indent/statuscolumn/Zen/dim are disabled. Snacks still provides its other
 features, including scope textobjects. Native folding remains in

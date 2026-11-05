@@ -51,10 +51,10 @@ return {
           {
             key = "s",
             icon = " ",
-            desc = "Restore Session",
-            action = "AutoSession restore",
+            desc = "Restore Workspace",
+            action = "WorkspaceRestore",
             enabled = function()
-              return require("lazy.core.config").plugins["auto-session"] ~= nil
+              return require("lazy.core.config").plugins["workspace-tools.nvim"] ~= nil
             end,
           },
           { key = "L", icon = "󰒲 ", desc = "Lazy", action = "Lazy" },
