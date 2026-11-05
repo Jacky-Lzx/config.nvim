@@ -24,6 +24,14 @@ if java_home and plugins["nvim-lspconfig"] then
   assert(owned.jdtls, "lsp-tools must select the Java server for native activation")
 end
 local tools = require("toolchain.tools")
+local leases = assert(_G.config_test_toolchain_sessions)
+assert(vim.fn.isdirectory(leases) == 1, "Tool activation did not record isolated session leases")
+local session_files = vim.fn.glob(leases .. "/*/sessions/*.json", false, true)
+assert(#session_files > 0, "Missing tool session lease in temporary state")
+for _, file in ipairs(session_files) do
+  local session = vim.json.decode(table.concat(vim.fn.readfile(file), "\n"))
+  assert(session.pid == vim.uv.os_getpid() and #session.versions > 0, "Invalid live tool session")
+end
 local count = 0
 for _, requirement in ipairs(require("integrations.toolchain").requirements("tool")) do
   local path = requirement.resolve and requirement.resolve()

@@ -1,4 +1,5 @@
 local api = vim.api
+local snapshot = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/write_snapshot.lua")
 vim.cmd("enew!")
 vim.bo.filetype = "markdown"
 vim.b.completion_tools_sources = { "snippets" }
@@ -47,7 +48,7 @@ timer:start(
       foldlevel = vim.wo.foldlevel,
       native = package.loaded.snippet_tools and require("snippet_tools").inspect() or { active = false },
     }
-    vim.fn.writefile({ vim.json.encode(state) }, vim.env.NVIM_SNIPPET_STATE)
+    snapshot(vim.env.NVIM_SNIPPET_STATE, state)
   end)
 )
 api.nvim_create_autocmd("VimLeavePre", {

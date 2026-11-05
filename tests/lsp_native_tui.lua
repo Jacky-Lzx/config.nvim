@@ -1,6 +1,7 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 local plugin = assert(vim.env.LSP_TOOLS_ROOT)
 vim.opt.rtp:prepend(root)
+dofile(root .. "/tests/toolchain_sessions.lua")
 require("config.context").initialize({ profiles = {}, features = {} })
 vim.g.loaded_wakatime = true
 vim.o.loadplugins = true

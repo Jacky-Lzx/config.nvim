@@ -1,5 +1,6 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.runtimepath:prepend(root)
+dofile(root .. "/tests/toolchain_sessions.lua")
 vim.opt.runtimepath:append(require("utils.platform").dev_plugin_root() .. "/toolchain-tools.nvim")
 require("toolchain").setup({ notify = false, log_file = false })
 require("config.context").initialize({ profiles = {}, features = {} })

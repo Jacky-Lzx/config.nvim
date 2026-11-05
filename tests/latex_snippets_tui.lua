@@ -1,4 +1,5 @@
 local api = vim.api
+local snapshot = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/write_snapshot.lua")
 function _G.latex_snippet_reset(beamer)
   if package.loaded.snippet_tools then
     require("snippet_tools").stop()
@@ -44,20 +45,18 @@ timer:start(
           "\n"
         )
       or ""
-    vim.fn.writefile({
-      vim.json.encode({
-        lines = api.nvim_buf_get_lines(0, 0, -1, false),
-        mode = mode,
-        engine = require("integrations.snippets").engine(),
-        errors = config_test_errors,
-        loaded = package.loaded.snippet_tools ~= nil,
-        screen = table.concat(screen),
-        selection = selection,
-        menu = cmp and cmp.is_menu_visible() or false,
-        selected = item and item.label,
-        native = package.loaded.snippet_tools and require("snippet_tools").inspect() or { active = false },
-      }),
-    }, vim.env.NVIM_SNIPPET_STATE)
+    snapshot(vim.env.NVIM_SNIPPET_STATE, {
+      lines = api.nvim_buf_get_lines(0, 0, -1, false),
+      mode = mode,
+      engine = require("integrations.snippets").engine(),
+      errors = config_test_errors,
+      loaded = package.loaded.snippet_tools ~= nil,
+      screen = table.concat(screen),
+      selection = selection,
+      menu = cmp and cmp.is_menu_visible() or false,
+      selected = item and item.label,
+      native = package.loaded.snippet_tools and require("snippet_tools").inspect() or { active = false },
+    })
   end)
 )
 api.nvim_create_autocmd("VimLeavePre", {

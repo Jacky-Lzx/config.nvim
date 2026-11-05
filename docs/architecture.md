@@ -171,6 +171,12 @@ headless startup does not emit `UIEnter` and cannot cover that path by waiting.
 `PROF=1 nvim` keeps the Snacks profiler running through the synchronous `VeryLazy`
 handlers instead of stopping at `VimEnter`.
 
+Test setup redirects toolchain live-session leases into the temporary state tree,
+while retaining the real installed tools, parsers and lease implementation. UI
+checks therefore neither write into the host tool store nor sample permission
+warning floats. Snippet PTY snapshots publish JSON by atomic rename so external
+readers always receive a complete UTF-8 frame.
+
 ## Language metadata API
 
 `config/inspect.lua` builds fresh diagnostic snapshots for `config.info()` and health checks.
