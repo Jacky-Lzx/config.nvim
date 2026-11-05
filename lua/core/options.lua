@@ -4,6 +4,9 @@ function M.setup()
   local options = {
     termguicolors = true,
 
+    -- Keep mode-specific shapes while letting the active theme own cursor colors.
+    guicursor = "n-v-c-sm:block-Cursor/lCursor,i-ci-ve:ver25-Cursor/lCursor,r-cr-o:hor20-Cursor/lCursor,t:block-blinkon500-blinkoff500-TermCursor",
+
     number = true,
     ignorecase = true,
     smartcase = true,
