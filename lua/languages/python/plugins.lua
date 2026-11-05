@@ -1,21 +1,25 @@
 return {
   {
-    "linux-cultist/venv-selector.nvim",
-    --  Call config for python files and load the cached venv automatically
+    dir = require("utils.platform").dev_plugin_root() .. "/workspace-tools.nvim",
+    name = "workspace-tools.nvim",
+    main = "workspace_tools",
     ft = "python",
     cmd = "VenvSelect",
     keys = { { "<leader>cv", "<CMD>VenvSelect<CR>", desc = "Select VirtualEnv", ft = "python" } },
     opts = {
-      settings = {
-        options = {
-          notify_user_on_venv_activation = true,
-        },
-      },
+      python = {},
     },
     config = function(_, opts)
-      local selector = require("venv-selector")
-      selector.setup(opts)
-      require("integrations.python_environment").setup(selector)
+      if require("config.context").current().selection.features.sessions then
+        require("workspace_tools").setup(opts)
+      end
+      require("integrations.python_environment").setup(opts.python)
+      vim.api.nvim_create_user_command("VenvSelect", function(args)
+        vim.api.nvim_cmd(
+          { cmd = "WorkspacePython", args = args.args ~= "" and { args.args } or {}, bang = args.bang },
+          {}
+        )
+      end, { nargs = "?", bang = true, complete = "file", desc = "Select project Python environment" })
     end,
   },
   {
@@ -57,6 +61,12 @@ return {
             request = "launch",
             name = "[Python] Launch file",
             program = "${file}",
+            pythonPath = function()
+              return require("languages.python.interpreter").current()
+            end,
+            env = function()
+              return require("languages.python.interpreter").environment()
+            end,
             args = function()
               local args_str = vim.fn.input("Commandline args: ")
               return vim.split(args_str, " ", { plain = true })

@@ -41,7 +41,9 @@ end
 
 local scenario = vim.env.NVIM_TEST_SCENARIO
 local selection
-if scenario == "lua" then
+if scenario == "python_environment" then
+  selection = { profiles = { "data" }, features = { debugging = true, tasks = true, sessions = false } }
+elseif scenario == "lua" then
   selection = { profiles = { "base" }, features = {} }
 elseif scenario == "minimal" then
   selection = {

@@ -44,8 +44,11 @@ return {
       { "<A-i>", function() require("task_tools").terminal() end, desc = "[Tasks] Toggle terminal", mode = { "n", "t" } },
     },
     opts = {
-      python = function()
-        return require("languages.python.interpreter").current()
+      python = function(ctx)
+        return require("languages.python.interpreter").current(ctx and { buf = ctx.buf } or nil)
+      end,
+      python_env = function(ctx)
+        return require("languages.python.interpreter").environment(ctx and { buf = ctx.buf } or nil)
       end,
       tasks = function(ctx)
         return require("features.tasks").definitions(ctx)

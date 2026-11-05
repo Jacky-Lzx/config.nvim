@@ -110,6 +110,7 @@ integration_checks() (
   python3 "$root/tests/tui.py" notification_picker
   python3 "$root/tests/tui.py" completion_input
   python3 "$root/tests/tui.py" native_utilities
+  python3 "$root/tests/tui.py" python_environment
   run_tests latex_snippet_collections snippet_collections
   NVIM_TEST_SCENARIO=writing run_tests snippets latex_snippets
   python3 "$root/tests/latex_snippets_tui.py"

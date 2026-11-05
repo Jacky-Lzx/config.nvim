@@ -707,6 +707,24 @@ use the returned handle's `update`, `finish`, and `cancel` methods. The caller o
 its events and actual cancellation. This configuration disables stale-task expiry
 so long-running silent requests remain visible until their producer finishes them.
 
+## Python project environments
+
+`:VenvSelect` / `<leader>cv` now use workspace-tools' Python environment module.
+Select a discovered environment, enter an executable/environment path, or choose
+Automatic/System. `:VenvSelect /path/to/.venv` selects directly; `:VenvSelect!`
+clears the project override. Choices are stored per project under
+`stdpath('state')/workspace-tools/python`; missing or corrupt selections fall back
+to local `.venv`, `venv`, `env`, then inherited environment/PATH discovery.
+
+The Python profile makes the workspace-tools runtime available independently of
+the sessions feature. With sessions disabled, environment selection does not
+initialize workspace saving/restoring. BasedPyright uses the same project root
+and receives interpreter updates without restarting other clients. Tasks and DAP
+share `languages.python.interpreter`; child processes receive the selected PATH
+and environment variables without changing Neovim's global environment. `:make`
+continues to resolve the live interpreter when invoked. Environment creation and
+Poetry/Conda management remain external.
+
 ## Debugging and startup performance
 
 `debug-tools.nvim` owns `dd(...)`, `bt()`, and enhanced `vim.print`. It is independent

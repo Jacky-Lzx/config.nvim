@@ -19,6 +19,8 @@ def main():
     root = Path(os.environ["NVIM_CONFIG_ROOT"])
     case = sys.argv[1]
     env = dict(os.environ, NVIM_LAZY_CASE=case)
+    if case == "python_environment":
+        env["NVIM_TEST_SCENARIO"] = "python_environment"
     if case == "native_utilities":
         env["NVIM_TEST_SCENARIO"] = "lua"
     if case.startswith("image_"):
@@ -41,7 +43,7 @@ def main():
     env["TERM"] = "xterm-256color"
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case in ("ui_tools", "bars", "folding") else 120, 0, 0))
-    test_file = {"native_utilities": "native_utilities_tui.lua", "editing_input": "editing_tui.lua", "tasks": "tasks_tui.lua", "motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
+    test_file = {"python_environment": "python_environment_tui.lua", "native_utilities": "native_utilities_tui.lua", "editing_input": "editing_tui.lua", "tasks": "tasks_tui.lua", "motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lazy_startup.lua")
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
@@ -63,7 +65,7 @@ def main():
     handled = set()
     motion_sentinel_at = None
     toolchain_actions = {"plan": b"q", "install": b":ConfigToolsInstall\r", "tasks": b"\r", "retry": b"r", "close": b"q"}
-    deadline = time.monotonic() + 30
+    deadline = time.monotonic() + (50 if case == "python_environment" else 30)
     try:
         while process.poll() is None and time.monotonic() < deadline:
             if motion_sentinel_at is not None and time.monotonic() >= motion_sentinel_at:
@@ -78,7 +80,14 @@ def main():
                     output.extend(chunk)
                 except OSError:
                     break
-            if case == "tasks":
+            if case == "python_environment":
+                stage_file = Path(env["NVIM_TEST_TMP"], "python-stage")
+                stage = stage_file.read_text().strip() if stage_file.exists() else ""
+                actions = {"open": b" cv", "choose": b"chosen\r", "open_other": b" cv", "cancel": b"\x1b"}
+                if stage in actions and stage not in handled:
+                    os.write(master, actions[stage])
+                    handled.add(stage)
+            elif case == "tasks":
                 stage_file = Path(env["NVIM_TEST_TMP"], "tasks-stage")
                 stage = stage_file.read_text().strip() if stage_file.exists() else ""
                 if stage in task_actions and stage not in handled:

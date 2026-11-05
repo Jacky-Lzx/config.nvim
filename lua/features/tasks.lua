@@ -120,6 +120,7 @@ function M.argv(text)
 end
 
 function M.run_file()
+  local buf = vim.api.nvim_get_current_buf()
   local file, ft = vim.api.nvim_buf_get_name(0), vim.bo.filetype
   if file == "" or vim.bo.buftype ~= "" or not vim.tbl_contains({ "python", "c", "cpp" }, ft) then
     notify("Run with arguments supports Python, C and C++ files")
@@ -138,7 +139,7 @@ function M.run_file()
       end
       local cmd
       if ft == "python" then
-        cmd = { require("languages.python.interpreter").current(), file }
+        cmd = { require("languages.python.interpreter").current({ buf = buf }), file }
       else
         cmd = { executable }
       end
@@ -147,6 +148,7 @@ function M.run_file()
         name = ft == "python" and "Python: run with arguments" or "C/C++: run with arguments",
         cmd = cmd,
         cwd = cwd,
+        env = ft == "python" and require("languages.python.interpreter").environment({ buf = buf }) or nil,
         mode = "terminal",
       }, { focus = true })
     end)

@@ -40,20 +40,26 @@ executables["/project/.venv/bin/python"] = true
 check("/project/.venv/bin/python")
 local selected = "/selected env/bin/python"
 executables[selected] = true
-package.loaded["venv-selector"] = {
-  python = function()
-    return selected
-  end,
-}
 assert(platform.python() == "/project/.venv/bin/python", "Platform discovery must ignore plugin state")
 local configured = false
-package.loaded["venv-selector"].setup = function(opts)
-  assert(opts.settings.options.notify_user_on_venv_activation)
-  configured = true
-end
+package.loaded["workspace_tools.environments.python"] = {
+  current = function()
+    return selected
+  end,
+  environment = function()
+    return { VIRTUAL_ENV = "/selected env", PATH = "/selected env/bin" }
+  end,
+  setup = function(opts)
+    assert(type(opts) == "table")
+    configured = true
+  end,
+}
+require("config.context").initialize({ profiles = { "data" }, features = {} })
 local spec = require("languages.python.plugins")[1]
 spec.config(nil, spec.opts)
 assert(configured, "Plugin setup must connect the interpreter provider")
+assert(vim.fn.exists(":VenvSelect") == 2)
+assert(not package.loaded.workspace_tools, "Python-only setup must leave session management unloaded")
 check(selected)
 selected = "/missing/python"
 check("/project/.venv/bin/python")
@@ -74,6 +80,7 @@ for _, interpreter in ipairs({ "/selected env/bin/python", "/another' env/bin/py
   selected = interpreter
   executables[selected] = true
   assert(task_spec.opts.python() == selected, "Tasks must use the live interpreter provider")
+  assert(task_spec.opts.python_env().VIRTUAL_ENV == "/selected env")
   count = count + 1
 end
 -- Select after ftplugin load, then exercise real shell execution without Python.
