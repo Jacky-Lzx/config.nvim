@@ -322,8 +322,8 @@ The dashboard retains the header art and `f`/`n`/`g`/`r`/`c`/`s`/`L`/`q` actions
 file, grep and recent-file actions use selection-tools. Session restore appears
 when the `sessions` feature enables workspace-tools. Open it manually with `:lua require("ui_tools").dashboard()`.
 
-Snacks dashboard/indent/statuscolumn/Zen/dim are disabled. Snacks still provides its other
-features, including scope textobjects. Native folding remains in
+Snacks is no longer loaded. ui-tools owns visual helpers, editing-tools owns
+indentation textobjects, and motion-tools owns indentation jumps. Native folding remains in
 `lua/features/folding.lua`. motion-tools provides the match lens and search keys;
 search markers and the optional GitTools hunk adapter are provided by ui-tools.
 Core yank handling retains clipboard copying, with feedback owned by ui-tools.
@@ -691,3 +691,25 @@ Third-party producers can call `require("notification-tools").progress()` and th
 use the returned handle's `update`, `finish`, and `cancel` methods. The caller owns
 its events and actual cancellation. This configuration disables stale-task expiry
 so long-running silent requests remain visible until their producer finishes them.
+
+## Debugging and startup performance
+
+`debug-tools.nvim` owns `dd(...)`, `bt()`, and enhanced `vim.print`. It is independent
+of the DAP feature. `<leader>tPp` starts/stops Lua profiling (stopping opens the
+report); `<leader>tPh` toggles source timing annotations. `:DebugTools show` opens
+the last report, Enter jumps to its source, and q closes it. `:DebugTools save`
+writes JSON under `stdpath('state')/debug-tools`. `PROF=1 nvim` captures startup
+until after `VeryLazy` and saves automatically. Profiling is opt-in, temporarily
+disables JIT, and includes hook overhead; it measures the main Lua thread.
+
+`lua/features/files.lua` owns early startup highlighting and large/minified file
+guards. Files above 1.5 MiB or averaging over 1000 bytes per line use `bigfile`
+filetype and disable completion, Tree-sitter and expensive UI scanning.
+`lua/features/toggles.lua` owns native option switches and registers read-only
+state with keymap-tools; `<leader>th` retains a session-wide inlay-hint preference.
+
+Animations and smooth scrolling are off by default. `<leader>ta` toggles the
+ui-tools animation engine; `<leader>tS` toggles smooth Ctrl-d/u/f/b/e/y scrolling.
+Enable both for animated scrolling. Existing custom mappings keep ownership.
+Obsidian uses its own built-in native picker (`picker.name = false`). The unused
+`<leader>sp` plugin-spec picker shortcut has been removed.

@@ -8,7 +8,7 @@ assert(type(config.setup) == "function" and type(config.info) == "function")
 assert(#vim.api.nvim_get_autocmds({}) == before, "Requiring config must not register editor behavior")
 assert(vim.fn.exists(":ConfigInfo") == 0, "Commands belong to setup, not module loading")
 assert(not package.loaded["core.options"] and not package.loaded["features.lsp"])
-assert(not package.loaded.lazy and not package.loaded["snacks.profiler"])
+assert(not package.loaded.lazy and not package.loaded["debug_tools.profiler"])
 
 local version = vim.version()
 local info = config.info()
@@ -50,16 +50,16 @@ assert(bootstrapped, "The root entry point must invoke config.setup")
 for name in pairs(package.loaded) do
   assert(not name:match("^config%.legacy[%.]?"), "Startup loaded an archived module: " .. name)
 end
-assert(not package.loaded["snacks.profiler"], "Profiling must remain opt-in")
+assert(not package.loaded["debug_tools.profiler"], "Profiling must remain opt-in")
 assert(not package.loaded.lazy and not package.loaded.snacks, "Core setup must remain plugin-independent")
 
--- Opting into profiling uses the installed Snacks runtime and its startup hook.
+-- Opting into profiling uses the local debug-tools runtime and its startup hook.
 local profiling = require("extra.profiling")
 local started = false
-package.preload["snacks.profiler"] = function()
+package.preload["debug_tools.profiler"] = function()
   return {
     startup = function(opts)
-      assert(opts.startup.event == "VeryLazy" and opts.startup.after == true)
+      assert(opts.event == "VeryLazy" and opts.save == true)
       started = true
     end,
   }
@@ -67,5 +67,5 @@ end
 vim.env.PROF = "1"
 profiling.setup()
 assert(started)
-assert(vim.list_contains(vim.opt.runtimepath:get(), vim.fn.stdpath("data") .. "/lazy/snacks.nvim"))
+assert(vim.list_contains(vim.opt.runtimepath:get(), require("utils.platform").dev_plugin_root() .. "/debug-tools.nvim"))
 print("Configuration entry point and profiling lifecycle checks passed")

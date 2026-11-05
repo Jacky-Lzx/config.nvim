@@ -1,21 +1,10 @@
 local M = {}
-
 function M.setup()
-  -- Snacks profiler settings
-  -- Use `PROF=1` nvim to start profiling
-  if vim.env.PROF then
-    -- example for lazy.nvim
-    -- change this to the correct path for your plugin manager
-    local snacks = vim.fn.stdpath("data") .. "/lazy/snacks.nvim"
-    vim.opt.rtp:append(snacks)
-    ---@diagnostic disable-next-line: missing-fields
-    require("snacks.profiler").startup({
-      startup = {
-        event = "VeryLazy",
-        after = true, -- Stop after all synchronous VeryLazy handlers have run.
-      },
-    })
+  if not vim.env.PROF or vim.env.PROF == "" or vim.env.PROF == "0" then
+    return
   end
+  local path = require("utils.platform").dev_plugin_root() .. "/debug-tools.nvim"
+  vim.opt.rtp:append(path)
+  require("debug_tools.profiler").startup({ event = "VeryLazy", save = true })
 end
-
 return M

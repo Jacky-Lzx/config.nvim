@@ -21,11 +21,13 @@ return {
       {
         "<leader>pc",
         function()
-          Snacks.picker.files({
-            ft = { "jpg", "jpeg", "png", "webp", "heic", "avif" },
-            confirm = function(self, item, _)
-              self:close()
-              require("img-clip").paste_image({}, "./" .. item.file) -- ./ is necessary for img-clip to recognize it as path
+          require("selection_tools").files({
+            multi = false,
+            globs = { "*.{jpg,jpeg,png,webp,heic,avif}" },
+            on_choice = function(item)
+              if item then
+                require("img-clip").paste_image({}, item.file)
+              end
             end,
           })
         end,

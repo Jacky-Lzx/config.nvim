@@ -5,7 +5,7 @@ function M.setup()
     group = vim.api.nvim_create_augroup("lzx_treesitter", { clear = true }),
     callback = function(ev)
       -- TeX keeps its language-specific highlighting/conceal policy.
-      if ev.match ~= "tex" then
+      if ev.match ~= "tex" and not vim.b[ev.buf].config_treesitter_disabled then
         pcall(vim.treesitter.start, ev.buf)
       end
     end,

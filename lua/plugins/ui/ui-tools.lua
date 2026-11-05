@@ -8,6 +8,8 @@ return {
     lazy = false,
     priority = 900,
     opts = {
+      animate = { enabled = false },
+      scroll = { enabled = false },
       dashboard = {
         layout = "vertical", -- "horizontal" places the art to the left; both fit automatically.
         header = [[

@@ -59,14 +59,11 @@ return {
   ),
 
   s(
-    { trig = "inspect", desc = "Inspect variable using snacks.debug" },
-    { t('require("snacks.debug").inspect('), i(0), t(")") }
+    { trig = "inspect", desc = "Inspect variable using debug-tools" },
+    { t('require("debug_tools").inspect('), i(0), t(")") }
   ),
 
-  s(
-    { trig = "print", desc = "Print variable using snacks.notify" },
-    { t('require("snacks.notify").info('), i(0), t(")") }
-  ),
+  s({ trig = "print", desc = "Show notification" }, { t("vim.notify("), i(0), t(")") }),
 
   s(
     { trig = "snippet", desc = "Snippet" },

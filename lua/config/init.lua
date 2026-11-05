@@ -11,6 +11,8 @@ function M.setup()
   vim.g.maplocalleader = " "
 
   vim.loader.enable()
+  require("extra.profiling").setup()
+  require("features.files").setup()
   -- Resolve personal defaults, or reuse an explicitly initialized startup fixture.
   require("config.context").current()
 
@@ -20,8 +22,6 @@ function M.setup()
   require("core.keymaps").setup()
   require("core.commands").setup()
   require("core.autocmds").setup()
-
-  require("extra.profiling").setup()
 
   require("features.lsp").setup()
   require("features.treesitter").setup()

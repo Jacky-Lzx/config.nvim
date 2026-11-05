@@ -6,8 +6,7 @@ vim.g.loaded_wakatime = true
 vim.o.loadplugins = true
 dofile(root .. "/init.lua")
 local plugins = require("lazy.core.config").plugins
-local snacks = require("lazy.core.plugin").values(plugins["snacks.nvim"], "opts", false)
-assert(snacks.image.enabled == false, "Snacks image must be disabled")
+assert(not plugins["snacks.nvim"], "Snacks image must not be configured")
 local expected = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
 local spec = plugins["image-tools.nvim"]
 local available = vim.uv.fs_stat(expected .. "/lua/image_tools/init.lua") ~= nil
@@ -38,8 +37,6 @@ if available then
   mapping.callback()
   assert(calls == 1, "Preview key must call the independent plugin")
   assert(not plugins["image-insert.nvim"], "Old image insertion plugin must be removed")
-  assert(snacks.picker.preview == nil, "Image-tools must not install a Snacks preview adapter")
-  assert(snacks.input.enabled == false, "Native input-tools prompts must not be replaced by Snacks")
   assert(image.snacks_preview == nil, "Removed Snacks API must not remain exposed")
   assert(
     vim.fn.exists(":ImageOpen") == 2 and vim.fn.exists(":ImagePage") == 2,

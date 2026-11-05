@@ -8,7 +8,7 @@ vim.g.loaded_wakatime = true
 vim.o.loadplugins = true
 dofile(root .. "/init.lua")
 local plugins = require("lazy.core.config").plugins
-local snacks = require("lazy.core.plugin").values(plugins["snacks.nvim"], "opts", false)
+assert(not plugins["snacks.nvim"])
 assert(not plugins["fidget.nvim"] and not package.loaded.fidget, "Fidget must be removed")
 local plugin = assert(plugins["notification-tools.nvim"])
 assert(plugin.url == "git@github.com:Jacky-Lzx/notification-tools.nvim.git", "Use the published SSH repository")
@@ -21,7 +21,7 @@ assert(
   "Prefer local development, fall back to installed repository"
 )
 assert(plugins["notification-tools.nvim"]._.loaded, "Notifications must load at startup")
-assert(not snacks.notifier.enabled and not package.loaded["snacks.notifier"])
+assert(not package.loaded["snacks.notifier"])
 local tools = require("notification-tools")
 tools.clear_history()
 local id = vim.notify("Notification route", "info", { title = "Build", timeout = 0 })

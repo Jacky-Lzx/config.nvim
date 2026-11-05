@@ -23,6 +23,7 @@ return {
     config = function(_, opts)
       local keymaps = require("keymap_tools")
       keymaps.setup(opts)
+      require("features.toggles").setup()
       require("integrations.diagnostic_toggles").setup()
       keymaps.register("config", {
         modes = { "n", "x", "o" },

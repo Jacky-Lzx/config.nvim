@@ -97,8 +97,8 @@ return {
       },
 
       picker = {
-        -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', 'mini.pick' or 'snacks.picker'.
-        name = "snacks.picker",
+        -- Explicitly use Obsidian's built-in native picker.
+        name = false,
         -- Optional, configure key mappings for the picker. These are the defaults.
         -- Not all pickers support all mappings.
         note_mappings = {

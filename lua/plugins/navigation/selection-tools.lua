@@ -5,7 +5,7 @@ return {
     name = "selection-tools.nvim",
     main = "selection_tools",
     lazy = false,
-    priority = 900, -- Install vim.ui.select after Snacks has initialized.
+    priority = 900, -- Make generic selection available at startup.
     cmd = "SelectionTools",
     opts = {
       ui_select = true,

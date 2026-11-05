@@ -66,10 +66,6 @@ assert(vim.wait(5000, function()
   return toggle_state("to", buf) == false
 end, 5))
 assert(not package.loaded.gitsigns and not package.loaded["mini.diff"] and not package.loaded.diffview)
-local snacks = dofile(root .. "/lua/plugins/navigation/snacks.lua")[1]
-assert(snacks.opts.lazygit.enabled == false, "Snacks must not own Lazygit")
-assert(snacks.opts.picker.previewers == nil, "Git/diff preview overrides must be removed")
-assert(snacks.opts.statuscolumn.enabled == false, "ui-tools owns the status column")
 local ui_spec = dofile(root .. "/lua/plugins/ui/ui-tools.lua")[1]
 assert(vim.deep_equal(ui_spec.opts.statuscolumn.git_patterns, { "GitTools" }))
 vim.opt.rtp:prepend(plugin_dir(ui_spec))
@@ -91,10 +87,7 @@ for _, key in ipairs(spec.keys) do
 end
 assert(lazygit_key and lazygit_key.desc == "[Git] Lazygit")
 assert(type(require("git_tools").lazygit) == "function" and vim.fn.exists(":GitTools") == 2)
-for _, key in ipairs(snacks.keys) do
-  assert(key[1] ~= "<C-g>", "Lazygit key must be owned by git-tools")
-  assert(not key[1]:match("^<leader>gg"), "Git keys must be owned by git-tools")
-end
+
 local staged
 require("git_tools").stage_hunk({
   callback = function(err)

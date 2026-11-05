@@ -62,7 +62,7 @@ return {
           rainbow_delimiters = true,
           render_markdown = true,
           snacks = {
-            enabled = true,
+            enabled = false,
           },
           which_key = true,
         },

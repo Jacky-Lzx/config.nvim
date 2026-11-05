@@ -20,6 +20,20 @@ return {
     cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },
     keys = {
       {
+        "gci",
+        function()
+          require("lsp-tools").call_hierarchy({ direction = "incoming" })
+        end,
+        desc = "[LSP] Incoming call tree",
+      },
+      {
+        "gco",
+        function()
+          require("lsp-tools").call_hierarchy({ direction = "outgoing" })
+        end,
+        desc = "[LSP] Outgoing call tree",
+      },
+      {
         "gd",
         function()
           require("lsp-tools").lsp_definitions()

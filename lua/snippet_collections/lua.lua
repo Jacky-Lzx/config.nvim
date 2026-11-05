@@ -57,8 +57,8 @@ return {
       { s.i(1), s.i(0) }
     )
   ),
-  def("inspect", "Inspect variable using snacks.debug", { s.t('require("snacks.debug").inspect('), s.i(0), s.t(")") }),
-  def("print", "Print variable using snacks.notify", { s.t('require("snacks.notify").info('), s.i(0), s.t(")") }),
+  def("inspect", "Inspect variable using debug-tools", { s.t('require("debug_tools").inspect('), s.i(0), s.t(")") }),
+  def("print", "Show notification", { s.t("vim.notify("), s.i(0), s.t(")") }),
   def(
     "snippet",
     "Native snippet definition",

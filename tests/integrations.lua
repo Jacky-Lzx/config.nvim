@@ -52,11 +52,6 @@ package.loaded.git_tools = {
     navigated = direction
   end,
 }
-package.loaded.snacks = {
-  toggle = function()
-    return { map = function() end }
-  end,
-}
 -- on_attach also registers unrelated action callbacks.
 setmetatable(package.loaded.git_tools, {
   __index = function()
