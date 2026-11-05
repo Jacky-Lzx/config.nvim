@@ -1,0 +1,27 @@
+-- Activation hints only: cmd, hooks, roots and settings remain native LSP configs.
+-- Keep these lists in sync with lsp/*.lua and after/lsp/*.lua; tests/startup.lua checks them.
+return {
+  basedpyright = { "python" },
+  bashls = { "sh", "bash" },
+  clangd = { "c", "c.doxygen", "cpp", "cpp.doxygen", "objc", "objcpp", "cuda" },
+  cmake = { "cmake" },
+  gdscript = { "gdscript" },
+  harper_ls = { "markdown", "text", "tex", "plaintex" },
+  jdtls = { "java" },
+  jsonls = { "json", "jsonc" },
+  lua_ls = { "lua" },
+  marksman = { "markdown", "markdown.mdx" },
+  matlab_ls = { "matlab" },
+  nil_ls = { "nix" },
+  rust_analyzer = { "rust" },
+  sourcekit = { "swift", "objc", "objcpp", "c", "cpp" },
+  superhtml = { "superhtml", "html" },
+  taplo = { "toml" },
+  texquill = { "tex", "plaintex", "bib", "bst" },
+  tinymist = { "typst" },
+  typos_lsp = false,
+  verible = { "systemverilog", "verilog" },
+  vtsls = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
+  vue_ls = { "vue" },
+  yamlls = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values" },
+}

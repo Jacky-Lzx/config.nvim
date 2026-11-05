@@ -104,11 +104,16 @@ without matching descriptions or replacing the global Snacks mapping hook.
 ## LSP tools
 
 `lua/plugins/coding/lsp-tools.lua` maps the selected language profiles to the
-plugin's `servers` options. It loads on `BufReadPre` / `BufNewFile` (or an explicit
-tool action), configures shared completion and file-operation capabilities, and
+plugin's `servers` options. It configures shared completion and file-operation
+capabilities at startup and
 enables matching servers through lsp-tools when their filetypes are opened
 (`server_activation = "filetype"`). Other selected configs remain pending until
-needed. Completion's pure capability API is available before LSP startup; its
+needed. `lua/config/server_filetypes.lua` supplies activation hints, so unrelated
+native configs are not executed during startup. These hints do not override
+native filetypes; the startup tests check that they stay in sync with upstream
+and `after/lsp/` configs. Config resolution and full validation occur synchronously
+before the first matching server is enabled. Completion's pure capability API is
+available before LSP startup; its
 interactive setup waits for `InsertEnter`, `CmdlineEnter`, or an explicit completion command.
 Requiring the capability API does not initialize completion sources or timers.
 nvim-lspconfig is a dependency that supplies
@@ -735,6 +740,10 @@ Reconfiguring either plugin reacquires the handoff. `<leader>N` also opens
 notification history. `:NotificationsPick` uses selection-tools to search complete
 messages and details; Enter opens the selected record for reading. Native LSP
 show-message notices still use `vim.notify`.
+
+CodeCompanion is currently disabled in `lua/plugins/ai/codecompanion.lua`; its
+commands, mappings and exclusive Plenary dependency are omitted. Independent
+Copilot completion remains controlled by the `ai` feature.
 
 CodeCompanion hooks live
 in `integrations.codecompanion_notifications` and create/finish tasks through the

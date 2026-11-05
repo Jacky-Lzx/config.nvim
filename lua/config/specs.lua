@@ -56,7 +56,7 @@ function M.build(selection)
     end
   end
   add(context.languages.plugins)
-  if context.selection.features.ai then
+  if owners["codecompanion.nvim"] then
     add({ { id = "plenary.nvim", source = "nvim-lua/plenary.nvim", start = false } })
   end
   add(M.project())

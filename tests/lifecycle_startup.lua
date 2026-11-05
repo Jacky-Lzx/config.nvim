@@ -56,7 +56,6 @@ local function check()
     "StartupTime",
     "EditingTools",
     "TaskToggle",
-    "CodeCompanionChat",
   }) do
     assert(vim.fn.exists(":" .. command) == 2, "Missing cold command: " .. command)
   end

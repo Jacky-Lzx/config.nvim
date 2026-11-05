@@ -1,6 +1,9 @@
-local servers = {}
+local servers, filetypes = {}, {}
+local activation = require("config.server_filetypes")
 for _, name in ipairs(require("languages").current().servers) do
   servers[name] = true
+  assert(activation[name] ~= nil, "Missing server activation filetypes: " .. name)
+  filetypes[name] = activation[name]
 end
 
 return {
@@ -186,6 +189,7 @@ return {
     },
     opts = {
       server_activation = "filetype",
+      server_filetypes = filetypes,
       servers = servers,
       lightbulb = true,
       linked_editing = true,

@@ -1,3 +1,5 @@
+local enabled = false
+
 return {
   {
     bootstrap = require("config.bindings").bootstrap("codecompanion.nvim", {
@@ -46,6 +48,7 @@ return {
     }, nil),
     main = "codecompanion",
     id = "codecompanion.nvim",
+    enabled = enabled,
     source = "olimorris/codecompanion.nvim",
     dependencies = {
       "plenary.nvim",
@@ -143,10 +146,12 @@ return {
   -- Configure render-markdown to recognize the codecompanion filetype
   {
     id = "render-markdown.nvim",
+    enabled = enabled,
     opts = { file_types = { "markdown", "codecompanion" } },
   },
   {
     id = "img-clip.nvim",
+    enabled = enabled,
     opts = {
       filetypes = {
         codecompanion = {
