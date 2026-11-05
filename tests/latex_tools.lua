@@ -59,7 +59,7 @@ local function check()
   keys("yit")
   assert(vim.fn.getreg('"') == "x", "Cell text object did not select cell contents")
 
-  local conditions = require("snippets.tex.utils.math_conditions")
+  local conditions = require("snippet_collections.tex.context")
   buffer("$x + \\text{words $y$} + z$")
   at("x")
   assert(conditions.fn.math_mode())

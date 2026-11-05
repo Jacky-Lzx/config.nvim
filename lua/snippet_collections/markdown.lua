@@ -20,7 +20,7 @@ local function outside_math(ctx)
     return true
   end
   if ctx.cache.in_math == nil then
-    ctx.cache.in_math = require("snippets.tex.utils.math_conditions").fn.in_math()
+    ctx.cache.in_math = require("snippet_collections.tex.context").fn.in_math()
   end
   return not ctx.cache.in_math
 end
@@ -108,7 +108,7 @@ return {
     trigger = "todo",
     description = "Checkbox",
     priority = 2000,
-    body = { s.t("- "), s.c(1, { { s.t("["), s.i(1, " "), s.t("]") }, "[x]" }), s.i(0) },
+    body = { s.t("- "), s.c(1, { { s.t("["), s.i(1, " "), s.t("]") }, "[x]" }), s.t(" "), s.i(0) },
   },
   { trigger = "hide", description = "Hide details", body = details },
   { trigger = "detail", description = "Hide details", body = details },

@@ -1,61 +1,48 @@
-# Markdown snippet engine trial
+# Native snippets
 
-Markdown and `markdown_inline` default to the local `snippet-tools.nvim` engine.
-Other filetypes default to LuaSnip. The original LuaSnip Markdown collection is
-retained for immediate comparison.
+All filetypes use the local `snippet-tools.nvim` engine. The 154 personal snippets
+live in `lua/snippet_collections/`: global date/time and TODO comments, Lua, Python,
+Rust, Typst, Verilog/SystemVerilog, Markdown and TeX. LuaSnip, its old definitions
+and the engine-switch commands have been removed. Restart Neovim after updating
+the plugin specs.
 
-Restart Neovim once after updating these plugin specs. Subsequent switches do
-not require a restart:
+The adapter in `lua/integrations/snippets.lua` connects native snippets to the
+completion menu and LSP expansion. Markdown inherits TeX; `markdown_inline` inherits
+Markdown, and SystemVerilog inherits Verilog. On duplicate completion labels, the
+highest-priority definition wins.
 
-```vim
-:SnippetEngine
-:SnippetEngine snippet-tools
-:SnippetEngine luasnip
-:SnippetEngineToggle
-:SnippetEngine auto
-```
+Tab/Enter confirm a completion candidate. Tab/Shift-Tab jump when no candidate is
+being accepted; Alt-l/Alt-h always navigate snippet fields. Alt-j/Alt-k navigate the
+completion menu while it is open and cycle snippet choices otherwise. Alt-c opens
+the choice picker. Visual backtick cuts text for the next snippet's selected-text
+field. Choice and dynamic branches retain edits when switched or regenerated.
+Complex choices first select the entire branch; Alt-l then enters its fields.
 
-Overrides apply to the current buffer. `auto` restores the filetype default.
-Switching preserves text and clears both engines' active sessions and stored
-selections. It also closes the completion menu so stale candidates are not used.
+Commands:
 
-The migrated definitions are in `lua/snippet_collections/markdown.lua`; the
-original comparison collection is `lua/snippets/markdown.lua`. The dispatcher
-lives in `lua/integrations/snippets.lua`.
+- `:SnippetToolsInspect` shows the active session.
+- `:SnippetToolsStop` stops the active session.
+- `:SnippetToolsReload` reloads definitions without duplicate entries. Active fields
+  remain editable; new expansions use the reloaded definitions.
 
-Both modes use the existing completion menu. Tab/Enter confirm a candidate,
-Tab/Shift-Tab jump when no candidate is being accepted, and Alt-l/Alt-h always
-navigate snippet fields. Alt-j/Alt-k retain menu navigation while the menu is
-open and cycle choices through their fallback mapping otherwise. Alt-c opens
-the choice picker. In Visual mode, backtick cuts the selection for the next
-snippet, preserving the existing wrapping workflow.
+Useful Markdown checks:
 
-In snippet-tools mode, inherited TeX and global LuaSnip definitions remain
-available. Migrated literal definitions take precedence on duplicate labels.
-LuaSnip's Markdown collection is excluded from that mode, and its TeX `mk`/`dm`
-automatic triggers defer to the migrated Markdown versions. In LuaSnip mode the
-original Markdown definitions and automatic triggers are restored.
+- Complete `bold`, `link`, `code`, `figure`, `todo`, `hide` or `detail`.
+- In `figure`, enter `my_figure.png`; Alt-l selects the generated `my figure` label.
+- Type `#3 `, `table2x2 `, `item3 ` or `enum3 ` for generated layouts.
+- Type `mk` or `dm` outside existing math for inline/display math.
+- Select text, press backtick, type `bold` and confirm to wrap it.
 
-Try these cases in a Markdown buffer:
-
-- `bold`, `link`, `code`, `figure`, `todo`, `hide`, `detail`, confirming with Tab or Enter.
-- For `figure`, enter `my_figure.png`; Alt-l selects the generated `my figure` description.
-- `#3 `, `table2x2 `, `item3 `, `enum3 ` automatically generate the original layouts.
-- `mk` and `dm` create inline/display math outside existing math.
-- Select text, press backtick, type `bold`, and confirm to wrap it.
-- Switch engines in the same buffer and repeat the same inputs.
-
-`SnippetToolsInspect` shows the new engine's session state. `SnippetEngine` shows
-the configured route; inherited LuaSnip snippets can still own the current field
-inside snippet-tools mode.
-
-Regression checks:
+`tests/snippet_collections.lua` compares every definition's trigger, priority, word
+boundary and default text with the frozen original export in
+`tests/fixtures/snippets-legacy.json`. The fixture README records its provenance
+and exceptions. No test needs an installed LuaSnip checkout.
 
 ```sh
 sh tests/smoke.sh native
-python3 tests/snippets_tui.py
+sh tests/smoke.sh integration
 ```
 
-`tests/snippets.lua` runs the larger attached-UI scenario suite using the real
-configuration and sibling plugin checkouts. The smoke integration suite supplies
-its environment and isolated lockfile.
+Integration checks include attached-UI scenarios in `tests/snippets.lua` and
+`tests/latex_snippets.lua`, plus real terminal input and intermediate screen states
+in `tests/snippets_tui.py` and `tests/latex_snippets_tui.py`.

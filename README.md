@@ -48,7 +48,7 @@ runtime-path handling.
 - `lua/utils/`: shared helpers for resource paths, platform discovery, and system commands.
 - `ftplugin/`: settings needed before runtime ftplugins, such as style and mapping switches.
 - `after/ftplugin/`: buffer-local settings; `after/lsp/`: native server overrides.
-- `lua/snippet_collections/`: native snippets; `lua/snippets/`: retained LuaSnip comparison definitions;
+- `lua/snippet_collections/`: native snippet definitions and their shared context helpers;
   `queries/`: Tree-sitter queries; `lua/features/tasks.lua`: personal task workflows.
 
 See [the architecture guide](docs/architecture.md) for ownership and lifecycle rules.
@@ -290,12 +290,13 @@ out of Insert mode so typing Space stays immediate; Enter remains composed
 by Blink and pairs.nvim.
 TeX snippets use tex-tools math context; Markdown retains its own detection.
 
-All filetypes use snippet-tools by default. Native collections include Lua,
+All filetypes use snippet-tools. Native collections include Lua,
 Python, Rust, Typst, Verilog/SystemVerilog, Markdown, TeX and global date/time/TODO
 snippets. `<A-l>`/`<A-h>` navigate fields, `<A-j>`/`<A-k>` cycle choices and `<A-c>`
 opens the choice picker. Visual backtick captures text for the next snippet.
-LuaSnip remains available through `:SnippetEngine luasnip` for explicit comparison;
-`:SnippetEngine auto` restores the native route. Normal editing does not load LuaSnip.
+`:SnippetToolsReload` reloads definitions; `:SnippetToolsInspect` shows the active session.
+The 154 migrated definitions are checked against a frozen pre-migration baseline;
+LuaSnip and its engine-switch commands have been removed.
 
 VimTeX-only selected-region compilation, structural `%`, environment/math/section
 end motions, frame/comment motions, `ds$`, Visual fraction/size toggles, `tsb`,
@@ -649,7 +650,7 @@ clipboard, diagnostics, column guide rendering, completion policy, snippet math,
 Python tasks, mocked integrations, links, tooling, and LSP setup contracts.
 
 The integration suite preserves real plugin checks for vault-local options, commenting and
-LuaSnip, folding queries, Rust DAP, code actions, image preview, statusline, and Mini.diff.
+native snippets, folding queries, Rust DAP, code actions, image preview, statusline, and Mini.diff.
 Image checks also exercise configured insertion templates, cursor positions, working-directory
 asset storage, document-relative references, clipboard conversion, menu cancellation, and batch
 file selection, using fixture images without accessing the desktop clipboard.

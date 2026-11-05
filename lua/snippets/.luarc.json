@@ -1,5 +1,0 @@
-{
-  "workspace.library": [
-    "~/.config/nvim/configs/lua"
-  ]
-}

@@ -11,7 +11,7 @@ local result = {
 }
 local function delimiter(side)
   return s.f(function()
-    local format = require("snippets.utils.commentstring").at_cursor()
+    local format = require("snippet_collections.utils.commentstring").at_cursor()
     local left, right = format:match("^(.*)%%s(.*)$")
     return vim.trim((side == "left" and left or right) or "")
   end)

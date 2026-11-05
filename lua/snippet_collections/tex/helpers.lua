@@ -12,7 +12,7 @@ function M.condition(name)
   return function(ctx)
     local key = "tex_" .. name
     if ctx.cache[key] == nil then
-      ctx.cache[key] = require("snippets.tex.utils.math_conditions").fn[name]()
+      ctx.cache[key] = require("snippet_collections.tex.context").fn[name]()
     end
     return ctx.cache[key]
   end

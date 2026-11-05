@@ -48,7 +48,7 @@ expect({ "-- local x = 1", "-- local y = 2", "-- local z = 3" })
 feed("dgc")
 expect({ "" })
 
-local commentstring = require("snippets.utils.commentstring")
+local commentstring = require("snippet_collections.utils.commentstring")
 vim.bo.commentstring = "/* %s */"
 assert(commentstring.at_cursor() == "/* %s */", "Missing parsers must use the buffer commentstring")
 
@@ -97,21 +97,28 @@ assert(commentstring.at_cursor() == "-- %s")
 feed("<leader>/")
 assert(vim.api.nvim_buf_get_lines(0, 3, 4, false)[1] == "-- local value = 1")
 
--- Exercise actual LuaSnip expansion after removing the former plugin dependency.
-vim.opt.runtimepath:append(vim.fn.stdpath("data") .. "/lazy/LuaSnip")
-local luasnip = require("luasnip")
-luasnip.setup({})
+-- Exercise the actual native TODO definition, including both comment delimiters.
+vim.opt.runtimepath:append(require("utils.platform").dev_plugin_root() .. "/snippet-tools.nvim")
+local snippets = require("snippet_tools")
+snippets.setup({ keymap = false })
+local todo
+for _, entry in ipairs(require("snippet_collections.all")) do
+  if entry.trigger == "todo" then
+    todo = entry
+    break
+  end
+end
+assert(todo, "Missing global TODO snippet")
 for _, delimiters in ipairs({ "-- %s", "# %s", "<!-- %s -->" }) do
   reset()
   vim.api.nvim_buf_set_lines(0, 0, -1, false, { "" })
   vim.bo.commentstring = delimiters
-  local snippets = require("snippets.generators.todo-comment").generate_todo_comment_snippets()
-  luasnip.snip_expand(snippets[1])
+  assert(snippets.expand_definition(todo))
   local left, right = delimiters:match("^(.*)%%s(.*)$")
   local expanded = vim.api.nvim_get_current_line()
   assert(expanded:find(vim.trim(left) .. " TODO:", 1, true), "TODO expansion lost its opening comment")
   assert(expanded:sub(-#right) == right or right == "", "TODO expansion lost its closing comment")
-  luasnip.unlink_current()
+  snippets.stop()
 end
-assert(not package.loaded["mini.comment"])
+assert(not package.loaded["mini.comment"] and not package.loaded.luasnip)
 print("Native comment mappings, counts, repeat, selections, textobjects and TODO snippets passed")

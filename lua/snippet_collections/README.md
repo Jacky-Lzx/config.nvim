@@ -1,37 +1,32 @@
 # Native snippet collections
 
-All filetypes default to `snippet-tools`, including Lua, Python, Rust, Typst,
-Verilog/SystemVerilog, Markdown and TeX. Date/time and signed TODO comments are
-native global definitions. Normal completion, automatic expansion, navigation
-and Visual capture do not load LuaSnip.
-`:SnippetEngine luasnip`, `:SnippetEngine snippet-tools` and `:SnippetEngine auto`
-switch the current buffer; `:SnippetEngineToggle` toggles the engines. LuaSnip
-loads only when explicitly selected or opened through its commands, using the
-retained definitions under `lua/snippets/` for comparison. Sources are never mixed;
-returning to `auto` selects the native engine for every filetype.
+All snippets run on `snippet-tools.nvim`. Each file returns native definitions;
+`helpers.lua` centralizes definition defaults. LuaSnip and its old definition tree
+have been removed.
 
-The native Lua `snippet` template now writes snippet-tools definitions. Other
-migrated language/global triggers and default text are checked against the retained
-collections in `tests/snippet_collections.lua`. Dynamic module names, computed
-Typst labels, Verilog mirrors and TODO alias/signature choices use native nodes.
+The collection contains 154 definitions across global, Lua, Python, Rust, Typst,
+Verilog, Markdown and TeX files. SystemVerilog inherits Verilog, Markdown inherits
+TeX, and `markdown_inline` inherits Markdown. Global definitions provide date/time
+and signed TODO comments. `utils/commentstring.lua` chooses comment delimiters from
+the deepest injected language at the cursor, falling back to the buffer setting.
 
-`tex.lua` loads 92 migrated definitions from `tex/text.lua`, `environments.lua`,
-`math.lua` and `beamer.lua`. Their trigger names, priorities, word boundaries and
-default text are checked against the retained files under `lua/snippets/tex/`.
-The postfix patterns match the same characters as the original LuaSnip postfix
-helper. Math/environment/Beamer predicates share the existing context detector;
-loading the native collection does not require LuaSnip. Markdown inherits this
-native TeX collection, with its own `mk`/`dm` layout taking precedence.
+`tex.lua` loads 92 definitions from `tex/text.lua`, `environments.lua`, `math.lua`
+and `beamer.lua`. `tex/context.lua` owns math/environment/Beamer predicates;
+`tex/helpers.lua` composes them with native tex-tools context and postfix matching.
+Markdown's own `mk`/`dm` layouts take priority over inherited TeX definitions.
 
-Use the existing `<A-l>` / `<A-h>` navigation, `<A-j>` / `<A-k>` choices and `<A-c>`
-choice picker. Complex choices stop on their whole branch first: `<A-l>` enters
-the branch's editable fields (for example a frame title or RGB components).
-This follows the new engine's navigation model and can add a stop compared with
-LuaSnip. Choice and dynamic branches retain edits when switched or regenerated.
-`:SnippetToolsReload` re-executes the TeX definition modules without duplicates.
+The Lua `snippet` template generates native definitions. Dynamic module names,
+computed labels, mirrors and TODO alias/signature choices use native nodes.
+The frozen export in `tests/fixtures/snippets-legacy.json` records the original
+trigger metadata and default text, with provenance in its adjacent README.
+`tests/snippet_collections.lua` compares all 154 definitions without loading the
+old engine; TeX's collection test also checks callbacks and stable reloads.
 
-Validation lives in `tests/latex_snippet_collections.lua` (definition parity and
-reload), `tests/latex_snippets.lua` (real configured attached UI), and
-`tests/latex_snippets_tui.py` (native terminal input and intermediate visible
-states). They run in the integration section of `tests/smoke.sh`; Markdown's
-existing snippet tests remain enabled.
+Use Alt-l/Alt-h to navigate, Alt-j/Alt-k to cycle choices and Alt-c for the choice
+picker. Complex choices stop on the whole branch before its editable fields.
+Choice and dynamic branches retain edits when switched or regenerated.
+Visual backtick captures text for the next snippet. `:SnippetToolsReload`
+re-executes collection files, including TeX children, without duplicate entries.
+
+See [the workflow guide](../../doc/snippet-engines.md) for completion behavior and
+[the smoke runner](../../tests/smoke.sh) for configured attached-UI and PTY checks.

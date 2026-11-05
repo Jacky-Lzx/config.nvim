@@ -206,7 +206,7 @@ function M.setup()
     group = vim.api.nvim_create_augroup("ConfigCompletion", { clear = true }),
     pattern = "LazyLoad",
     callback = function(args)
-      if args.data == "pairs.nvim" or args.data == "LuaSnip" or args.data == "snippet-tools.nvim" then
+      if args.data == "pairs.nvim" or args.data == "snippet-tools.nvim" then
         require("completion-tools").refresh_keymaps()
       end
     end,

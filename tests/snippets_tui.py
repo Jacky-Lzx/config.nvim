@@ -1,4 +1,4 @@
-"""Exercise migrated Markdown and both engines through the configured terminal."""
+"""Exercise native collections through the configured terminal without a legacy engine."""
 import fcntl
 import json
 import os
@@ -111,16 +111,13 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
         assert not state["legacy_loaded"], "Native language snippets loaded LuaSnip"
 
         reset()
-        send(b":SnippetEngine luasnip\r")
-        wait(lambda s: s["engine"] == "luasnip" and s["mode"] == "n", "legacy switch")
-        send(b"ibold")
-        wait(lambda s: s["menu"] and s.get("selected") == "bold", "legacy completion menu")
-        send(b"\t")
-        wait(lambda s: s["mode"] == "s", "legacy field")
-        send(b"old\x1bl!")
-        wait(lambda s: s["lines"] == ["**old**!"], "legacy field input")
-        send(b"\x1b:SnippetEngineToggle\r")
-        wait(lambda s: s["engine"] == "snippet-tools" and s["mode"] == "n", "native switch")
+        send(b":SnippetToolsReload\r")
+        wait(lambda s: s["mode"] == "n", "native collections reloaded")
+        expand("bold")
+        wait(lambda s: s["mode"] == "s", "native field after reload")
+        send(b"native\x1bl!")
+        state = wait(lambda s: s["lines"] == ["**native**!"], "native field input after reload")
+        assert not state["legacy_loaded"]
 
         reset()
         send(b"i#3 Title")

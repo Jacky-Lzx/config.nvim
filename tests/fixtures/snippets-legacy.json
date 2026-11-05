@@ -1,0 +1,1396 @@
+{
+  "date": "2026.11.05",
+  "datetime": "2026.11.05 12:34:56",
+  "filename": "example.v",
+  "filetypes": {
+    "all": [
+      {
+        "auto": false,
+        "description": "Date",
+        "postfix": false,
+        "priority": 1000,
+        "text": "2026.11.05",
+        "trigger": "date",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Date & time",
+        "postfix": false,
+        "priority": 1000,
+        "text": "2026.11.05 12:34:56",
+        "trigger": "datetime",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "TODO comment with a signature-mark",
+        "postfix": false,
+        "priority": 1000,
+        "text": "-- TODO:  <2026.11.05, lzx> ",
+        "trigger": "todo",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "FIX|BUG|ISSUE|FIXIT comment with a signature-mark",
+        "postfix": false,
+        "priority": 1000,
+        "text": "-- FIX:  <2026.11.05, lzx> ",
+        "trigger": "fix",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "HACK comment with a signature-mark",
+        "postfix": false,
+        "priority": 1000,
+        "text": "-- HACK:  <2026.11.05, lzx> ",
+        "trigger": "hack",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "WARN|WARNING|XXX comment with a signature-mark",
+        "postfix": false,
+        "priority": 1000,
+        "text": "-- WARN:  <2026.11.05, lzx> ",
+        "trigger": "warn",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "PERF|PERFORMANCE|OPTIM|OPTIMIZE comment with a signature-mark",
+        "postfix": false,
+        "priority": 1000,
+        "text": "-- PERF:  <2026.11.05, lzx> ",
+        "trigger": "perf",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "NOTE|INFO comment with a signature-mark",
+        "postfix": false,
+        "priority": 1000,
+        "text": "-- NOTE:  <2026.11.05, lzx> ",
+        "trigger": "note",
+        "word": true
+      }
+    ],
+    "lua": [
+      {
+        "auto": false,
+        "description": "Ignore stylua",
+        "postfix": false,
+        "priority": 1000,
+        "text": "-- stylua: ignore",
+        "trigger": "stylua-ignore",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Ignore codespell (Place at the end of the line)",
+        "postfix": false,
+        "priority": 1000,
+        "text": "-- codespell:ignore \"<WORD>\"",
+        "trigger": "codespell-ignore",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Ignore typos",
+        "postfix": false,
+        "priority": 1000,
+        "text": "-- typos: ignore",
+        "trigger": "typos-ignore",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Require module",
+        "postfix": false,
+        "priority": 1000,
+        "text": "local  = require(\"\")",
+        "trigger": "req",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Local function",
+        "postfix": false,
+        "priority": 1000,
+        "text": "local function ()\n  \nend",
+        "trigger": "lfun",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Method function",
+        "postfix": false,
+        "priority": 1000,
+        "text": "M. = function()\n  \nend",
+        "trigger": "mfun",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Function",
+        "postfix": false,
+        "priority": 1000,
+        "text": "function()\n  \nend",
+        "trigger": "fun",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Inspect variable using debug-tools",
+        "postfix": false,
+        "priority": 1000,
+        "text": "require(\"debug_tools\").inspect()",
+        "trigger": "inspect",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Show notification",
+        "postfix": false,
+        "priority": 1000,
+        "text": "vim.notify()",
+        "trigger": "print",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Snippet",
+        "postfix": false,
+        "priority": 1000,
+        "trigger": "snippet",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Neovim command",
+        "postfix": false,
+        "priority": 1000,
+        "text": "<CMD><ESC>",
+        "trigger": "command",
+        "word": true
+      }
+    ],
+    "markdown": [
+      {
+        "auto": false,
+        "description": "Image",
+        "postfix": false,
+        "priority": 1000,
+        "text": "![](./Figures_markdown/)",
+        "trigger": "figure",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Link",
+        "postfix": false,
+        "priority": 1000,
+        "text": "[NAME](LINK)",
+        "trigger": "link",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Code block",
+        "postfix": false,
+        "priority": 1000,
+        "text": "```\n\n```",
+        "trigger": "code",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "bold",
+        "postfix": false,
+        "priority": 1000,
+        "text": "**BOLD**",
+        "trigger": "bold",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "italic",
+        "postfix": false,
+        "priority": 1000,
+        "text": "_ITALIC_",
+        "trigger": "italic",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "strike",
+        "postfix": false,
+        "priority": 1000,
+        "text": "~~STRIKETHROUGH~~",
+        "trigger": "strike",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "quote",
+        "postfix": false,
+        "priority": 1000,
+        "text": "> QUOTE",
+        "trigger": "quote",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Emphasis",
+        "postfix": false,
+        "priority": 2000,
+        "text": "**_EMPH_**",
+        "trigger": "emph",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "comment",
+        "postfix": false,
+        "priority": 1000,
+        "text": "<!-- COMMENT -->",
+        "trigger": "comment",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Checkbox",
+        "postfix": false,
+        "priority": 2000,
+        "text": "- [ ] ",
+        "trigger": "todo",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Hide details",
+        "postfix": false,
+        "priority": 1000,
+        "text": "<details> <summary> SUMMARY </summary>\n  DETAILS\n</details>",
+        "trigger": "hide",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Hide details",
+        "postfix": false,
+        "priority": 1000,
+        "text": "<details> <summary> SUMMARY </summary>\n  DETAILS\n</details>",
+        "trigger": "detail",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Repeat # n times",
+        "postfix": false,
+        "priority": 1000,
+        "trigger": "#(%d+)%s",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Table generation",
+        "postfix": false,
+        "priority": 1000,
+        "trigger": "table(%d+)x(%d+)%s",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Itemize generation",
+        "postfix": false,
+        "priority": 1000,
+        "trigger": "item(%d+)%s",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Enumerate generation",
+        "postfix": false,
+        "priority": 1000,
+        "trigger": "enum(%d+)%s",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Math (inline)",
+        "postfix": false,
+        "priority": 1000,
+        "text": "$$",
+        "trigger": "mk",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Math (block)",
+        "postfix": false,
+        "priority": 1000,
+        "text": "$$\n  \n$$",
+        "trigger": "dm",
+        "word": true
+      }
+    ],
+    "python": [
+      {
+        "auto": false,
+        "description": "From ... import ... statement",
+        "postfix": false,
+        "priority": 1000,
+        "text": "from MODULE import NAME",
+        "trigger": "fr",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "From ... import ... as ... statement",
+        "postfix": false,
+        "priority": 1000,
+        "text": "from MODULE import NAME as ALIAS",
+        "trigger": "fras",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "import ... statement",
+        "postfix": false,
+        "priority": 1000,
+        "text": "import NAME",
+        "trigger": "im",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "import ... as ... statement",
+        "postfix": false,
+        "priority": 1000,
+        "text": "import NAME as ALIAS",
+        "trigger": "imas",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Main",
+        "postfix": false,
+        "priority": 1000,
+        "text": "if __name__ == \"__main__\":\n    pass",
+        "trigger": "main",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Ignore linting error",
+        "postfix": false,
+        "priority": 1000,
+        "text": "# noqa: E402",
+        "trigger": "ignore",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "`__eq__`",
+        "postfix": false,
+        "priority": 1000,
+        "text": "@override\ndef __eq__(self, other):\n    pass",
+        "trigger": "eq",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "`__ne__`",
+        "postfix": false,
+        "priority": 1000,
+        "text": "@override\ndef __ne__(self, other):\n    pass",
+        "trigger": "ne",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "`__lt__`",
+        "postfix": false,
+        "priority": 1000,
+        "text": "def __lt__(self, other):\n    pass",
+        "trigger": "lt",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "`__le__`",
+        "postfix": false,
+        "priority": 1000,
+        "text": "def __le__(self, other):\n    pass",
+        "trigger": "le",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "`__gt__`",
+        "postfix": false,
+        "priority": 1000,
+        "text": "def __gt__(self, other):\n    pass",
+        "trigger": "gt",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "`__ge__`",
+        "postfix": false,
+        "priority": 1000,
+        "text": "def __ge__(self, other):\n    pass",
+        "trigger": "ge",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "`__cmp__`",
+        "postfix": false,
+        "priority": 1000,
+        "text": "def __cmp__(self, other):\n    pass",
+        "trigger": "cmp",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Class definition",
+        "postfix": false,
+        "priority": 1000,
+        "text": "class NAME():\n    pass",
+        "trigger": "class",
+        "word": true
+      }
+    ],
+    "rust": [
+      {
+        "auto": false,
+        "description": "Print Hello world",
+        "postfix": false,
+        "priority": 1000,
+        "text": "println!(\"Hello world\");",
+        "trigger": "hello",
+        "word": true
+      }
+    ],
+    "tex": [
+      {
+        "auto": false,
+        "description": "Frame",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{frame}{Title}\n  \n\\end{frame}",
+        "trigger": "frame",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Table of contents",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{frame}{Outline}\n  \\tableofcontents\n\\end{frame}\n% Current section\n\\AtBeginSection[ ]\n{\n  \\begin{frame}{Outline}\n    \\tableofcontents[currentsection]\n  \\end{frame}\n}",
+        "trigger": "toc",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Create columns",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{columns}[T,totalwidth=\\linewidth]\n  \\begin{column}{0.49\\linewidth}\n    \n  \\end{column}\n\n  \\begin{column}{0.49\\linewidth}\n    \n  \\end{column}\n\\end{columns}",
+        "trigger": "columns",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "begin/end",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{}\n  \n\\end{}",
+        "trigger": "begin",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Itemize",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{itemize}\n  \\item \n\\end{itemize}",
+        "trigger": "itemize",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "A single item",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\item ",
+        "trigger": "item",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Enumerate",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{enumerate}[label=\\arabic*.]\n  \\item \n\\end{enumerate}",
+        "trigger": "enumerate",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Figure environment",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{figure}[H]\n  \\centering\n  \\includegraphics[width=0.6\\linewidth]{./Figures/}\n  \\caption{}%\n  \\label{fig:}\n\\end{figure}",
+        "trigger": "figure",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Table environment",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{table}[H]\n  \\centering\n  \\begin{tabular}{cc}\n    \n  \\end{tabular}\n  \\caption{}\n  \\label{tab:}\n\\end{table}",
+        "trigger": "table",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Subfigure",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{figure}[H]\n  \\centering\n  \\begin{subfigure}[b]{0.45\\textwidth}\n    \\centering\n    \\includegraphics[width=\\textwidth]{./Figures/}\n    \\caption{}\n    \\label{subfig:}\n  \\end{subfigure}\n  \\begin{subfigure}[b]{0.45\\textwidth}\n    \\centering\n    \\includegraphics[width=\\textwidth]{./Figures/}\n    \\caption{}\n    \\label{subfig:}\n  \\end{subfigure}\n  \\caption{}\n  \\label{fig:}\n\\end{figure}",
+        "trigger": "subfigure",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Subfigure (simple)",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{subfigure}[b]{0.45\\textwidth}\n  \\centering\n  \\includegraphics[width=\\textwidth]{./Figures/}\n  \\caption{}\n  \\label{subfig:}\n\\end{subfigure}",
+        "trigger": "subfigure",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Verbatim environment",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{verbatim}\n  \n\\end{verbatim}",
+        "trigger": "verbatim",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Align environment",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{align}\n  \n\\end{align}",
+        "trigger": "align",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Equation environment",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{equation}\n  \n  \\label{eq:}\n\\end{equation}",
+        "trigger": "equation",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "operatorname",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\operatorname{}",
+        "trigger": "ope",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Big bracket",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\left\\{\n  \\begin{array}{ll}\n     &  \\\\\n     &  \\\\\n  \\end{array}\n\\right.",
+        "trigger": "big-bracket",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Lim(sup|inf)",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\lim",
+        "trigger": "lim",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Summation",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\sum_{i = 0}^{\\infty}",
+        "trigger": "sum",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Integral",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\int_{i = 0}^{\\infty}",
+        "trigger": "int",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Text color",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\textcolor{red}{}",
+        "trigger": "color",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Box around equation",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\boxed{}",
+        "trigger": "box",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Array",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{array}{ll}\n  \n\\end{array}",
+        "trigger": "array",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "`\\text{}`",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\text{}",
+        "trigger": "text",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "`{ }`",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\{  \\}",
+        "trigger": "set",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Matrix",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{matrix}\n  \n\\end{matrix}",
+        "trigger": "matrix",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "bmatrix",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{bmatrix}\n  \n\\end{bmatrix}",
+        "trigger": "matrix[]",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "pmatrix",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\begin{pmatrix}\n  \n\\end{pmatrix}",
+        "trigger": "matrix()",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Short implies",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\Rightarrow",
+        "trigger": "=>",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Implies",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\implies",
+        "trigger": "==>",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Equivalence",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\Leftrightarrow",
+        "trigger": "<=>",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Long equivalence",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\iff",
+        "trigger": "<==>",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Logic AND",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\land",
+        "trigger": "and",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Logic OR",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\lor",
+        "trigger": "or",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Logic NOT",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\lnot",
+        "trigger": "not",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Logic XOR",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\oplus",
+        "trigger": "xor",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Infinity",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\infty",
+        "trigger": "inf",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Forall",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\forall",
+        "trigger": "forall",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Exists",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\exists",
+        "trigger": "exists",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "In",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\in",
+        "trigger": "in",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Not in",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\notin",
+        "trigger": "notin",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Less and equal",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\le",
+        "trigger": "<=",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Greater and equal",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\ge",
+        "trigger": ">=",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Much greater",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\gg",
+        "trigger": ">>",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Much less",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\ll",
+        "trigger": "<<",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Not equal",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\neq",
+        "trigger": "!=",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Equivalent",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\equiv",
+        "trigger": "===",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "+-",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\pm",
+        "trigger": "+-",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "-+",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\mp",
+        "trigger": "-+",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Degree",
+        "postfix": false,
+        "priority": 1000,
+        "text": "^\\circ",
+        "trigger": "degree",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Hline",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\hline",
+        "trigger": "hl",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Cap",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\cap",
+        "trigger": "NN",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Cap",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\cap",
+        "trigger": "intersect",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Cup",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\cup",
+        "trigger": "UU",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Cup",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\cup",
+        "trigger": "union",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "()",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\left(  \\right)",
+        "trigger": "lr",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "()",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\left(  \\right)",
+        "trigger": "lr()",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "[]",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\left[  \\right]",
+        "trigger": "lr[]",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "{}",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\left{  \\right}",
+        "trigger": "lr{}",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "||",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\left|  \\right|",
+        "trigger": "lr||",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "<>",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\left<  \\right>",
+        "trigger": "lr<>",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Template LaTeX file",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\documentclass[a4paper]{article}\n\n\\usepackage[utf8]{inputenc}\n\\usepackage[T1]{fontenc}\n\n%\\setlength{\\parskip}{0.5\\baselineskip}\n\n\\usepackage{geometry}\n\\geometry{left = 2.54 cm, right = 2.54 cm, top = 2.54 cm, bottom = 2.54 cm}\n\n\\usepackage{indentfirst}\n\\setlength{\\parindent}{2em}\n\n%\\usepackage{fontspec}\n%\\setmainfont{Times New Roman}\n\n\\PassOptionsToPackage{hyphens}{url}\n\\usepackage[colorlinks=true]{hyperref}\n\\usepackage{ulem}\n\\usepackage{graphicx}\n%\\usepackage{wrapfig}\n\\usepackage{enumitem}\n%\\usepackage{xcolor}\n%\\usepackage{subcaption}\n\\usepackage{float}\n\\usepackage{amsmath, amssymb, amsthm}\n\\usepackage{booktabs}\n\n%\\pagestyle{empty} % Not showing page number\n\n\n\\newcommand{\\TODO}[1]{\\textcolor{red}{TODO\\@: #1} }\n\n\\renewcommand{\\thesection}{\\Roman{section}}\n\\renewcommand{\\thesubsection}{\\Alph{subsection}}\n\\renewcommand{\\thesubsubsection}{\\thesubsection.\\arabic{subsubsection}}\n\\renewcommand{\\d}{ \\: \\mathrm{d} }\n\\newcommand{\\e}{\\mathrm{e}}\n\n\\begin{document}\n\n  \n\n\\end{document}",
+        "trigger": "template",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Paragraph",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\par ",
+        "trigger": "par",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Italic text",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\textit{}",
+        "trigger": "it",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Bold text",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\textbf{}",
+        "trigger": "bf",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Emph text",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\emph{}",
+        "trigger": "emph",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Box around text",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\fbox{}",
+        "trigger": "box",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Box around text (with line break)",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\fbox{\\parbox{0.4\\textwidth}{%\n  \n}}",
+        "trigger": "box2",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Verb",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\verb||",
+        "trigger": "verb",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Resize-box",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\resizebox*{\\textwidth}{!}{%\n  \n}",
+        "trigger": "resize",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Scale box",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\scalebox{0.8}{%\n  \n}",
+        "trigger": "scale",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "vspace",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\vspace{-1em}",
+        "trigger": "vs",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Lzx add",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\ldelA{}\\laddA{}",
+        "trigger": "ladd",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Lzx del",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\ldelA{}",
+        "trigger": "ldel",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "tex-fmt ignore",
+        "postfix": false,
+        "priority": 1000,
+        "text": "% tex-fmt: skip",
+        "trigger": "ignore",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "tex-fmt ignore (block)",
+        "postfix": false,
+        "priority": 1000,
+        "text": "% tex-fmt: off\n% tex-fmt: on",
+        "trigger": "ignoreb",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "`\\item `",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\item ",
+        "trigger": ";t",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Math (inline)",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\(  \\)",
+        "trigger": "mk",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Math (block)",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\[\n  \n\\]",
+        "trigger": "dm",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "&= align",
+        "postfix": false,
+        "priority": 1000,
+        "text": "&=  \\\\",
+        "trigger": "==",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Vector",
+        "postfix": true,
+        "priority": 1000,
+        "trigger": "vec",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Hat",
+        "postfix": true,
+        "priority": 1000,
+        "trigger": "hat",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Overline",
+        "postfix": true,
+        "priority": 1000,
+        "trigger": "bar",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Overline",
+        "postfix": true,
+        "priority": 1000,
+        "trigger": "overline",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Math rm",
+        "postfix": true,
+        "priority": 1000,
+        "trigger": "rm",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Fraction",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\frac{}{}",
+        "trigger": "//",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Auto Fraction",
+        "postfix": true,
+        "priority": 2000,
+        "trigger": "//",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Superscript",
+        "postfix": false,
+        "priority": 1000,
+        "text": "^{}",
+        "trigger": "^^",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Subscript",
+        "postfix": false,
+        "priority": 1000,
+        "text": "_{}",
+        "trigger": "__",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Times",
+        "postfix": false,
+        "priority": 1000,
+        "text": "\\times",
+        "trigger": "xx",
+        "word": true
+      },
+      {
+        "auto": true,
+        "description": "Square",
+        "postfix": true,
+        "priority": 1000,
+        "trigger": "sr",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Cube",
+        "postfix": true,
+        "priority": 1000,
+        "trigger": "cb",
+        "word": false
+      },
+      {
+        "auto": true,
+        "description": "Sqrt",
+        "postfix": true,
+        "priority": 1000,
+        "trigger": "sq",
+        "word": false
+      }
+    ],
+    "typst": [
+      {
+        "auto": false,
+        "description": "Bold text",
+        "postfix": false,
+        "priority": 1000,
+        "text": "#strong[] ",
+        "trigger": "bf",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Figure",
+        "postfix": false,
+        "priority": 1000,
+        "text": "#figure(image(\"./Figures/\", width: 80%), caption: []) <fig:>",
+        "trigger": "figure",
+        "word": true
+      }
+    ],
+    "verilog": [
+      {
+        "auto": false,
+        "description": "Module Block",
+        "postfix": false,
+        "priority": 1000,
+        "text": "module example (\n  PORTS\n);\n  \nendmodule",
+        "trigger": "module",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "If Statement",
+        "postfix": false,
+        "priority": 1000,
+        "text": "if (CONDITION) begin\n  \nend",
+        "trigger": "if",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "If-Else Statement",
+        "postfix": false,
+        "priority": 1000,
+        "text": "if (CONDITION) begin\n  \nend else begin\n  \nend",
+        "trigger": "if-else",
+        "word": false
+      },
+      {
+        "auto": false,
+        "description": "Else Statement",
+        "postfix": false,
+        "priority": 1000,
+        "text": "else begin\n  \nend",
+        "trigger": "else",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Case Statement",
+        "postfix": false,
+        "priority": 1000,
+        "text": "case (EXPRESSION)\n  :\n  default:\nendcase",
+        "trigger": "case",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Always Block",
+        "postfix": false,
+        "priority": 1000,
+        "text": "always @(posedge SIGNAL) begin\n  \nend",
+        "trigger": "always",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "Initial Block",
+        "postfix": false,
+        "priority": 1000,
+        "text": "initial begin\n  \nend",
+        "trigger": "initial",
+        "word": true
+      },
+      {
+        "auto": false,
+        "description": "For Loop",
+        "postfix": false,
+        "priority": 1000,
+        "text": "for (i= 0; i < N; i = i + 1) begin\n  \nend",
+        "trigger": "for",
+        "word": true
+      }
+    ]
+  },
+  "source": "LuaSnip definitions at config commit 21acb6e"
+}

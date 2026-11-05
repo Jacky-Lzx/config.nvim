@@ -1,4 +1,4 @@
-"""Real configured PTY input, including rendered fields and engine switching."""
+"""Real configured PTY input, including rendered fields and native collection reload."""
 import fcntl
 import json
 import os
@@ -116,14 +116,12 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
         wait(lambda s: "  \\begin{column}{0.68\\linewidth}" in s["lines"] and "    Right" in s["lines"], "linked Beamer widths")
 
         reset()
-        send(b":SnippetEngine luasnip\r")
-        wait(lambda s: s["engine"] == "luasnip" and s["mode"] == "n", "legacy TeX switch")
+        send(b":SnippetToolsReload\r")
+        wait(lambda s: s["mode"] == "n", "native TeX reload")
         expand("bf")
-        wait(lambda s: s["lines"] == ["\\textbf{}"] and s["mode"] == "i", "first legacy query loads collection")
-        send(b"old\x1bl!")
-        wait(lambda s: s["lines"] == ["\\textbf{old}!"] and not s["native"]["active"], "legacy field navigation")
-        send(b"\x1c\x0e:SnippetEngineToggle\r")
-        wait(lambda s: s["engine"] == "snippet-tools" and s["mode"] == "n", "native TeX restored")
+        wait(lambda s: s["lines"] == ["\\textbf{}"] and s["mode"] == "i", "native query after reload")
+        send(b"native\x1bl!")
+        wait(lambda s: s["lines"] == ["\\textbf{native}!"], "native field navigation after reload")
         print(f"Configured LaTeX PTY: {len(states)} intermediate states passed")
     finally:
         if child.poll() is None:

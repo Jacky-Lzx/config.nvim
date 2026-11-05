@@ -1,13 +1,6 @@
 -- Run from the config root with:
 -- nvim --headless -u NONE -i NONE --noplugin -l tests/math_conditions.lua
 vim.opt.runtimepath:prepend(vim.fn.getcwd())
-package.preload["luasnip.extras.conditions"] = function()
-  return {
-    make_condition = function(fn)
-      return fn
-    end,
-  }
-end
 
 local ts = vim.treesitter
 local parser_mode, query_mode = "throw", "throw"
@@ -94,10 +87,11 @@ local function edit(lines)
 end
 
 buffer({ "$x$" }, "markdown")
-local M = require("snippets.tex.utils.math_conditions")
+local M = require("snippet_collections.tex.context")
 eq(queries, 0, "loading Markdown does not compile LaTeX queries")
 eq(M.fn.true_fn(), true, "true condition")
-eq(M.obj.false_fn(), false, "wrapped false condition")
+eq(M.fn.false_fn(), false, "native false condition")
+assert(M.obj == nil, "Legacy condition wrappers must be removed")
 for _, enabled in ipairs({ false, true }) do
   M.setup({ use_cache = enabled })
   for _, mode in ipairs({ "throw", "nil", "parse_error", "empty" }) do

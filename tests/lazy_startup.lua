@@ -26,7 +26,6 @@ local function check()
     "file-tools.nvim",
     "task-tools.nvim",
     "conform.nvim",
-    "LuaSnip",
     "pairs.nvim",
     "editing-tools.nvim"
   )
@@ -36,6 +35,8 @@ local function check()
   for _, name in ipairs({ "mini.ai", "mini.align", "mini.operators" }) do
     assert(not plugins[name] and not package.loaded[name], "Replaced editing owner remains: " .. name)
   end
+  assert(not plugins.LuaSnip and not package.loaded.luasnip)
+  assert(vim.fn.exists(":LuaSnipEdit") == 0 and vim.fn.exists(":SnippetEngine") == 0)
   loaded("ui-tools.nvim")
   assert(not plugins["todo-comments.nvim"] and not plugins["nvim-highlight-colors"])
   assert(not package.loaded["todo-comments"] and not package.loaded["nvim-highlight-colors"])
@@ -56,7 +57,7 @@ local function check()
     "EditingTools",
     "TaskToggle",
     "CodeCompanionChat",
-    "LuaSnipEdit",
+    "SnippetToolsReload",
     "CompletionToolsCopilot",
   }) do
     assert(vim.fn.exists(":" .. command) == 2, "Missing cold command: " .. command)
@@ -85,7 +86,7 @@ local function check()
     loaded("crates.nvim")
     loaded("pairs.nvim") -- Reading/creating a file enables rainbow before InsertEnter.
     assert(require("pairs.rainbow").status().enabled)
-    unloaded("nvim-dap", "LuaSnip")
+    unloaded("nvim-dap", "snippet-tools.nvim")
     loaded("file-tools.nvim")
     assert(not package.loaded["file_tools.tree"], "LSP capabilities must not initialize the tree")
     for _, extension in ipairs({ "cpp", "swift" }) do
@@ -181,14 +182,14 @@ local function check()
     feed(":<Esc>")
     loaded("completion-tools.nvim")
     assert(not plugins["blink.cmp"] and not package.loaded["blink.cmp"])
-    unloaded("LuaSnip", "pairs.nvim")
+    unloaded("snippet-tools.nvim", "pairs.nvim")
     contents({ "" })
     vim.bo.filetype = "lua"
     feed("i(<CR>x<Esc>")
     loaded("completion-tools.nvim")
     loaded("pairs.nvim")
     loaded("snippet-tools.nvim")
-    unloaded("LuaSnip")
+    assert(not plugins.LuaSnip and not package.loaded.luasnip)
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     assert(vim.deep_equal(lines, { "(", "  x", ")" }), "First insert newline pairing failed: " .. vim.inspect(lines))
     for _, provider in ipairs({ "blink-copilot", "blink-cmp-dictionary", "blink-cmp-spell", "colorful-menu.nvim" }) do

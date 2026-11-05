@@ -89,12 +89,11 @@ is not copied into this repo.
 
 snippet-tools owns snippets for every filetype and loads native definitions from
 `lua/snippet_collections/`, including global date/time and TODO comments.
-`integrations/snippets.lua` routes completion, LSP expansion, navigation, choices
-and Visual capture to the buffer's selected engine. LuaSnip and its retained
-`lua/snippets/` definitions are available only through an explicit engine switch
-or LuaSnip command; normal native editing never loads or queries that engine.
-Switching stops the old buffer's session and clears pending selected text. Native
-completion keeps the highest-priority definition for a duplicate trigger.
+`integrations/snippets.lua` connects completion, LSP expansion, navigation, choices
+and Visual capture directly to snippet-tools. Completion keeps the highest-priority
+definition for a duplicate trigger. The collection owns the TeX context detector and
+injected-language comment delimiters. LuaSnip and its engine-switch commands have
+been removed; regression tests use a frozen export of the 154 original definitions.
 
 completion-tools owns the completion menu and connects directly to the official
 Copilot Language Server, without copilot.lua. The server starts on a completion request
