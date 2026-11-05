@@ -132,8 +132,8 @@ end
 tasks.stop(fixtures[2])
 settle()
 assert(scans == 1, "Task bursts must share one snapshot: " .. scans)
-assert(line():find("󰑮 2", 1, true) and line():find("󰅚 1", 1, true), line())
-assert(line():find("󰄴 1", 1, true) and line():find(" 1", 1, true), line())
+assert(line():find("running 2", 1, true) and line():find("failure 1", 1, true), line())
+assert(line():find("success 1", 1, true) and line():find("stopped 1", 1, true), line())
 local calls = symbol_calls
 for _ = 1, 50 do
   status.update()
@@ -161,7 +161,7 @@ for _, id in ipairs(fixtures) do
   tasks.remove(id)
 end
 settle()
-assert(not line():find("󰑮", 1, true))
+assert(not line():find("running ", 1, true))
 assert(next(status.errors) == nil, vim.inspect(status.errors))
 assert(not package.loaded.lualine and not package.loaded.dap and #attempted == 0, vim.inspect(attempted))
 require("lsp-tools").setup({

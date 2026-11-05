@@ -115,7 +115,7 @@ local function check()
   end
   vim.diagnostic.set(diagnostics, 0, items)
   pause(100)
-  assert(rendered():find("2 󰌶3", 1, true), rendered())
+  assert(rendered():find("2 󰌵3", 1, true), rendered())
   vim.diagnostic.reset(diagnostics, 0)
   pause(100)
   feed("qa")

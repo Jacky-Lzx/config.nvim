@@ -3,7 +3,11 @@ local M = {}
 local api = vim.api
 local counts, tasks_dirty = {}, true
 local queue
-local task_symbols = { failure = "󰅚 ", stopped = " ", success = "󰄴 ", running = "󰑮 " }
+local function task_symbol(status)
+  local shared = package.loaded["theme_tools.icons"]
+  local icon = shared and shared.get("task", status) or ""
+  return icon ~= "" and icon .. " " or status .. " "
+end
 local task_colors =
   { failure = "DiagnosticError", stopped = "Comment", success = "DiagnosticOk", running = "DiagnosticInfo" }
 
@@ -24,7 +28,7 @@ function M.sections()
     for _, status in ipairs({ "failure", "stopped", "success", "running" }) do
       result.x[#result.x + 1] = {
         function()
-          return (counts[status] or 0) > 0 and task_symbols[status] .. counts[status] or ""
+          return (counts[status] or 0) > 0 and task_symbol(status) .. counts[status] or ""
         end,
         color = task_colors[status],
         priority = 60,
@@ -68,12 +72,14 @@ function M.setup()
   local group = api.nvim_create_augroup("ConfigBars", { clear = true })
   api.nvim_create_autocmd("User", {
     group = group,
-    pattern = { "TaskToolsChanged", "LazyLoad" },
+    pattern = { "TaskToolsChanged", "LazyLoad", "ThemeToolsReady", "ThemeToolsIconsChanged" },
     callback = function(event)
       if event.match == "TaskToolsChanged" and event.data and event.data.kind == "output" then
         return
       end
-      tasks_dirty = true
+      if event.match == "TaskToolsChanged" or event.match == "LazyLoad" then
+        tasks_dirty = true
+      end
       queue.request()
     end,
   })

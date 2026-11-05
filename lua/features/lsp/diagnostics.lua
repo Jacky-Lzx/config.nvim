@@ -1,8 +1,34 @@
 local M = {}
 
-local icons = { [1] = "", [2] = "", [3] = "", [4] = "󰌶" }
+local names = { "error", "warn", "info", "hint" }
+local labels = { "E", "W", "I", "H" }
+local function icon(severity)
+  local shared = package.loaded["theme_tools.icons"]
+  if shared and names[severity] then
+    return shared.get("diagnostic", names[severity])
+  end
+  return labels[severity] or ""
+end
 local function prefix(diagnostic)
-  return icons[diagnostic.severity] or diagnostic.message
+  return (names[diagnostic.severity] and icon(diagnostic.severity) or diagnostic.message)
+end
+local function refresh_icons()
+  local current = vim.diagnostic.config().signs
+  local options = {}
+  if current ~= false then
+    local signs = type(current) == "table" and vim.deepcopy(current) or {}
+    signs.text = {}
+    for severity = 1, 4 do
+      signs.text[severity] = icon(severity)
+    end
+    options.signs = signs
+  end
+  -- Re-show cached diagnostics so both native signs and virtual text update.
+  vim.diagnostic.config(options)
+  local column = package.loaded["ui_tools.statuscolumn"]
+  if column and column.enabled then
+    column.refresh()
+  end
 end
 local text = { spacing = 4, prefix = prefix }
 local compact = {
@@ -59,13 +85,20 @@ end
 function M.setup()
   vim.diagnostic.config({
     underline = false,
-    signs = { text = icons },
+    signs = { text = {} },
     update_in_insert = false,
     severity_sort = true,
     virtual_text = text,
     virtual_lines = false,
     float = { border = "rounded" },
   })
+
+  vim.api.nvim_create_autocmd("User", {
+    group = vim.api.nvim_create_augroup("ConfigDiagnosticIcons", { clear = true }),
+    pattern = { "ThemeToolsReady", "ThemeToolsIconsChanged" },
+    callback = refresh_icons,
+  })
+  refresh_icons()
 
   vim.keymap.set("n", "<A-j>", function()
     jump(1)
