@@ -707,6 +707,11 @@ use the returned handle's `update`, `finish`, and `cancel` methods. The caller o
 its events and actual cancellation. This configuration disables stale-task expiry
 so long-running silent requests remain visible until their producer finishes them.
 
+Textobject queries for the configured programming and document languages are
+bundled in editing-tools. nvim-treesitter-textobjects is no longer a dependency;
+query provenance and the pinned upstream license are retained in the plugin.
+Parser installation and versions remain owned by toolchain-tools.
+
 ## Python project environments
 
 `:VenvSelect` / `<leader>cv` now use workspace-tools' Python environment module.

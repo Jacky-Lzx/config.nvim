@@ -27,6 +27,7 @@ case("cold-object-and-repeat", "cib值\27$h.", function()
   for _, name in ipairs({ "mini.ai", "mini.align", "mini.operators" }) do
     eq(plugins[name], nil, "legacy editing owner")
   end
+  eq(plugins["nvim-treesitter-textobjects"], nil, "textobject query dependency")
   for _, mode in ipairs({ "o", "x" }) do
     for _, key in ipairs({ "ai", "ii" }) do
       eq(vim.fn.maparg(key, mode), "", "no competing scope object")

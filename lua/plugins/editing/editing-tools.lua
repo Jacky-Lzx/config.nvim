@@ -58,8 +58,6 @@ return {
     name = "editing-tools.nvim",
     main = "editing_tools",
     cmd = "EditingTools",
-    -- Query data for languages beyond editing-tools' bundled queries.
-    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
     opts = {},
     init = function()
       vim.api.nvim_create_autocmd("VimEnter", {
