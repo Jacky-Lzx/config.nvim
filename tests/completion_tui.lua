@@ -174,11 +174,29 @@ local function word_sources()
     end)
   end)
 end
+-- Loading completion from the command line before the snippet engine must keep
+-- completion navigation ahead of the snippet choice mappings on InsertEnter.
+local function commandline_first(run)
+  later(function()
+    assert(not package.loaded.snippet_tools, "Snippet engine loaded before the command-line check")
+    vim.cmd.edit(vim.fs.joinpath(assert(vim.env.NVIM_TEST_TMP), "completion-first.lua"))
+    input(":")
+    await(function()
+      return vim.api.nvim_get_mode().mode == "c" and package.loaded["completion-tools"] ~= nil
+    end, function()
+      assert(not package.loaded.snippet_tools, "Command-line completion loaded the snippet engine")
+      input("<Esc>")
+      await(function()
+        return vim.api.nvim_get_mode().mode == "n"
+      end, run)
+    end)
+  end)
+end
 vim.api.nvim_create_autocmd("User", {
   pattern = "VeryLazy",
   once = true,
   callback = function()
-    later(function()
+    commandline_first(function()
       assert(not require("lazy.core.config").plugins["blink.cmp"])
       buffer()
       input("ial")
@@ -205,7 +223,7 @@ vim.api.nvim_create_autocmd("User", {
           plugin._.is_local
             and plugin.dir == vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "completion-tools.nvim")
         )
-        input("<C-n><Tab>!")
+        input("<A-j><A-k><A-j><Tab>!")
         await(function()
           return vim.api.nvim_get_current_line() == "alphabet!"
         end, function()
