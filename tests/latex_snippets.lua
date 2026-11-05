@@ -117,8 +117,11 @@ local ok, err = xpcall(function()
         local ns=vim.api.nvim_get_namespaces()['snippet-tools']
         for _,mark in ipairs(vim.api.nvim_buf_get_extmarks(0,ns,0,-1,{details=true})) do
           local d=mark[4]
-          if d.priority==130 and d.virt_text then
-            return d.virt_text[1][1]==icon and d.virt_text[1][2]==group
+          local eol_ns=vim.api.nvim_get_namespaces()['snippet-tools.eol']
+          local eol=vim.api.nvim_buf_get_extmark_by_id(0,eol_ns,mark[1],{details=true})
+          local text=d.virt_text or (#eol>0 and eol[3].virt_text)
+          if d.priority==130 and text then
+            return text[1][1]==icon and text[1][2]==group
               and d.sign_text:match('%S+')==icon and d.sign_hl_group==group
           end
         end
@@ -133,13 +136,17 @@ local ok, err = xpcall(function()
       local passive=false
       for _,mark in ipairs(vim.api.nvim_buf_get_extmarks(0,ns,0,-1,{details=true})) do
         local d=mark[4]
-        if d.virt_text and d.virt_text[1][1]=='' then
-          passive=d.virt_text[1][2]=='Comment' and d.sign_hl_group=='Comment'
+        local eol_ns=vim.api.nvim_get_namespaces()['snippet-tools.eol']
+        local eol=vim.api.nvim_buf_get_extmark_by_id(0,eol_ns,mark[1],{details=true})
+        local text=d.virt_text or (#eol>0 and eol[3].virt_text)
+        if text and text[1][1]=='' then
+          passive=text[1][2]=='Comment' and d.sign_hl_group=='Comment'
         end
       end
       assert(passive)
       require('snippet_tools').stop()
       assert(#vim.api.nvim_buf_get_extmarks(0,ns,0,-1,{})==0)
+      assert(#vim.api.nvim_buf_get_extmarks(0,vim.api.nvim_get_namespaces()['snippet-tools.eol'],0,-1,{})==0)
     ]])
   end)
   test("visual TeX wrapper preserves Unicode", function()
