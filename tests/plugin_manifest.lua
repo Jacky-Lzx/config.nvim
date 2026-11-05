@@ -9,6 +9,8 @@ assert(not local_graph.packages["notification-tools.nvim"].managed)
 assert(local_graph.nodes["workspace-tools.python"].owner == "workspace-tools.nvim")
 assert(local_graph.nodes["workspace-tools.nvim"].start == false)
 assert(local_graph.nodes["workspace-tools.python"].start == true)
+assert(local_graph.nodes["workspace-tools.python"].declarations[1].origin == "languages.python.plugins")
+assert(local_graph.nodes["notification-tools.nvim"].declarations[1].origin == "plugins.ui.notification-tools")
 assert(not local_graph.nodes["nvim-dap"] and not local_graph.nodes["task-tools.nvim"])
 local remote = resolve(
   specs,

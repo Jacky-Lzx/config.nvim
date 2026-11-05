@@ -23,6 +23,11 @@ Each plugin's `config(ctx)` applies its options and binds personal shortcuts wit
 register their own commands and APIs, and keep expensive first-use initialization
 inside their implementations; shortcuts call those ordinary commands or APIs.
 
+Specs carry an `origin` label for their configuration module or language; project
+contributions use the `.nvim-plugins.lua` path. `:PluginTools explain {id}` shows
+declarations and option assignments in merge order, including disabled contributions
+and paths replaced by project overrides. Metadata resolution remains side-effect free.
+
 Managed Git packages live under `stdpath("data")/plugin-tools` (override with
 `NVIM_PLUGIN_ROOT`); development checkouts remain external. To prepare a new
 machine, mount the manager and run its explicit `install()` API with the native

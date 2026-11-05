@@ -75,7 +75,12 @@ function M.resolve(selection, capabilities)
             end
           end
         end
-        vim.list_extend(result.plugins, vim.deepcopy(definition.plugins or {}))
+        for _, spec in ipairs(vim.deepcopy(definition.plugins or {})) do
+          if type(spec) == "table" then
+            spec.origin = spec.origin or ("languages." .. name)
+          end
+          result.plugins[#result.plugins + 1] = spec
+        end
       end
     end
   end

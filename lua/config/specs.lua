@@ -1,4 +1,11 @@
 local M = {}
+local function annotate(spec, origin)
+  spec.origin = spec.origin or origin
+  for _, child in ipairs(spec.children or {}) do
+    annotate(child, spec.origin)
+  end
+  return spec
+end
 -- Explicit module lists keep startup deterministic and avoid directory scans.
 local groups = {
   ui = { "theme-tools", "notification-tools", "input-tools", "nvim-web-devicons", "ui-tools" },
@@ -25,17 +32,20 @@ function M.project(path)
   assert(chunk, err)
   local specs = chunk()
   assert(type(specs) == "table" and vim.islist(specs), file .. " must return a list of native plugin specs")
+  for _, spec in ipairs(specs) do
+    annotate(spec, file)
+  end
   return specs
 end
 function M.build(selection)
   local context = selection and require("config.context").initialize(selection) or require("config.context").current()
   local specs, owners = {}, {}
-  local function add(entries)
+  local function add(entries, origin)
     for _, entry in ipairs(entries) do
       if type(entry) == "string" then
-        add(require(entry))
+        add(require(entry), entry)
       else
-        specs[#specs + 1] = vim.deepcopy(entry)
+        specs[#specs + 1] = annotate(vim.deepcopy(entry), origin or "config.specs")
         if (entry.source or entry.dir) and entry.enabled ~= false then
           owners[entry.id] = true
         end
@@ -44,7 +54,8 @@ function M.build(selection)
   end
   local function group(name)
     for _, module in ipairs(groups[name]) do
-      add(require("plugins." .. name .. "." .. module))
+      local path = "plugins." .. name .. "." .. module
+      add(require(path), path)
     end
   end
   for _, name in ipairs({ "ui", "navigation", "editing", "coding", "git", "integrations" }) do
@@ -74,7 +85,8 @@ function M.build(selection)
       return spec.id ~= "obsidian.nvim"
     end, selected)
   else
-    selected[#selected + 1] = { id = "image-tools.nvim", opts = { insert = { directory = "assets/imgs" } } }
+    selected[#selected + 1] =
+      { id = "image-tools.nvim", origin = "config.specs:obsidian", opts = { insert = { directory = "assets/imgs" } } }
   end
   return selected
 end
