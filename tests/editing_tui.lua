@@ -27,6 +27,11 @@ case("cold-object-and-repeat", "cib值\27$h.", function()
   for _, name in ipairs({ "mini.ai", "mini.align", "mini.operators" }) do
     eq(plugins[name], nil, "legacy editing owner")
   end
+  for _, mode in ipairs({ "o", "x" }) do
+    for _, key in ipairs({ "ai", "ii" }) do
+      eq(vim.fn.maparg(key, mode), "", "no competing scope object")
+    end
+  end
   reset({ "(one) (two)" }, { 1, 1 })
 end, function()
   eq(lines(), { "(值) (值)" })
@@ -41,6 +46,16 @@ end, function()
 end)
 case("repeat-after-empty", "0f)2l.", nil, function()
   eq(lines(), { "(X) (X) (X)" })
+end)
+case("inner-indent-owner", "dii", function()
+  reset({ "if ready then", "  first()", "  second()", "end", "tail()" }, { 2, 2 })
+end, function()
+  eq(lines(), { "if ready then", "end", "tail()" })
+end)
+case("around-indent-owner", "dai", function()
+  reset({ "if ready then", "  first()", "  second()", "end", "tail()" }, { 2, 2 })
+end, function()
+  eq(lines(), { "end", "tail()" })
 end)
 case("counted-duplicate", "2gmm", function()
   reset({ "a", "b", "tail" })
