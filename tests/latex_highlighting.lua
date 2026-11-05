@@ -131,7 +131,10 @@ local ok, err = pcall(function()
     verify()
   end
 
-  vim.cmd.colorscheme("catppuccin-nvim")
+  vim.cmd.colorscheme("theme-tools-dracula")
+  flush_scheduled()
+  verify()
+  vim.cmd.colorscheme("theme-tools-mocha")
   flush_scheduled()
   verify()
   vim.cmd("syntax enable")
@@ -147,7 +150,7 @@ local ok, err = pcall(function()
 end)
 
 if not ok then
-  vim.api.nvim_err_writeln(tostring(err))
+  io.stderr:write(tostring(err) .. "\n")
   vim.cmd("cquit 1")
 else
   print("PASS: Tree-sitter priorities and tex-tools conceal survive edits, theme/syntax reloads and new buffers")
