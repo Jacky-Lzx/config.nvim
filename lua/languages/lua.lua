@@ -10,14 +10,19 @@ return {
   },
   plugins = {
     {
-      "folke/lazydev.nvim",
-      ft = "lua", -- only load on lua files
+      "Jacky-Lzx/lsp-tools.nvim",
       opts = {
-        library = {
-          -- See the configuration section for more details
-          -- Load luvit types when the `vim.uv` word is found
-          { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-          { path = "debug-tools.nvim", words = { "debug_tools" } },
+        lua = {
+          -- Preserve the previous behavior in projects with their own .luarc.
+          enabled = true,
+          plugin_roots = {
+            require("utils.platform").dev_plugin_root(),
+            vim.fn.stdpath("data") .. "/lazy",
+          },
+          library = {
+            { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+            { path = "debug-tools.nvim", words = { "debug_tools" } },
+          },
         },
       },
     },

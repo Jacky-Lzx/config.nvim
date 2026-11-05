@@ -85,6 +85,14 @@ maintained configs; it has no separate setup or activation hook. Existing
 semantics. Tool installation stays with toolchain-tools. `:checkhealth lsp-tools`
 and `:LspToolsInfo` show selected server configuration and attachment state.
 
+The Lua profile enables lsp-tools' native LuaLS library discovery, replacing
+lazydev.nvim. Literal `require` calls and module annotations load only the needed
+plugin libraries. `vim.uv` and `debug_tools` retain their conditional type rules;
+local and installed plugin directories supply source paths without executing
+plugins. `:LspToolsLua` lists libraries and `:LspToolsLua refresh` rescans paths.
+This configuration explicitly supplements projects with `.luarc.json`, preserving
+the previous policy while leaving those project files untouched.
+
 [lsp-tools.nvim](https://github.com/Jacky-Lzx/lsp-tools.nvim) supplies the code action
 picker and previews, replacing code-actions.nvim. `<leader>a` works in Normal and
 Visual mode; `<A-a>` works in Insert mode. Enter applies the action, Escape cancels.
@@ -339,6 +347,13 @@ permanent deletion; `y/x/p` copy, cut and paste. `h/l` fold or open directories.
 merges file-operation capabilities with completion capabilities before enabling
 servers. nvim-tree, its separate LSP file-operation adapter, and Yazi are removed.
 Sidebar bufferline spacing and progress-notification avoidance use `file-tools`.
+
+`:FileToolsRead[!] [path]` and `:FileToolsWrite [path]` provide explicit sudo reads
+and writes, replacing vim-suda. Existing `:SudaRead` / `:SudaWrite` commands forward
+to these APIs. Authentication uses a terminal split when needed; closing it
+cancels the operation. Dirty reads require `!`, and edits made during authentication
+are guarded. Writes preserve native encoding, BOM and newline options, but are
+in-place operations without backups.
 
 `lua/plugins/navigation/motion-tools.lua` loads the local motion-tools.nvim checkout
 from `utils.platform.dev_plugin_root()`. It replaces Flash, hlslens and mini.bracketed;
@@ -701,6 +716,13 @@ the last report, Enter jumps to its source, and q closes it. `:DebugTools save`
 writes JSON under `stdpath('state')/debug-tools`. `PROF=1 nvim` captures startup
 until after `VeryLazy` and saves automatically. Profiling is opt-in, temporarily
 disables JIT, and includes hook overhead; it measures the main Lua thread.
+
+`:StartupTime [runs]` (default 10) and `:DebugTools startup` use debug-tools' native
+`--startuptime` collector, replacing vim-startuptime. Each child has an attached
+UI and runs the actual configuration. The report shows mean self/inclusive event
+times and total mean/median/min/max; Enter opens source and q closes the report.
+These warm sequential runs end at `NVIM STARTED`, separately from the Lua hook
+profiler and deferred plugin readiness.
 
 `lua/features/files.lua` owns early startup highlighting and large/minified file
 guards. Files above 1.5 MiB or averaging over 1000 bytes per line use `bigfile`

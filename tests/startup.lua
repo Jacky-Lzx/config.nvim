@@ -164,7 +164,8 @@ local function check()
   end
   assert((plugins["codecompanion.nvim"] ~= nil) == not not features.ai)
   assert((plugins["tex-tools.nvim"] ~= nil) == require("languages").is_enabled("latex"))
-  assert((plugins["lazydev.nvim"] ~= nil) == require("languages").is_enabled("lua"))
+  assert(not plugins["lazydev.nvim"] and not plugins["vim-startuptime"] and not plugins["vim-suda"])
+  assert((opts("lsp-tools.nvim").lua ~= nil) == require("languages").is_enabled("lua"))
   assert(not plugins["mason.nvim"] and not package.loaded.mason)
   assert(opts("toolchain-tools.nvim").tools.path == "append")
   local tools = {}

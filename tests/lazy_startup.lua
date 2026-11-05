@@ -48,6 +48,11 @@ local function check()
   assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
   for _, command in ipairs({
     "FileTools",
+    "FileToolsRead",
+    "FileToolsWrite",
+    "SudaRead",
+    "SudaWrite",
+    "StartupTime",
     "EditingTools",
     "TaskToggle",
     "CodeCompanionChat",

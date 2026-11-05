@@ -5,9 +5,23 @@ return {
     dir = root .. "/file-tools.nvim",
     name = "file-tools.nvim",
     main = "file_tools",
-    cmd = "FileTools",
+    cmd = { "FileTools", "FileToolsRead", "FileToolsWrite", "SudaRead", "SudaWrite" },
     dependencies = { "theme-tools.nvim" },
     opts = { tree = { width = 40, follow = true } },
+    config = function(_, opts)
+      local files = require("file_tools")
+      files.setup(opts)
+      for _, action in ipairs({ "Read", "Write" }) do
+        vim.api.nvim_create_user_command("Suda" .. action, function(args)
+          local ok, err = pcall(files["privileged_" .. action:lower()], args.args ~= "" and args.args or nil, {
+            force = args.bang,
+          })
+          if not ok then
+            vim.notify(tostring(err), vim.log.levels.ERROR)
+          end
+        end, { nargs = "?", bang = true, complete = "file", desc = "Privileged file " .. action:lower() })
+      end
+    end,
     init = function()
       local unsupported = {
         "<A-h>",

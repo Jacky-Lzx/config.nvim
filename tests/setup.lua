@@ -41,7 +41,9 @@ end
 
 local scenario = vim.env.NVIM_TEST_SCENARIO
 local selection
-if scenario == "minimal" then
+if scenario == "lua" then
+  selection = { profiles = { "base" }, features = {} }
+elseif scenario == "minimal" then
   selection = {
     profiles = {},
     features = {},
