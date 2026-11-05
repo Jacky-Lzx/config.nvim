@@ -135,7 +135,13 @@ vim.api.nvim_create_autocmd("User", {
     end)
     later(1200, function()
       local text = capture()
-      assert(text:find("Completed", 1, true))
+      local task = tools.tasks()[1]
+      assert(task.done and task.status == "success" and task.message == "Completed")
+      -- Successful tasks keep their title and compact result row; the default
+      -- completion message is intentionally omitted from the rendered panel.
+      assert(text:find("Requesting assistance", 1, true), "Completed task title disappeared")
+      assert(not text:find("In progress…", 1, true), "Completed task still shows its running message")
+      assert(not text:find("Completed", 1, true), "Default completion text should stay compact")
       assert(vim.g.colors_name == original_theme, "Notification UI changed the selected theme")
       for _, item in ipairs(tools.history()) do
         assert(item.level ~= vim.log.levels.ERROR, item.message)
