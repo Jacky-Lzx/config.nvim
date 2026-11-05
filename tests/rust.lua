@@ -1,5 +1,5 @@
 vim.opt.runtimepath:prepend(vim.fn.getcwd())
-vim.opt.runtimepath:prepend(vim.fn.stdpath("data") .. "/lazy/nvim-dap")
+vim.opt.runtimepath:prepend(vim.fn.stdpath("data") .. "/plugin-tools/nvim-dap")
 local dap = require("dap")
 local abort = dap.ABORT
 local program = require("languages.rust.plugins")[2].opts.configurations.rust[1].program

@@ -23,15 +23,15 @@ package.preload.snacks = function()
 end
 local conform = require("plugins.coding.conform")[1]
 vim.g.enable_autoformat = false
-conform.init()
-conform.config(nil, vim.deepcopy(conform.opts))
+conform.bootstrap({ opts = conform.opts, dir = conform.dir })
+conform.config({ opts = vim.deepcopy(conform.opts), dir = conform.dir })
 assert(vim.g.enable_autoformat == false, "preserve explicit autoformat preference")
 vim.g.enable_autoformat = nil
-conform.init()
+conform.bootstrap({ opts = conform.opts, dir = conform.dir })
 local toggle_format = vim.fn.maparg("<leader>tf", "n", false, true).callback
 toggle_format()
 assert(vim.g.enable_autoformat == false, "Allow disabling formatting before Conform setup")
-conform.config(nil, vim.deepcopy(conform.opts))
+conform.config({ opts = vim.deepcopy(conform.opts), dir = conform.dir })
 assert(vim.g.enable_autoformat == false, "Loading Conform must preserve the pre-save toggle")
 assert(not format_registration.get())
 assert(vim.fn.maparg("<leader>tf", "n", false, true).callback == toggle_format, "Conform replaced the owner mapping")
@@ -46,7 +46,7 @@ vim.b[buf].disable_autoformat = nil
 vim.b[buf].enable_autoformat = false
 assert(conform.opts.format_on_save(buf) == nil)
 vim.b[buf].enable_autoformat = nil
-conform.keys[1][2]()
+require("config.bindings").entries[conform.id][1][2]()
 assert(formatted.lsp_format == "fallback")
 local function buffer(ft, text, scratch)
   local b = vim.api.nvim_create_buf(true, scratch or false)
@@ -84,7 +84,7 @@ vim.lsp.get_clients = function(opts)
   return typos and { {} } or {}
 end
 local lint = require("plugins.coding.nvim-lint")[1]
-lint.config(nil, lint.opts)
+lint.config({ opts = lint.opts, dir = lint.dir })
 local function lint_buffer(b)
   calls = {}
   vim.api.nvim_exec_autocmds("BufWritePost", { buffer = b })

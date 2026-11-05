@@ -1,6 +1,6 @@
 return {
-  { import = "languages.markdown.specs.preview" },
-  { import = "languages.markdown.specs.render" },
-  { import = "languages.markdown.specs.img-clip" },
-  { import = "languages.markdown.specs.obsidian" },
+  "languages.markdown.specs.preview",
+  "languages.markdown.specs.render",
+  "languages.markdown.specs.img-clip",
+  "languages.markdown.specs.obsidian",
 }

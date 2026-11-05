@@ -1,20 +1,8 @@
 return {
   {
+    id = "toolchain-tools.nvim",
     dir = require("utils.platform").dev_plugin_root() .. "/toolchain-tools.nvim",
-    name = "toolchain-tools.nvim",
     main = "toolchain",
-    lazy = false, -- pin complete parser/query versions before FileType handling
-    cmd = {
-      "Toolchain",
-      "ToolchainPlan",
-      "ToolchainInstall",
-      "ToolchainRetry",
-      "ToolchainCancel",
-      "ToolchainLog",
-      "Mason",
-      "MasonToolsInstall",
-      "TSInstallConfigured",
-    },
     opts = {
       concurrency = 2,
       tools = { path = "append", lockfile = require("utils.paths").root .. "/toolchain-lock.json" },
@@ -22,7 +10,8 @@ return {
         return require("integrations.toolchain").requirements()
       end,
     },
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       require("toolchain").setup(opts)
       -- Keep :Mason from abbreviating to :MasonToolsInstall after removing Mason.
       vim.api.nvim_create_user_command("Mason", function()

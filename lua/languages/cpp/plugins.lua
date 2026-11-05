@@ -1,7 +1,6 @@
 return {
   {
-    "mfussenegger/nvim-dap",
-    optional = true,
+    id = "nvim-dap",
     opts = {
       -- See `https://codeberg.org/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation`
       adapters = {

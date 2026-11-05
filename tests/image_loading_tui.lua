@@ -1,10 +1,14 @@
 local api = vim.api
-local case = assert(vim.env.NVIM_LAZY_CASE)
+local case = assert(vim.env.NVIM_STARTUP_CASE)
 local temp = assert(vim.env.NVIM_TEST_TMP)
-local plugins = require("lazy.core.config").plugins
+local plugins = require("config.plugins").nodes()
 local image_spec = assert(plugins["image-tools.nvim"])
+local function active()
+  local image = package.loaded.image_tools
+  return image ~= nil and image.status().configured
+end
 local function cold()
-  assert(not image_spec._.loaded and not package.loaded.image_tools, "Image backend loaded before image demand")
+  assert(not active() and not package.loaded.image_tools, "Image backend loaded before image demand")
 end
 local function feed(keys)
   api.nvim_feedkeys(vim.keycode(keys), "xt", false)
@@ -24,14 +28,10 @@ local function pixel()
   return path
 end
 local function automatic_request()
-  local configured, request = image_spec.config, nil
-  image_spec.config = function(plugin, options)
-    -- Observe the real automatic lookup/delay path without terminal graphics.
-    require("image_tools.runtime").open_preview = function(_, path, opts)
-      request = { path = path, automatic = opts.automatic }
-      return true
-    end
-    configured(plugin, options)
+  local request
+  require("image_tools.runtime").open_preview = function(_, path, opts)
+    request = { path = path, automatic = opts.automatic }
+    return true
   end
   return function()
     assert(
@@ -45,10 +45,10 @@ local function automatic_request()
   end
 end
 local function check()
-  assert(vim.g.did_very_lazy, "This test requires the real terminal startup lifecycle")
+  assert(vim.g.config_ready, "This test requires the real terminal startup lifecycle")
   cold()
-  assert(not plugins["tex-tools.nvim"].dependencies)
-  for _, name in ipairs(plugins["lsp-tools.nvim"].dependencies or {}) do
+  assert(next(plugins["tex-tools.nvim"].dependencies) == nil)
+  for name in pairs(plugins["lsp-tools.nvim"].dependencies) do
     assert(
       name ~= "image-tools.nvim" and name ~= "git-tools.nvim" and name ~= "selection-tools.nvim",
       "LSP setup must keep image, diff and picker backends deferred"
@@ -61,15 +61,15 @@ local function check()
       cold()
     end
     api.nvim_exec_autocmds("BufReadPre", { buffer = 0 })
-    assert(plugins["lsp-tools.nvim"]._.loaded)
-    assert(not plugins["git-tools.nvim"]._.loaded, "LSP setup must not initialize its optional diff backend")
+    assert(require("config.plugins").initialized("lsp-tools.nvim"))
+    assert(not package.loaded["git_tools.diff.render"], "LSP setup must not initialize the optional diff renderer")
   elseif case == "image_edit" then
     document("markdown", "")
     cold()
     feed("i![example](missing.png)<Esc>")
     assert(
       vim.wait(1000, function()
-        return image_spec._.loaded ~= nil
+        return active()
       end),
       "Typing an image reference did not initialize automatic preview"
     )
@@ -82,7 +82,7 @@ local function check()
     vim.cmd.edit(path)
     assert(
       vim.wait(1000, function()
-        return image_spec._.loaded ~= nil
+        return active()
       end),
       "Opening a document with an image did not initialize automatic preview"
     )
@@ -100,7 +100,7 @@ local function check()
     })
     assert(
       vim.wait(1000, function()
-        return image_spec._.loaded ~= nil
+        return active()
       end),
       "An edited " .. ft .. " image reference did not initialize automatic preview"
     )
@@ -113,12 +113,13 @@ local function check()
     vim.wait(150)
     cold()
     vim.cmd("ImagePreviewClose")
-    assert(image_spec._.loaded and not require("image_tools").status().auto_preview)
+    assert(active() and not require("image_tools").status().auto_preview)
   elseif case == "image_formula" then
     -- Disable automatic formula requests so this test controls the first manual
     -- display. The real controller/parser and Lazy provider setup still run.
-    local opts = require("lazy.core.plugin").values(plugins["tex-tools.nvim"], "opts", false)
+    local opts = vim.deepcopy((plugins["tex-tools.nvim"]).opts)
     opts.formula_preview.enabled = false
+    require("tex-tools").setup(opts)
     document("tex", "$x$")
     vim.treesitter.get_parser(0, "latex"):parse()
     api.nvim_win_set_cursor(0, { 1, 1 })
@@ -127,29 +128,26 @@ local function check()
       complete = callback
       return function() end
     end
-    local configured, displayed = image_spec.config, 0
-    image_spec.config = function(plugin, options)
-      configured(plugin, options)
-      require("image_tools").float = function()
-        displayed = displayed + 1
-        return {
-          close = function() end,
-          status = function()
-            return { stage = "ready" }
-          end,
-        }
-      end
+    local displayed = 0
+    require("image_tools.runtime").float = function()
+      displayed = displayed + 1
+      return {
+        close = function() end,
+        status = function()
+          return { stage = "ready" }
+        end,
+      }
     end
     feed(" si")
     assert(complete, "First preview key did not reach the formula compiler")
     cold()
     complete(nil, { path = temp .. "/formula.png", release = function() end })
-    assert(image_spec._.loaded and displayed == 1, "Completed formula did not initialize and use its provider")
+    assert(active() and displayed == 1, "Completed formula did not initialize and use its provider")
     assert(require("image_tools").status().configured)
     require("tex-tools").close_formula_preview()
   elseif case == "image_file" then
     vim.cmd.edit(pixel())
-    assert(image_spec._.loaded, "First binary-file read did not initialize image-tools")
+    assert(active(), "First binary-file read did not initialize image-tools")
     assert(vim.bo.buftype == "nofile", "Binary bytes were opened as an ordinary editable document")
   else
     error("Unknown image loading case: " .. case)
@@ -158,14 +156,14 @@ local function check()
 end
 local function run()
   local ok, err = xpcall(check, debug.traceback)
-  vim.fn.writefile(vim.split(ok and ("Image loading TUI passed: " .. case) or err, "\n"), vim.env.NVIM_LAZY_RESULT)
+  vim.fn.writefile(vim.split(ok and ("Image loading TUI passed: " .. case) or err, "\n"), vim.env.NVIM_STARTUP_RESULT)
   vim.cmd(ok and "quitall!" or "cquit 1")
 end
-if vim.g.did_very_lazy then
+if vim.g.config_ready then
   vim.schedule(run)
 else
   api.nvim_create_autocmd("User", {
-    pattern = "VeryLazy",
+    pattern = "ConfigReady",
     once = true,
     callback = function()
       vim.schedule(run)

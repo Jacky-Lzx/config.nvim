@@ -1,9 +1,11 @@
 return {
   -- A plugin to take beautiful screenshots of your code
   {
-    "mistricky/codesnap.nvim",
-    build = "make",
-    cond = false,
+    main = "codesnap",
+    id = "codesnap.nvim",
+    source = "mistricky/codesnap.nvim",
+    build = { "make" },
+    enabled = false,
     opts = {
       mac_window_bar = false,
       -- title = "CodeSnap.nvim",

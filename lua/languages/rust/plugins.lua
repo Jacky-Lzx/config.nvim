@@ -1,7 +1,8 @@
 return {
   {
-    "Saecki/crates.nvim",
-    event = { "BufRead Cargo.toml", "BufNewFile Cargo.toml" },
+    main = "crates",
+    id = "crates.nvim",
+    source = "Saecki/crates.nvim",
     opts = {
       completion = {
         crates = {
@@ -17,8 +18,7 @@ return {
     },
   },
   {
-    "mfussenegger/nvim-dap",
-    optional = true,
+    id = "nvim-dap",
     opts = {
       -- See `https://codeberg.org/mfussenegger/nvim-dap/wiki/Debug-Adapter-installation`
       adapters = {

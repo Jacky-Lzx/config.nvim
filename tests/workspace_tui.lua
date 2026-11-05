@@ -35,8 +35,8 @@ timer:start(
       assert(ticks < 700, "timeout at " .. phase)
       local workspace = package.loaded.workspace_tools
       if phase == "startup" then
-        local plugins = require("lazy.core.config").plugins
-        if not plugins["workspace-tools.nvim"]._.loaded then
+        local plugins = require("config.plugins").nodes()
+        if not require("config.plugins").initialized("workspace-tools.nvim") then
           return
         end
         assert(not plugins["auto-session"] and vim.fn.exists(":AutoSession") == 0)
@@ -110,7 +110,7 @@ timer:start(
         assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
         finish(
           true,
-          "PASS configured TUI: VeryLazy, save/restore/search/delete mappings, real selection picker, confirmation and dashboard restore"
+          "PASS configured TUI: ConfigReady, save/restore/search/delete mappings, real selection picker, confirmation and dashboard restore"
         )
       end
     end, debug.traceback)

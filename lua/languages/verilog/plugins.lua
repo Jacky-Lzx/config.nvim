@@ -1,18 +1,9 @@
+local parser
 return {
   {
-    "mfussenegger/nvim-lint",
-    optional = true,
-    opts = function(_, opts)
-      local pattern = "(.-):(%d+): ([%w ]+): (.*)"
-      local groups = { "file", "lnum", "severity", "message" }
-      local severities = {
-        ["error"] = vim.diagnostic.severity.ERROR,
-        ["warning"] = vim.diagnostic.severity.WARN,
-        ["     "] = vim.diagnostic.severity.INFO,
-        ["       "] = vim.diagnostic.severity.INFO,
-      }
-
-      opts.linters = vim.tbl_deep_extend("force", opts.linters or {}, {
+    id = "nvim-lint",
+    opts = {
+      linters = {
         iverilog = {
           name = "iverilog",
           cmd = "iverilog",
@@ -21,10 +12,24 @@ return {
           args = { "-g2012", "-Wall", "-y", ".", "-o", "/dev/null" },
           stream = "both",
           ignore_exitcode = true,
-          parser = require("lint.parser").from_pattern(pattern, groups, severities, { source = "iverilog" }),
+          parser = function(...)
+            if not parser then
+              parser = require("lint.parser").from_pattern(
+                "(.-):(%d+): ([%w ]+): (.*)",
+                { "file", "lnum", "severity", "message" },
+                {
+                  error = vim.diagnostic.severity.ERROR,
+                  warning = vim.diagnostic.severity.WARN,
+                  ["     "] = vim.diagnostic.severity.INFO,
+                  ["       "] = vim.diagnostic.severity.INFO,
+                },
+                { source = "iverilog" }
+              )
+            end
+            return parser(...)
+          end,
         },
-      })
-      return opts
-    end,
+      },
+    },
   },
 }

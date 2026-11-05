@@ -54,18 +54,7 @@ end
 
 return {
   {
-    dir = require("utils.platform").dev_plugin_root() .. "/editing-tools.nvim",
-    name = "editing-tools.nvim",
-    main = "editing_tools",
-    cmd = "EditingTools",
-    opts = {},
-    init = function()
-      vim.api.nvim_create_autocmd("VimEnter", {
-        once = true,
-        callback = describe,
-      })
-    end,
-    keys = function()
+    bootstrap = require("config.bindings").bootstrap("editing-tools.nvim", function()
       local keys = {}
       -- Keep Vim's URI opener reachable after gx becomes exchange.
       local uri = vim.fn.maparg("gx", "n", false, true)
@@ -91,6 +80,20 @@ return {
         keys[#keys + 1] = { prefix .. prefix:sub(-1), mode = "n", desc = "[Editing] " .. action .. " lines" }
       end
       return keys
-    end,
+    end, function()
+      if vim.fn.maparg("gX", "n") == "" then
+        vim.keymap.set("n", "gX", function()
+          vim.ui.open(vim.fn.expand("<cfile>"))
+        end, { desc = "Open URI under cursor" })
+      end
+      vim.api.nvim_create_autocmd("VimEnter", {
+        once = true,
+        callback = describe,
+      })
+    end),
+    id = "editing-tools.nvim",
+    dir = require("utils.platform").dev_plugin_root() .. "/editing-tools.nvim",
+    main = "editing_tools",
+    opts = {},
   },
 }

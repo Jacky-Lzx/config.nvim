@@ -204,11 +204,9 @@ function M.setup()
   })
   vim.api.nvim_create_autocmd("User", {
     group = vim.api.nvim_create_augroup("ConfigCompletion", { clear = true }),
-    pattern = "LazyLoad",
+    pattern = { "ConfigReady", "SnippetToolsReady" },
     callback = function(args)
-      if args.data == "pairs.nvim" or args.data == "snippet-tools.nvim" then
-        require("completion-tools").refresh_keymaps()
-      end
+      require("completion-tools").refresh_keymaps()
     end,
   })
 end

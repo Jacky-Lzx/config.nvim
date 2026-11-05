@@ -1,8 +1,6 @@
 return {
   {
-    "MeanderingProgrammer/render-markdown.nvim",
-    ft = { "markdown" },
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("render-markdown.nvim", {
       {
         "<leader>tm",
         function()
@@ -10,8 +8,7 @@ return {
         end,
         desc = "Toggle render markdown",
       },
-    },
-    init = function()
+    }, function()
       require("keymap_tools").register("render-markdown", {
         toggles = {
           {
@@ -26,14 +23,16 @@ return {
           },
         },
       })
-    end,
+    end),
+    main = "render-markdown",
+    id = "render-markdown.nvim",
+    source = "MeanderingProgrammer/render-markdown.nvim",
     dependencies = {
       "toolchain-tools.nvim",
-      "nvim-tree/nvim-web-devicons", -- if you prefer nvim-web-devicons
+      "nvim-web-devicons", -- if you prefer nvim-web-devicons
     },
-    ---@module 'render-markdown'
-    ---@type render.md.UserConfig
     opts = {
+      file_types = { "markdown" },
       -- Disable by default, use keymap to toggle
       enabled = false,
       -- Clear native Tree-sitter conceal marks left behind before lazy loading.
@@ -62,7 +61,8 @@ return {
         sign = false,
       },
     },
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       require("render-markdown").setup(opts)
     end,
   },

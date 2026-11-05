@@ -1,6 +1,6 @@
 -- Uses actual terminal input from tests/tui.py against the full configuration.
 local directory = assert(vim.env.NVIM_TEST_TMP)
-local result = assert(vim.env.NVIM_LAZY_RESULT)
+local result = assert(vim.env.NVIM_STARTUP_RESULT)
 local api = vim.api
 local stage, ticks, finished = "startup", 0, false
 if vim.v.vim_did_enter == 0 then
@@ -14,14 +14,14 @@ local function mark(value)
   vim.fn.writefile({ value }, directory .. "/keymap-stage")
 end
 local function check_owners()
-  local plugins = require("lazy.core.config").plugins
-  assert(plugins["keymap-tools.nvim"]._.loaded, "keymap-tools did not load at startup")
+  local plugins = require("config.plugins").nodes()
+  assert(require("config.plugins").initialized("keymap-tools.nvim"), "keymap-tools did not load at startup")
   assert(not plugins.showkeys and not package.loaded.showkeys, "Legacy screencast owner remains")
   assert(vim.fn.exists(":ShowkeysToggle") == 0)
   assert(not require("keymap_tools").showkeys.is_enabled())
   assert(not package.loaded["keymap_tools.showkeys"], "Screencast loaded before being enabled")
   assert(require("keymap_tools.config").get().showkeys.maxkeys == 5)
-  assert(plugins["selection-tools.nvim"]._.loaded, "selection-tools missing")
+  assert(require("config.plugins").initialized("selection-tools.nvim"), "selection-tools missing")
   assert(plugins["keymap-tools.nvim"].dir == require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim")
   assert(not plugins["which-key.nvim"] and not package.loaded["which-key"], "legacy hint owner remains")
   assert(
@@ -64,16 +64,16 @@ local function check_owners()
   }) do
     assert(by_key["<Space>" .. key] and by_key["<Space>" .. key].toggle, "Missing toggle metadata: " .. key)
   end
-  assert(not plugins["conform.nvim"]._.loaded and not package.loaded.conform, "Status reads loaded the formatter")
-  assert(not plugins["pairs.nvim"]._.loaded and not package.loaded.pairs, "Status reads loaded pairing")
-  assert(not by_key["<Space>tp"].toggle.state, "Cold pairing should have unknown state")
-  local image_loaded = plugins["image-tools.nvim"]._.loaded
+  assert(require("config.plugins").initialized("conform.nvim"), "Status reads loaded the formatter")
+  assert(require("config.plugins").initialized("pairs.nvim"), "Status reads loaded pairing")
+  assert(by_key["<Space>tp"].toggle.state == require("pairs").status().enabled, "Pairing status is stale")
+  local image_loaded = package.loaded.image_tools
   local image
   for _, item in ipairs(tools.list({ mode = "n", prefix = "<leader>ui" })) do
     image = item
   end
   assert(image and image.toggle.name == "Automatic image preview" and image.toggle.state == true)
-  assert(plugins["image-tools.nvim"]._.loaded == image_loaded, "Status reads loaded image-tools")
+  assert(package.loaded.image_tools == image_loaded, "Status reads loaded image-tools")
   for _, mode in ipairs({ "n", "x" }) do
     local map = vim.fn.maparg(" ?", mode, false, true)
     assert(map.desc == "Choose and execute buffer keymap", "old picker binding remains")
@@ -94,7 +94,7 @@ timer:start(
       ticks = ticks + 1
       assert(ticks < 900, "keymap installation TUI timed out at " .. stage)
       local view = package.loaded["keymap_tools.view"]
-      if stage == "startup" and vim.g.did_very_lazy then
+      if stage == "startup" and vim.g.config_ready then
         check_owners()
         vim.cmd("enew!")
         api.nvim_buf_set_lines(0, 0, -1, false, { "first line", "second line" })

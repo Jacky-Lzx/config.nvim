@@ -3,7 +3,7 @@ local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.rtp:prepend(root)
 require("config.context").initialize({ profiles = {}, features = { ai = true, tasks = true } })
 local dev = require("utils.platform").dev_plugin_root()
-local installed = vim.fn.stdpath("data") .. "/lazy/"
+local installed = vim.fn.stdpath("data") .. "/plugin-tools/"
 for _, path in ipairs({
   dev .. "/ui-tools.nvim",
   dev .. "/lsp-tools.nvim",

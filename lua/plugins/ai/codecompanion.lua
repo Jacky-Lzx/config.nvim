@@ -1,23 +1,56 @@
 return {
   {
-    "olimorris/codecompanion.nvim",
-    cmd = { "CodeCompanion", "CodeCompanionChat", "CodeCompanionActions", "CodeCompanionCmd" },
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "toolchain-tools.nvim",
-    },
-
-    -- stylua: ignore
-    keys = {
-      {"<leader>cca", "<CMD>CodeCompanionActions<CR>",     mode = {"n", "v"}, noremap = true, silent = true, desc = "CodeCompanion actions"      },
-      {"<leader>cci", "<CMD>CodeCompanion<CR>",            mode = {"n", "v"}, noremap = true, silent = true, desc = "CodeCompanion inline"       },
-      {"<leader>ccc", "<CMD>CodeCompanionChat Toggle<CR>", mode = {"n", "v"}, noremap = true, silent = true, desc = "CodeCompanion chat (toggle)"},
-      {"<leader>ccp", "<CMD>CodeCompanionChat Add<CR>",    mode = {"v"}     , noremap = true, silent = true, desc = "CodeCompanion chat add code"},
+    bootstrap = require("config.bindings").bootstrap("codecompanion.nvim", {
+      {
+        "<leader>cca",
+        "<CMD>CodeCompanionActions<CR>",
+        mode = { "n", "v" },
+        noremap = true,
+        silent = true,
+        desc = "CodeCompanion actions",
+      },
+      {
+        "<leader>cci",
+        "<CMD>CodeCompanion<CR>",
+        mode = { "n", "v" },
+        noremap = true,
+        silent = true,
+        desc = "CodeCompanion inline",
+      },
+      {
+        "<leader>ccc",
+        "<CMD>CodeCompanionChat Toggle<CR>",
+        mode = { "n", "v" },
+        noremap = true,
+        silent = true,
+        desc = "CodeCompanion chat (toggle)",
+      },
+      {
+        "<leader>ccp",
+        "<CMD>CodeCompanionChat Add<CR>",
+        mode = { "v" },
+        noremap = true,
+        silent = true,
+        desc = "CodeCompanion chat add code",
+      },
 
       -- Assume you have a prompt defined in your markdown prompts directory with the alias "essay"
-      {"<leader>cce", "<CMD>CodeCompanion /essay<CR>",     mode = {"v"}     , noremap = true, silent = true, desc = "CodeCompanion /essay"       },
+      {
+        "<leader>cce",
+        "<CMD>CodeCompanion /essay<CR>",
+        mode = { "v" },
+        noremap = true,
+        silent = true,
+        desc = "CodeCompanion /essay",
+      },
+    }, nil),
+    main = "codecompanion",
+    id = "codecompanion.nvim",
+    source = "olimorris/codecompanion.nvim",
+    dependencies = {
+      "plenary.nvim",
+      "toolchain-tools.nvim",
     },
-
     opts = {
       send_code = false,
 
@@ -98,7 +131,8 @@ return {
       },
     },
 
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       require("integrations.codecompanion_notifications").setup()
 
       local codecompanion = require("codecompanion")
@@ -108,13 +142,11 @@ return {
 
   -- Configure render-markdown to recognize the codecompanion filetype
   {
-    "MeanderingProgrammer/render-markdown.nvim",
-    optional = true,
-    ft = { "codecompanion" },
+    id = "render-markdown.nvim",
+    opts = { file_types = { "markdown", "codecompanion" } },
   },
   {
-    "HakonHarnes/img-clip.nvim",
-    optional = true,
+    id = "img-clip.nvim",
     opts = {
       filetypes = {
         codecompanion = {

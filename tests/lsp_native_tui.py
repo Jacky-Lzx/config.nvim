@@ -18,13 +18,13 @@ plugins = Path(os.environ.get("NVIM_DEV_PLUGIN_ROOT", str(Path.home() / "Documen
 for case in ("rename", "actions"):
     with tempfile.TemporaryDirectory(prefix="nvim-native-" + case + "-") as directory:
         temp = Path(directory)
-        shutil.copyfile(root / "lazy-lock.json", temp / "lock.json")
+        shutil.copyfile(root / "plugin-tools-lock.json", temp / "lock.json")
         env = dict(os.environ, TERM="xterm-256color", NVIM_CONFIG_ROOT=str(root),
-                   NVIM_LAZY_LOCKFILE=str(temp / "lock.json"), LSP_NATIVE_CASE=case,
+                   NVIM_PLUGIN_LOCKFILE=str(temp / "lock.json"), LSP_NATIVE_CASE=case,
                    LSP_TOOLS_TEST_TMP=directory, LSP_TOOLS_ROOT=str(plugins / "lsp-tools.nvim"),
                    LSP_TOOLS_TUI="1", SELECTION_TOOLS_DIR=str(plugins / "selection-tools.nvim"),
                    GIT_TOOLS_DIR=str(plugins / "git-tools.nvim"),
-                   SNACKS_DIR=str(Path.home() / ".local/share/nvim/lazy/snacks.nvim"),
+                   SNACKS_DIR=str(Path.home() / ".local/share/nvim/plugin-tools/snacks.nvim"),
                    XDG_CACHE_HOME=directory + "/cache", XDG_STATE_HOME=directory + "/state",
                    NVIM_LOG_FILE=directory + "/nvim.log")
         master, slave = pty.openpty()

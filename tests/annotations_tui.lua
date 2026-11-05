@@ -8,7 +8,7 @@ local function marks(module, kind)
 end
 
 local function finish(ok, message)
-  vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_LAZY_RESULT)
+  vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_STARTUP_RESULT)
   vim.cmd(ok and "quitall!" or "cquit 1")
 end
 
@@ -82,9 +82,9 @@ local function verify_toggles()
 end
 
 local function check()
-  assert(vim.g.did_very_lazy)
-  local plugins = require("lazy.core.config").plugins
-  assert(plugins["ui-tools.nvim"]._.loaded)
+  assert(vim.g.config_ready)
+  local plugins = require("config.plugins").nodes()
+  assert(require("config.plugins").initialized("ui-tools.nvim"))
   assert(not plugins["nvim-highlight-colors"] and not plugins["todo-comments.nvim"])
   assert(not package.loaded["nvim-highlight-colors"] and not package.loaded["todo-comments"])
   colors, todo = require("ui_tools.colors"), require("ui_tools.todo")
@@ -119,7 +119,7 @@ local function check()
 end
 
 api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     vim.defer_fn(function()

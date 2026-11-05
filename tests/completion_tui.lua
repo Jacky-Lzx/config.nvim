@@ -1,4 +1,4 @@
-local result = assert(vim.env.NVIM_LAZY_RESULT)
+local result = assert(vim.env.NVIM_STARTUP_RESULT)
 local done = false
 local events = {}
 vim.api.nvim_create_autocmd({ "TextChangedI", "CursorMovedI" }, {
@@ -193,11 +193,11 @@ local function commandline_first(run)
   end)
 end
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     commandline_first(function()
-      assert(not require("lazy.core.config").plugins["blink.cmp"])
+      assert(not require("config.plugins").nodes()["blink.cmp"])
       buffer()
       input("ial")
       await(visible, function()
@@ -218,9 +218,9 @@ vim.api.nvim_create_autocmd("User", {
           menu_line
         )
         assert(not package.loaded["colorful-menu"])
-        local plugin = require("lazy.core.config").plugins["completion-tools.nvim"]
+        local plugin = require("config.plugins").nodes()["completion-tools.nvim"]
         assert(
-          plugin._.is_local
+          not plugin.package.managed
             and plugin.dir == vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "completion-tools.nvim")
         )
         input("<A-j><A-k><A-j><Tab>!")

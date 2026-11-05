@@ -5,20 +5,7 @@ end
 
 return {
   {
-    "Jacky-Lzx/lsp-tools.nvim",
-    url = "git@github.com:Jacky-Lzx/lsp-tools.nvim.git",
-    dev = true,
-    -- Register servers before attachment; keep empty-editor startup lightweight.
-    event = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-      "neovim/nvim-lspconfig",
-      -- Completion's capability API is available without initializing its UI.
-      "file-tools.nvim",
-      "toolchain-tools.nvim",
-    },
-    -- Picker and diff backends load through their APIs on first use.
-    cmd = { "Outline", "OutlineOpen", "LspToolsOutline", "LspToolsOutlineOpen", "LspToolsOutlineClose", "LspToolsInfo" },
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("lsp-tools.nvim", {
       {
         "gci",
         function()
@@ -185,6 +172,17 @@ return {
         desc = "[LSP] Code action",
         mode = "i",
       },
+    }, nil),
+    id = "lsp-tools.nvim",
+    after = { "toolchain-tools.nvim" },
+    source = "git@github.com:Jacky-Lzx/lsp-tools.nvim.git",
+    dev = true,
+    -- Register servers before attachment; keep empty-editor startup lightweight.
+    dependencies = {
+      "nvim-lspconfig",
+      -- Completion's capability API is available without initializing its UI.
+      "file-tools.nvim",
+      "toolchain-tools.nvim",
     },
     opts = {
       server_activation = "filetype",
@@ -219,7 +217,8 @@ return {
         native = { file_header = false },
       },
     },
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       vim.lsp.config("*", {
         capabilities = vim.tbl_deep_extend(
           "force",

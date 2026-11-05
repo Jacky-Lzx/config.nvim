@@ -12,7 +12,7 @@ local function finish(err)
   end
   vim.fn.writefile(err and vim.split(err, "\n", { plain = true }) or {
     "PASS configured Python PTY: real picker input/cancel, project isolation, persistent selection, actual BasedPyright import resolution, task/DAP environments and reset",
-  }, vim.env.NVIM_LAZY_RESULT)
+  }, vim.env.NVIM_STARTUP_RESULT)
   vim.cmd(err and "cquit 1" or "qa!")
 end
 local function safe(fn)
@@ -118,9 +118,12 @@ local function after_selection()
   end)
 end
 local function start()
-  local plugins = require("lazy.core.config").plugins
+  local plugins = require("config.plugins").nodes()
   assert(not plugins["venv-selector.nvim"])
-  assert(not plugins["workspace-tools.nvim"]._.loaded, "environment-only workspace runtime should stay cold")
+  assert(
+    not require("config.plugins").initialized("workspace-tools.nvim"),
+    "environment-only workspace runtime should stay cold"
+  )
   project_a, project_b = folder .. "/a", folder .. "/b"
   local base = vim.fn.exepath("python3")
   for _, path in ipairs({ project_a .. "/.venv", project_b .. "/.venv", folder .. "/envs/chosen" }) do
@@ -160,7 +163,7 @@ local function start()
   end)
 end
 local function ready()
-  if vim.g.did_very_lazy then
+  if vim.g.config_ready then
     safe(start)
   else
     vim.defer_fn(ready, 25)

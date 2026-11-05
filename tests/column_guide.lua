@@ -78,7 +78,7 @@ local function check()
   request("nvim_ui_attach", 140, 30, { rgb = true, ext_linegrid = true })
   if startup then
     assert(
-      run([=[return require('lazy.core.config').plugins['virt-column.nvim'] == nil]=]),
+      run([=[return require('config.plugins').nodes()['virt-column.nvim'] == nil]=]),
       "Column plugin still configured"
     )
   end

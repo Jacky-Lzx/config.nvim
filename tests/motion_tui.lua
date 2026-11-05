@@ -1,6 +1,6 @@
 -- Actual configured mappings, driven by terminal bytes in tests/tui.py.
-local plugins = require("lazy.core.config").plugins
-local result = assert(vim.env.NVIM_LAZY_RESULT)
+local plugins = require("config.plugins").nodes()
+local result = assert(vim.env.NVIM_STARTUP_RESULT)
 local stage = assert(vim.env.NVIM_TEST_TMP) .. "/motion-stage"
 local motion = require("motion_tools")
 local View = require("motion_tools.view")
@@ -159,12 +159,12 @@ vim.keymap.set({ "n", "x" }, "<F12>", function()
   end)
 end)
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     vim.defer_fn(function()
       local ok, err = xpcall(function()
-        assert(plugins["motion-tools.nvim"]._.loaded, "Motion feedback must load at startup")
+        assert(require("config.plugins").initialized("motion-tools.nvim"), "Motion feedback must load at startup")
         assert(require("motion_tools.config").options.mappings == false, "Config must own explicit mappings")
         for _, mode in ipairs({ "n", "x", "o" }) do
           for _, lhs in ipairs({ " f", " F", " j", " k", "]i", "[i", "]o", "[o", "]d", "[d", "]t", "[t" }) do

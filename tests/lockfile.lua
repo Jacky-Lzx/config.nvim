@@ -1,16 +1,16 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.runtimepath:prepend(root)
 local lockfile = require("config.lockfile")
-local source = root .. "/lazy-lock.json"
+local source = root .. "/plugin-tools-lock.json"
 local original = vim.fn.readfile(source, "b")
 
-vim.env.NVIM_LAZY_LOCKFILE = nil
+vim.env.NVIM_PLUGIN_LOCKFILE = nil
 local paths = require("utils.paths")
 local config_path = paths.config
 local fixture = assert(vim.env.NVIM_TEST_TMP) .. "/source-lock.json"
 vim.fn.writefile(original, fixture, "b")
 paths.config = function(name)
-  assert(name == "lazy-lock.json")
+  assert(name == "plugin-tools-lock.json")
   return fixture
 end
 assert(lockfile.resolve() == fixture, "Editable checkouts must update their own lock")
@@ -35,11 +35,11 @@ assert(lockfile.resolve() == target and vim.fn.filereadable(target) == 1)
 
 local development = assert(vim.env.NVIM_TEST_TMP) .. "/development-lock.json"
 vim.fn.writefile({ '{"development":true}' }, development)
-vim.env.NVIM_LAZY_LOCKFILE = development
+vim.env.NVIM_PLUGIN_LOCKFILE = development
 assert(lockfile.resolve() == development)
 assert(vim.fn.readfile(development)[1] == '{"development":true}', "Do not overwrite the development lock")
 assert(vim.deep_equal(vim.fn.readfile(source, "b"), original))
-vim.env.NVIM_LAZY_LOCKFILE = nil
+vim.env.NVIM_PLUGIN_LOCKFILE = nil
 paths.config = config_path
 assert(vim.uv.fs_chmod(fixture, 420))
 print("Editable checkout, read-only deployment, lock restoration and explicit override checks passed")

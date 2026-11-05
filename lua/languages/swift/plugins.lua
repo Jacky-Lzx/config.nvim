@@ -13,8 +13,7 @@ end
 
 return {
   {
-    "mfussenegger/nvim-dap",
-    optional = true,
+    id = "nvim-dap",
     opts = {
       adapters = {
         lldb = lldb_adapter,

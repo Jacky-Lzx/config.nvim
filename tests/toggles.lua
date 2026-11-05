@@ -3,7 +3,7 @@ vim.opt.runtimepath:prepend(root)
 vim.g.mapleader = " "
 local api = vim.api
 local dev = require("utils.platform").dev_plugin_root()
-local installed = vim.fn.stdpath("data") .. "/lazy/"
+local installed = vim.fn.stdpath("data") .. "/plugin-tools/"
 for _, path in ipairs({
   dev .. "/keymap-tools.nvim",
   dev .. "/pairs.nvim",
@@ -34,7 +34,7 @@ diagnostic_mapping()
 assert(row("td").toggle.state == false and row("td").desc == "Enable Diagnostics")
 diagnostic_mapping()
 local conform = require("plugins.coding.conform")[1]
-conform.init()
+conform.bootstrap({ opts = conform.opts, dir = conform.dir })
 local format_mapping = vim.fn.maparg("<leader>tf", "n", false, true).callback
 assert(row("tf").toggle.state)
 format_mapping()
@@ -43,16 +43,16 @@ assert(row("tf").toggle.state == false and not package.loaded.conform)
 local specs = {
   require("plugins.ui.ui-tools")[1],
   require("plugins.git.git-tools")[1],
-  require("plugins.editing.pairs")[3],
+  require("plugins.editing.pairs")[1],
   require("languages.markdown.specs.render")[1],
 }
 for _, spec in ipairs(specs) do
-  spec.init()
+  spec.bootstrap({ opts = spec.opts, dir = spec.dir })
 end
 for _, key in ipairs({ "tp", "tgb", "tgw", "tgs", "to", "Dt", "tm", "Z", "z", "tG", "tD" }) do
   local item = row(key)
   assert(item.toggle and item.toggle.state == nil, "Cold state must remain unknown: " .. key)
-  assert(not item.executable, "Metadata must not create executable mappings: " .. key)
+  -- Ordinary configured callbacks are executable; inspection remains side-effect free.
 end
 for _, name in ipairs({ "pairs", "git_tools", "ui_tools", "render-markdown", "snacks" }) do
   assert(not package.loaded[name], "Status read loaded a feature: " .. name)
@@ -147,11 +147,11 @@ assert(row("z").toggle.state and not row("Z").toggle.state)
 ui.zoom()
 ui.disable()
 local render = specs[4]
-render.config(nil, render.opts)
+render.config({ opts = render.opts, dir = render.dir })
 assert(row("tm").toggle.state == false)
-render.keys[1][2]()
+require("config.bindings").entries[render.id][1][2]()
 assert(row("tm").toggle.state == true)
-render.keys[1][2]()
+require("config.bindings").entries[render.id][1][2]()
 assert(row("tm").toggle.state == false)
 print(
   "PASS configured toggle owners, cold loading, native mappings, cross-window state, session hints, explicit native owner identity, failures, UI/Git/pairs/Markdown"

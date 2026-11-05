@@ -1,9 +1,6 @@
 return {
   {
-    "HakonHarnes/img-clip.nvim",
-    enabled = false,
-    dev = true,
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("img-clip.nvim", {
       {
         "<leader>pi",
         function()
@@ -33,7 +30,12 @@ return {
         end,
         desc = "[Img-Clip] Choose an image to paste",
       },
-    },
+    }, nil),
+    main = "img-clip",
+    id = "img-clip.nvim",
+    source = "HakonHarnes/img-clip.nvim",
+    enabled = false,
+    dev = true,
     opts = {
       default = {
         dir_path = "Figures", ---@type string | fun(): string

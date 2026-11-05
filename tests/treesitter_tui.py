@@ -22,11 +22,11 @@ actions = {
 }
 with tempfile.TemporaryDirectory(prefix="treesitter-runtime-") as directory:
     temp = Path(directory)
-    shutil.copyfile(root / "lazy-lock.json", temp / "lazy-lock.json")
+    shutil.copyfile(root / "plugin-tools-lock.json", temp / "plugin-tools-lock.json")
     env = dict(os.environ, TERM="xterm-256color", NVIM_CONFIG_ROOT=str(root),
                NVIM_TEST_TMP=directory, NVIM_TEST_SCENARIO="writing", NVIM_SMOKE_TEST="1",
                XDG_STATE_HOME=directory + "/state", XDG_CACHE_HOME=directory + "/cache",
-               NVIM_LOG_FILE=directory + "/nvim.log", NVIM_LAZY_LOCKFILE=directory + "/lazy-lock.json",
+               NVIM_LOG_FILE=directory + "/nvim.log", NVIM_PLUGIN_LOCKFILE=directory + "/plugin-tools-lock.json",
                TREESITTER_TUI_RESULT=directory + "/result", TREESITTER_TUI_STAGE=directory + "/stage")
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 36, 140, 0, 0))

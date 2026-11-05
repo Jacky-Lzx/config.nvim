@@ -1,9 +1,15 @@
 return {
   -- formatters
   {
-    "stevearc/conform.nvim",
-    event = "BufWritePre",
-    init = function()
+    bootstrap = require("config.bindings").bootstrap("conform.nvim", {
+      {
+        "<leader>gf",
+        function()
+          require("conform").format({ lsp_format = "fallback" })
+        end,
+        desc = "Format",
+      },
+    }, function()
       if vim.g.enable_autoformat == nil then
         vim.g.enable_autoformat = true
       end
@@ -22,16 +28,10 @@ return {
           },
         },
       })
-    end,
-    keys = {
-      {
-        "<leader>gf",
-        function()
-          require("conform").format({ lsp_format = "fallback" })
-        end,
-        desc = "Format",
-      },
-    },
+    end),
+    main = "conform",
+    id = "conform.nvim",
+    source = "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = vim.tbl_extend(
         "force",
@@ -50,7 +50,8 @@ return {
         end
       end,
     },
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       require("conform").setup(opts)
     end,
   },

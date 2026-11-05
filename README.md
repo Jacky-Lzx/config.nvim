@@ -1,7 +1,7 @@
 # Neovim configuration
 
 Personal Neovim configuration for macOS and Linux. It targets Neovim 0.12 and uses
-[lazy.nvim](https://github.com/folke/lazy.nvim) for plugins.
+the local `plugin-tools.nvim` package manager.
 
 This repository owns the Lua configuration, plugin specifications, plugin lock,
 snippets, queries and editor tests. Nix can supply Neovim and external language
@@ -10,14 +10,47 @@ direct editing, or consume a pinned revision as a non-flake Nix input.
 
 ## Plugin versions and Nix deployment
 
-In a writable checkout, `:Lazy update` writes `lazy-lock.json` directly. Review,
-test and commit that file with any configuration changes. `NVIM_LAZY_LOCKFILE`
+The manager checkout must be available at
+`NVIM_PLUGIN_TOOLS_PATH` (default `NVIM_DEV_PLUGIN_ROOT/plugin-tools.nvim`).
+Startup mounts plugins and registers their configuration without running Git,
+checking updates, or installing missing packages. Completion, snippets and images
+own their first-use initialization inside their respective plugins. Other setup
+callbacks register native behavior immediately; the manager has no loading
+triggers or `require()` interception.
+
+Managed Git packages live under `stdpath("data")/plugin-tools` (override with
+`NVIM_PLUGIN_ROOT`); development checkouts remain external. To prepare a new
+machine, mount the manager and run its explicit `install()` API with the native
+manifest, or use `examples/manage.lua` from its checkout. During migration from
+an existing installation, the optional script below copies cached repositories,
+ignored build artifacts, and locked revisions into the new independent cache:
+
+```sh
+python3 scripts/migrate-plugin-cache.py \
+  --source ~/.local/share/nvim/lazy --target ~/.local/share/nvim/plugin-tools \
+  --lockfile plugin-tools-lock.json
+```
+
+The original cache stays intact for switching to the previous configuration
+branch. New plugin operations never adopt arbitrary existing checkouts.
+
+Project/vault configuration uses a nearest `.nvim-plugins.lua` file, read through
+`vim.secure.read`. It returns native declarations, for example:
+
+```lua
+return { { id = "obsidian.nvim", opts = {
+  workspaces = { { name = "Notes", path = "~/Documents/Notes" } },
+} } }
+```
+
+In a writable checkout, `:PluginTools update` writes `plugin-tools-lock.json` directly. Review,
+test and commit that file with any configuration changes. `NVIM_PLUGIN_LOCKFILE`
 can explicitly select another writable lock for a development session.
 
 For a read-only deployment such as the Nix store, startup seeds or resets
-`stdpath("state")/lazy/lazy-lock.json` from the committed lock. Runtime updates
+`stdpath("state")/plugin-tools/plugin-tools-lock.json` from the committed lock. Runtime updates
 do not change the deployed source. Deploying or rolling back configuration does
-not reconcile already installed plugin checkouts; run `:Lazy restore` as well.
+not reconcile already installed plugin checkouts; run `:PluginTools restore` as well.
 Plugins, parsers and managed tools remain runtime installations, outside the Nix
 closure. Nix/system executables take priority over toolchain's optional fallback.
 
@@ -28,8 +61,7 @@ directory in Home Manager while retaining its Neovim and language-tool packages.
 
 Run `sh tests/smoke.sh native` for offline tests with isolated plugin data, and
 `sh tests/smoke.sh integration` for tests using installed plugins and parsers.
-Integration checks also use Python 3 and a terminal PTY to verify actual `VeryLazy`
-loading, first-use mappings/commands, and first-save formatting behavior.
+Integration checks also use Python 3 and a terminal PTY to verify native startup and plugin-owned first-use initialization, mappings/commands, and first-save formatting behavior.
 To review startup independently, create an isolated XDG config tree with a
 `nvim-review` symlink to this checkout and launch with `NVIM_APPNAME=nvim-review`.
 That also isolates plugin data, state and cache; prepare those dependencies
@@ -39,11 +71,11 @@ runtime-path handling.
 ## Configuration layout
 
 - `init.lua`: delegates startup to `config.setup()`.
-- `lua/config/`: startup composition, platform settings, selection, and lazy.nvim bootstrap.
+- `lua/config/`: startup composition, platform settings, selection, and plugin-tools bootstrap.
 - `lua/core/`: editor options, general mappings, commands, and autocmds.
 - `lua/features/`: native folding, column guide, LSP/diagnostic behavior, and completion source state.
-- `lua/plugins/`: lazy.nvim specs, dependencies, loading conditions, and plugin-specific configuration.
-- `lua/integrations/`: adapters connecting features to Snacks/Blink and other plugin integrations.
+- `lua/plugins/`: native plugin-tools specs, dependencies, ordinary mappings, and plugin-specific configuration.
+- `lua/integrations/`: adapters connecting native completion, snippets, images and other plugins.
 - `lua/languages/`: language metadata and dedicated plugin specs.
 - `lua/utils/`: shared helpers for resource paths, platform discovery, and system commands.
 - `ftplugin/`: settings needed before runtime ftplugins, such as style and mapping switches.
@@ -116,7 +148,7 @@ highlight groups when supported by the server. lsp-tools owns automatic referenc
 highlighting, so Snacks.words is disabled. `]]` / `[[` retain native section and
 terminal-prompt navigation. Reference navigation itself does not require Snacks.
 
-The configuration prefers the local development checkout through lazy.nvim's
+The configuration prefers the local development checkout through plugin-tools'
 `dev = true`, and falls back to GitHub over SSH when it is absent. Code action options live
 under `opts.code_actions`; the public API is `require("lsp-tools").code_action()`.
 
@@ -536,16 +568,15 @@ The following environment variables override local paths or commands:
 macOS uses `open` and optionally Skim. Linux uses `xdg-open` and optionally Zathura. Missing
 Delta, Kitty, and Skim degrade to built-in behavior or disable their integration.
 
-Obsidian workspaces belong to the vault's `.lazy.lua`, in the Obsidian spec's
+Obsidian workspaces belong to the vault's `.nvim-plugins.lua`, in the Obsidian spec's
 `opts.workspaces`. The shared spec keeps plugin behavior and mappings, and only enables
 Obsidian when the merged options contain a workspace. Start Neovim inside the vault or one
-of its subdirectories so lazy.nvim can discover that local spec.
+of its subdirectories so the configuration can securely read that local spec.
 
-Pairing uses [Jacky-Lzx/pairs.nvim](https://github.com/Jacky-Lzx/pairs.nvim) with lazy.nvim's
+Pairing uses [Jacky-Lzx/pairs.nvim](https://github.com/Jacky-Lzx/pairs.nvim) with plugin-tools'
 `dev = true` and `dev.fallback = true`. It prefers `NVIM_DEV_PLUGIN_ROOT/pairs.nvim`
 (default `~/Documents/Github/nvim_plugins/pairs.nvim`); when that directory is absent,
-lazy.nvim installs the GitHub version pinned in `lazy-lock.json`. Blink depends on it and
-composes Enter after completion confirmation. Use `:checkhealth pairs` for plugin diagnostics.
+explicit `:PluginTools install` installs the GitHub version pinned in `plugin-tools-lock.json`. Completion tools composes Enter after completion confirmation. Use `:checkhealth pairs` for plugin diagnostics.
 
 ## Image insertion
 
@@ -644,7 +675,7 @@ Run the smoke runner with:
 ```
 
 The native suite isolates the data and development-plugin directories as well as cache/state,
-so it can run on a fresh machine without lazy.nvim, other plugins, or extra parsers installed.
+so it can run on a fresh machine without any plugin manager, other plugins, or extra parsers installed.
 It covers syntax/profile resolution, declaration validation, diagnostic snapshots, core behavior,
 clipboard, diagnostics, column guide rendering, completion policy, snippet math, commands,
 Python tasks, mocked integrations, links, tooling, and LSP setup contracts.
@@ -690,16 +721,16 @@ messages are filtered from notifications/history; errors and other sources remai
 
 The plugin is installed from `Jacky-Lzx/notification-tools.nvim` over SSH.
 `dev = true` prefers `NVIM_DEV_PLUGIN_ROOT/notification-tools.nvim`
-(default `~/Documents/Github/nvim_plugins/notification-tools.nvim`); lazy.nvim's
-`dev.fallback = true` installs the published repository when that checkout is absent.
+(default `~/Documents/Github/nvim_plugins/notification-tools.nvim`); plugin-tools'
+`dev.fallback = true` selects the published repository when that checkout is absent.
 The lockfile pins the published revision for remote installs. Snacks notifier stays
 disabled so only notification-tools owns ordinary notifications; Fidget is no longer configured.
 
 `input-tools.nvim` owns the command line, search/input prompts and native completion
-menus. It also prefers the local development checkout through lazy.nvim's shared
+menus. It also prefers the local development checkout through plugin-tools' shared
 `dev.path`. `messages.enabled = true` lets it hand non-interactive messages to
 notification-tools after its renderer is ready. Both plugins load at startup;
-notifications load first (priority 1100), then input-tools (priority 1000).
+notifications register before input-tools in the explicit manifest order.
 Reconfiguring either plugin reacquires the handoff. `<leader>N` also opens
 notification history. `:NotificationsPick` uses selection-tools to search complete
 messages and details; Enter opens the selected record for reading. Native LSP
@@ -744,7 +775,7 @@ of the DAP feature. `<leader>tPp` starts/stops Lua profiling (stopping opens the
 report); `<leader>tPh` toggles source timing annotations. `:DebugTools show` opens
 the last report, Enter jumps to its source, and q closes it. `:DebugTools save`
 writes JSON under `stdpath('state')/debug-tools`. `PROF=1 nvim` captures startup
-until after `VeryLazy` and saves automatically. Profiling is opt-in, temporarily
+until after `ConfigReady` and saves automatically. Profiling is opt-in, temporarily
 disables JIT, and includes hook overhead; it measures the main Lua thread.
 
 `:StartupTime [runs]` (default 10) and `:DebugTools startup` use debug-tools' native
@@ -753,6 +784,11 @@ UI and runs the actual configuration. The report shows mean self/inclusive event
 times and total mean/median/min/max; Enter opens source and q closes the report.
 These warm sequential runs end at `NVIM STARTED`, separately from the Lua hook
 profiler and deferred plugin readiness.
+
+`python3 tests/benchmark_startup.py --output /tmp/nvim-startup.json` repeats fresh
+headless startups with isolated state/cache and mocked external LSP/clipboard.
+It reports native startup and registration times, and verifies that completion,
+snippet and image engines remain uninitialized in an empty editor.
 
 `lua/features/files.lua` owns early startup highlighting and large/minified file
 guards. Files above 1.5 MiB or averaging over 1000 bytes per line use `bigfile`

@@ -1,12 +1,12 @@
--- Run through tests/tui.py: real startup, UIEnter/VeryLazy and actual key dispatch.
+-- Run through tests/tui.py: real startup, UIEnter/ConfigReady and actual key dispatch.
 local function feed(keys)
   vim.api.nvim_feedkeys(vim.keycode(keys), "xt", false)
 end
 
 local function check()
-  assert(vim.g.did_very_lazy)
-  local plugins = require("lazy.core.config").plugins
-  assert(plugins["ui-tools.nvim"]._.loaded)
+  assert(vim.g.config_ready)
+  local plugins = require("config.plugins").nodes()
+  assert(require("config.plugins").initialized("ui-tools.nvim"))
   assert(not plugins["nvim-scrollbar"] and not package.loaded.scrollbar)
   assert(not package.loaded["features.column_guide"])
   assert(not plugins["snacks.nvim"], "Snacks must no longer own editor features")
@@ -187,7 +187,7 @@ local function check()
   assert(vim.deep_equal(layout, vim.fn.winlayout()))
 
   feed("/body<CR>")
-  assert(plugins["motion-tools.nvim"]._.loaded, "Search lens must remain functional")
+  assert(require("config.plugins").initialized("motion-tools.nvim"), "Search lens must remain functional")
   local scrollbar = require("ui_tools.scrollbar")
   scrollbar.refresh()
   assert(vim.tbl_count(scrollbar.bars) == 2)
@@ -216,7 +216,7 @@ local function check()
 end
 
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     vim.defer_fn(function()
@@ -224,7 +224,7 @@ vim.api.nvim_create_autocmd("User", {
       local result = ok
           and "ui-tools configured TUI: ownership, compact diagnostics, guide, pulse/yank, keys, Zen/Zoom typing/restore, search and scrollbar passed"
         or err
-      vim.fn.writefile(vim.split(result, "\n", { plain = true }), vim.env.NVIM_LAZY_RESULT)
+      vim.fn.writefile(vim.split(result, "\n", { plain = true }), vim.env.NVIM_STARTUP_RESULT)
       vim.cmd(ok and "quitall!" or "cquit 1")
     end, 120)
   end,

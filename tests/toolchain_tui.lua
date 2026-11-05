@@ -1,6 +1,6 @@
 local api = vim.api
 local temp = assert(vim.env.NVIM_TEST_TMP)
-local result = assert(vim.env.NVIM_LAZY_RESULT)
+local result = assert(vim.env.NVIM_STARTUP_RESULT)
 local stage, source_buf, source_win = "initial", nil, nil
 local optional_ready, submitted = false, nil
 local timer = vim.uv.new_timer()
@@ -10,7 +10,7 @@ local function mark(name)
 end
 local function check()
   if stage == "initial" then
-    if not vim.g.did_very_lazy then
+    if not vim.g.config_ready then
       return
     end
     vim.cmd("enew!")

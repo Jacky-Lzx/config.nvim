@@ -1,12 +1,11 @@
 return {
   {
+    id = "debug-tools.nvim",
     dir = require("utils.platform").dev_plugin_root() .. "/debug-tools.nvim",
-    name = "debug-tools.nvim",
     main = "debug_tools",
-    lazy = false,
-    priority = 1000,
     opts = { globals = true, override_print = true },
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       require("debug_tools").setup(opts)
       vim.api.nvim_create_user_command("StartupTime", function(args)
         local tries = args.args == "" and 10 or tonumber(args.args)

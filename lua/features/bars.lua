@@ -72,12 +72,12 @@ function M.setup()
   local group = api.nvim_create_augroup("ConfigBars", { clear = true })
   api.nvim_create_autocmd("User", {
     group = group,
-    pattern = { "TaskToolsChanged", "LazyLoad", "ThemeToolsReady", "ThemeToolsIconsChanged" },
+    pattern = { "TaskToolsChanged", "ConfigReady", "ThemeToolsReady", "ThemeToolsIconsChanged" },
     callback = function(event)
       if event.match == "TaskToolsChanged" and event.data and event.data.kind == "output" then
         return
       end
-      if event.match == "TaskToolsChanged" or event.match == "LazyLoad" then
+      if event.match == "TaskToolsChanged" or event.match == "ConfigReady" then
         tasks_dirty = true
       end
       queue.request()

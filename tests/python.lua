@@ -55,8 +55,8 @@ package.loaded["workspace_tools.environments.python"] = {
   end,
 }
 require("config.context").initialize({ profiles = { "data" }, features = {} })
-local spec = require("languages.python.plugins")[1]
-spec.config(nil, spec.opts)
+local spec = require("languages.python.plugins")[1].children[1]
+spec.config({ opts = spec.opts, dir = spec.dir })
 assert(configured, "Plugin setup must connect the interpreter provider")
 assert(vim.fn.exists(":VenvSelect") == 2)
 assert(not package.loaded.workspace_tools, "Python-only setup must leave session management unloaded")

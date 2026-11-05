@@ -3,9 +3,10 @@ vim.opt.rtp:prepend(root)
 vim.o.loadplugins = true
 dofile(root .. "/tests/setup.lua")
 dofile(root .. "/init.lua")
+dofile(root .. "/tests/native_plugins.lua")
 
 local function check()
-  local plugins = require("lazy.core.config").plugins
+  local plugins = require("config.plugins").nodes()
   assert(not plugins["nvim-treesitter"], "Main plugin must not be declared")
   assert(not vim.g.loaded_nvim_treesitter and not package.loaded["nvim-treesitter"])
   for _, path in ipairs(vim.opt.rtp:get()) do
@@ -34,7 +35,7 @@ local function check()
               for _, file in ipairs(vim.treesitter.query.get_files(language, kind)) do
                 local resolved = vim.uv.fs_realpath(file) or file
                 assert(
-                  not resolved:match("/lazy/nvim%-treesitter/"),
+                  not resolved:match("/plugin-tools/nvim%-treesitter/"),
                   "Legacy query dependency: " .. language .. "/" .. kind .. ": " .. resolved
                 )
               end
@@ -60,14 +61,18 @@ local function check()
   assert(vim.list_contains(predicates, "kind-eq?") and vim.list_contains(predicates, "any-kind-eq?"))
 
   -- Editing uses managed parsers and its own bundled textobject queries.
-  require("lazy").load({ plugins = { "editing-tools.nvim" } })
-  assert(plugins["editing-tools.nvim"]._.loaded)
+  for _, id in ipairs({ "editing-tools.nvim" }) do
+    require("plugin_tools").activate(id)
+  end
+  assert(require("config.plugins").initialized("editing-tools.nvim"))
   assert(not plugins["nvim-treesitter-textobjects"])
   assert(not package.loaded["mini.ai"])
   assert(vim.treesitter.query.get("lua", "textobjects"))
   if plugins["codecompanion.nvim"] then
-    require("lazy").load({ plugins = { "codecompanion.nvim" } })
-    assert(plugins["codecompanion.nvim"]._.loaded and not plugins["nvim-treesitter"])
+    for _, id in ipairs({ "codecompanion.nvim" }) do
+      require("plugin_tools").activate(id)
+    end
+    assert(require("config.plugins").initialized("codecompanion.nvim") and not plugins["nvim-treesitter"])
   end
   assert(not package.loaded["nvim-treesitter"])
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))

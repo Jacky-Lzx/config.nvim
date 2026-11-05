@@ -11,5 +11,5 @@ return {
     cpp = { "clang-format" },
     cuda = { "clang-format" },
   },
-  plugins = { { import = "languages.cpp.plugins" } },
+  plugins = { "languages.cpp.plugins" },
 }

@@ -5,6 +5,6 @@ function M.setup()
   end
   local path = require("utils.platform").dev_plugin_root() .. "/debug-tools.nvim"
   vim.opt.rtp:append(path)
-  require("debug_tools.profiler").startup({ event = "VeryLazy", save = true })
+  require("debug_tools.profiler").startup({ event = "ConfigReady", save = true })
 end
 return M

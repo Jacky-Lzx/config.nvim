@@ -8,7 +8,7 @@ function M.resolve(selection)
   return { selection = selection, languages = require("languages").resolve(selection) }
 end
 
--- Choose once, before lazy.nvim imports specs. A later, different selection is an
+-- Choose once, before plugin-tools resolves specs. A later, different selection is an
 -- error rather than a mixture of old language data and new workflow switches.
 function M.initialize(selection)
   selection = schema.normalize(selection or require("config.selection"))

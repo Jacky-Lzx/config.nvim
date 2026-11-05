@@ -2,8 +2,7 @@ local platform = require("utils.platform")
 
 return {
   {
-    "toolchain-tools.nvim",
-    optional = true,
+    id = "toolchain-tools.nvim",
     opts = {
       parsers = {
         sources = {
@@ -19,16 +18,16 @@ return {
     },
   },
   {
-    "Jacky-Lzx/tex-tools.nvim",
-    dev = true,
-    main = "tex-tools",
-    -- Formula display requires image-tools only after a preview is ready.
-    ft = { "tex", "plaintex" },
-    init = function()
+    bootstrap = require("config.bindings").bootstrap("tex-tools.nvim", {}, function()
       vim.g.tex_flavor = "latex"
       -- tex-tools owns conceal; native TeX syntax must not add replacements.
       vim.g.tex_conceal = ""
-    end,
+    end),
+    id = "tex-tools.nvim",
+    source = "Jacky-Lzx/tex-tools.nvim",
+    dev = true,
+    main = "tex-tools",
+    -- Formula display requires image-tools only after a preview is ready.
     opts = {
       lsp = "texquill",
       formula_preview = { enabled = true },
@@ -59,8 +58,8 @@ return {
     },
   },
   {
-    "let-def/texpresso.vim",
+    id = "texpresso.vim",
+    source = "let-def/texpresso.vim",
     enabled = platform.executable("texpresso") ~= nil,
-    ft = { "tex" },
   },
 }

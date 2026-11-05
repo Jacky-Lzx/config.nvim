@@ -6,9 +6,12 @@ require("config.context").initialize({ profiles = {}, features = {} })
 vim.g.loaded_wakatime = true
 vim.o.loadplugins = true
 dofile(root .. "/init.lua")
-require("lazy").load({ plugins = { "lsp-tools.nvim" } })
-local spec = require("lazy.core.config").plugins["lsp-tools.nvim"]
-local opts = require("lazy.core.plugin").values(spec, "opts", false)
+dofile(root .. "/tests/native_plugins.lua")
+for _, id in ipairs({ "lsp-tools.nvim" }) do
+  require("plugin_tools").activate(id)
+end
+local spec = require("config.plugins").nodes()["lsp-tools.nvim"]
+local opts = vim.deepcopy((spec).opts)
 assert(opts.rename.backend == "native" and opts.code_actions.backend == "native")
 assert(opts.rename.native.file_header == false and opts.code_actions.native.file_header == false)
 vim.env.LSP_TOOLS_BACKEND = "native"

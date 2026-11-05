@@ -15,9 +15,14 @@ return {
   },
   plugins = {
     {
-      "chomosuke/typst-preview.nvim",
-      ft = "typst",
-      version = "1.*",
+      id = "typst-preview.nvim",
+      source = "chomosuke/typst-preview.nvim",
+      main = "typst-preview",
+      -- Configure without setup()'s eager binary downloader. Native plugin
+      -- scripts register commands; :TypstPreviewUpdate remains an explicit action.
+      config = function(ctx)
+        require("typst-preview.config").config(ctx.opts)
+      end,
       opts = {
         -- Use tinymist installed by toolchain
         dependencies_bin = {

@@ -1,6 +1,6 @@
--- Exercise the real lazy.nvim/filetype lifecycle, not just the folding module.
+-- Exercise the real native startup/filetype lifecycle, not just the folding module.
 local function check()
-  local plugins = require("lazy.core.config").plugins
+  local plugins = require("config.plugins").nodes()
   assert(not plugins["nvim-ufo"] and not plugins["promise-async"])
   assert(not package.loaded.ufo)
   assert(require("ui_tools.fold").enabled, "ui-tools must own folding")

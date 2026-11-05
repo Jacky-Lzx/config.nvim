@@ -7,7 +7,7 @@ local function feed(keys)
   vim.api.nvim_feedkeys(vim.keycode(keys), "xt", false)
 end
 local function check()
-  local plugins = require("lazy.core.config").plugins
+  local plugins = require("config.plugins").nodes()
   for _, name in ipairs({ "barbar.nvim", "lualine.nvim", "copilot-lualine" }) do
     assert(not plugins[name], name)
   end
@@ -178,7 +178,7 @@ local function check()
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     local worker = coroutine.create(check)
@@ -187,7 +187,7 @@ vim.api.nvim_create_autocmd("User", {
       if not ok or coroutine.status(worker) == "dead" then
         local message = ok and "bars TUI: exact mappings, restore, symbols, burst edits, macro, tree and splits passed"
           or debug.traceback(worker, tostring(delay))
-        vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_LAZY_RESULT)
+        vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_STARTUP_RESULT)
         vim.cmd(ok and "qa!" or "cquit")
       else
         -- Return to Neovim's real input loop so BufModifiedSet/TextChanged and

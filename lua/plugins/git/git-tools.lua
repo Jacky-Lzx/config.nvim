@@ -48,58 +48,7 @@ local function on_attach(buf)
 end
 return {
   {
-    "Jacky-Lzx/git-tools.nvim",
-    url = "git@github.com:Jacky-Lzx/git-tools.nvim.git",
-    dev = true,
-    main = "git_tools",
-    event = { "BufReadPost", "BufNewFile" },
-    cmd = "GitTools",
-    init = function()
-      local function option(name)
-        return function()
-          local buffer = package.loaded["git_tools.buffer"]
-          if buffer then
-            return buffer.config[name]
-          end
-        end
-      end
-      local function overlay(ctx)
-        local buffer = package.loaded["git_tools.buffer"]
-        local state = buffer and buffer.states[ctx.buf]
-        if state then
-          return state.overlay == true
-        end
-      end
-      require("keymap_tools").register("git-tools.toggles", {
-        toggles = {
-          {
-            keys = "<leader>Dt",
-            name = "Git diff view",
-            get = function(ctx)
-              if not ctx.win then
-                return nil
-              end
-              local view = package.loaded["git_tools.view"]
-              if package.loaded.git_tools then
-                for active in pairs(view and view.active or {}) do
-                  if active.tab == vim.api.nvim_win_get_tabpage(ctx.win) then
-                    return true
-                  end
-                end
-                return false
-              end
-            end,
-          },
-          { keys = "<leader>to", name = "Git diff overlay", get = overlay },
-          { keys = "<leader>ggP", name = "Git inline preview", get = overlay },
-          { keys = "<leader>tgb", name = "Git line blame", get = option("line_blame") },
-          { keys = "<leader>tgw", name = "Git word diff", get = option("word_diff") },
-          { keys = "<leader>tgs", name = "Git signs", get = option("signs") },
-        },
-      })
-    end,
-    opts = { buffer = { signs = false, numhl = true, on_attach = on_attach } },
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("git-tools.nvim", {
       {
         "<leader>ggC",
         function()
@@ -249,6 +198,54 @@ return {
         end,
         desc = "[Git] Toggle signs",
       },
-    },
+    }, function()
+      local function option(name)
+        return function()
+          local buffer = package.loaded["git_tools.buffer"]
+          if buffer then
+            return buffer.config[name]
+          end
+        end
+      end
+      local function overlay(ctx)
+        local buffer = package.loaded["git_tools.buffer"]
+        local state = buffer and buffer.states[ctx.buf]
+        if state then
+          return state.overlay == true
+        end
+      end
+      require("keymap_tools").register("git-tools.toggles", {
+        toggles = {
+          {
+            keys = "<leader>Dt",
+            name = "Git diff view",
+            get = function(ctx)
+              if not ctx.win then
+                return nil
+              end
+              local view = package.loaded["git_tools.view"]
+              if package.loaded.git_tools then
+                for active in pairs(view and view.active or {}) do
+                  if active.tab == vim.api.nvim_win_get_tabpage(ctx.win) then
+                    return true
+                  end
+                end
+                return false
+              end
+            end,
+          },
+          { keys = "<leader>to", name = "Git diff overlay", get = overlay },
+          { keys = "<leader>ggP", name = "Git inline preview", get = overlay },
+          { keys = "<leader>tgb", name = "Git line blame", get = option("line_blame") },
+          { keys = "<leader>tgw", name = "Git word diff", get = option("word_diff") },
+          { keys = "<leader>tgs", name = "Git signs", get = option("signs") },
+        },
+      })
+    end),
+    id = "git-tools.nvim",
+    source = "git@github.com:Jacky-Lzx/git-tools.nvim.git",
+    dev = true,
+    main = "git_tools",
+    opts = { buffer = { signs = false, numhl = true, on_attach = on_attach } },
   },
 }

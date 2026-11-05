@@ -1,0 +1,61 @@
+{
+  "plugins": {
+    "codecompanion.nvim": {
+      "commit": "86118411be00f0451a59c5ef7972c437e979e1b7",
+      "source": "https://github.com/olimorris/codecompanion.nvim.git"
+    },
+    "conform.nvim": {
+      "commit": "016802de402556da54c36bd7359b441266b01cdd",
+      "source": "https://github.com/stevearc/conform.nvim.git"
+    },
+    "crates.nvim": {
+      "commit": "7039bc1d130e424232a7aa64ceddb170a154ff5b",
+      "source": "https://github.com/Saecki/crates.nvim.git"
+    },
+    "nvim-dap": {
+      "commit": "cfa2d58f4537aca6ca83e2de1a0d9f1491121264",
+      "source": "https://github.com/mfussenegger/nvim-dap.git"
+    },
+    "nvim-dap-view": {
+      "commit": "b4486a6e83c45db4712849c09a76ef95b41a2133",
+      "source": "https://github.com/igorlfs/nvim-dap-view.git"
+    },
+    "nvim-lint": {
+      "commit": "52107ce2076a27a285af781248e2c59bad817cd0",
+      "source": "https://github.com/mfussenegger/nvim-lint.git"
+    },
+    "nvim-lspconfig": {
+      "commit": "77b7432d4770d23b277d37923e5a08a442d8bb07",
+      "source": "https://github.com/neovim/nvim-lspconfig.git"
+    },
+    "nvim-web-devicons": {
+      "commit": "ec309a0eaff6ea967e58c275996155ab5c16938d",
+      "source": "https://github.com/nvim-tree/nvim-web-devicons.git"
+    },
+    "obsidian.nvim": {
+      "commit": "1212014bb22a1f44a655e8e706659892b8e43e59",
+      "source": "https://github.com/obsidian-nvim/obsidian.nvim.git"
+    },
+    "peek.nvim": {
+      "commit": "5820d937d5414baea5f586dc2a3d912a74636e5b",
+      "source": "https://github.com/toppair/peek.nvim.git"
+    },
+    "plenary.nvim": {
+      "commit": "74b06c6c75e4eeb3108ec01852001636d85a932b",
+      "source": "https://github.com/nvim-lua/plenary.nvim.git"
+    },
+    "render-markdown.nvim": {
+      "commit": "8e8795368391036643b622875a6da6a51bcd33f4",
+      "source": "https://github.com/MeanderingProgrammer/render-markdown.nvim.git"
+    },
+    "typst-preview.nvim": {
+      "commit": "1c2e19486397be1c580b560fc50ee36abe329c46",
+      "source": "https://github.com/chomosuke/typst-preview.nvim.git"
+    },
+    "vim-wakatime": {
+      "commit": "9f8a1d3b9c6f3a948988a0896b3227c1e1f74a58",
+      "source": "https://github.com/wakatime/vim-wakatime.git"
+    }
+  },
+  "version": 1
+}

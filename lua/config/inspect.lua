@@ -47,20 +47,20 @@ function M.snapshot()
     }
   end
 
-  -- Inspect resolved specs without requiring lazy.nvim or loading any plugin.
-  local lazy = package.loaded["lazy.core.config"]
-  if lazy and lazy.plugins then
+  -- Inspect configuration state without requiring managed modules.
+  local plugins = package.loaded["config.plugins"]
+  local manager = plugins and plugins.manager
+  if manager then
     result.plugins.initialized = true
-    for _, name in ipairs(vim.fn.sort(vim.tbl_keys(lazy.plugins))) do
-      local plugin = lazy.plugins[name]
-      local state = plugin._ or {}
+    for _, name in ipairs(vim.fn.sort(vim.tbl_keys(manager.graph.nodes))) do
+      local plugin = manager.graph.nodes[name]
       result.plugins.entries[#result.plugins.entries + 1] = {
         name = name,
         directory = plugin.dir,
-        source = state.is_local and "local" or "git",
+        source = plugin.package.managed and "git" or "local",
         development = plugin.dev == true,
-        url = plugin.url,
-        loaded = not not state.loaded,
+        url = plugin.package.source,
+        loaded = manager.states[name].phase == "ready",
       }
     end
   end

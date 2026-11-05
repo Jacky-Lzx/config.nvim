@@ -1,7 +1,7 @@
 local M = {}
 
 -- Resolution is pure with respect to editor state: definitions describe capabilities;
--- plugin hooks are executed later by lazy.nvim. Explicit selections make tests independent
+-- plugin hooks are executed later by plugin-tools.nvim. Explicit selections make tests independent
 -- of the user's personal defaults.
 function M.resolve(selection, capabilities)
   selection = require("config.selection_schema").normalize(selection or require("config.selection"))

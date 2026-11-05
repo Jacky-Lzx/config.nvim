@@ -1,6 +1,6 @@
 -- Full-config integration: commands, real input, key ownership, and snippet context.
 local function check()
-  local plugins = require("lazy.core.config").plugins
+  local plugins = require("config.plugins").nodes()
   assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
   local function buffer(text)
     vim.cmd("enew!")
@@ -23,7 +23,7 @@ local function check()
     vim.api.nvim_feedkeys(vim.keycode(text), "xt", false)
   end
   buffer("$\\frac{x}{y}$")
-  assert(plugins["tex-tools.nvim"]._.loaded)
+  assert(require("config.plugins").initialized("tex-tools.nvim"))
   assert(vim.api.nvim_buf_get_commands(0, {}).TexToolsCompiler)
   -- Every configured Plug target must exist in the mode where it is invoked.
   for _, mode in ipairs({ "n", "i", "x", "o" }) do
@@ -73,7 +73,7 @@ local function check()
 
   -- The completion/Enter composition remains the completion-tools -> pairs chain.
   vim.api.nvim_exec_autocmds("InsertEnter", {})
-  local completion_spec = require("lazy.core.plugin").values(plugins["completion-tools.nvim"], "opts", false)
+  local completion_spec = vim.deepcopy((plugins["completion-tools.nvim"]).opts)
   assert(require("tex-tools.config").options.smart_enter == false)
   assert(completion_spec.keymap["<CR>"][2]() == require("pairs").expr("<CR>"))
   assert(not vim.fn.maparg("<CR>", "i"):find("TexTools", 1, true))

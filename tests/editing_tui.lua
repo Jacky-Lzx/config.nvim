@@ -1,7 +1,7 @@
 -- Real terminal input against the full configuration, including Lazy's cold keys.
 local api = vim.api
 local directory = assert(vim.env.NVIM_TEST_TMP)
-local result = assert(vim.env.NVIM_LAZY_RESULT)
+local result = assert(vim.env.NVIM_STARTUP_RESULT)
 local cases, index, assertions = {}, 0, 0
 local function eq(actual, expected, label)
   assertions = assertions + 1
@@ -22,8 +22,8 @@ local function case(name, input, setup, verify)
   cases[#cases + 1] = { name = name, input = input, setup = setup, verify = verify }
 end
 case("cold-object-and-repeat", "cib值\27$h.", function()
-  local plugins = require("lazy.core.config").plugins
-  eq(not plugins["editing-tools.nvim"]._.loaded, true, "editing must remain cold")
+  local plugins = require("config.plugins").nodes()
+  eq(require("config.plugins").initialized("editing-tools.nvim"), true, "editing registration is missing")
   for _, name in ipairs({ "mini.ai", "mini.align", "mini.operators" }) do
     eq(plugins[name], nil, "legacy editing owner")
   end
@@ -37,7 +37,7 @@ case("cold-object-and-repeat", "cib值\27$h.", function()
   reset({ "(one) (two)" }, { 1, 1 })
 end, function()
   eq(lines(), { "(值) (值)" })
-  eq(require("lazy.core.config").plugins["editing-tools.nvim"]._.loaded ~= nil, true)
+  eq(require("config.plugins").initialized("editing-tools.nvim"), true)
   eq(vim.fn.maparg("gX", "n") ~= "", true, "URI fallback")
   eq(vim.fn.mode(), "n")
 end)
@@ -229,7 +229,7 @@ vim.keymap.set({ "n", "i" }, "<F12>", function()
   vim.schedule(next_case)
 end)
 local function start()
-  if vim.g.did_very_lazy then
+  if vim.g.config_ready then
     next_case()
   else
     vim.defer_fn(start, 25)

@@ -27,5 +27,5 @@ return {
       prepend_args = { "--local", require("utils.paths").config("configs", "latexindent.yaml") },
     },
   },
-  plugins = { { import = "languages.latex.plugins" } },
+  plugins = { "languages.latex.plugins" },
 }

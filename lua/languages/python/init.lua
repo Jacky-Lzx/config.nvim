@@ -18,5 +18,5 @@ return {
   linters = {
     python = { "ruff" },
   },
-  plugins = { { import = "languages.python.plugins" } },
+  plugins = { "languages.python.plugins" },
 }

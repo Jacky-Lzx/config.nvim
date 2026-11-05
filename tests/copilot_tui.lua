@@ -9,7 +9,7 @@ local function finish(ok, message)
   if cmp then
     cmp.dispose()
   end
-  vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_LAZY_RESULT)
+  vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_STARTUP_RESULT)
   vim.cmd(ok and "qa!" or "cquit 1")
 end
 local function guarded(f)
@@ -75,12 +75,12 @@ local function footer_screen()
   return ""
 end
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     vim.defer_fn(function()
       guarded(function()
-        local plugins = require("lazy.core.config").plugins
+        local plugins = require("config.plugins").nodes()
         assert(not plugins["copilot.lua"])
         local previous_start = vim.lsp.start
         vim.lsp.start = function(config, ...)
@@ -93,7 +93,7 @@ vim.api.nvim_create_autocmd("User", {
         vim.notify = function() end
         vim.cmd("CompletionToolsCopilot status")
         vim.notify = notify
-        assert(plugins["completion-tools.nvim"]._.loaded)
+        assert(require("config.plugins").initialized("completion-tools.nvim"))
         local cmp = require("completion_tools")
         for _, client in ipairs(vim.lsp.get_clients()) do
           assert(client.name ~= "completion-tools-copilot", "Status started the server")

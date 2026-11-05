@@ -12,30 +12,8 @@ local comment_rules = {
 }
 
 return {
-  { "windwp/nvim-autopairs", enabled = false },
-  { "nvim-mini/mini.pairs", enabled = false },
   {
-    "Jacky-Lzx/pairs.nvim",
-    dev = true,
-    event = { "BufReadPost", "BufNewFile", "InsertEnter" },
-    cmd = { "PairsToggle", "PairsInspect", "PairsRainbowToggle" },
-    init = function()
-      require("keymap_tools").register("pairs.toggle", {
-        toggles = {
-          {
-            keys = "<leader>tp",
-            name = "Pairing",
-            get = function()
-              local pairs = package.loaded.pairs
-              if pairs then
-                return pairs.status().enabled
-              end
-            end,
-          },
-        },
-      })
-    end,
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("pairs.nvim", {
       -- Preserve the existing surround prefix and load on the first Normal/Visual action.
       { "s", "<NOP>", mode = { "n", "x", "o" } },
       { "sa", mode = { "n", "x" }, desc = "Add surrounding" },
@@ -52,8 +30,26 @@ return {
         end,
         desc = "[Pairs] Toggle pairing",
       },
-    },
-    -- completion-tools composes Enter after completion confirmation.
+    }, function()
+      require("keymap_tools").register("pairs.toggle", {
+        toggles = {
+          {
+            keys = "<leader>tp",
+            name = "Pairing",
+            get = function()
+              local pairs = package.loaded.pairs
+              if pairs then
+                return pairs.status().enabled
+              end
+            end,
+          },
+        },
+      })
+    end),
+    main = "pairs",
+    id = "pairs.nvim",
+    source = "Jacky-Lzx/pairs.nvim",
+    dev = true,
     opts = {
       treesitter = true,
       surround = { enabled = true, treesitter = true },

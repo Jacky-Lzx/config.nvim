@@ -30,7 +30,7 @@ function M.setup()
     require("integrations.neovide")
   end
 
-  require("config.lazy")
+  require("config.plugins").setup()
 end
 
 function M.info()

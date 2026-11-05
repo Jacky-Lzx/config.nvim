@@ -87,7 +87,9 @@ local function lines()
 end
 local ok, err = xpcall(function()
   rpc("nvim_ui_attach", 120, 36, { rgb = true })
-  lua([[require('lazy').load({plugins={'snippet-tools.nvim','completion-tools.nvim'}})]])
+  lua(
+    [[for _, id in ipairs({'snippet-tools.nvim','completion-tools.nvim'}) do require("plugin_tools").activate(id); if id=='snippet-tools.nvim' then require('snippet_tools.bootstrap').ensure() elseif id=='completion-tools.nvim' then require('completion_tools.bootstrap').ensure() end end]]
+  )
   test("TeX and global snippets use only the native engine", function()
     eq("snippet-tools", lua("return require('integrations.snippets').engine()"))
     lua([[local ctx=require('snippet_tools').context();ctx.start_col=0;ctx.mode='insert'
@@ -319,7 +321,7 @@ local ok, err = xpcall(function()
     lua([[vim.cmd('SnippetToolsReload');vim.cmd('SnippetToolsReload')]])
     input("imkx<A-l>!")
     wait_line("\\( x \\)!")
-    lua([[assert(not require('lazy.core.config').plugins.LuaSnip);assert(vim.fn.exists(':SnippetEngine')==0)]])
+    lua([[assert(not require('config.plugins').nodes().LuaSnip);assert(vim.fn.exists(':SnippetEngine')==0)]])
   end)
 end, debug.traceback)
 pcall(rpc, "nvim_command", "qa!")

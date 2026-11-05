@@ -1,8 +1,8 @@
 local M = {}
 
 function M.resolve()
-  local source = require("utils.paths").config("lazy-lock.json")
-  local override = vim.env.NVIM_LAZY_LOCKFILE
+  local source = require("utils.paths").config("plugin-tools-lock.json")
+  local override = vim.env.NVIM_PLUGIN_LOCKFILE
   if override and override ~= "" then
     -- Development updates must write to the explicitly selected source checkout.
     return vim.fn.fnamemodify(vim.fn.expand(override), ":p")
@@ -13,16 +13,16 @@ function M.resolve()
     return source
   end
 
-  local target = vim.fs.joinpath(vim.fn.stdpath("state"), "lazy", "lazy-lock.json")
+  local target = vim.fs.joinpath(vim.fn.stdpath("state"), "plugin-tools", "plugin-tools-lock.json")
   local contents = vim.fn.readfile(source, "b")
   if vim.fn.filereadable(target) == 0 or not vim.deep_equal(contents, vim.fn.readfile(target, "b")) then
     vim.fn.mkdir(vim.fs.dirname(target), "p")
     local temporary = target .. "." .. vim.uv.os_getpid() .. ".tmp"
-    assert(vim.fn.writefile(contents, temporary, "b") == 0, "Cannot seed lazy.nvim lockfile")
+    assert(vim.fn.writefile(contents, temporary, "b") == 0, "Cannot seed plugin-tools lockfile")
     local ok, err = vim.uv.fs_rename(temporary, target)
     if not ok then
       vim.uv.fs_unlink(temporary)
-      error("Cannot replace lazy.nvim lockfile: " .. tostring(err))
+      error("Cannot replace plugin-tools lockfile: " .. tostring(err))
     end
   end
   return target

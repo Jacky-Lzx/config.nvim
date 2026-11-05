@@ -1,12 +1,18 @@
 return {
   {
-    "igorlfs/nvim-dap-view",
+    bootstrap = require("config.bindings").bootstrap("nvim-dap-view", {
+      {
+        "<leader>Du",
+        function()
+          require("dap-view").toggle()
+        end,
+        desc = "[DAP view] Toggle dap-view",
+      },
+    }, nil),
+    main = "dap-view",
+    id = "nvim-dap-view",
+    source = "igorlfs/nvim-dap-view",
     -- stylua: ignore
-    keys = {
-      { "<leader>Du", function() require("dap-view").toggle() end, desc = "[DAP view] Toggle dap-view" },
-    },
-    ---@module 'dap-view'
-    ---@type dapview.Config
     opts = {
       winbar = {
         sections = { "scopes", "repl", "watches", "breakpoints", "exceptions" },
@@ -29,42 +35,146 @@ return {
   },
 
   {
+    main = "nvim-dap-virtual-text",
     -- Show variable values as virtual texts
-    "theHamsta/nvim-dap-virtual-text",
+    id = "nvim-dap-virtual-text",
+    source = "theHamsta/nvim-dap-virtual-text",
     -- Disabled by default
     enabled = false,
     opts = { virt_text_pos = "eol" },
   },
 
   {
-    "mfussenegger/nvim-dap",
-    dependencies = { "igorlfs/nvim-dap-view" },
+    bootstrap = require("config.bindings").bootstrap("nvim-dap", {
+      {
+        "<F5>",
+        function()
+          require("dap").continue()
+        end,
+        mode = "n",
+        desc = "[DAP] Continue",
+      },
+      {
+        "<F6>",
+        function()
+          require("dap").step_over()
+        end,
+        mode = "n",
+        desc = "[DAP] Step over",
+      },
+      {
+        "<F7>",
+        function()
+          require("dap").step_into()
+        end,
+        mode = "n",
+        desc = "[DAP] Step into",
+      },
+      {
+        "<F8>",
+        function()
+          require("dap").step_out()
+        end,
+        mode = "n",
+        desc = "[DAP] Step out",
+      },
+      {
+        "<F9>",
+        function()
+          require("dap").pause()
+        end,
+        mode = "n",
+        desc = "[DAP] Pause",
+      },
+      {
+        "<F10>",
+        function()
+          require("dap").terminate()
+        end,
+        mode = "n",
+        desc = "[DAP] Terminate",
+      },
+      {
+        "<Leader>b",
+        function()
+          require("dap").toggle_breakpoint()
+        end,
+        mode = "n",
+        desc = "[DAP] Toggle breakpoint",
+      },
+      {
+        "<Leader>B",
+        function()
+          require("dap").set_breakpoint()
+        end,
+        mode = "n",
+        desc = "[DAP] Set breakpoint",
+      },
+      -- Remove the <leader>D binding in "x" mode
+      { "<Leader>D", mode = "x" },
+      {
+        "<Leader>Dr",
+        function()
+          require("dap").repl.open()
+        end,
+        mode = "n",
+        desc = "[DAP] Repl open",
+      },
+      {
+        "<Leader>Dl",
+        function()
+          require("dap").run_last()
+        end,
+        mode = "n",
+        desc = "[DAP] Run last",
+      },
+      {
+        "<Leader>Dd",
+        function()
+          require("dap.ui.widgets").hover()
+        end,
+        mode = { "n", "v" },
+        desc = "[DAP] Widgets hover",
+      },
+      {
+        "<Leader>Dp",
+        function()
+          require("dap.ui.widgets").preview()
+        end,
+        mode = { "n", "v" },
+        desc = "[DAP] Widgets preview",
+      },
+      {
+        "<Leader>Df",
+        function()
+          local widgets = require("dap.ui.widgets")
+          widgets.centered_float(widgets.frames)
+        end,
+        mode = { "n" },
+        desc = "[DAP] Float frames",
+      },
+      {
+        "<Leader>Ds",
+        function()
+          local widgets = require("dap.ui.widgets")
+          widgets.centered_float(widgets.scopes)
+        end,
+        mode = { "n" },
+        desc = "[DAP] Float scopes",
+      },
+    }, nil),
+    main = "dap",
+    id = "nvim-dap",
+    source = "mfussenegger/nvim-dap",
+    dependencies = { "nvim-dap-view" },
     opts = {
       adapters = {},
       configurations = {},
       configuration_aliases = {},
     },
     -- stylua: ignore
-    keys = {
-      { "<F5>",       function() require("dap").continue() end,                                                        mode = "n",          desc = "[DAP] Continue" },
-      { "<F6>",       function() require("dap").step_over() end,                                                       mode = "n",          desc = "[DAP] Step over" },
-      { "<F7>",       function() require("dap").step_into() end,                                                       mode = "n",          desc = "[DAP] Step into" },
-      { "<F8>",       function() require("dap").step_out() end,                                                        mode = "n",          desc = "[DAP] Step out" },
-      { "<F9>",       function() require("dap").pause() end,                                                           mode = "n",          desc = "[DAP] Pause" },
-      { "<F10>",      function() require("dap").terminate() end,                                                       mode = "n",          desc = "[DAP] Terminate" },
-      { "<Leader>b",  function() require("dap").toggle_breakpoint() end,                                               mode = "n",          desc = "[DAP] Toggle breakpoint" },
-      { "<Leader>B",  function() require("dap").set_breakpoint() end,                                                  mode = "n",          desc = "[DAP] Set breakpoint" },
-      -- Remove the <leader>D binding in "x" mode
-      { "<Leader>D" , mode = "x" },
-      { "<Leader>Dr", function() require("dap").repl.open() end,                                                       mode = "n",          desc = "[DAP] Repl open" },
-      { "<Leader>Dl", function() require("dap").run_last() end,                                                        mode = "n",          desc = "[DAP] Run last" },
-      { "<Leader>Dd", function() require("dap.ui.widgets").hover() end,                                                mode = { "n", "v" }, desc = "[DAP] Widgets hover" },
-      { "<Leader>Dp", function() require("dap.ui.widgets").preview() end,                                              mode = { "n", "v" }, desc = "[DAP] Widgets preview" },
-      { "<Leader>Df", function() local widgets = require("dap.ui.widgets") widgets.centered_float(widgets.frames) end, mode = {"n"},        desc = "[DAP] Float frames" },
-      { "<Leader>Ds", function() local widgets = require("dap.ui.widgets") widgets.centered_float(widgets.scopes) end, mode = {"n"},        desc = "[DAP] Float scopes" },
-    },
-
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       local dap = require("dap")
       dap.adapters = vim.tbl_deep_extend("force", dap.adapters, opts.adapters)
       dap.configurations = vim.tbl_deep_extend("force", dap.configurations, opts.configurations)

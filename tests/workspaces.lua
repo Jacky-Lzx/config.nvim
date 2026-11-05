@@ -7,10 +7,11 @@ end
 dofile(root .. "/tests/setup.lua")
 vim.o.loadplugins = true
 dofile(root .. "/init.lua")
-local plugins = require("lazy.core.config").plugins
+dofile(root .. "/tests/native_plugins.lua")
+local plugins = require("config.plugins").nodes()
 assert(not plugins["auto-session"] and not package.loaded["auto-session"])
 assert((plugins["workspace-tools.nvim"] ~= nil) == enabled)
-local ui = require("lazy.core.plugin").values(plugins["ui-tools.nvim"], "opts", false)
+local ui = vim.deepcopy((plugins["ui-tools.nvim"]).opts)
 local dashboard_restore
 for _, key in ipairs(ui.dashboard.keys) do
   if key.key == "s" then
@@ -30,7 +31,7 @@ if enabled then
   vim.cmd.edit(dir .. "/file.txt")
   vim.cmd("WorkspaceSave configured name")
   local workspace = require("workspace_tools")
-  assert(plugin._.loaded and workspace.status().initialized)
+  assert(require("config.plugins").initialized(plugin.id) and workspace.status().initialized)
   assert(not require("workspace_tools.config").options.auto_save)
   assert(not require("workspace_tools.config").options.auto_restore)
   assert(vim.o.sessionoptions == before, "workspace setup changed global sessionoptions")

@@ -17,5 +17,5 @@ return {
     },
   },
   linters = { verilog = { "iverilog" }, systemverilog = { "iverilog" } },
-  plugins = { { import = "languages.verilog.plugins" } },
+  plugins = { "languages.verilog.plugins" },
 }

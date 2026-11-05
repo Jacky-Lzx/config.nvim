@@ -1,12 +1,6 @@
 return {
   {
-    dir = vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "snippet-tools.nvim"),
-    name = "snippet-tools.nvim",
-    main = "snippet_tools",
-    module = false,
-    event = "InsertEnter",
-    cmd = { "SnippetToolsInspect", "SnippetToolsStop", "SnippetToolsReload" },
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("snippet-tools.nvim", {
       {
         "<A-l>",
         function()
@@ -47,10 +41,12 @@ return {
         mode = { "i", "s" },
         desc = "Snippet choice selection",
       },
-    },
-    init = function()
+    }, function()
       require("integrations.snippets").setup()
-    end,
+    end),
+    id = "snippet-tools.nvim",
+    dir = vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "snippet-tools.nvim"),
+    main = "snippet_tools",
     config = function()
       require("integrations.snippets").setup_native()
     end,

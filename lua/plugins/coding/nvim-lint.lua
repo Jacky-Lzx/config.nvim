@@ -1,13 +1,15 @@
 return {
   {
-    "mfussenegger/nvim-lint",
-    event = { "BufWritePost" },
+    main = "lint",
+    id = "nvim-lint",
+    source = "mfussenegger/nvim-lint",
     dependencies = { "toolchain-tools.nvim" },
     opts = {
       linters = require("languages").current().linter_options,
       linters_by_ft = require("languages").current().linters,
     },
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       -- Configure linters
       local lint = require("lint")
       lint.linters_by_ft = opts.linters_by_ft

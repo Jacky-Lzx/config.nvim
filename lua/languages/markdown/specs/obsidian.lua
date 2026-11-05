@@ -1,39 +1,6 @@
 return {
   {
-    "obsidian-nvim/obsidian.nvim",
-    init = function()
-      require("keymap_tools").register("obsidian", {
-        groups = { { prefix = "<leader>O", label = "[Obsidian]" } },
-      })
-    end,
-    -- Workspaces are supplied by the vault's .lazy.lua after shared opts are merged.
-    cond = function(plugin)
-      local opts = require("lazy.core.plugin").values(plugin, "opts", false)
-      return type(opts.workspaces) == "table" and #opts.workspaces > 0
-    end,
-    version = "*", -- Recommended, use latest release instead of latest commit
-    -- These only contribute options; opening a vault does not need image APIs.
-    specs = {
-      -- Modified img-clip configs for obsidian vaults
-      {
-        "HakonHarnes/img-clip.nvim",
-        optional = true,
-        opts = {
-          default = {
-            dir_path = "assets/imgs", ---@type string | fun(): string
-          },
-        },
-      },
-      {
-        "image-tools.nvim",
-        optional = true,
-        opts = {
-          insert = { directory = "assets/imgs" },
-        },
-      },
-    },
-    cmd = { "Obsidian" },
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("obsidian.nvim", {
       { "<leader>OO", "<CMD>Obsidian<CR>", desc = "[Obsidian] Picker" },
       { "<leader>OD", "<CMD>Obsidian dailies<CR>", desc = "[Obsidian] Dailies" },
       { "<leader>Og", "<CMD>Obsidian search<CR>", desc = "[Obsidian] Search" },
@@ -44,10 +11,16 @@ return {
       -- typos: ignore
       { "<leader>Ot", "<CMD>Obsidian tags<CR>", desc = "[Obsidian] Tags" }, -- codespell:ignore "Ot"
       { "<leader>Op", "<CMD>Obsidian paste_img<CR>", desc = "[Obsidian] Paste image" },
-    },
-
-    ---@module 'obsidian'
-    ---@type obsidian.config
+    }, function()
+      require("keymap_tools").register("obsidian", {
+        groups = { { prefix = "<leader>O", label = "[Obsidian]" } },
+      })
+    end),
+    main = "obsidian",
+    id = "obsidian.nvim",
+    source = "obsidian-nvim/obsidian.nvim",
+    version = "*", -- Recommended, use latest release instead of latest commit
+    -- These only contribute options; opening a vault does not need image APIs.
     opts = {
       -- Keep notes in a specific subdirectory of the vault.
       notes_subdir = "notes",

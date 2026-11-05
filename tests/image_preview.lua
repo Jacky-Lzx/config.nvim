@@ -5,7 +5,8 @@ require("config.context").initialize({ profiles = {}, features = {} })
 vim.g.loaded_wakatime = true
 vim.o.loadplugins = true
 dofile(root .. "/init.lua")
-local plugins = require("lazy.core.config").plugins
+dofile(root .. "/tests/native_plugins.lua")
+local plugins = require("config.plugins").nodes()
 assert(not plugins["snacks.nvim"], "Snacks image must not be configured")
 local expected = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
 local spec = plugins["image-tools.nvim"]
@@ -13,17 +14,14 @@ local available = vim.uv.fs_stat(expected .. "/lua/image_tools/init.lua") ~= nil
 if available then
   assert(spec, "Independent preview spec missing")
   assert(spec.dir == expected, "Independent preview must use the external checkout")
-  assert(
-    require("lazy.core.plugin").values(spec, "opts", false).position == "bottom_right",
-    "Preview must be configured for the bottom-right corner"
-  )
-  local options = require("lazy.core.plugin").values(spec, "opts", false)
+  assert(vim.deepcopy((spec).opts).position == "bottom_right", "Preview must be configured for the bottom-right corner")
+  local options = vim.deepcopy((spec).opts)
   assert(options.transport == "auto", "Preview should prefer file transfer with automatic direct fallback")
-  assert(spec.lazy == true, "Image preview must load on demand")
-  assert(not spec._.loaded and not package.loaded.image_tools, "Empty startup must leave image preview unloaded")
+  assert(not package.loaded["image_tools.runtime"], "Image Runtime must initialize on demand")
+  assert(not package.loaded.image_tools, "Empty startup must leave image preview unloaded")
   local calls = 0
   vim.cmd("ImagePreviewClose")
-  assert(spec._.loaded, "Independent preview did not load")
+  assert(require("config.plugins").initialized(spec.id), "Independent preview did not load")
   local image = require("image_tools")
   assert(
     debug.getinfo(image.hover).source:find(expected, 1, true),
@@ -49,7 +47,7 @@ if available then
   assert(vim.fn.exists(":ImagePreview") == 2, "Independent preview command missing")
   assert(vim.fn.exists(":ImagePreviewClearCache") == 2, "Terminal cache cleanup command missing")
 else
-  assert(not spec or spec.cond == false, "Missing unpublished plugin should be disabled without cloning")
+  assert(not spec or spec.enabled == false, "Missing unpublished plugin should be disabled without cloning")
 end
 assert(package.loaded["snacks.image"] == nil, "Snacks image was loaded despite being disabled")
 print(

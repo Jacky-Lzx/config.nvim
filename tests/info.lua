@@ -32,10 +32,18 @@ vim.lsp.is_enabled = function(name)
   return name == "basedpyright"
 end
 local plugins = {
-  ["pairs.nvim"] = { dir = "/fixture/dev/pairs.nvim", dev = true, _ = { is_local = true, loaded = {} } },
-  ["remote.nvim"] = { dir = "/fixture/lazy/remote.nvim", url = "https://example.test/remote.git", _ = {} },
+  ["pairs.nvim"] = { dir = "/fixture/dev/pairs.nvim", dev = true, package = { managed = false } },
+  ["remote.nvim"] = {
+    dir = "/fixture/plugin-tools/remote.nvim",
+    package = { managed = true, source = "https://example.test/remote.git" },
+  },
 }
-package.loaded["lazy.core.config"] = { plugins = plugins }
+package.loaded["config.plugins"] = {
+  manager = {
+    graph = { nodes = plugins },
+    states = { ["pairs.nvim"] = { phase = "ready" }, ["remote.nvim"] = { phase = "mounted" } },
+  },
+}
 info = inspect.snapshot()
 assert(vim.deep_equal(info.lsp.enabled_servers, { "basedpyright" }))
 assert(info.plugins.initialized and #info.plugins.entries == 2)

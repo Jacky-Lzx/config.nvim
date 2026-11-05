@@ -2,27 +2,17 @@ local root = require("utils.platform").dev_plugin_root()
 
 return {
   {
-    dir = root .. "/file-tools.nvim",
-    name = "file-tools.nvim",
-    main = "file_tools",
-    cmd = { "FileTools", "FileToolsRead", "FileToolsWrite", "SudaRead", "SudaWrite" },
-    dependencies = { "theme-tools.nvim" },
-    opts = { tree = { width = 40, follow = true } },
-    config = function(_, opts)
-      local files = require("file_tools")
-      files.setup(opts)
-      for _, action in ipairs({ "Read", "Write" }) do
-        vim.api.nvim_create_user_command("Suda" .. action, function(args)
-          local ok, err = pcall(files["privileged_" .. action:lower()], args.args ~= "" and args.args or nil, {
-            force = args.bang,
-          })
-          if not ok then
-            vim.notify(tostring(err), vim.log.levels.ERROR)
-          end
-        end, { nargs = "?", bang = true, complete = "file", desc = "Privileged file " .. action:lower() })
-      end
-    end,
-    init = function()
+    bootstrap = require("config.bindings").bootstrap("file-tools.nvim", {
+      { "<leader>e", "<Cmd>FileTools toggle<CR>", desc = "[Files] Toggle tree" },
+      { "<leader>E", "<Cmd>FileTools find<CR>", desc = "[Files] Reveal current file" },
+      {
+        "<leader>cw",
+        function()
+          require("file_tools").open({ root = vim.fn.getcwd() })
+        end,
+        desc = "[Files] Open working directory",
+      },
+    }, function()
       local unsupported = {
         "<A-h>",
         "<A-l>",
@@ -53,17 +43,26 @@ return {
           end
         end,
       })
+    end),
+    id = "file-tools.nvim",
+    dir = root .. "/file-tools.nvim",
+    main = "file_tools",
+    dependencies = { "theme-tools.nvim" },
+    opts = { tree = { width = 40, follow = true } },
+    config = function(ctx)
+      local opts = ctx.opts
+      local files = require("file_tools")
+      files.setup(opts)
+      for _, action in ipairs({ "Read", "Write" }) do
+        vim.api.nvim_create_user_command("Suda" .. action, function(args)
+          local ok, err = pcall(files["privileged_" .. action:lower()], args.args ~= "" and args.args or nil, {
+            force = args.bang,
+          })
+          if not ok then
+            vim.notify(tostring(err), vim.log.levels.ERROR)
+          end
+        end, { nargs = "?", bang = true, complete = "file", desc = "Privileged file " .. action:lower() })
+      end
     end,
-    keys = {
-      { "<leader>e", "<Cmd>FileTools toggle<CR>", desc = "[Files] Toggle tree" },
-      { "<leader>E", "<Cmd>FileTools find<CR>", desc = "[Files] Reveal current file" },
-      {
-        "<leader>cw",
-        function()
-          require("file_tools").open({ root = vim.fn.getcwd() })
-        end,
-        desc = "[Files] Open working directory",
-      },
-    },
   },
 }

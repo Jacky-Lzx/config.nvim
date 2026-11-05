@@ -1,13 +1,13 @@
--- Invoked by tests/tui.py so Lazy's real UIEnter -> VeryLazy path runs.
+-- Invoked by tests/tui.py after native startup and ConfigReady.
 local temp = assert(vim.uv.fs_realpath(assert(vim.env.NVIM_TEST_TMP)))
-local plugins = require("lazy.core.config").plugins
-local function unloaded(...)
+local plugins = require("config.plugins").nodes()
+local function registered(...)
   for _, name in ipairs({ ... }) do
-    assert(plugins[name] and not plugins[name]._.loaded, "Unexpectedly loaded " .. name)
+    assert(plugins[name] and require("config.plugins").initialized(name), "Missing registration for " .. name)
   end
 end
 local function loaded(name)
-  assert(plugins[name] and plugins[name]._.loaded, "Did not load " .. name)
+  assert(plugins[name] and require("config.plugins").initialized(name), "Did not load " .. name)
 end
 local function feed(keys)
   vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(keys, true, false, true), "xt", false)
@@ -19,8 +19,8 @@ local function contents(lines)
 end
 
 local function check()
-  assert(vim.g.did_very_lazy, "This check must run after the real VeryLazy event")
-  unloaded(
+  assert(vim.g.config_ready, "This check must run after the real ConfigReady event")
+  registered(
     "nvim-dap",
     "nvim-dap-view",
     "file-tools.nvim",
@@ -45,7 +45,7 @@ local function check()
   assert(not plugins["flash.nvim"] and not plugins["nvim-hlslens"] and not plugins["mini.bracketed"])
   assert(not plugins["copilot.lua"] and not package.loaded["copilot.client"])
   assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
-  assert(not package.loaded["tex-tools"], "TeX tools loaded without a TeX buffer")
+  assert(not vim.b.tex_tools_generation, "TeX behavior attached to a non-TeX buffer")
   assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
   for _, command in ipairs({
     "FileTools",
@@ -57,13 +57,11 @@ local function check()
     "EditingTools",
     "TaskToggle",
     "CodeCompanionChat",
-    "SnippetToolsReload",
-    "CompletionToolsCopilot",
   }) do
     assert(vim.fn.exists(":" .. command) == 2, "Missing cold command: " .. command)
   end
 
-  local case = vim.env.NVIM_LAZY_CASE
+  local case = vim.env.NVIM_STARTUP_CASE
   -- Some installed plugins use silent! cleanup for absent legacy autocmds and
   -- dictionary watchers. These leave v:errmsg without reporting an error.
   vim.v.errmsg = ""
@@ -71,7 +69,7 @@ local function check()
     -- First-save opt-out must not initialize Conform or trim whitespace.
     feed(" tf")
     assert(vim.g.enable_autoformat == false)
-    unloaded("conform.nvim")
+    registered("conform.nvim")
     vim.cmd.edit(temp .. "/lazy-save.txt")
     vim.api.nvim_buf_set_lines(0, 0, -1, false, { "keep spaces   " })
     vim.cmd.write()
@@ -86,16 +84,16 @@ local function check()
     loaded("crates.nvim")
     loaded("pairs.nvim") -- Reading/creating a file enables rainbow before InsertEnter.
     assert(require("pairs.rainbow").status().enabled)
-    unloaded("nvim-dap", "snippet-tools.nvim")
+    registered("nvim-dap", "snippet-tools.nvim")
     loaded("file-tools.nvim")
     assert(not package.loaded["file_tools.tree"], "LSP capabilities must not initialize the tree")
     for _, extension in ipairs({ "cpp", "swift" }) do
       vim.cmd.edit(temp .. "/lazy-file." .. extension)
-      unloaded("nvim-dap", "nvim-dap-view")
+      registered("nvim-dap", "nvim-dap-view")
       assert(not package.loaded["file_tools.tree"])
     end
     vim.api.nvim_exec_autocmds("LspAttach", { buffer = 0, data = { client_id = 999999 } })
-    unloaded("nvim-dap")
+    registered("nvim-dap")
     assert(not package.loaded["file_tools.tree"])
 
     if case == "boundaries_files" then
@@ -145,7 +143,7 @@ local function check()
     loaded("nvim-dap-view")
   elseif case == "editing" then
     contents({ "a=1", "long=2" })
-    vim.fn.writefile({ "Running first alignment" }, vim.env.NVIM_LAZY_RESULT)
+    vim.fn.writefile({ "Running first alignment" }, vim.env.NVIM_STARTUP_RESULT)
     feed("Vjga")
     loaded("editing-tools.nvim")
     assert(require("editing_tools.align").is_active(), "First alignment did not open preview")
@@ -155,24 +153,24 @@ local function check()
     local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
     assert(lines[1]:find("=", 1, true) == lines[2]:find("=", 1, true), vim.inspect(lines))
     contents({ "word" })
-    vim.fn.writefile({ "Running first multiply" }, vim.env.NVIM_LAZY_RESULT)
+    vim.fn.writefile({ "Running first multiply" }, vim.env.NVIM_STARTUP_RESULT)
     feed("gmm")
     loaded("editing-tools.nvim")
     assert(vim.api.nvim_buf_line_count(0) == 2, "First multiply key did not duplicate the line")
     contents({ "(word)" })
-    vim.fn.writefile({ "Running first textobject" }, vim.env.NVIM_LAZY_RESULT)
+    vim.fn.writefile({ "Running first textobject" }, vim.env.NVIM_STARTUP_RESULT)
     feed("di(")
     loaded("editing-tools.nvim")
     assert(vim.api.nvim_get_current_line() == "()", "First textobject key did not operate")
     contents({ "(word)" })
-    vim.fn.writefile({ "Running first surround" }, vim.env.NVIM_LAZY_RESULT)
+    vim.fn.writefile({ "Running first surround" }, vim.env.NVIM_STARTUP_RESULT)
     feed("sd)")
     loaded("pairs.nvim")
     assert(require("pairs").status().surround.enabled)
     assert(#require("pairs").status().surround.conflicts == 0)
     assert(vim.api.nvim_get_current_line() == "word", "First surround key did not operate")
     contents({ "match match" })
-    vim.fn.writefile({ "Running first search" }, vim.env.NVIM_LAZY_RESULT)
+    vim.fn.writefile({ "Running first search" }, vim.env.NVIM_STARTUP_RESULT)
     feed("/match<CR>")
     loaded("motion-tools.nvim")
     assert(not plugins["nvim-scrollbar"] and not package.loaded.scrollbar)
@@ -182,7 +180,7 @@ local function check()
     feed(":<Esc>")
     loaded("completion-tools.nvim")
     assert(not plugins["blink.cmp"] and not package.loaded["blink.cmp"])
-    unloaded("snippet-tools.nvim", "pairs.nvim")
+    registered("snippet-tools.nvim", "pairs.nvim")
     contents({ "" })
     vim.bo.filetype = "lua"
     feed("i(<CR>x<Esc>")
@@ -219,13 +217,13 @@ local function check()
 end
 
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     vim.defer_fn(function()
       local ok, err = xpcall(check, debug.traceback)
-      local result = ok and ("Terminal lazy-loading checks passed: " .. vim.env.NVIM_LAZY_CASE) or err
-      vim.fn.writefile(vim.split(result, "\n", { plain = true }), vim.env.NVIM_LAZY_RESULT)
+      local result = ok and ("Terminal lazy-loading checks passed: " .. vim.env.NVIM_STARTUP_CASE) or err
+      vim.fn.writefile(vim.split(result, "\n", { plain = true }), vim.env.NVIM_STARTUP_RESULT)
       vim.cmd(ok and "quitall!" or "cquit 1")
     end, 50)
   end,

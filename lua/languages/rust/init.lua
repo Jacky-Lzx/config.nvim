@@ -10,5 +10,5 @@ return {
   formatters = {
     rust = { "rustfmt", lsp_format = "fallback" },
   },
-  plugins = { { import = "languages.rust.plugins" } },
+  plugins = { "languages.rust.plugins" },
 }

@@ -10,14 +10,14 @@ return {
   },
   plugins = {
     {
-      "Jacky-Lzx/lsp-tools.nvim",
+      id = "lsp-tools.nvim",
       opts = {
         lua = {
           -- Preserve the previous behavior in projects with their own .luarc.
           enabled = true,
           plugin_roots = {
             require("utils.platform").dev_plugin_root(),
-            vim.fn.stdpath("data") .. "/lazy",
+            vim.fn.stdpath("data") .. "/plugin-tools",
           },
           library = {
             { path = "${3rd}/luv/library", words = { "vim%.uv" } },

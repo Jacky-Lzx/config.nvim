@@ -29,12 +29,13 @@ export XDG_STATE_HOME="$test_tmp/state"
 export NVIM_CONFIG_ROOT="$root"
 export NVIM_TEST_TMP="$test_tmp"
 export NVIM_SMOKE_TEST=1
+export NVIM_PLUGIN_TOOLS_PATH="${NVIM_PLUGIN_TOOLS_PATH:-$HOME/Documents/Github/nvim_plugins/plugin-tools.nvim}"
 export NVIM_LOG_FILE="$test_tmp/nvim.log"
 export SSH_CONNECTION=
-unset PROF NVIM_LAZY_LOCKFILE NVIM_TEST_SCENARIO NVIM_COLUMN_GUIDE_STARTUP BARS_TEST NVIM_TEST_LINK_FIRST
+unset PROF NVIM_PLUGIN_LOCKFILE NVIM_TEST_SCENARIO NVIM_COLUMN_GUIDE_STARTUP BARS_TEST NVIM_TEST_LINK_FIRST
 # Plugin startup may refresh locks; smoke runs must not rewrite the checkout.
-cp "$root/lazy-lock.json" "$test_tmp/lazy-lock.json"
-export NVIM_LAZY_LOCKFILE="$test_tmp/lazy-lock.json"
+cp "$root/plugin-tools-lock.json" "$test_tmp/plugin-tools-lock.json"
+export NVIM_PLUGIN_LOCKFILE="$test_tmp/plugin-tools-lock.json"
 
 cat >"$test_tmp/sample.tex" <<'EOF'
 \documentclass{article}
@@ -70,10 +71,9 @@ integration_checks() (
   NVIM_TEST_LINK_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   NVIM_TEST_REFERENCE_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   BARS_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/bars.lua"
-  NVIM_DEV_PLUGIN_ROOT="$test_tmp/missing-dev-plugins" nvim --headless -u NONE -i NONE --noplugin \
-    -l "$root/tests/image_preview.lua"
+  run_tests plugin_manifest
   installed_plugins=$(nvim --headless -u NONE -i NONE --noplugin \
-    --cmd "lua io.stdout:write(vim.fn.stdpath('data') .. '/lazy')" +qa)
+    --cmd "lua io.stdout:write(vim.fn.stdpath('data') .. '/plugin-tools')" +qa)
   fallback_ready=true
   for plugin in notification-tools.nvim input-tools.nvim ui-tools.nvim selection-tools.nvim; do
     if [ ! -d "$installed_plugins/$plugin" ]; then fallback_ready=false; fi
@@ -128,7 +128,7 @@ integration_checks() (
     --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
     -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_tools.lua')"
 
-  # A PTY supplies UIEnter, which Lazy needs to fire its actual VeryLazy event.
+  # A PTY validates native startup, ConfigReady, and actual terminal input.
   for scenario in boundaries boundaries_files tasks editing editing_input completion ui_tools annotations bars folding keymaps \
     image_plain image_edit image_existing image_tex_reference image_typst_reference image_markdown_formula \
     image_disabled image_formula image_file; do

@@ -2,13 +2,12 @@ local root = require("utils.platform").dev_plugin_root()
 
 return {
   {
+    bootstrap = require("config.bindings").bootstrap("theme-tools.nvim", {
+      { "<leader>ut", "<cmd>ThemeTools<cr>", desc = "[Theme] Preview themes" },
+    }, nil),
+    id = "theme-tools.nvim",
     dir = root .. "/theme-tools.nvim",
-    name = "theme-tools.nvim",
     main = "theme_tools",
-    lazy = false,
-    -- Apply the saved theme before UI plugins can redraw the default background.
-    priority = 1200,
-    -- selection-tools has its own startup spec; the picker only needs it on use.
     opts = {
       dracula = { transparent_bg = true },
       catppuccin = {
@@ -85,7 +84,8 @@ return {
         "catppuccin-macchiato",
       },
     },
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       vim.api.nvim_create_autocmd("ColorScheme", {
         group = vim.api.nvim_create_augroup("lzx_highlights", { clear = true }),
         pattern = "catppuccin*",
@@ -95,8 +95,5 @@ return {
       })
       require("theme_tools").setup(opts)
     end,
-    keys = {
-      { "<leader>ut", "<cmd>ThemeTools<cr>", desc = "[Theme] Preview themes" },
-    },
   },
 }

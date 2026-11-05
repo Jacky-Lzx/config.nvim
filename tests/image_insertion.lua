@@ -1,6 +1,6 @@
 -- Run after image_preview.lua has loaded the real local plugin and configuration.
 local image = require("image_tools")
-local plugin = require("lazy.core.config").plugins["image-tools.nvim"].dir
+local plugin = require("config.plugins").nodes()["image-tools.nvim"].dir
 local fixture = plugin .. "/tests/fixtures/fixture.png"
 local directory = vim.fn.tempname() .. "-insertion"
 vim.fn.mkdir(directory .. "/chapters", "p")

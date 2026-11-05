@@ -50,11 +50,10 @@ end
 
 return {
   {
+    bootstrap = require("config.bindings").bootstrap("motion-tools.nvim", keys, nil),
+    id = "motion-tools.nvim",
     dir = require("utils.platform").dev_plugin_root() .. "/motion-tools.nvim",
-    name = "motion-tools.nvim",
     main = "motion_tools",
-    lazy = false, -- Native / and ? feedback must work before the first mapped motion.
     opts = { mappings = false }, -- This spec owns keys; preserve other plugin owners.
-    keys = keys,
   },
 }

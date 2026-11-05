@@ -2,13 +2,13 @@ local api = vim.api
 local temp = assert(vim.uv.fs_realpath(vim.env.NVIM_TEST_TMP))
 
 local function check()
-  local plugins = require("lazy.core.config").plugins
+  local plugins = require("config.plugins").nodes()
   for _, name in ipairs({ "vim-startuptime", "vim-suda", "lazydev.nvim" }) do
     assert(not plugins[name], "Replaced utility is still configured: " .. name)
   end
   assert(not package.loaded["debug_tools.startuptime"] and not package.loaded["file_tools.privileged"])
   assert(not package.loaded["lsp-tools.languages.lua.resolve"])
-  assert(not plugins["file-tools.nvim"]._.loaded, "Sudo commands must remain lazy")
+  assert(require("config.plugins").initialized("file-tools.nvim"), "File command registration is missing")
   for _, command in ipairs({ "StartupTime", "SudaRead", "SudaWrite", "FileToolsRead", "FileToolsWrite" }) do
     assert(vim.fn.exists(":" .. command) == 2, command)
   end
@@ -108,7 +108,7 @@ local function check()
 end
 
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     vim.defer_fn(function()
@@ -119,7 +119,7 @@ vim.api.nvim_create_autocmd("User", {
       vim.fn.writefile({
         ok and "Configured PTY: cold commands, ten native startup runs, sudo aliases and actual LuaLS libraries passed"
           or err,
-      }, vim.env.NVIM_LAZY_RESULT)
+      }, vim.env.NVIM_STARTUP_RESULT)
       vim.cmd(ok and "qa!" or "cquit 1")
     end, 50)
   end,

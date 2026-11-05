@@ -142,7 +142,7 @@ end, "Feature must be boolean: ai")
 local specs = require("config.specs")
 local ok_feature, feature_err = pcall(specs.build, { profiles = {}, features = { typo = true } })
 assert(not ok_feature and tostring(feature_err):find("Unknown feature: typo", 1, true))
-assert(not package.loaded.lazy, "Registry tests unexpectedly loaded lazy.nvim")
+assert(not package.loaded.lazy, "Registry tests unexpectedly loaded a plugin manager")
 
 local context = require("config.context")
 local fixture = selection({ "data" })

@@ -15,10 +15,10 @@ import time
 root = Path(__file__).resolve().parent.parent
 with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
     task = Path(temporary)
-    shutil.copy2(root / "lazy-lock.json", task / "lazy-lock.json")
+    shutil.copy2(root / "plugin-tools-lock.json", task / "plugin-tools-lock.json")
     env = dict(os.environ, TERM="xterm-256color", NVIM_CONFIG_ROOT=str(root), NVIM_SMOKE_TEST="1",
                NVIM_TEST_SCENARIO="writing", NVIM_SNIPPET_STATE=str(task / "state.json"),
-               NVIM_LAZY_LOCKFILE=str(task / "lazy-lock.json"), NVIM_LOG_FILE=str(task / "nvim.log"),
+               NVIM_PLUGIN_LOCKFILE=str(task / "plugin-tools-lock.json"), NVIM_LOG_FILE=str(task / "nvim.log"),
                XDG_CACHE_HOME=str(task / "cache"), XDG_STATE_HOME=str(task / "state"))
     (task / "trial.md").write_text("")
     primary, secondary = pty.openpty()

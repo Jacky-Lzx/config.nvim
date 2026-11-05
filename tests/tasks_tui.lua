@@ -36,9 +36,12 @@ local function screen()
   return table.concat(lines, "\n")
 end
 local function check()
-  local plugins = require("lazy.core.config").plugins
-  assert(plugins["task-tools.nvim"] and not plugins["task-tools.nvim"]._.loaded, "tasks should stay lazy at startup")
-  assert(not package.loaded.task_tools, "bars must not load task-tools")
+  local plugins = require("config.plugins").nodes()
+  assert(
+    plugins["task-tools.nvim"] and require("config.plugins").initialized("task-tools.nvim"),
+    "task command registration is missing"
+  )
+  assert(#require("task_tools").list() == 0, "Registration started a task")
   assert(not plugins["overseer.nvim"] and not plugins["compile.nvim"])
   local root = vim.uv.fs_realpath(vim.env.NVIM_TEST_TMP) .. "/tasks-tui"
   vim.fn.mkdir(root .. "/src", "p")
@@ -47,7 +50,7 @@ local function check()
   await("prompt", function()
     return vim.fn.getcmdtype() == "@"
   end)
-  assert(plugins["task-tools.nvim"]._.loaded)
+  assert(require("config.plugins").initialized("task-tools.nvim"))
   local tasks = require("task_tools")
   assert(plugins["task-tools.nvim"].dir == require("utils.platform").dev_plugin_root() .. "/task-tools.nvim")
   await("command", function()
@@ -141,7 +144,7 @@ local function check()
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     local worker = coroutine.create(check)
@@ -151,7 +154,7 @@ vim.api.nvim_create_autocmd("User", {
         local message = ok
             and "tasks TUI: lazy loading, manual commands, quickfix jumps, Alt-i PTY, Python arguments and task discovery passed"
           or debug.traceback(worker, tostring(delay))
-        vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_LAZY_RESULT)
+        vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_STARTUP_RESULT)
         vim.cmd(ok and "qa!" or "cquit 1")
       else
         vim.defer_fn(advance, delay)

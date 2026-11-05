@@ -1,6 +1,6 @@
 -- Invoked by tests/tui.py after the full real configuration has started.
 local tools = require("notification-tools")
-local result = assert(vim.env.NVIM_LAZY_RESULT)
+local result = assert(vim.env.NVIM_STARTUP_RESULT)
 local original_win, original_buf, notice, before, original_theme
 local buffer_done, buffer_value
 local failed = false
@@ -62,13 +62,13 @@ local function capture()
 end
 
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     later(100, function()
-      assert(vim.g.did_very_lazy and #vim.api.nvim_list_uis() > 0)
-      assert(not require("lazy.core.config").plugins["fidget.nvim"])
-      assert(not require("lazy.core.config").plugins["noice.nvim"] and not package.loaded.noice)
+      assert(vim.g.config_ready and #vim.api.nvim_list_uis() > 0)
+      assert(not require("config.plugins").nodes()["fidget.nvim"])
+      assert(not require("config.plugins").nodes()["noice.nvim"] and not package.loaded.noice)
       assert(require("input-tools").status().notifications, "Native message handoff is inactive")
       tools.dismiss()
       tools.clear_tasks()

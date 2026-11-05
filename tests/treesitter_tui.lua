@@ -9,10 +9,10 @@ local function mark(value)
 end
 local function check()
   if stage == "initial" then
-    if not vim.g.did_very_lazy then
+    if not vim.g.config_ready then
       return
     end
-    assert(not require("lazy.core.config").plugins["nvim-treesitter"])
+    assert(not require("config.plugins").nodes()["nvim-treesitter"])
     assert(not vim.g.loaded_nvim_treesitter and not package.loaded["nvim-treesitter"])
     vim.cmd("enew!")
     source_buf, source_win = api.nvim_get_current_buf(), api.nvim_get_current_win()

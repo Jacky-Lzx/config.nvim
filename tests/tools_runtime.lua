@@ -3,10 +3,11 @@ vim.opt.rtp:prepend(root)
 vim.o.loadplugins = true
 dofile(root .. "/tests/setup.lua")
 dofile(root .. "/init.lua")
+dofile(root .. "/tests/native_plugins.lua")
 vim.wait(100, function()
   return false
 end, 10)
-local plugins = require("lazy.core.config").plugins
+local plugins = require("config.plugins").nodes()
 assert(not plugins["mason.nvim"] and not package.loaded.mason and not package.loaded["mason-registry"])
 for _, path in ipairs(vim.opt.rtp:get()) do
   assert(not path:match("/mason%.nvim"), path)
@@ -15,7 +16,9 @@ local commands = vim.api.nvim_get_commands({})
 assert(commands.Mason ~= nil and commands.MasonToolsInstall ~= nil)
 local java_home = require("utils.platform").jdtls_java_home()
 if java_home and plugins["nvim-lspconfig"] then
-  require("lazy").load({ plugins = { "lsp-tools.nvim" } })
+  for _, id in ipairs({ "lsp-tools.nvim" }) do
+    require("plugin_tools").activate(id)
+  end
   assert(vim.lsp.config.jdtls.cmd_env.JAVA_HOME == java_home)
   local owned = {}
   for _, server in ipairs(require("lsp-tools").server_status()) do

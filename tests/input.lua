@@ -3,23 +3,24 @@ local function feed(keys)
 end
 
 local function check()
-  local plugins = require("lazy.core.config").plugins
+  local plugins = require("config.plugins").nodes()
   local pairing = assert(plugins["pairs.nvim"])
   local dev_dir = vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "pairs.nvim")
   local local_pairing = vim.fn.isdirectory(dev_dir) == 1
-  local expected_dir = local_pairing and dev_dir or vim.fs.joinpath(vim.fn.stdpath("data"), "lazy", "pairs.nvim")
-  assert(pairing.url == "https://github.com/Jacky-Lzx/pairs.nvim.git")
+  local expected_dir = local_pairing and dev_dir
+    or vim.fs.joinpath(vim.fn.stdpath("data"), "plugin-tools", "pairs.nvim")
+  assert(pairing.package.source == "https://github.com/Jacky-Lzx/pairs.nvim.git")
   assert(pairing.dev == local_pairing, "Pairing did not select the expected development/fallback mode")
-  assert((pairing._.is_local == true) == local_pairing)
+  assert((not pairing.package.managed) == local_pairing)
   assert(pairing.dir == expected_dir, "Pairing did not select the expected checkout")
   assert(not plugins["nvim-autopairs"] and not plugins["mini.pairs"])
   assert(not plugins["mini.surround"] and not plugins["rainbow-delimiters.nvim"])
 
   -- Command-line completion loads on first use without loading insert dependencies.
   feed(":<Esc>")
-  assert(plugins["completion-tools.nvim"]._.loaded)
+  assert(require("config.plugins").initialized("completion-tools.nvim"))
   assert(not package.loaded["blink.cmp"])
-  assert(not pairing._.loaded, "Command-line completion must not load pairing")
+  assert(require("config.plugins").initialized(pairing.id), "Pairing registration must be available before input")
 
   local function input(keys, expected, filetype)
     vim.cmd("enew!")

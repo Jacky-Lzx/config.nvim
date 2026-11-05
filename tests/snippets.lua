@@ -73,11 +73,13 @@ local function expand(trigger, key)
 end
 local ok, err = xpcall(function()
   rpc("nvim_ui_attach", 120, 36, { rgb = true })
-  lua([[require('lazy').load({plugins={'snippet-tools.nvim','completion-tools.nvim'}})]])
+  lua(
+    [[for _, id in ipairs({'snippet-tools.nvim','completion-tools.nvim'}) do require("plugin_tools").activate(id); if id=='snippet-tools.nvim' then require('snippet_tools.bootstrap').ensure() elseif id=='completion-tools.nvim' then require('completion_tools.bootstrap').ensure() end end]]
+  )
   test("default Markdown route, inherited TeX/global definitions and duplicate filtering", function()
     eq("snippet-tools", lua("return require('integrations.snippets').engine()"))
     lua([[
-      assert(require('lazy.core.config').plugins['snippet-tools.nvim']._.loaded)
+      assert(require('config.plugins').initialized('snippet-tools.nvim'))
       local ctx=require('snippet_tools').context();ctx.start_col=0;ctx.mode='insert'
       require('integrations.snippets').source().complete(ctx,function(result)
         local labels,own={},0
@@ -234,7 +236,7 @@ local ok, err = xpcall(function()
   end, "lua")
   test("legacy plugin and commands are absent", function()
     lua([[
-      assert(not require('lazy.core.config').plugins.LuaSnip)
+      assert(not require('config.plugins').nodes().LuaSnip)
       for _, command in ipairs({'LuaSnipList','LuaSnipEdit','SnippetEngine','SnippetEngineToggle'}) do
         assert(vim.fn.exists(':'..command)==0, command)
       end

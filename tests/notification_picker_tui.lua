@@ -1,6 +1,6 @@
 -- Exercise the configured picker through the real <leader>sN mapping and UI input.
 local tools = require("notification-tools")
-local result = assert(vim.env.NVIM_LAZY_RESULT)
+local result = assert(vim.env.NVIM_STARTUP_RESULT)
 local origin, source, picker, failed
 local function finish(ok, message)
   vim.fn.writefile(vim.split(message, "\n", { plain = true }), result)
@@ -48,15 +48,16 @@ local function screen()
   return table.concat(rows, "\n")
 end
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     later(100, function()
       assert(#vim.api.nvim_list_uis() > 0)
-      local plugins = require("lazy.core.config").plugins
+      local plugins = require("config.plugins").nodes()
       assert(not plugins["noice.nvim"] and not package.loaded.noice)
       assert(vim.fn.filereadable(vim.env.NVIM_CONFIG_ROOT .. "/lua/plugins/ui/noice.lua") == 0)
-      local locks = vim.json.decode(table.concat(vim.fn.readfile(vim.env.NVIM_CONFIG_ROOT .. "/lazy-lock.json"), "\n"))
+      local locks =
+        vim.json.decode(table.concat(vim.fn.readfile(vim.env.NVIM_CONFIG_ROOT .. "/plugin-tools-lock.json"), "\n"))
       assert(not locks["noice.nvim"])
       tools.dismiss()
       tools.clear_tasks()

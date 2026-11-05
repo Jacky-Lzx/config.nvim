@@ -1,3 +1,3 @@
 return {
-  { import = "plugins.coding.completion.core" },
+  "plugins.coding.completion.core",
 }

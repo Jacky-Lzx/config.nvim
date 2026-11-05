@@ -28,22 +28,25 @@ local ok, err = pcall(config.setup)
 vim.fn.has = has
 assert(not ok and tostring(err):find("requires Neovim 0.12 or newer", 1, true))
 assert(#vim.api.nvim_get_autocmds({}) == before and vim.fn.exists(":ConfigInfo") == 0)
-assert(not package.loaded["core.options"] and not package.loaded["config.lazy"])
+assert(not package.loaded["core.options"] and not package.loaded["config.plugins"])
 
 -- Exercise the actual entry point while keeping plugin bootstrap out of this test.
 local bootstrapped = false
-package.preload["config.lazy"] = function()
-  assert(package.loaded["config.context"] and package.loaded.languages)
-  assert(require("config.context").current().languages == require("languages").current())
-  assert(vim.g.mapleader == " " and vim.g.maplocalleader == " ")
-  assert(vim.g.loaded_netrw == 1 and vim.g.loaded_netrwPlugin == 1)
-  assert(vim.fn.exists(":ConfigInfo") == 2 and vim.fn.exists(":Titlecase") == 2)
-  assert(vim.fn.maparg("jk", "i") == "<Esc>")
-  assert(#vim.api.nvim_get_autocmds({ group = "ConfigCore", event = "FileType" }) == 1)
-  assert(#vim.api.nvim_get_autocmds({ group = "ConfigLsp", event = "LspAttach" }) == 1)
-  assert(vim.diagnostic.config().virtual_lines == false)
-  bootstrapped = true
-  return {}
+package.preload["config.plugins"] = function()
+  return {
+    setup = function()
+      assert(package.loaded["config.context"] and package.loaded.languages)
+      assert(require("config.context").current().languages == require("languages").current())
+      assert(vim.g.mapleader == " " and vim.g.maplocalleader == " ")
+      assert(vim.g.loaded_netrw == 1 and vim.g.loaded_netrwPlugin == 1)
+      assert(vim.fn.exists(":ConfigInfo") == 2 and vim.fn.exists(":Titlecase") == 2)
+      assert(vim.fn.maparg("jk", "i") == "<Esc>")
+      assert(#vim.api.nvim_get_autocmds({ group = "ConfigCore", event = "FileType" }) == 1)
+      assert(#vim.api.nvim_get_autocmds({ group = "ConfigLsp", event = "LspAttach" }) == 1)
+      assert(vim.diagnostic.config().virtual_lines == false)
+      bootstrapped = true
+    end,
+  }
 end
 dofile(root .. "/init.lua")
 assert(bootstrapped, "The root entry point must invoke config.setup")
@@ -59,7 +62,7 @@ local started = false
 package.preload["debug_tools.profiler"] = function()
   return {
     startup = function(opts)
-      assert(opts.event == "VeryLazy" and opts.save == true)
+      assert(opts.event == "ConfigReady" and opts.save == true)
       started = true
     end,
   }

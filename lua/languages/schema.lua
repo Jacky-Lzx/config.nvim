@@ -123,7 +123,7 @@ function M.validate(name, definition)
     check(
       type(spec) == "string" or type(spec) == "table",
       path .. ".plugins[" .. i .. "]",
-      "expected a native lazy spec"
+      "expected a plugin module name or native plugin-tools spec"
     )
   end
   for _, field in ipairs({ "formatters", "formatter_options", "linters", "linter_options" }) do

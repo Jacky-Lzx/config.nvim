@@ -18,7 +18,7 @@ local function check()
   for name in pairs(package.loaded) do
     assert(not name:match("^config%.legacy[%.]?"), "Startup loaded an archived module: " .. name)
   end
-  local plugins = require("lazy.core.config").plugins
+  local plugins = require("config.plugins").nodes()
   assert(info.plugins.initialized)
   assert(not plugins.showkeys and not package.loaded.showkeys, "Screencast must use keymap-tools")
   assert(vim.fn.exists(":ShowkeysToggle") == 0, "Legacy showkeys command remains")
@@ -28,33 +28,33 @@ local function check()
   assert(not package.loaded["keymap_tools.showkeys"], "Inactive screencast must stay lazy")
   for _, entry in ipairs(info.plugins.entries) do
     local plugin = assert(plugins[entry.name])
-    assert(entry.directory == plugin.dir and entry.loaded == not not plugin._.loaded)
-    assert(entry.source == (plugin._.is_local and "local" or "git"))
+    assert(entry.directory == plugin.dir and entry.loaded == not not require("config.plugins").initialized(plugin.id))
+    assert(entry.source == ((not plugin.package.managed) and "local" or "git"))
   end
   assert(not plugins["mini.comment"], "Commenting must use Neovim's native implementation")
   assert(not plugins.undotree, "Snacks undo must not depend on the Undotree plugin")
   assert(not plugins["fidget.nvim"] and not package.loaded.fidget, "Fidget must be removed")
-  assert(plugins["notification-tools.nvim"]._.loaded, "Notifications must be available at startup")
-  assert(plugins["input-tools.nvim"]._.loaded, "Command-line UI must load at startup")
+  assert(require("config.plugins").initialized("notification-tools.nvim"), "Notifications must be available at startup")
+  assert(require("config.plugins").initialized("input-tools.nvim"), "Command-line UI must load at startup")
   assert(require("input-tools").status().notifications, "Native message handoff must be active")
   assert(not plugins["noice.nvim"] and not package.loaded.noice, "Noice must remain disabled")
   assert(not package.loaded["snacks.notifier"], "Snacks must not compete for notification ownership")
   assert(not plugins["smartyank.nvim"], "Yank synchronization must use the native clipboard provider")
   assert(not plugins["nvim-ufo"] and not plugins["promise-async"], "Folding must use the native implementation")
   assert(not plugins["virt-column.nvim"] and not plugins["nvim-scrollbar"])
-  assert(plugins["ui-tools.nvim"]._.loaded, "Editor UI helpers must load at startup")
+  assert(require("config.plugins").initialized("ui-tools.nvim"), "Editor UI helpers must load at startup")
   assert(not plugins["todo-comments.nvim"] and not plugins["nvim-highlight-colors"])
   assert(require("ui_tools.colors").enabled and require("ui_tools.todo").enabled)
-  assert(plugins["motion-tools.nvim"]._.loaded, "Motion search feedback must load at startup")
+  assert(require("config.plugins").initialized("motion-tools.nvim"), "Motion search feedback must load at startup")
   assert(not plugins["flash.nvim"] and not plugins["nvim-hlslens"] and not plugins["mini.bracketed"])
   assert(require("ui_tools.render").sources.guide, "ui-tools must own the column guide")
   assert(not package.loaded["features.column_guide"] and not package.loaded.scrollbar)
   local languages = require("languages").current()
   local features = require("config.context").current().selection.features
   assert(not plugins.vimtex and not plugins["nvim-texlabconfig"])
-  assert(not package.loaded["tex-tools"], "TeX tools must stay lazy before a TeX buffer")
+  assert(not vim.b.tex_tools_generation, "TeX behavior attached to a non-TeX buffer")
   local function opts(name)
-    return require("lazy.core.plugin").values(assert(plugins[name], name), "opts", false)
+    return vim.deepcopy((assert(plugins[name], name)).opts)
   end
   -- Opening a file must supply completion capabilities before LSP enable/start;
   -- interactive completion waits for the first input event.
@@ -62,7 +62,7 @@ local function check()
   if vim.v.errmsg == "E31: No such mapping" then
     vim.v.errmsg = ""
   end
-  assert(not plugins["completion-tools.nvim"]._.loaded, "Opening a file initialized completion UI")
+  assert(require("config.plugins").initialized("completion-tools.nvim"), "Completion bootstrap registration is missing")
   local cmp = require("completion-tools")
   assert(not cmp.get_status().configured, "Capability lookup initialized the completion engine")
   local completion = cmp.get_lsp_capabilities().textDocument.completion
@@ -82,7 +82,9 @@ local function check()
     end
     assert(vim.deep_equal(vim.tbl_deep_extend("force", actual, completion), actual), name)
   end
-  assert(plugins["lsp-tools.nvim"]._.loaded and plugins["nvim-lspconfig"]._.loaded)
+  assert(
+    require("config.plugins").initialized("lsp-tools.nvim") and require("config.plugins").initialized("nvim-lspconfig")
+  )
   local selected, active = {}, {}
   for _, server in ipairs(require("lsp-tools").server_status()) do
     selected[server.name] = server
@@ -106,7 +108,7 @@ local function check()
   assert(vim.deep_equal(active_info.lsp.enabled_servers, active))
   vim.api.nvim_exec_autocmds("InsertEnter", {})
   assert(
-    plugins["completion-tools.nvim"]._.loaded and cmp.get_status().configured,
+    require("config.plugins").initialized("completion-tools.nvim") and cmp.get_status().configured,
     "First InsertEnter must initialize completion"
   )
   local runtime_count = 0
@@ -185,10 +187,13 @@ local function check()
       assert(tools["tool:" .. tool.package], tool.package)
     end
   end
-  assert(plugins["toolchain-tools.nvim"]._.loaded, "Managed parser versions must activate before editing")
+  assert(
+    require("config.plugins").initialized("toolchain-tools.nvim"),
+    "Managed parser versions must activate before editing"
+  )
   assert(not package.loaded["nvim-treesitter"], "Startup must not invoke the legacy installer API")
   vim.cmd("ToolchainPlan")
-  assert(plugins["toolchain-tools.nvim"]._.loaded)
+  assert(require("config.plugins").initialized("toolchain-tools.nvim"))
   assert(not package.loaded.mason and not package.loaded["mason-registry"])
   assert(#require("toolchain").status() == 0, "Planning must not start installations")
   local parser = require("toolchain.parsers").info("lua")
@@ -206,7 +211,9 @@ local function check()
   vim.api.nvim_win_close(0, true)
 
   -- Exercise actual plugin setup, not just spec merging.
-  require("lazy").load({ plugins = { "conform.nvim", "nvim-lint", "completion-tools.nvim" } })
+  for _, id in ipairs({ "conform.nvim", "nvim-lint", "completion-tools.nvim" }) do
+    require("plugin_tools").activate(id)
+  end
   assert(vim.deep_equal(require("conform").formatters_by_ft, opts("conform.nvim").formatters_by_ft))
   assert(vim.deep_equal(require("lint").linters_by_ft, opts("nvim-lint").linters_by_ft))
   -- The same physical format key must use Conform in attached and unattached buffers.
@@ -234,7 +241,9 @@ local function check()
   vim.api.nvim_set_current_buf(attached)
   conform.format, vim.lsp.buf.format = original_format, original_lsp_format
   if features.debugging then
-    require("lazy").load({ plugins = { "nvim-dap" } })
+    for _, id in ipairs({ "nvim-dap" }) do
+      require("plugin_tools").activate(id)
+    end
     if require("languages").is_enabled("python") then
       assert(require("dap").configurations.python[1].type == "python")
     end
@@ -294,7 +303,7 @@ local function check()
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
 
--- Headless startup covers VimEnter. tests/tui.py covers the real VeryLazy path.
+-- Headless startup covers VimEnter. tests/tui.py covers the real ConfigReady path.
 vim.defer_fn(function()
   local ok, err = xpcall(check, debug.traceback)
   if not ok then

@@ -85,7 +85,7 @@ local function check()
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
 vim.api.nvim_create_autocmd("User", {
-  pattern = "VeryLazy",
+  pattern = "ConfigReady",
   once = true,
   callback = function()
     local worker = coroutine.create(check)
@@ -95,7 +95,7 @@ vim.api.nvim_create_autocmd("User", {
         local message = ok
             and "folding TUI: native keys, zS/zK, preview focus, splits, diff, first insert and cleanup passed"
           or debug.traceback(worker, tostring(delay))
-        vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_LAZY_RESULT)
+        vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_STARTUP_RESULT)
         vim.cmd(ok and "qa!" or "cquit 1")
       else
         vim.defer_fn(advance, delay)

@@ -1,49 +1,8 @@
 local directory = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
-local image_patterns = {}
-for _, extension in ipairs({ "png", "jpg", "jpeg", "webp", "avif", "heic", "gif", "bmp", "tif", "tiff", "pdf" }) do
-  image_patterns[#image_patterns + 1] = "*."
-    .. extension:gsub("%a", function(c)
-      return "[" .. c .. c:upper() .. "]"
-    end)
-end
 
 return {
   {
-    -- Local-only until this plugin has a published remote repository.
-    dir = directory,
-    name = "image-tools.nvim",
-    cond = function()
-      return vim.uv.fs_stat(directory .. "/lua/image_tools/init.lua") ~= nil
-    end,
-    lazy = true,
-    init = function(plugin)
-      local opts = require("lazy.core.plugin").values(plugin, "opts", false)
-      require("integrations.image_tools").setup(opts, function()
-        require("image_tools")
-      end)
-    end,
-    -- Load and replay the read event before binary file contents are read.
-    event = { { event = "BufReadCmd", pattern = image_patterns } },
-    cmd = {
-      "ImagePreview",
-      "ImagePreviewClose",
-      "ImagePreviewToggle",
-      "ImagePreviewClearCache",
-      "ImageCacheClear",
-      "ImageInfo",
-      "ImageCheckAssets",
-      "ImageInsert",
-      "ImagePaste",
-      "ImagePick",
-      "ImageOpen",
-      "ImagePage",
-      "ImageNextPage",
-      "ImagePreviousPage",
-      "ImageReload",
-      "ImageZoom",
-      "ImagePan",
-    },
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("image-tools.nvim", {
       {
         "<leader>pc",
         function()
@@ -108,7 +67,10 @@ return {
         end,
         desc = "[Image] Import image file",
       },
-    },
+    }, nil),
+    id = "image-tools.nvim",
+    -- Local-only until this plugin has a published remote repository.
+    dir = directory,
     opts = {
       -- The old plugin saved in cwd/Figures and emitted document-relative paths.
       root = function(document)
@@ -158,25 +120,28 @@ return {
       max_width = 60,
       max_height = 30,
     },
-    config = function(_, opts)
-      local integration = require("integrations.image_tools")
-      local image = require("image_tools")
-      image.setup(integration.options(opts))
-      integration.configured()
-      -- Preserve :ImageInsert's original clipboard-or-reference behavior.
-      vim.api.nvim_create_user_command("ImageInsert", function(args)
-        if args.args == "" then
-          image.paste()
-        else
-          image.insert(args.args, { mode = "reference" })
-        end
-      end, {
-        nargs = "?",
-        bang = true,
-        complete = "file",
-        desc = "Insert a clipboard image or reference an existing file",
-        force = true,
-      })
+    config = function(ctx)
+      require("image_tools.bootstrap").setup(ctx.opts)
+      require("integrations.image_tools").setup()
+      -- Preserve the clipboard-or-reference behavior of the personal shortcut.
+      local function alias()
+        vim.api.nvim_create_user_command("ImageInsert", function(args)
+          local image = require("image_tools.bootstrap").ensure()
+          if args.args == "" then
+            image.paste()
+          else
+            image.insert(args.args, { mode = "reference" })
+          end
+        end, {
+          nargs = "?",
+          bang = true,
+          complete = "file",
+          desc = "Insert a clipboard image or reference an existing file",
+          force = true,
+        })
+      end
+      vim.api.nvim_create_autocmd("User", { pattern = "ImageToolsReady", callback = alias })
+      alias()
     end,
   },
 }

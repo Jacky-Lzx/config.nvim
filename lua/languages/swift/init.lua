@@ -16,5 +16,5 @@ return {
   parsers = { "swift" },
   formatters = { swift = { "swift" } },
   linters = { swift = { "swiftlint" } },
-  plugins = { { import = "languages.swift.plugins" } },
+  plugins = { "languages.swift.plugins" },
 }

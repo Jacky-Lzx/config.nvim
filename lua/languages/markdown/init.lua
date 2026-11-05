@@ -15,5 +15,5 @@ return {
     -- Conform will run the first available formatter
     markdown = { "prettierd", "prettier", stop_after_first = true },
   },
-  plugins = { { import = "languages.markdown.plugins" } },
+  plugins = { "languages.markdown.plugins" },
 }

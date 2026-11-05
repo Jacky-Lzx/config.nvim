@@ -1,25 +1,14 @@
 return {
   {
-    dir = require("utils.platform").dev_plugin_root() .. "/workspace-tools.nvim",
-    name = "workspace-tools.nvim",
-    main = "workspace_tools",
-    event = "VeryLazy",
-    cmd = {
-      "WorkspaceSave",
-      "WorkspaceRestore",
-      "WorkspaceSearch",
-      "WorkspaceLast",
-      "WorkspaceDelete",
-      "WorkspaceStop",
-      "WorkspaceStart",
-    },
-    -- stylua: ignore
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("workspace-tools.nvim", {
       { "<leader>pw", "<cmd>WorkspaceSave<cr>", desc = "[Workspace] Save" },
       { "<leader>ps", "<cmd>WorkspaceRestore<cr>", desc = "[Workspace] Restore" },
       { "<leader>pS", "<cmd>WorkspaceSearch<cr>", desc = "[Workspace] Search history" },
       { "<leader>pD", "<cmd>WorkspaceDelete<cr>", desc = "[Workspace] Delete" },
-    },
+    }, nil),
+    id = "workspace-tools.nvim",
+    dir = require("utils.platform").dev_plugin_root() .. "/workspace-tools.nvim",
+    main = "workspace_tools",
     opts = {
       auto_restore = false,
       auto_save = vim.env.NVIM_SMOKE_TEST ~= "1",

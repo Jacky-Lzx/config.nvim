@@ -34,7 +34,7 @@ package.loaded.toolchain = {
   end,
 }
 local spec = require("plugins.coding.toolchain")[1]
-spec.config(nil, spec.opts)
+spec.config({ opts = spec.opts, dir = spec.dir })
 assert(configured.concurrency == 2 and type(configured.requirements) == "function")
 vim.cmd("Mason")
 assert(opened and installed == nil, "Mason compatibility must only open the manager")

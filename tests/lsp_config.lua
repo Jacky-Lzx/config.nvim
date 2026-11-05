@@ -2,11 +2,11 @@ local root = assert(vim.env.NVIM_CONFIG_ROOT, "NVIM_CONFIG_ROOT is required")
 vim.opt.runtimepath:prepend(root)
 
 local provider = require("plugins.coding.nvim-lspconfig")[1]
-assert(provider.lazy and not provider.config and not provider.opts and not provider.event)
+assert(provider.source == "neovim/nvim-lspconfig" and not provider.main and not provider.config and not provider.opts)
 local lsp = require("plugins.coding.lsp-tools")[1]
 assert(lsp.opts.server_activation == "filetype", "Servers must activate only when their filetypes are opened")
-assert(vim.list_contains(lsp.event, "BufReadPre") and vim.list_contains(lsp.event, "BufNewFile"))
-assert(vim.list_contains(lsp.dependencies, "neovim/nvim-lspconfig"))
+assert(not lsp.event and vim.list_contains(lsp.after, "toolchain-tools.nvim"))
+assert(vim.list_contains(lsp.dependencies, "nvim-lspconfig"))
 assert(not vim.list_contains(lsp.dependencies, "completion-tools.nvim"), "LSP must not initialize the completion UI")
 assert(vim.list_contains(lsp.dependencies, "file-tools.nvim"))
 assert(vim.list_contains(lsp.dependencies, "toolchain-tools.nvim"))
@@ -16,7 +16,7 @@ for _, name in ipairs(selected) do
   assert(lsp.opts.servers[name] == true, "Profile server missing from lsp-tools: " .. name)
 end
 local completion_spec = require("plugins.coding.completion.core")[1]
-assert(completion_spec.module == false and type(completion_spec.init) == "function")
+assert(completion_spec.main == "completion-tools" and not completion_spec.event and not completion_spec.module)
 local original_completion = package.loaded["completion-tools"]
 local original_files = package.loaded.file_tools
 local file_capabilities = {
@@ -52,6 +52,7 @@ package.loaded["completion-tools"] = {
     return capabilities
   end,
 }
+package.loaded["completion_tools.bootstrap"] = { setup = package.loaded["completion-tools"].setup }
 vim.lsp.config = function(name, opts)
   assert(name == "*")
   assert(vim.deep_equal(opts.capabilities.textDocument, capabilities.textDocument))
@@ -73,9 +74,9 @@ vim.lsp.enable = function()
   assert(configured, "capabilities must be finalized before enabling servers")
   error("Plugin specs must leave activation to lsp-tools")
 end
-lsp.config(nil, lsp.opts)
+lsp.config({ opts = lsp.opts, dir = lsp.dir })
 assert(configured and enabled and not setup, "LSP setup must not initialize interactive completion")
-completion_spec.config(completion_spec, completion_spec.opts)
+completion_spec.config({ opts = completion_spec.opts, dir = completion_spec.dir })
 assert(setup, "Completion still initializes through its input-event configuration")
 package.loaded["lsp-tools"] = original_manager
 
@@ -160,8 +161,8 @@ package.loaded.file_tools = original_files
 vim.api.nvim_del_augroup_by_name("ConfigLsp")
 
 local editing = require("plugins.editing.editing-tools")[1]
-assert(editing.name == "editing-tools.nvim" and editing.main == "editing_tools")
+assert(editing.id == "editing-tools.nvim" and editing.main == "editing_tools")
 assert(editing.dir == require("utils.platform").dev_plugin_root() .. "/editing-tools.nvim")
-assert(editing.cmd == "EditingTools" and editing.opts and not editing.event)
+assert(editing.opts and not editing.event and not editing.cmd)
 assert(not vim.list_contains(editing.dependencies or {}, "nvim-treesitter/nvim-treesitter-textobjects"))
 print("LSP capability ordering and buffer-local feature checks passed")

@@ -1,10 +1,6 @@
 return {
   {
-    dir = require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim",
-    name = "keymap-tools.nvim",
-    main = "keymap_tools",
-    event = "VimEnter",
-    keys = {
+    bootstrap = require("config.bindings").bootstrap("keymap-tools.nvim", {
       {
         "<leader>?",
         function()
@@ -13,14 +9,18 @@ return {
         mode = { "n", "x" },
         desc = "Choose and execute buffer keymap",
       },
-    },
+    }, nil),
+    id = "keymap-tools.nvim",
+    dir = require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim",
+    main = "keymap_tools",
     opts = {
       defer = true,
       hints = { delay = 200 },
       showkeys = { enabled = false, maxkeys = 5 },
       window = { width = 80, height = 16, border = "rounded" },
     },
-    config = function(_, opts)
+    config = function(ctx)
+      local opts = ctx.opts
       local keymaps = require("keymap_tools")
       keymaps.setup(opts)
       require("features.toggles").setup()

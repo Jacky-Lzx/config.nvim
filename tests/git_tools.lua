@@ -5,9 +5,9 @@ local function plugin_dir(plugin)
   if plugin.dir then
     return plugin.dir
   end
-  local name = plugin.name or plugin[1]:match("/([^/]+)$")
+  local name = plugin.id
   local dev_dir = require("utils.platform").dev_plugin_root() .. "/" .. name
-  return vim.uv.fs_stat(dev_dir) and dev_dir or vim.fn.stdpath("data") .. "/lazy/" .. name
+  return vim.uv.fs_stat(dev_dir) and dev_dir or vim.fn.stdpath("data") .. "/plugin-tools/" .. name
 end
 vim.opt.rtp:prepend(plugin_dir(spec))
 vim.opt.rtp:prepend(require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim")
@@ -23,7 +23,7 @@ local function toggle_state(key, buf)
 end
 vim.o.swapfile = false
 vim.g.mapleader = " "
-spec.init()
+spec.bootstrap({ opts = spec.opts, dir = spec.dir })
 local fixture = assert(vim.env.NVIM_TEST_TMP) .. "/git-tools-config"
 vim.fn.mkdir(fixture, "p")
 local function git(...)
@@ -48,7 +48,7 @@ end, 5))
 assert(vim.fn.maparg("]h", "n") ~= "" and vim.fn.maparg("<leader>ggu", "n") ~= "")
 vim.api.nvim_buf_set_lines(buf, 0, 1, false, { "changed" })
 local overlay
-for _, key in ipairs(spec.keys) do
+for _, key in ipairs(require("config.bindings").entries[spec.id]) do
   if key[1] == "<leader>to" then
     overlay = key[2]
   end
@@ -69,18 +69,18 @@ assert(not package.loaded.gitsigns and not package.loaded["mini.diff"] and not p
 local ui_spec = dofile(root .. "/lua/plugins/ui/ui-tools.lua")[1]
 assert(vim.deep_equal(ui_spec.opts.statuscolumn.git_patterns, { "GitTools" }))
 vim.opt.rtp:prepend(plugin_dir(ui_spec))
-ui_spec.config(nil, ui_spec.opts)
+ui_spec.config({ opts = ui_spec.opts, dir = ui_spec.dir })
 local marks = require("ui_tools.scrollbar").providers.git_tools.callback({ buf = buf })
 assert(#marks > 0 and marks[1].hl == "GitToolsChange", "Scrollbar adapter did not read real GitTools hunks")
 local keys = {}
-for _, key in ipairs(spec.keys) do
+for _, key in ipairs(require("config.bindings").entries[spec.id]) do
   keys[key[1]] = true
 end
 for _, name in ipairs({ "<leader>ggc", "<leader>ggC", "<leader>ggv", "<leader>ggt", "<leader>ggo", "<leader>ggO" }) do
   assert(keys[name], name)
 end
 local lazygit_key
-for _, key in ipairs(spec.keys) do
+for _, key in ipairs(require("config.bindings").entries[spec.id]) do
   if key[1] == "<C-g>" then
     lazygit_key = key
   end
