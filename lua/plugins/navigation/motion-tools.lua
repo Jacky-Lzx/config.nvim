@@ -50,7 +50,10 @@ end
 
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("motion-tools.nvim", keys, nil),
+    config = function(ctx)
+      require("config.bindings").set("motion-tools.nvim", keys)
+      require("motion_tools").setup(ctx.opts)
+    end,
     id = "motion-tools.nvim",
     dir = require("utils.platform").dev_plugin_root() .. "/motion-tools.nvim",
     main = "motion_tools",

@@ -2,72 +2,6 @@ local directory = require("utils.platform").dev_plugin_root() .. "/image-tools.n
 
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("image-tools.nvim", {
-      {
-        "<leader>pc",
-        function()
-          require("image_tools").pick({
-            insert = { mode = "reference", insert_strategy = "insert_line_after" },
-          })
-        end,
-        desc = "[Image] Choose images to reference",
-      },
-      {
-        "<leader>pI",
-        function()
-          require("image_tools").paste({ insert_strategy = "insert_line_after" })
-        end,
-        desc = "[Image] Paste on next line",
-      },
-      {
-        "<leader>pi",
-        function()
-          require("image_tools").paste({ insert_strategy = "insert_after" })
-        end,
-        desc = "[Image] Paste after cursor",
-      },
-      {
-        "<leader>PI",
-        function()
-          require("image_tools").paste({ insert_strategy = "insert_line_before" })
-        end,
-        desc = "[Image] Paste on previous line",
-      },
-      {
-        "<leader>Pi",
-        function()
-          require("image_tools").paste({ insert_strategy = "insert_before" })
-        end,
-        desc = "[Image] Paste before cursor",
-      },
-      {
-        "<leader>pC",
-        function()
-          require("image_tools").paste({
-            process = {
-              {
-                name = "PNG",
-                format = "png",
-                command = { "magick", "$INPUT", "-quality", "75", "$OUTPUT" },
-              },
-              { name = "JPEG", format = "jpg", quality = 75 },
-              { name = "WebP", format = "webp", quality = 75 },
-              { name = "AVIF", format = "avif", quality = 75 },
-              { name = "Original PNG", format = "png" },
-            },
-            prompt_for_file_name = true,
-          })
-        end,
-        desc = "[Image] Paste with format and filename",
-      },
-      {
-        "<leader>pf",
-        function()
-          require("image_tools").insert(nil, { mode = "copy" })
-        end,
-        desc = "[Image] Import image file",
-      },
-    }, nil),
     id = "image-tools.nvim",
     -- Local-only until this plugin has a published remote repository.
     dir = directory,
@@ -121,6 +55,72 @@ return {
       max_height = 30,
     },
     config = function(ctx)
+      require("config.bindings").set("image-tools.nvim", {
+        {
+          "<leader>pc",
+          function()
+            require("image_tools").pick({
+              insert = { mode = "reference", insert_strategy = "insert_line_after" },
+            })
+          end,
+          desc = "[Image] Choose images to reference",
+        },
+        {
+          "<leader>pI",
+          function()
+            require("image_tools").paste({ insert_strategy = "insert_line_after" })
+          end,
+          desc = "[Image] Paste on next line",
+        },
+        {
+          "<leader>pi",
+          function()
+            require("image_tools").paste({ insert_strategy = "insert_after" })
+          end,
+          desc = "[Image] Paste after cursor",
+        },
+        {
+          "<leader>PI",
+          function()
+            require("image_tools").paste({ insert_strategy = "insert_line_before" })
+          end,
+          desc = "[Image] Paste on previous line",
+        },
+        {
+          "<leader>Pi",
+          function()
+            require("image_tools").paste({ insert_strategy = "insert_before" })
+          end,
+          desc = "[Image] Paste before cursor",
+        },
+        {
+          "<leader>pC",
+          function()
+            require("image_tools").paste({
+              process = {
+                {
+                  name = "PNG",
+                  format = "png",
+                  command = { "magick", "$INPUT", "-quality", "75", "$OUTPUT" },
+                },
+                { name = "JPEG", format = "jpg", quality = 75 },
+                { name = "WebP", format = "webp", quality = 75 },
+                { name = "AVIF", format = "avif", quality = 75 },
+                { name = "Original PNG", format = "png" },
+              },
+              prompt_for_file_name = true,
+            })
+          end,
+          desc = "[Image] Paste with format and filename",
+        },
+        {
+          "<leader>pf",
+          function()
+            require("image_tools").insert(nil, { mode = "copy" })
+          end,
+          desc = "[Image] Import image file",
+        },
+      })
       require("image_tools.bootstrap").setup(ctx.opts)
       require("integrations.image_tools").setup()
       -- Preserve the clipboard-or-reference behavior of the personal shortcut.

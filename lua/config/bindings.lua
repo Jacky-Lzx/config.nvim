@@ -1,6 +1,7 @@
 -- Ordinary mappings only. No loading proxies or manager activation callbacks.
 local M = { entries = {} }
 function M.set(id, entries)
+  entries = type(entries) == "function" and entries() or entries
   M.entries[id] = entries
   for _, entry in ipairs(entries) do
     assert(type(entry[1]) == "string", id .. ": a mapping needs a string left-hand side")
@@ -32,14 +33,6 @@ function M.set(id, entries)
         bind(nil)
       end
     end
-  end
-end
-function M.bootstrap(id, entries, initialize)
-  return function(ctx)
-    if initialize then
-      initialize(ctx)
-    end
-    M.set(id, type(entries) == "function" and entries() or entries)
   end
 end
 return M

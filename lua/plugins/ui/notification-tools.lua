@@ -1,12 +1,15 @@
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("notification-tools.nvim", {
-      { "<leader>N", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
-      { "<leader>sN", "<Cmd>NotificationsPick<CR>", desc = "[Notifications] Search history" },
-      { "<leader>sn", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
-      { "<leader>n", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
-      { "<leader>un", "<Cmd>NotificationsDismiss<CR>", desc = "[Notifications] Dismiss" },
-    }, nil),
+    config = function(ctx)
+      require("config.bindings").set("notification-tools.nvim", {
+        { "<leader>N", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
+        { "<leader>sN", "<Cmd>NotificationsPick<CR>", desc = "[Notifications] Search history" },
+        { "<leader>sn", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
+        { "<leader>n", "<Cmd>Notifications<CR>", desc = "[Notifications] History" },
+        { "<leader>un", "<Cmd>NotificationsDismiss<CR>", desc = "[Notifications] Dismiss" },
+      })
+      require("notification-tools").setup(ctx.opts)
+    end,
     id = "notification-tools.nvim",
     source = "git@github.com:Jacky-Lzx/notification-tools.nvim.git",
     dev = true,

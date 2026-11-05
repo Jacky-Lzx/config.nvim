@@ -1,34 +1,6 @@
 return {
   -- formatters
   {
-    bootstrap = require("config.bindings").bootstrap("conform.nvim", {
-      {
-        "<leader>gf",
-        function()
-          require("conform").format({ lsp_format = "fallback" })
-        end,
-        desc = "Format",
-      },
-    }, function()
-      if vim.g.enable_autoformat == nil then
-        vim.g.enable_autoformat = true
-      end
-      -- Allow opting out before the first save, without loading the formatter.
-      vim.keymap.set("n", "<leader>tf", function()
-        vim.g.enable_autoformat = not vim.g.enable_autoformat
-      end, { desc = "Toggle auto format" })
-      require("keymap_tools").register("formatting", {
-        toggles = {
-          {
-            keys = "<leader>tf",
-            name = "Auto format",
-            get = function()
-              return vim.g.enable_autoformat
-            end,
-          },
-        },
-      })
-    end),
     main = "conform",
     id = "conform.nvim",
     source = "stevearc/conform.nvim",
@@ -51,6 +23,35 @@ return {
       end,
     },
     config = function(ctx)
+      do
+        if vim.g.enable_autoformat == nil then
+          vim.g.enable_autoformat = true
+        end
+        -- Allow opting out before the first save, without loading the formatter.
+        vim.keymap.set("n", "<leader>tf", function()
+          vim.g.enable_autoformat = not vim.g.enable_autoformat
+        end, { desc = "Toggle auto format" })
+        require("keymap_tools").register("formatting", {
+          toggles = {
+            {
+              keys = "<leader>tf",
+              name = "Auto format",
+              get = function()
+                return vim.g.enable_autoformat
+              end,
+            },
+          },
+        })
+      end
+      require("config.bindings").set("conform.nvim", {
+        {
+          "<leader>gf",
+          function()
+            require("conform").format({ lsp_format = "fallback" })
+          end,
+          desc = "Format",
+        },
+      })
       local opts = ctx.opts
       require("conform").setup(opts)
     end,

@@ -2,9 +2,6 @@ local root = require("utils.platform").dev_plugin_root()
 
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("theme-tools.nvim", {
-      { "<leader>ut", "<cmd>ThemeTools<cr>", desc = "[Theme] Preview themes" },
-    }, nil),
     id = "theme-tools.nvim",
     dir = root .. "/theme-tools.nvim",
     main = "theme_tools",
@@ -85,6 +82,9 @@ return {
       },
     },
     config = function(ctx)
+      require("config.bindings").set("theme-tools.nvim", {
+        { "<leader>ut", "<cmd>ThemeTools<cr>", desc = "[Theme] Preview themes" },
+      })
       local opts = ctx.opts
       vim.api.nvim_create_autocmd("ColorScheme", {
         group = vim.api.nvim_create_augroup("lzx_highlights", { clear = true }),

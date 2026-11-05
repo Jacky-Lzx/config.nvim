@@ -1,14 +1,17 @@
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("nvim-dap-view", {
-      {
-        "<leader>Du",
-        function()
-          require("dap-view").toggle()
-        end,
-        desc = "[DAP view] Toggle dap-view",
-      },
-    }, nil),
+    config = function(ctx)
+      require("config.bindings").set("nvim-dap-view", {
+        {
+          "<leader>Du",
+          function()
+            require("dap-view").toggle()
+          end,
+          desc = "[DAP view] Toggle dap-view",
+        },
+      })
+      require("dap-view").setup(ctx.opts)
+    end,
     main = "dap-view",
     id = "nvim-dap-view",
     source = "igorlfs/nvim-dap-view",
@@ -45,7 +48,18 @@ return {
   },
 
   {
-    bootstrap = require("config.bindings").bootstrap("nvim-dap", {
+    main = "dap",
+    id = "nvim-dap",
+    source = "mfussenegger/nvim-dap",
+    dependencies = { "nvim-dap-view" },
+    opts = {
+      adapters = {},
+      configurations = {},
+      configuration_aliases = {},
+    },
+    -- stylua: ignore
+    config = function(ctx)
+require("config.bindings").set("nvim-dap", {
       {
         "<F5>",
         function()
@@ -162,19 +176,8 @@ return {
         mode = { "n" },
         desc = "[DAP] Float scopes",
       },
-    }, nil),
-    main = "dap",
-    id = "nvim-dap",
-    source = "mfussenegger/nvim-dap",
-    dependencies = { "nvim-dap-view" },
-    opts = {
-      adapters = {},
-      configurations = {},
-      configuration_aliases = {},
-    },
-    -- stylua: ignore
-    config = function(ctx)
-      local opts = ctx.opts
+    })
+local opts = ctx.opts
       local dap = require("dap")
       dap.adapters = vim.tbl_deep_extend("force", dap.adapters, opts.adapters)
       dap.configurations = vim.tbl_deep_extend("force", dap.configurations, opts.configurations)
@@ -201,6 +204,6 @@ return {
       vim.fn.sign_define("DapBreakpointRejected", dap_breakpoint.rejected)
       vim.fn.sign_define("DapLogPoint", dap_breakpoint.logpoint)
       vim.fn.sign_define("DapStopped", dap_breakpoint.stopped)
-    end,
+end,
   },
 }

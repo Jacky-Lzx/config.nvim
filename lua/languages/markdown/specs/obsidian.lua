@@ -1,21 +1,25 @@
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("obsidian.nvim", {
-      { "<leader>OO", "<CMD>Obsidian<CR>", desc = "[Obsidian] Picker" },
-      { "<leader>OD", "<CMD>Obsidian dailies<CR>", desc = "[Obsidian] Dailies" },
-      { "<leader>Og", "<CMD>Obsidian search<CR>", desc = "[Obsidian] Search" },
-      { "<leader>Of", "<CMD>Obsidian quick_switch<CR>", desc = "[Obsidian] Quick switch files" },
-      { "<leader>Od", "<CMD>Obsidian follow_link<CR>", desc = "[Obsidian] Follow link" },
-      { "<leader>Ob", "<CMD>Obsidian backlinks<CR>", desc = "[Obsidian] Back links" },
-      { "<leader>Oq", "<CMD>Obsidian quick_switch<CR>", desc = "[Obsidian] Quick switch" },
-      -- typos: ignore
-      { "<leader>Ot", "<CMD>Obsidian tags<CR>", desc = "[Obsidian] Tags" }, -- codespell:ignore "Ot"
-      { "<leader>Op", "<CMD>Obsidian paste_img<CR>", desc = "[Obsidian] Paste image" },
-    }, function()
-      require("keymap_tools").register("obsidian", {
-        groups = { { prefix = "<leader>O", label = "[Obsidian]" } },
+    config = function(ctx)
+      do
+        require("keymap_tools").register("obsidian", {
+          groups = { { prefix = "<leader>O", label = "[Obsidian]" } },
+        })
+      end
+      require("config.bindings").set("obsidian.nvim", {
+        { "<leader>OO", "<CMD>Obsidian<CR>", desc = "[Obsidian] Picker" },
+        { "<leader>OD", "<CMD>Obsidian dailies<CR>", desc = "[Obsidian] Dailies" },
+        { "<leader>Og", "<CMD>Obsidian search<CR>", desc = "[Obsidian] Search" },
+        { "<leader>Of", "<CMD>Obsidian quick_switch<CR>", desc = "[Obsidian] Quick switch files" },
+        { "<leader>Od", "<CMD>Obsidian follow_link<CR>", desc = "[Obsidian] Follow link" },
+        { "<leader>Ob", "<CMD>Obsidian backlinks<CR>", desc = "[Obsidian] Back links" },
+        { "<leader>Oq", "<CMD>Obsidian quick_switch<CR>", desc = "[Obsidian] Quick switch" },
+        -- typos: ignore
+        { "<leader>Ot", "<CMD>Obsidian tags<CR>", desc = "[Obsidian] Tags" }, -- codespell:ignore "Ot"
+        { "<leader>Op", "<CMD>Obsidian paste_img<CR>", desc = "[Obsidian] Paste image" },
       })
-    end),
+      require("obsidian").setup(ctx.opts)
+    end,
     main = "obsidian",
     id = "obsidian.nvim",
     source = "obsidian-nvim/obsidian.nvim",

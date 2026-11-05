@@ -1,36 +1,39 @@
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("img-clip.nvim", {
-      {
-        "<leader>pi",
-        function()
-          require("img-clip").paste_image({ insert_at_current_line = true, insert_at_current_line_after = true })
-        end,
-        desc = "[Img-Clip] Paste image from system clipboard",
-      },
-      {
-        "<leader>pI",
-        function()
-          require("img-clip").paste_image({ insert_at_current_line = true, insert_at_current_line_after = false })
-        end,
-        desc = "[Img-Clip] Paste image from system clipboard",
-      },
-      {
-        "<leader>pc",
-        function()
-          require("selection_tools").files({
-            multi = false,
-            globs = { "*.{jpg,jpeg,png,webp,heic,avif}" },
-            on_choice = function(item)
-              if item then
-                require("img-clip").paste_image({}, item.file)
-              end
-            end,
-          })
-        end,
-        desc = "[Img-Clip] Choose an image to paste",
-      },
-    }, nil),
+    config = function(ctx)
+      require("config.bindings").set("img-clip.nvim", {
+        {
+          "<leader>pi",
+          function()
+            require("img-clip").paste_image({ insert_at_current_line = true, insert_at_current_line_after = true })
+          end,
+          desc = "[Img-Clip] Paste image from system clipboard",
+        },
+        {
+          "<leader>pI",
+          function()
+            require("img-clip").paste_image({ insert_at_current_line = true, insert_at_current_line_after = false })
+          end,
+          desc = "[Img-Clip] Paste image from system clipboard",
+        },
+        {
+          "<leader>pc",
+          function()
+            require("selection_tools").files({
+              multi = false,
+              globs = { "*.{jpg,jpeg,png,webp,heic,avif}" },
+              on_choice = function(item)
+                if item then
+                  require("img-clip").paste_image({}, item.file)
+                end
+              end,
+            })
+          end,
+          desc = "[Img-Clip] Choose an image to paste",
+        },
+      })
+      require("img-clip").setup(ctx.opts)
+    end,
     main = "img-clip",
     id = "img-clip.nvim",
     source = "HakonHarnes/img-clip.nvim",

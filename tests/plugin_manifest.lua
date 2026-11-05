@@ -18,7 +18,8 @@ assert(remote.packages["notification-tools.nvim"].managed)
 assert(remote.packages["notification-tools.nvim"].source == "git@github.com:Jacky-Lzx/notification-tools.nvim.git")
 assert(not remote.packages["image-tools.nvim"].managed, "Unpublished local-only plugins acquired a remote fallback")
 for _, node in pairs(local_graph.nodes) do
-  assert(node.event == nil and node.cmd == nil and node.ft == nil and node.lazy == nil)
+  assert(node.event == nil and node.cmd == nil and node.ft == nil and node.lazy == nil and node.bootstrap == nil)
 end
 assert(not package.loaded.lazy and not package.loaded["image_tools.runtime"])
+assert(not package.loaded["config.bindings"], "Resolving specs must not register personal keymaps")
 print("Native manifest, Python child ownership, feature gates, local preference and remote fallback passed")

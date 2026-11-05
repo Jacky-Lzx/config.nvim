@@ -1,212 +1,5 @@
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("ui-tools.nvim", {
-      {
-        "<A-S-,>",
-        function()
-          require("ui_tools.bufferline").move(-1)
-        end,
-        desc = "[Buffer] Move buffer left",
-      },
-      {
-        "<A-S-.>",
-        function()
-          require("ui_tools.bufferline").move(1)
-        end,
-        desc = "[Buffer] Move buffer right",
-      },
-      {
-        "<A-<>",
-        function()
-          require("ui_tools.bufferline").move(-1)
-        end,
-        desc = "[Buffer] Move buffer left",
-      },
-      {
-        "<A->>",
-        function()
-          require("ui_tools.bufferline").move(1)
-        end,
-        desc = "[Buffer] Move buffer right",
-      },
-      {
-        "<A-1>",
-        function()
-          require("ui_tools.bufferline").go(1)
-        end,
-        desc = "[Buffer] Go to buffer 1",
-      },
-      {
-        "<A-2>",
-        function()
-          require("ui_tools.bufferline").go(2)
-        end,
-        desc = "[Buffer] Go to buffer 2",
-      },
-      {
-        "<A-3>",
-        function()
-          require("ui_tools.bufferline").go(3)
-        end,
-        desc = "[Buffer] Go to buffer 3",
-      },
-      {
-        "<A-4>",
-        function()
-          require("ui_tools.bufferline").go(4)
-        end,
-        desc = "[Buffer] Go to buffer 4",
-      },
-      {
-        "<A-5>",
-        function()
-          require("ui_tools.bufferline").go(5)
-        end,
-        desc = "[Buffer] Go to buffer 5",
-      },
-      {
-        "<A-6>",
-        function()
-          require("ui_tools.bufferline").go(6)
-        end,
-        desc = "[Buffer] Go to buffer 6",
-      },
-      {
-        "<A-7>",
-        function()
-          require("ui_tools.bufferline").go(7)
-        end,
-        desc = "[Buffer] Go to buffer 7",
-      },
-      {
-        "<A-8>",
-        function()
-          require("ui_tools.bufferline").go(8)
-        end,
-        desc = "[Buffer] Go to buffer 8",
-      },
-      {
-        "<A-9>",
-        function()
-          require("ui_tools.bufferline").go(9)
-        end,
-        desc = "[Buffer] Go to buffer 9",
-      },
-      {
-        "<A-h>",
-        function()
-          require("ui_tools.bufferline").cycle(-1)
-        end,
-        desc = "[Buffer] Previous buffer",
-      },
-      {
-        "<A-l>",
-        function()
-          require("ui_tools.bufferline").cycle(1)
-        end,
-        desc = "[Buffer] Next buffer",
-      },
-      {
-        "[b",
-        function()
-          require("ui_tools.bufferline").cycle(-1)
-        end,
-        desc = "[Buffer] Previous buffer",
-      },
-      {
-        "]b",
-        function()
-          require("ui_tools.bufferline").cycle(1)
-        end,
-        desc = "[Buffer] Next buffer",
-      },
-      {
-        "<A-w>",
-        function()
-          require("features.bars").close()
-        end,
-        desc = "Close buffer",
-      },
-      {
-        "<A-u>",
-        function()
-          require("features.bars").restore()
-        end,
-        desc = "Restore buffer",
-      },
-      {
-        "<leader><leader>",
-        function()
-          require("ui_tools").pulse()
-        end,
-        desc = "[UI] Pulse current line",
-      },
-      {
-        "<leader>Z",
-        function()
-          require("ui_tools").zen()
-        end,
-        desc = "[UI] Toggle Zen Mode",
-      },
-      {
-        "<leader>z",
-        function()
-          require("ui_tools").zoom()
-        end,
-        desc = "[UI] Toggle Zoom",
-      },
-      {
-        "<leader>tG",
-        function()
-          require("ui_tools").toggle("indent")
-        end,
-        desc = "[UI] Toggle indent guides",
-      },
-      {
-        "<leader>tD",
-        function()
-          require("ui_tools").dim()
-        end,
-        desc = "[UI] Toggle scope dimming",
-      },
-    }, function()
-      local function focus_mode(mode)
-        return function()
-          local focus = package.loaded["ui_tools.focus"]
-          if focus then
-            local state = focus.state()
-            return state ~= nil and state.mode == mode
-          end
-        end
-      end
-      require("keymap_tools").register("ui-tools.toggles", {
-        toggles = {
-          { keys = "<leader>Z", name = "Zen Mode", get = focus_mode("zen") },
-          { keys = "<leader>z", name = "Zoom", get = focus_mode("zoom") },
-          {
-            keys = "<leader>tG",
-            name = "Indent guides",
-            get = function()
-              local indent = package.loaded["ui_tools.indent"]
-              if indent then
-                local render = package.loaded["ui_tools.render"]
-                return indent.enabled == true or (render ~= nil and render.sources.indent ~= nil)
-              end
-            end,
-          },
-          {
-            keys = "<leader>tD",
-            name = "Scope dimming",
-            get = function()
-              local focus = package.loaded["ui_tools.focus"]
-              if focus then
-                return focus.dimmed == true
-              end
-            end,
-          },
-        },
-      })
-    end),
     id = "ui-tools.nvim",
     source = "git@github.com:Jacky-Lzx/ui-tools.nvim.git",
     dev = true,
@@ -302,6 +95,214 @@ return {
       todo = true,
     },
     config = function(ctx)
+      do
+        local function focus_mode(mode)
+          return function()
+            local focus = package.loaded["ui_tools.focus"]
+            if focus then
+              local state = focus.state()
+              return state ~= nil and state.mode == mode
+            end
+          end
+        end
+        require("keymap_tools").register("ui-tools.toggles", {
+          toggles = {
+            { keys = "<leader>Z", name = "Zen Mode", get = focus_mode("zen") },
+            { keys = "<leader>z", name = "Zoom", get = focus_mode("zoom") },
+            {
+              keys = "<leader>tG",
+              name = "Indent guides",
+              get = function()
+                local indent = package.loaded["ui_tools.indent"]
+                if indent then
+                  local render = package.loaded["ui_tools.render"]
+                  return indent.enabled == true or (render ~= nil and render.sources.indent ~= nil)
+                end
+              end,
+            },
+            {
+              keys = "<leader>tD",
+              name = "Scope dimming",
+              get = function()
+                local focus = package.loaded["ui_tools.focus"]
+                if focus then
+                  return focus.dimmed == true
+                end
+              end,
+            },
+          },
+        })
+      end
+      require("config.bindings").set("ui-tools.nvim", {
+        {
+          "<A-S-,>",
+          function()
+            require("ui_tools.bufferline").move(-1)
+          end,
+          desc = "[Buffer] Move buffer left",
+        },
+        {
+          "<A-S-.>",
+          function()
+            require("ui_tools.bufferline").move(1)
+          end,
+          desc = "[Buffer] Move buffer right",
+        },
+        {
+          "<A-<>",
+          function()
+            require("ui_tools.bufferline").move(-1)
+          end,
+          desc = "[Buffer] Move buffer left",
+        },
+        {
+          "<A->>",
+          function()
+            require("ui_tools.bufferline").move(1)
+          end,
+          desc = "[Buffer] Move buffer right",
+        },
+        {
+          "<A-1>",
+          function()
+            require("ui_tools.bufferline").go(1)
+          end,
+          desc = "[Buffer] Go to buffer 1",
+        },
+        {
+          "<A-2>",
+          function()
+            require("ui_tools.bufferline").go(2)
+          end,
+          desc = "[Buffer] Go to buffer 2",
+        },
+        {
+          "<A-3>",
+          function()
+            require("ui_tools.bufferline").go(3)
+          end,
+          desc = "[Buffer] Go to buffer 3",
+        },
+        {
+          "<A-4>",
+          function()
+            require("ui_tools.bufferline").go(4)
+          end,
+          desc = "[Buffer] Go to buffer 4",
+        },
+        {
+          "<A-5>",
+          function()
+            require("ui_tools.bufferline").go(5)
+          end,
+          desc = "[Buffer] Go to buffer 5",
+        },
+        {
+          "<A-6>",
+          function()
+            require("ui_tools.bufferline").go(6)
+          end,
+          desc = "[Buffer] Go to buffer 6",
+        },
+        {
+          "<A-7>",
+          function()
+            require("ui_tools.bufferline").go(7)
+          end,
+          desc = "[Buffer] Go to buffer 7",
+        },
+        {
+          "<A-8>",
+          function()
+            require("ui_tools.bufferline").go(8)
+          end,
+          desc = "[Buffer] Go to buffer 8",
+        },
+        {
+          "<A-9>",
+          function()
+            require("ui_tools.bufferline").go(9)
+          end,
+          desc = "[Buffer] Go to buffer 9",
+        },
+        {
+          "<A-h>",
+          function()
+            require("ui_tools.bufferline").cycle(-1)
+          end,
+          desc = "[Buffer] Previous buffer",
+        },
+        {
+          "<A-l>",
+          function()
+            require("ui_tools.bufferline").cycle(1)
+          end,
+          desc = "[Buffer] Next buffer",
+        },
+        {
+          "[b",
+          function()
+            require("ui_tools.bufferline").cycle(-1)
+          end,
+          desc = "[Buffer] Previous buffer",
+        },
+        {
+          "]b",
+          function()
+            require("ui_tools.bufferline").cycle(1)
+          end,
+          desc = "[Buffer] Next buffer",
+        },
+        {
+          "<A-w>",
+          function()
+            require("features.bars").close()
+          end,
+          desc = "Close buffer",
+        },
+        {
+          "<A-u>",
+          function()
+            require("features.bars").restore()
+          end,
+          desc = "Restore buffer",
+        },
+        {
+          "<leader><leader>",
+          function()
+            require("ui_tools").pulse()
+          end,
+          desc = "[UI] Pulse current line",
+        },
+        {
+          "<leader>Z",
+          function()
+            require("ui_tools").zen()
+          end,
+          desc = "[UI] Toggle Zen Mode",
+        },
+        {
+          "<leader>z",
+          function()
+            require("ui_tools").zoom()
+          end,
+          desc = "[UI] Toggle Zoom",
+        },
+        {
+          "<leader>tG",
+          function()
+            require("ui_tools").toggle("indent")
+          end,
+          desc = "[UI] Toggle indent guides",
+        },
+        {
+          "<leader>tD",
+          function()
+            require("ui_tools").dim()
+          end,
+          desc = "[UI] Toggle scope dimming",
+        },
+      })
       local opts = ctx.opts
       require("ui_tools").setup(opts)
       require("features.bars").setup()

@@ -13,39 +13,43 @@ local comment_rules = {
 
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("pairs.nvim", {
-      -- Preserve the existing surround prefix and load on the first Normal/Visual action.
-      { "s", "<NOP>", mode = { "n", "x", "o" } },
-      { "sa", mode = { "n", "x" }, desc = "Add surrounding" },
-      { "sr", desc = "Replace surrounding" },
-      { "sd", desc = "Delete surrounding" },
-      { "sf", mode = { "n", "x", "o" }, desc = "Find surrounding right" },
-      { "sF", mode = { "n", "x", "o" }, desc = "Find surrounding left" },
-      { "sh", desc = "Highlight surrounding" },
-      { "sn", desc = "Update surrounding search range" },
-      {
-        "<leader>tp",
-        function()
-          require("pairs").toggle()
-        end,
-        desc = "[Pairs] Toggle pairing",
-      },
-    }, function()
-      require("keymap_tools").register("pairs.toggle", {
-        toggles = {
-          {
-            keys = "<leader>tp",
-            name = "Pairing",
-            get = function()
-              local pairs = package.loaded.pairs
-              if pairs then
-                return pairs.status().enabled
-              end
-            end,
+    config = function(ctx)
+      do
+        require("keymap_tools").register("pairs.toggle", {
+          toggles = {
+            {
+              keys = "<leader>tp",
+              name = "Pairing",
+              get = function()
+                local pairs = package.loaded.pairs
+                if pairs then
+                  return pairs.status().enabled
+                end
+              end,
+            },
           },
+        })
+      end
+      require("config.bindings").set("pairs.nvim", {
+        -- Preserve the existing surround prefix and load on the first Normal/Visual action.
+        { "s", "<NOP>", mode = { "n", "x", "o" } },
+        { "sa", mode = { "n", "x" }, desc = "Add surrounding" },
+        { "sr", desc = "Replace surrounding" },
+        { "sd", desc = "Delete surrounding" },
+        { "sf", mode = { "n", "x", "o" }, desc = "Find surrounding right" },
+        { "sF", mode = { "n", "x", "o" }, desc = "Find surrounding left" },
+        { "sh", desc = "Highlight surrounding" },
+        { "sn", desc = "Update surrounding search range" },
+        {
+          "<leader>tp",
+          function()
+            require("pairs").toggle()
+          end,
+          desc = "[Pairs] Toggle pairing",
         },
       })
-    end),
+      require("pairs").setup(ctx.opts)
+    end,
     main = "pairs",
     id = "pairs.nvim",
     source = "Jacky-Lzx/pairs.nvim",

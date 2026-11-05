@@ -1,15 +1,5 @@
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("keymap-tools.nvim", {
-      {
-        "<leader>?",
-        function()
-          require("keymap_tools").pick()
-        end,
-        mode = { "n", "x" },
-        desc = "Choose and execute buffer keymap",
-      },
-    }, nil),
     id = "keymap-tools.nvim",
     dir = require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim",
     main = "keymap_tools",
@@ -20,6 +10,16 @@ return {
       window = { width = 80, height = 16, border = "rounded" },
     },
     config = function(ctx)
+      require("config.bindings").set("keymap-tools.nvim", {
+        {
+          "<leader>?",
+          function()
+            require("keymap_tools").pick()
+          end,
+          mode = { "n", "x" },
+          desc = "Choose and execute buffer keymap",
+        },
+      })
       local opts = ctx.opts
       local keymaps = require("keymap_tools")
       keymaps.setup(opts)

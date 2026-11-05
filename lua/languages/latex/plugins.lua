@@ -18,11 +18,12 @@ return {
     },
   },
   {
-    bootstrap = require("config.bindings").bootstrap("tex-tools.nvim", {}, function()
+    config = function(ctx)
       vim.g.tex_flavor = "latex"
       -- tex-tools owns conceal; native TeX syntax must not add replacements.
       vim.g.tex_conceal = ""
-    end),
+      require("tex-tools").setup(ctx.opts)
+    end,
     id = "tex-tools.nvim",
     source = "Jacky-Lzx/tex-tools.nvim",
     dev = true,

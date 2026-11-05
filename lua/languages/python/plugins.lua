@@ -7,15 +7,14 @@ return {
       {
         id = "workspace-tools.python",
         start = true,
-        bootstrap = require("config.bindings").bootstrap(
-          "workspace-tools.python",
-          { { "<leader>cv", "<CMD>VenvSelect<CR>", desc = "Select VirtualEnv", ft = "python" } },
-          nil
-        ),
         opts = {
           python = {},
         },
         config = function(ctx)
+          require("config.bindings").set(
+            "workspace-tools.python",
+            { { "<leader>cv", "<CMD>VenvSelect<CR>", desc = "Select VirtualEnv", ft = "python" } }
+          )
           local opts = ctx.opts
           require("integrations.python_environment").setup(opts.python)
           vim.api.nvim_create_user_command("VenvSelect", function(args)

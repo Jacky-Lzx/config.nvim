@@ -23,7 +23,6 @@ local function toggle_state(key, buf)
 end
 vim.o.swapfile = false
 vim.g.mapleader = " "
-spec.bootstrap({ opts = spec.opts, dir = spec.dir })
 local fixture = assert(vim.env.NVIM_TEST_TMP) .. "/git-tools-config"
 vim.fn.mkdir(fixture, "p")
 local function git(...)
@@ -40,7 +39,7 @@ vim.fn.writefile({ "one", "two" }, fixture .. "/sample.txt")
 git("add", ".")
 git("commit", "-qm", "initial")
 vim.cmd.edit(fixture .. "/sample.txt")
-require("git_tools").setup(spec.opts)
+spec.config({ opts = vim.deepcopy(spec.opts), dir = spec.dir })
 local buf = vim.api.nvim_get_current_buf()
 assert(vim.wait(5000, function()
   return vim.fn.maparg("ih", "o") ~= ""

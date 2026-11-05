@@ -54,43 +54,47 @@ end
 
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("editing-tools.nvim", function()
-      local keys = {}
-      -- Keep Vim's URI opener reachable after gx becomes exchange.
-      local uri = vim.fn.maparg("gx", "n", false, true)
-      if vim.fn.maparg("gX", "n") == "" and (uri.desc or ""):find("URI under cursor", 1, true) then
-        keys[#keys + 1] = { "gX", uri.callback or uri.rhs, desc = uri.desc }
+    config = function(ctx)
+      do
+        if vim.fn.maparg("gX", "n") == "" then
+          vim.keymap.set("n", "gX", function()
+            vim.ui.open(vim.fn.expand("<cfile>"))
+          end, { desc = "Open URI under cursor" })
+        end
+        vim.api.nvim_create_autocmd("VimEnter", {
+          once = true,
+          callback = describe,
+        })
       end
-      for _, prefix in ipairs({ "a", "i", "an", "in", "al", "il" }) do
-        keys[#keys + 1] = { prefix, mode = { "o", "x" } }
-      end
-      keys[#keys + 1] = { "g[", desc = "[Editing] Go to object start" }
-      keys[#keys + 1] = { "g]", desc = "[Editing] Go to object end" }
-      keys[#keys + 1] = { "mI", mode = "x", desc = "[Editing] Insert at selected lines" }
-      keys[#keys + 1] = { "mA", mode = "x", desc = "[Editing] Append at selected lines" }
-      for prefix, action in pairs({
-        ["g="] = "Evaluate arithmetic",
-        gx = "Exchange",
-        gm = "Duplicate",
-        cr = "Replace from register",
-        gs = "Sort",
-        ga = "Align with preview",
-      }) do
-        keys[#keys + 1] = { prefix, mode = { "n", "x" }, desc = "[Editing] " .. action }
-        keys[#keys + 1] = { prefix .. prefix:sub(-1), mode = "n", desc = "[Editing] " .. action .. " lines" }
-      end
-      return keys
-    end, function()
-      if vim.fn.maparg("gX", "n") == "" then
-        vim.keymap.set("n", "gX", function()
-          vim.ui.open(vim.fn.expand("<cfile>"))
-        end, { desc = "Open URI under cursor" })
-      end
-      vim.api.nvim_create_autocmd("VimEnter", {
-        once = true,
-        callback = describe,
-      })
-    end),
+      require("config.bindings").set("editing-tools.nvim", function()
+        local keys = {}
+        -- Keep Vim's URI opener reachable after gx becomes exchange.
+        local uri = vim.fn.maparg("gx", "n", false, true)
+        if vim.fn.maparg("gX", "n") == "" and (uri.desc or ""):find("URI under cursor", 1, true) then
+          keys[#keys + 1] = { "gX", uri.callback or uri.rhs, desc = uri.desc }
+        end
+        for _, prefix in ipairs({ "a", "i", "an", "in", "al", "il" }) do
+          keys[#keys + 1] = { prefix, mode = { "o", "x" } }
+        end
+        keys[#keys + 1] = { "g[", desc = "[Editing] Go to object start" }
+        keys[#keys + 1] = { "g]", desc = "[Editing] Go to object end" }
+        keys[#keys + 1] = { "mI", mode = "x", desc = "[Editing] Insert at selected lines" }
+        keys[#keys + 1] = { "mA", mode = "x", desc = "[Editing] Append at selected lines" }
+        for prefix, action in pairs({
+          ["g="] = "Evaluate arithmetic",
+          gx = "Exchange",
+          gm = "Duplicate",
+          cr = "Replace from register",
+          gs = "Sort",
+          ga = "Align with preview",
+        }) do
+          keys[#keys + 1] = { prefix, mode = { "n", "x" }, desc = "[Editing] " .. action }
+          keys[#keys + 1] = { prefix .. prefix:sub(-1), mode = "n", desc = "[Editing] " .. action .. " lines" }
+        end
+        return keys
+      end)
+      require("editing_tools").setup(ctx.opts)
+    end,
     id = "editing-tools.nvim",
     dir = require("utils.platform").dev_plugin_root() .. "/editing-tools.nvim",
     main = "editing_tools",

@@ -7,8 +7,8 @@
 - `core/` owns editor options, general mappings, commands, and autocmds.
 - `features/` owns capability behavior and state. Native folding, column guide,
   LSP/diagnostic behavior, and completion source selection can run without plugin APIs.
-- `plugins/` owns lazy.nvim specs, dependencies, loading conditions, and plugin-specific
-  configuration. Small callbacks used by only one plugin remain with that spec.
+- `plugins/` owns native plugin-tools specs, explicit dependencies, personal mappings,
+  and plugin-specific configuration. Small adapters used by one plugin stay with its spec.
 - `integrations/` connects feature behavior to plugin APIs. Snacks diagnostic toggles,
   Blink completion actions, and Blink/pairing Enter composition live here.
 - `languages/` owns language metadata and language-specific plugin contributions.
@@ -28,8 +28,16 @@
 ## Lifecycle
 
 Set options and early globals, register editor behavior and LSP attach handlers, then
-initialize lazy.nvim. Plugin APIs run in their plugin's lifecycle. Register UI integrations
-on explicit events, not scheduled callbacks used as dependency ordering.
+initialize plugin-tools. It resolves the manifest, mounts runtime directories, and
+executes configuration in explicit `after` order. There is one configuration phase;
+`config(ctx)` applies options, adapters, and ordinary personal mappings through
+`config.bindings.set()`. Merely resolving specs must not bind keys or run plugin APIs.
+
+Plugins own their commands, public APIs, and feature-specific event handlers. Lightweight
+setup registers those entry points, while the plugin defers expensive implementations
+until needed. Plugin-owned bootstrap modules can implement that internal lifecycle;
+the manager has no bootstrap hook, key/command/event loading proxies, or require hooks.
+Register UI integrations on explicit events, not scheduled callbacks used as dependency ordering.
 
 Requiring a feature or its adapter must not start plugins or register behavior. Native
 behavior is installed through `setup()` or an attach handler. Adapters are invoked by

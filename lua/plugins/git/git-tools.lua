@@ -48,200 +48,204 @@ local function on_attach(buf)
 end
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("git-tools.nvim", {
-      {
-        "<leader>ggC",
-        function()
-          require("git_tools").status({ backend = "native" })
-        end,
-        desc = "[Git] Changed files",
-      },
-      {
-        "<leader>ggv",
-        function()
-          require("git_tools").branches({ all = true })
-        end,
-        desc = "[Git] Branches",
-      },
-      {
-        "<leader>ggt",
-        function()
-          require("git_tools").stash({ backend = "native" })
-        end,
-        desc = "[Git] Stash",
-      },
-      {
-        "<leader>ggo",
-        function()
-          require("git_tools").browse({ what = "repo" })
-        end,
-        desc = "[Git] Repository page",
-      },
-      {
-        "<leader>ggO",
-        function()
-          require("git_tools").browse({ what = "branch" })
-        end,
-        desc = "[Git] Branch page",
-      },
-      {
-        "<C-g>",
-        function()
-          require("git_tools").lazygit()
-        end,
-        desc = "[Git] Lazygit",
-      },
-      {
-        "<leader>ggc",
-        function()
-          require("git_tools").changes({ backend = "native" })
-        end,
-        desc = "[Git] Change hunks",
-      },
-      {
-        "<leader>ggl",
-        function()
-          require("git_tools").log({ backend = "native" })
-        end,
-        desc = "[Git] Log",
-      },
-      {
-        "<leader>ggf",
-        function()
-          require("git_tools").file_history({ backend = "native" })
-        end,
-        desc = "[Git] File history",
-      },
-      {
-        "<leader>ggh",
-        function()
-          require("git_tools").line_history()
-        end,
-        desc = "[Git] Line history",
-      },
-      {
-        "<leader>ggb",
-        function()
-          require("git_tools").blame()
-        end,
-        desc = "[Git] Blame line",
-      },
-      {
-        "<leader>ggB",
-        function()
-          require("git_tools").browse()
-        end,
-        desc = "[Git] Browse file",
-      },
-      {
-        "<leader>ggB",
-        function()
-          require("git_tools").browse({ range = visual_range() })
-        end,
-        mode = "x",
-        desc = "[Git] Browse selected lines",
-      },
-      {
-        "<leader>ggy",
-        function()
-          require("git_tools").browse({ copy = true })
-        end,
-        desc = "[Git] Copy permanent URL",
-      },
-      {
-        "<leader>ggy",
-        function()
-          require("git_tools").browse({ copy = true, range = visual_range() })
-        end,
-        mode = "x",
-        desc = "[Git] Copy selected line URL",
-      },
-      {
-        "<leader>ggm",
-        function()
-          require("git_tools").merge()
-        end,
-        desc = "[Git] Merge conflicts",
-      },
-      {
-        "<leader>Dt",
-        function()
-          require("git_tools").toggle_compare()
-        end,
-        desc = "[Git] Toggle diff view",
-      },
-      {
-        "<leader>to",
-        function()
-          require("git_tools").toggle_overlay()
-        end,
-        desc = "[Git] Toggle diff overlay",
-      },
-      {
-        "<leader>tgb",
-        function()
-          require("git_tools").toggle("line_blame")
-        end,
-        desc = "[Git] Toggle line blame",
-      },
-      {
-        "<leader>tgw",
-        function()
-          require("git_tools").toggle("word_diff")
-        end,
-        desc = "[Git] Toggle word diff",
-      },
-      {
-        "<leader>tgs",
-        function()
-          require("git_tools").toggle("signs")
-        end,
-        desc = "[Git] Toggle signs",
-      },
-    }, function()
-      local function option(name)
-        return function()
-          local buffer = package.loaded["git_tools.buffer"]
-          if buffer then
-            return buffer.config[name]
+    config = function(ctx)
+      do
+        local function option(name)
+          return function()
+            local buffer = package.loaded["git_tools.buffer"]
+            if buffer then
+              return buffer.config[name]
+            end
           end
         end
-      end
-      local function overlay(ctx)
-        local buffer = package.loaded["git_tools.buffer"]
-        local state = buffer and buffer.states[ctx.buf]
-        if state then
-          return state.overlay == true
+        local function overlay(ctx)
+          local buffer = package.loaded["git_tools.buffer"]
+          local state = buffer and buffer.states[ctx.buf]
+          if state then
+            return state.overlay == true
+          end
         end
-      end
-      require("keymap_tools").register("git-tools.toggles", {
-        toggles = {
-          {
-            keys = "<leader>Dt",
-            name = "Git diff view",
-            get = function(ctx)
-              if not ctx.win then
-                return nil
-              end
-              local view = package.loaded["git_tools.view"]
-              if package.loaded.git_tools then
-                for active in pairs(view and view.active or {}) do
-                  if active.tab == vim.api.nvim_win_get_tabpage(ctx.win) then
-                    return true
-                  end
+        require("keymap_tools").register("git-tools.toggles", {
+          toggles = {
+            {
+              keys = "<leader>Dt",
+              name = "Git diff view",
+              get = function(ctx)
+                if not ctx.win then
+                  return nil
                 end
-                return false
-              end
-            end,
+                local view = package.loaded["git_tools.view"]
+                if package.loaded.git_tools then
+                  for active in pairs(view and view.active or {}) do
+                    if active.tab == vim.api.nvim_win_get_tabpage(ctx.win) then
+                      return true
+                    end
+                  end
+                  return false
+                end
+              end,
+            },
+            { keys = "<leader>to", name = "Git diff overlay", get = overlay },
+            { keys = "<leader>ggP", name = "Git inline preview", get = overlay },
+            { keys = "<leader>tgb", name = "Git line blame", get = option("line_blame") },
+            { keys = "<leader>tgw", name = "Git word diff", get = option("word_diff") },
+            { keys = "<leader>tgs", name = "Git signs", get = option("signs") },
           },
-          { keys = "<leader>to", name = "Git diff overlay", get = overlay },
-          { keys = "<leader>ggP", name = "Git inline preview", get = overlay },
-          { keys = "<leader>tgb", name = "Git line blame", get = option("line_blame") },
-          { keys = "<leader>tgw", name = "Git word diff", get = option("word_diff") },
-          { keys = "<leader>tgs", name = "Git signs", get = option("signs") },
+        })
+      end
+      require("config.bindings").set("git-tools.nvim", {
+        {
+          "<leader>ggC",
+          function()
+            require("git_tools").status({ backend = "native" })
+          end,
+          desc = "[Git] Changed files",
+        },
+        {
+          "<leader>ggv",
+          function()
+            require("git_tools").branches({ all = true })
+          end,
+          desc = "[Git] Branches",
+        },
+        {
+          "<leader>ggt",
+          function()
+            require("git_tools").stash({ backend = "native" })
+          end,
+          desc = "[Git] Stash",
+        },
+        {
+          "<leader>ggo",
+          function()
+            require("git_tools").browse({ what = "repo" })
+          end,
+          desc = "[Git] Repository page",
+        },
+        {
+          "<leader>ggO",
+          function()
+            require("git_tools").browse({ what = "branch" })
+          end,
+          desc = "[Git] Branch page",
+        },
+        {
+          "<C-g>",
+          function()
+            require("git_tools").lazygit()
+          end,
+          desc = "[Git] Lazygit",
+        },
+        {
+          "<leader>ggc",
+          function()
+            require("git_tools").changes({ backend = "native" })
+          end,
+          desc = "[Git] Change hunks",
+        },
+        {
+          "<leader>ggl",
+          function()
+            require("git_tools").log({ backend = "native" })
+          end,
+          desc = "[Git] Log",
+        },
+        {
+          "<leader>ggf",
+          function()
+            require("git_tools").file_history({ backend = "native" })
+          end,
+          desc = "[Git] File history",
+        },
+        {
+          "<leader>ggh",
+          function()
+            require("git_tools").line_history()
+          end,
+          desc = "[Git] Line history",
+        },
+        {
+          "<leader>ggb",
+          function()
+            require("git_tools").blame()
+          end,
+          desc = "[Git] Blame line",
+        },
+        {
+          "<leader>ggB",
+          function()
+            require("git_tools").browse()
+          end,
+          desc = "[Git] Browse file",
+        },
+        {
+          "<leader>ggB",
+          function()
+            require("git_tools").browse({ range = visual_range() })
+          end,
+          mode = "x",
+          desc = "[Git] Browse selected lines",
+        },
+        {
+          "<leader>ggy",
+          function()
+            require("git_tools").browse({ copy = true })
+          end,
+          desc = "[Git] Copy permanent URL",
+        },
+        {
+          "<leader>ggy",
+          function()
+            require("git_tools").browse({ copy = true, range = visual_range() })
+          end,
+          mode = "x",
+          desc = "[Git] Copy selected line URL",
+        },
+        {
+          "<leader>ggm",
+          function()
+            require("git_tools").merge()
+          end,
+          desc = "[Git] Merge conflicts",
+        },
+        {
+          "<leader>Dt",
+          function()
+            require("git_tools").toggle_compare()
+          end,
+          desc = "[Git] Toggle diff view",
+        },
+        {
+          "<leader>to",
+          function()
+            require("git_tools").toggle_overlay()
+          end,
+          desc = "[Git] Toggle diff overlay",
+        },
+        {
+          "<leader>tgb",
+          function()
+            require("git_tools").toggle("line_blame")
+          end,
+          desc = "[Git] Toggle line blame",
+        },
+        {
+          "<leader>tgw",
+          function()
+            require("git_tools").toggle("word_diff")
+          end,
+          desc = "[Git] Toggle word diff",
+        },
+        {
+          "<leader>tgs",
+          function()
+            require("git_tools").toggle("signs")
+          end,
+          desc = "[Git] Toggle signs",
         },
       })
-    end),
+      require("git_tools").setup(ctx.opts)
+    end,
     id = "git-tools.nvim",
     source = "git@github.com:Jacky-Lzx/git-tools.nvim.git",
     dev = true,

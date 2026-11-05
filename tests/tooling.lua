@@ -23,18 +23,15 @@ package.preload.snacks = function()
 end
 local conform = require("plugins.coding.conform")[1]
 vim.g.enable_autoformat = false
-conform.bootstrap({ opts = conform.opts, dir = conform.dir })
 conform.config({ opts = vim.deepcopy(conform.opts), dir = conform.dir })
 assert(vim.g.enable_autoformat == false, "preserve explicit autoformat preference")
 vim.g.enable_autoformat = nil
-conform.bootstrap({ opts = conform.opts, dir = conform.dir })
+conform.config({ opts = vim.deepcopy(conform.opts), dir = conform.dir })
 local toggle_format = vim.fn.maparg("<leader>tf", "n", false, true).callback
 toggle_format()
-assert(vim.g.enable_autoformat == false, "Allow disabling formatting before Conform setup")
-conform.config({ opts = vim.deepcopy(conform.opts), dir = conform.dir })
-assert(vim.g.enable_autoformat == false, "Loading Conform must preserve the pre-save toggle")
+assert(vim.g.enable_autoformat == false, "Allow disabling formatting before the first save")
 assert(not format_registration.get())
-assert(vim.fn.maparg("<leader>tf", "n", false, true).callback == toggle_format, "Conform replaced the owner mapping")
+assert(vim.fn.maparg("<leader>tf", "n", false, true).callback == toggle_format, "Inspection replaced the owner mapping")
 assert(not package.loaded.snacks)
 toggle_format()
 assert(vim.g.enable_autoformat == true)

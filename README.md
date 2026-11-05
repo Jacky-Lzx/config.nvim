@@ -18,6 +18,11 @@ own their first-use initialization inside their respective plugins. Other setup
 callbacks register native behavior immediately; the manager has no loading
 triggers or `require()` interception.
 
+Each plugin's `config(ctx)` applies its options and binds personal shortcuts with
+`config.bindings.set()`. There is no separate manager bootstrap phase. Plugins
+register their own commands and APIs, and keep expensive first-use initialization
+inside their implementations; shortcuts call those ordinary commands or APIs.
+
 Managed Git packages live under `stdpath("data")/plugin-tools` (override with
 `NVIM_PLUGIN_ROOT`); development checkouts remain external. To prepare a new
 machine, mount the manager and run its explicit `install()` API with the native
@@ -87,8 +92,8 @@ See [the architecture guide](docs/architecture.md) for ownership and lifecycle r
 
 `<leader>gf` uses Conform's configured formatters with LSP fallback in all buffers.
 LSP attachment adds navigation/refactoring mappings without replacing the shared format key.
-`<leader>tf` toggles automatic formatting even before the first save, without loading
-Conform. Debugging loads on debugger keys; merely opening C/C++ or Swift does not
+`<leader>tf` toggles automatic formatting before the first save.
+Debugging loads on debugger keys; merely opening C/C++ or Swift does not
 initialize DAP. Pairing/snippets load on Insert mode, and optional completion providers
 load when used. VimTeX stays available at startup for headless inverse search.
 

@@ -34,11 +34,36 @@ diagnostic_mapping()
 assert(row("td").toggle.state == false and row("td").desc == "Enable Diagnostics")
 diagnostic_mapping()
 local conform = require("plugins.coding.conform")[1]
-conform.bootstrap({ opts = conform.opts, dir = conform.dir })
+-- Isolate configuration-owned mappings/metadata from plugin initialization.
+local mocked = {
+  "conform",
+  "ui_tools",
+  "git_tools",
+  "pairs",
+  "render-markdown",
+  "features.bars",
+  "ui_tools.integrations.git_tools",
+  "ui_tools.integrations.context_lsp",
+}
+local function configure(spec)
+  local previous = {}
+  for _, name in ipairs(mocked) do
+    previous[name] = package.loaded[name]
+    package.loaded[name] = { setup = function() end }
+  end
+  local ok, err = xpcall(function()
+    spec.config({ opts = vim.deepcopy(spec.opts), dir = spec.dir })
+  end, debug.traceback)
+  for _, name in ipairs(mocked) do
+    package.loaded[name] = previous[name]
+  end
+  assert(ok, err)
+end
+configure(conform)
 local format_mapping = vim.fn.maparg("<leader>tf", "n", false, true).callback
 assert(row("tf").toggle.state)
 format_mapping()
-assert(row("tf").toggle.state == false and not package.loaded.conform)
+assert(row("tf").toggle.state == false)
 
 local specs = {
   require("plugins.ui.ui-tools")[1],
@@ -47,7 +72,7 @@ local specs = {
   require("languages.markdown.specs.render")[1],
 }
 for _, spec in ipairs(specs) do
-  spec.bootstrap({ opts = spec.opts, dir = spec.dir })
+  configure(spec)
 end
 for _, key in ipairs({ "tp", "tgb", "tgw", "tgs", "to", "Dt", "tm", "Z", "z", "tG", "tD" }) do
   local item = row(key)

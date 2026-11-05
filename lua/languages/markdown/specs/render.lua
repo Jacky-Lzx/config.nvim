@@ -1,29 +1,5 @@
 return {
   {
-    bootstrap = require("config.bindings").bootstrap("render-markdown.nvim", {
-      {
-        "<leader>tm",
-        function()
-          require("render-markdown").toggle()
-        end,
-        desc = "Toggle render markdown",
-      },
-    }, function()
-      require("keymap_tools").register("render-markdown", {
-        toggles = {
-          {
-            keys = "<leader>tm",
-            name = "Render Markdown",
-            get = function()
-              local state = package.loaded["render-markdown.state"]
-              if state then
-                return state.enabled
-              end
-            end,
-          },
-        },
-      })
-    end),
     main = "render-markdown",
     id = "render-markdown.nvim",
     source = "MeanderingProgrammer/render-markdown.nvim",
@@ -62,6 +38,31 @@ return {
       },
     },
     config = function(ctx)
+      do
+        require("keymap_tools").register("render-markdown", {
+          toggles = {
+            {
+              keys = "<leader>tm",
+              name = "Render Markdown",
+              get = function()
+                local state = package.loaded["render-markdown.state"]
+                if state then
+                  return state.enabled
+                end
+              end,
+            },
+          },
+        })
+      end
+      require("config.bindings").set("render-markdown.nvim", {
+        {
+          "<leader>tm",
+          function()
+            require("render-markdown").toggle()
+          end,
+          desc = "Toggle render markdown",
+        },
+      })
       local opts = ctx.opts
       require("render-markdown").setup(opts)
     end,
