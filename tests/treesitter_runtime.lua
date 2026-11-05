@@ -59,10 +59,10 @@ local function check()
   local predicates = vim.treesitter.query.list_predicates()
   assert(vim.list_contains(predicates, "kind-eq?") and vim.list_contains(predicates, "any-kind-eq?"))
 
-  -- Editing uses the managed parser and retains external queries for other languages.
+  -- Editing uses managed parsers and its own bundled textobject queries.
   require("lazy").load({ plugins = { "editing-tools.nvim" } })
   assert(plugins["editing-tools.nvim"]._.loaded)
-  assert(plugins["nvim-treesitter-textobjects"]._.loaded)
+  assert(not plugins["nvim-treesitter-textobjects"])
   assert(not package.loaded["mini.ai"])
   assert(vim.treesitter.query.get("lua", "textobjects"))
   if plugins["codecompanion.nvim"] then

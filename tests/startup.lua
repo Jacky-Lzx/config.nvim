@@ -145,7 +145,9 @@ local function check()
   assert(
     (plugins["workspace-tools.nvim"] ~= nil) == (not not features.sessions or require("languages").is_enabled("python"))
   )
-  assert(not plugins["venv-selector.nvim"])
+  assert(
+    not plugins["venv-selector.nvim"] and not plugins["multicursor.nvim"] and not plugins["nvim-treesitter-textobjects"]
+  )
   assert(not plugins["auto-session"] and not package.loaded["auto-session"])
   for _, name in ipairs({ "barbar.nvim", "lualine.nvim", "copilot-lualine" }) do
     assert(not plugins[name], "Old bar plugin remains configured: " .. name)
@@ -265,7 +267,7 @@ local function check()
   vim.cmd.edit(vim.env.NVIM_TEST_TMP .. "/sample.py")
   assert(vim.bo.filetype == "python")
   -- Neovim's Python undo_ftplugin uses silent! unmap even when no_python_maps is set.
-  -- lazy.nvim replays FileType while loading venv-selector, leaving this caught error.
+  -- FileType/ftplugin replay can leave this caught cleanup error.
   if vim.v.errmsg == "E31: No such mapping" then
     vim.v.errmsg = ""
   end

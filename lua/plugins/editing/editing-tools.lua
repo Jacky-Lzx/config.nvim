@@ -77,6 +77,8 @@ return {
       end
       keys[#keys + 1] = { "g[", desc = "[Editing] Go to object start" }
       keys[#keys + 1] = { "g]", desc = "[Editing] Go to object end" }
+      keys[#keys + 1] = { "mI", mode = "x", desc = "[Editing] Insert at selected lines" }
+      keys[#keys + 1] = { "mA", mode = "x", desc = "[Editing] Append at selected lines" }
       for prefix, action in pairs({
         ["g="] = "Evaluate arithmetic",
         gx = "Exchange",

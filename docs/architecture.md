@@ -41,8 +41,11 @@ or start jobs. `utils.platform` matches each platform's `sysname`, falls back to
 overlays its fields on `defaults`. Lists are replaced as a whole. Environment overrides and
 executable availability are evaluated when an accessor is called; changing the configuration
 table requires a Neovim restart. Python project interpreter selection remains dynamic.
-`languages/python/interpreter.lua` owns the live project interpreter provider; the
-venv-selector lifecycle connects it through `integrations/python_environment.lua`.
+`languages/python/interpreter.lua` owns the live project interpreter provider.
+The Python profile connects workspace-tools environment selection through
+`integrations/python_environment.lua`, independently of session persistence.
+BasedPyright, tasks and DAP consume the project interpreter; child environment
+variables are passed explicitly without changing global PATH.
 Platform discovery accepts the selected path as data and handles executable/environment
 fallbacks without inspecting plugin state. Tasks and `:make` use the language accessor.
 Native LSP mapping removal runs in `features.lsp.setup()`, independent of Snacks events.
@@ -66,9 +69,9 @@ on first display. selection-tools has its own setup owner and is required only b
 the executable picker. editing-tools publishes text-object metadata at VimEnter
 without initializing its implementation; it loads on the first editing key or
 :EditingTools command. It owns text objects, editing operators and alignment.
-mini.ai, mini.align and mini.operators are no longer declared. The retained
-nvim-treesitter-textobjects dependency supplies query data for additional languages,
-without taking ownership of input or selection. LaTeX publishes buffer-scoped groups. Snacks
+mini.ai, mini.align and mini.operators are no longer declared.
+editing-tools bundles the textobject query data for the configured languages,
+and owns the mI/mA live insertion sessions. LaTeX publishes buffer-scoped groups. Snacks
 registers dynamic toggle descriptions. Each integration registers named groups/hints
 under its own source ID; registrations have replace/dispose lifecycles. Native
 vim.keymap.set() owns real mappings. The picker shortcut is explicitly declared in

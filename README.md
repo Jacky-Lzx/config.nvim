@@ -418,8 +418,8 @@ filetype aliases and query predicate compatibility. The nvim-treesitter main plu
 longer declared or loaded; Markdown rendering and CodeCompanion depend on toolchain instead.
 The independently installed runtime covers all 45 previously installed parser languages,
 including Vimdoc, XML, TSX and Svelte. `editing-tools.nvim` owns text objects,
-editing operators and alignment. `nvim-treesitter-textobjects` remains a query-data
-dependency for languages beyond editing-tools' bundled queries. `:TSInstallConfigured` submits independent parser tasks. Query data is downloaded
+editing operators, alignment and bundled textobject queries.
+`nvim-treesitter-textobjects` is no longer a plugin dependency. `:TSInstallConfigured` submits independent parser tasks. Query data is downloaded
 at a fixed nvim-treesitter commit without loading its Lua code; existing legacy checkout
 files are retained for rollback but are not required by these managed language bundles.
 When migrating an existing installation, old `site/queries` links to that checkout must
@@ -435,7 +435,13 @@ Editing loads from the development plugin root on the first object/operator key 
 alignment preview: Enter applies, Esc cancels, and `d` changes the delimiter.
 Confirmed edits support `.` repeat and undo. `gX` keeps Vim's URI opener available.
 The former `gA` immediate-alignment mapping is no longer installed. Pair insertion
-and surround continue to belong to pairs.nvim; multicursor remains separate.
+and surround continue to belong to pairs.nvim. Visual `mI` / `mA` now use
+editing-tools' live insertion sessions, replacing multicursor.nvim. They insert at
+each line's first nonblank/end, or at the selected block's left/right column.
+Unicode, register insertion, pair mappings and newlines synchronize live. Escape
+or Ctrl-C ends the session; undo/redo follows the native insertion block. Tab
+expansion and short-line padding share that undo block. This covers the configured
+insertion workflow rather than a general Normal-mode multi-cursor engine.
 
 Mason is no longer declared or loaded. Toolchain installs pinned release archives, isolated
 npm/Python packages, Cargo packages and selected source builds. It appends managed tool
