@@ -81,7 +81,7 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
         initial = wait(lambda s: s["mode"] == "n" and s["engine"] == "snippet-tools", "cold TeX startup")
         assert not initial["loaded"], "TeX opening eagerly loaded snippet runtime"
         expand("bf")
-        wait(lambda s: s["lines"] == ["\\textbf{}"] and s["mode"] == "i", "native empty field")
+        wait(lambda s: s["lines"] == ["\\textbf{}"] and s["mode"] == "i" and "" in s["screen"], "native empty field marker")
         send(b"text\x1bl!")
         wait(lambda s: s["lines"] == ["\\textbf{text}!"] and "\\textbf{text}!" in s["screen"], "rendered TeX wrapper")
 
@@ -105,7 +105,7 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
 
         reset()
         expand("figure")
-        wait(lambda s: s["mode"] == "s" and s["selection"] == "H", "figure placement selection")
+        wait(lambda s: s["mode"] == "s" and s["selection"] == "H" and "" in s["screen"], "figure placement selection and choice marker")
         send(b"\x1bj\x1bl7\x1blmy_figure.pdf\x1blCaption\x1bl!")
         wait(lambda s: "  \\label{fig:my-figure}" in s["lines"] and s["lines"][-1] == "\\end{figure}!", "filename label linkage")
 

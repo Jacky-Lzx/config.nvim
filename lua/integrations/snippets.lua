@@ -161,11 +161,21 @@ function M.source()
 end
 function M.setup_native()
   local s = require("snippet_tools")
+  local function decoration(icon, group)
+    return {
+      active = { virt_text = { { icon, group } }, sign_text = icon, sign_hl_group = group },
+      passive = { virt_text = { { icon, "Comment" } }, sign_text = icon, sign_hl_group = "Comment" },
+    }
+  end
   s.filetype_extend("markdown", { "tex" })
   s.filetype_extend("markdown_inline", { "markdown" })
   s.setup({
     keymap = false,
     paths = { require("utils.paths").config("lua", "snippet_collections") },
+    ext_opts = {
+      insert = decoration("", "Identifier"),
+      choice = decoration("", "Type"),
+    },
     enabled = function(ctx)
       return M.engine(ctx.bufnr) == "snippet-tools"
     end,

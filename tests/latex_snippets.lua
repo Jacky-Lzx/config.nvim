@@ -109,6 +109,39 @@ local ok, err = xpcall(function()
     wait_line("  body")
     eq({ "\\begin{example}", "  body", "\\end{example}" }, lines())
   end)
+  test("native node decorations match configured insert and choice indicators", function()
+    expand("figure")
+    wait("return vim.api.nvim_get_mode().mode=='s'")
+    lua([[
+      function native_decoration(icon, group)
+        local ns=vim.api.nvim_get_namespaces()['snippet-tools']
+        for _,mark in ipairs(vim.api.nvim_buf_get_extmarks(0,ns,0,-1,{details=true})) do
+          local d=mark[4]
+          if d.priority==130 and d.virt_text then
+            return d.virt_text[1][1]==icon and d.virt_text[1][2]==group
+              and d.sign_text:match('%S+')==icon and d.sign_hl_group==group
+          end
+        end
+        return false
+      end
+      assert(native_decoration('','Type'))
+    ]])
+    input("<A-l>")
+    wait("return vim.api.nvim_get_mode().mode=='s' and native_decoration('','Identifier')")
+    lua([[
+      local ns=vim.api.nvim_get_namespaces()['snippet-tools']
+      local passive=false
+      for _,mark in ipairs(vim.api.nvim_buf_get_extmarks(0,ns,0,-1,{details=true})) do
+        local d=mark[4]
+        if d.virt_text and d.virt_text[1][1]=='' then
+          passive=d.virt_text[1][2]=='Comment' and d.sign_hl_group=='Comment'
+        end
+      end
+      assert(passive)
+      require('snippet_tools').stop()
+      assert(#vim.api.nvim_buf_get_extmarks(0,ns,0,-1,{})==0)
+    ]])
+  end)
   test("visual TeX wrapper preserves Unicode", function()
     buffer({ "中文 text" })
     input("v$`bf")
