@@ -174,6 +174,7 @@ function M.setup_native()
     paths = { require("utils.paths").config("lua", "snippet_collections") },
     ext_opts = {
       insert = decoration("", "Identifier"),
+      exit = decoration("", "Identifier"),
       choice = decoration("", "Type"),
     },
     enabled = function(ctx)

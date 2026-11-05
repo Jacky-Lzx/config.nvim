@@ -149,6 +149,30 @@ local ok, err = xpcall(function()
       assert(#vim.api.nvim_buf_get_extmarks(0,vim.api.nvim_get_namespaces()['snippet-tools.eol'],0,-1,{})==0)
     ]])
   end)
+  test("final stop uses a separate flag and disappears on exit", function()
+    expand("bf")
+    wait("return vim.api.nvim_get_mode().mode=='i'")
+    lua([[
+      local ns=vim.api.nvim_get_namespaces()['snippet-tools']
+      local eol_ns=vim.api.nvim_get_namespaces()['snippet-tools.eol']
+      local flag=false
+      for _,mark in ipairs(vim.api.nvim_buf_get_extmarks(0,ns,0,-1,{details=true})) do
+        local d=mark[4]
+        if d.sign_text and d.sign_text:match('%S+')=='' then
+          local text=vim.api.nvim_buf_get_extmark_by_id(0,eol_ns,mark[1],{details=true})[3].virt_text[1]
+          assert(text[1]=='' and text[2]=='Comment' and d.sign_hl_group=='Comment')
+          flag=true
+        end
+      end
+      assert(flag)
+    ]])
+    input("text<A-l>!")
+    wait_line("\\textbf{text}!")
+    lua([[
+      local ns=vim.api.nvim_get_namespaces()['snippet-tools.eol']
+      assert(#vim.api.nvim_buf_get_extmarks(0,ns,0,-1,{})==0)
+    ]])
+  end)
   test("visual TeX wrapper preserves Unicode", function()
     buffer({ "中文 text" })
     input("v$`bf")

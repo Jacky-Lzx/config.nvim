@@ -81,7 +81,7 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
         initial = wait(lambda s: s["mode"] == "n" and s["engine"] == "snippet-tools", "cold TeX startup")
         assert not initial["loaded"], "TeX opening eagerly loaded snippet runtime"
         expand("bf")
-        wait(lambda s: s["lines"] == ["\\textbf{}"] and s["mode"] == "i" and "" in s["screen"], "native empty field marker")
+        wait(lambda s: s["lines"] == ["\\textbf{}"] and s["mode"] == "i" and "" in s["screen"] and "" in s["screen"], "native field and distinct final-stop markers")
         send(b"text\x1bl!")
         wait(lambda s: s["lines"] == ["\\textbf{text}!"] and "\\textbf{text}!" in s["screen"], "rendered TeX wrapper")
 
