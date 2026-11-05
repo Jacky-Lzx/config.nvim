@@ -1,20 +1,17 @@
 local M = {}
-local owners = {}
-local migrated = { markdown = true, markdown_inline = true, tex = true }
 
 function M.engine(buf)
   buf = buf or vim.api.nvim_get_current_buf()
-  return vim.b[buf].snippet_engine or (migrated[vim.bo[buf].filetype] and "snippet-tools" or "luasnip")
+  return vim.b[buf].snippet_engine or "snippet-tools"
 end
 function M.configure_legacy()
   local ls = package.loaded.luasnip
   if not ls then
     return
   end
-  local native = M.engine() == "snippet-tools"
-  ls.filetype_set("tex", native and {} or { "tex" })
-  ls.filetype_set("markdown", native and {} or { "markdown", "tex" })
-  ls.filetype_set("markdown_inline", native and {} or { "markdown_inline", "markdown", "tex" })
+  ls.filetype_set("tex", { "tex" })
+  ls.filetype_set("markdown", { "markdown", "tex" })
+  ls.filetype_set("markdown_inline", { "markdown_inline", "markdown", "tex" })
 end
 local function legacy()
   local ls = require("luasnip")
@@ -22,11 +19,7 @@ local function legacy()
   return ls
 end
 local function order()
-  if M.engine() ~= "snippet-tools" then
-    return { "luasnip" }
-  end
-  return owners[vim.api.nvim_get_current_buf()] == "luasnip" and { "luasnip", "snippet-tools" }
-    or { "snippet-tools", "luasnip" }
+  return { M.engine() }
 end
 function M.active(direction)
   for _, engine in ipairs(order()) do
@@ -90,14 +83,11 @@ function M.select_choice()
   return false
 end
 function M.capture()
-  local ls = legacy()
   if M.engine() == "snippet-tools" then
-    local text = require("snippet_tools").cut_selection()
-    if type(text) == "string" then
-      local lines = vim.split(text, "\n", { plain = true })
-      vim.b.LUASNIP_SELECT_RAW, vim.b.LUASNIP_SELECT_DEDENT, vim.b.LUASNIP_TM_SELECT = lines, lines, lines
-    end
+    require("lazy").load({ plugins = { "snippet-tools.nvim" } })
+    return require("snippet_tools").cut_selection()
   else
+    local ls = legacy()
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(ls.cut_keys, true, false, true), "in", false)
   end
 end
@@ -115,47 +105,39 @@ function M.options()
   return { preset = "default", expand = M.expand, active = M.active, jump = M.jump }
 end
 function M.source()
-  local function providers()
+  local function provider(engine)
+    if engine == "luasnip" then
+      legacy()
+      return require("completion_tools.sources.luasnip").new()
+    end
     if not package.loaded.snippet_tools then
       require("lazy").load({ plugins = { "snippet-tools.nvim" } })
     end
-    return require("snippet_tools.integrations.completion_tools").new(),
-      require("completion_tools.sources.luasnip").new()
+    return require("snippet_tools.integrations.completion_tools").new()
   end
   return {
     complete = function(ctx, callback)
-      M.configure_legacy()
-      local native, old = providers()
-      if M.engine(ctx.bufnr) ~= "snippet-tools" then
-        old.complete(ctx, callback)
-        return
-      end
-      native.complete(ctx, function(result)
-        local labels = {}
-        for _, item in ipairs(result.items) do
-          labels[item.label] = true
-        end
-        old.complete(ctx, function(fallback)
-          for _, item in ipairs(fallback.items) do
-            if not labels[item.label] then
-              result.items[#result.items + 1] = item
+      local engine = M.engine(ctx.bufnr)
+      local native = engine == "snippet-tools"
+      return provider(engine).complete(ctx, function(result)
+        if native then
+          local seen = {}
+          result.items = vim.tbl_filter(function(item)
+            if seen[item.label] then
+              return false
             end
-          end
-          callback(result)
-        end)
+            seen[item.label] = true
+            return true
+          end, result.items)
+        end
+        callback(result)
       end)
     end,
     resolve = function(entry, callback)
-      local native, old = providers()
-      return (entry.item._snippet_tools and native or old).resolve(entry, callback)
+      return provider(entry.item._snippet_tools and "snippet-tools" or "luasnip").resolve(entry, callback)
     end,
     execute = function(entry, ctx)
-      local native, old = providers()
-      owners[ctx.bufnr] = entry.item._snippet_tools and "snippet-tools" or "luasnip"
-      if not entry.item._snippet_tools and package.loaded.snippet_tools then
-        require("snippet_tools").clear_selection()
-      end
-      return (entry.item._snippet_tools and native or old).execute(entry, ctx)
+      return provider(entry.item._snippet_tools and "snippet-tools" or "luasnip").execute(entry, ctx)
     end,
   }
 end
@@ -169,6 +151,7 @@ function M.setup_native()
   end
   s.filetype_extend("markdown", { "tex" })
   s.filetype_extend("markdown_inline", { "markdown" })
+  s.filetype_extend("systemverilog", { "verilog" })
   s.setup({
     keymap = false,
     paths = { require("utils.paths").config("lua", "snippet_collections") },
@@ -185,24 +168,30 @@ function M.setup_native()
 end
 function M.switch(value)
   assert(value == "auto" or value == "luasnip" or value == "snippet-tools", "Expected auto, luasnip or snippet-tools")
-  require("lazy").load({ plugins = { "LuaSnip", "snippet-tools.nvim" } })
-  local s, ls = require("snippet_tools"), legacy()
-  s.stop()
-  s.clear_selection()
-  for _ = 1, 64 do
-    if not ls.session.current_nodes[vim.api.nvim_get_current_buf()] then
-      break
-    end
-    ls.unlink_current()
+  local destination = value == "luasnip" and "LuaSnip" or "snippet-tools.nvim"
+  require("lazy").load({ plugins = { destination } })
+  local s, ls = package.loaded.snippet_tools, package.loaded.luasnip
+  if s then
+    s.stop()
+    s.clear_selection()
   end
-  owners[vim.api.nvim_get_current_buf()] = nil
+  if ls then
+    for _ = 1, 64 do
+      if not ls.session.current_nodes[vim.api.nvim_get_current_buf()] then
+        break
+      end
+      ls.unlink_current()
+    end
+  end
   vim.b.snippet_engine = value ~= "auto" and value or nil
   for _, key in ipairs({ "LUASNIP_SELECT_RAW", "LUASNIP_SELECT_DEDENT", "LUASNIP_TM_SELECT" }) do
     vim.b[key] = nil
   end
   M.configure_legacy()
   -- Routing can change after FileType; load the destination before its first query.
-  require("luasnip.loaders").load_lazy_loaded(vim.api.nvim_get_current_buf())
+  if M.engine() == "luasnip" then
+    require("luasnip.loaders").load_lazy_loaded(vim.api.nvim_get_current_buf())
+  end
   local cmp = package.loaded["completion_tools"]
   if cmp then
     cmp.hide()
@@ -212,27 +201,6 @@ end
 function M.setup()
   local group = vim.api.nvim_create_augroup("ConfigSnippetEngines", { clear = true })
   vim.api.nvim_create_autocmd({ "BufEnter", "FileType" }, { group = group, callback = M.configure_legacy })
-  vim.api.nvim_create_autocmd("BufWipeout", {
-    group = group,
-    callback = function(args)
-      owners[args.buf] = nil
-    end,
-  })
-  vim.api.nvim_create_autocmd("User", {
-    group = group,
-    pattern = { "SnippetToolsEnter", "SnippetToolsExpand", "LuasnipInsertNodeEnter", "LuasnipChoiceNodeEnter" },
-    callback = function(args)
-      local native = args.match == "SnippetToolsEnter" or args.match == "SnippetToolsExpand"
-      owners[vim.api.nvim_get_current_buf()] = native and "snippet-tools" or "luasnip"
-      if native then
-        for _, key in ipairs({ "LUASNIP_SELECT_RAW", "LUASNIP_SELECT_DEDENT", "LUASNIP_TM_SELECT" }) do
-          vim.b[key] = nil
-        end
-      elseif package.loaded.snippet_tools then
-        require("snippet_tools").clear_selection()
-      end
-    end,
-  })
   vim.api.nvim_create_user_command("SnippetEngine", function(args)
     if args.args == "" then
       vim.notify("Snippet engine: " .. M.engine())

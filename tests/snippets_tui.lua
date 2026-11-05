@@ -3,7 +3,7 @@ vim.cmd("enew!")
 vim.bo.filetype = "markdown"
 vim.b.completion_tools_sources = { "snippets" }
 vim.bo.expandtab, vim.bo.shiftwidth, vim.bo.autoindent, vim.bo.indentexpr = true, 2, false, ""
-function _G.snippet_config_reset()
+function _G.snippet_config_reset(filetype)
   if package.loaded.snippet_tools then
     require("snippet_tools").stop()
   end
@@ -12,7 +12,7 @@ function _G.snippet_config_reset()
     cmp.hide()
   end
   vim.cmd("enew!")
-  vim.bo.filetype = "markdown"
+  vim.bo.filetype = filetype or "markdown"
   vim.b.completion_tools_sources = { "snippets" }
   vim.bo.expandtab, vim.bo.shiftwidth, vim.bo.autoindent, vim.bo.indentexpr = true, 2, false, ""
 end
@@ -34,6 +34,8 @@ timer:start(
       lines = api.nvim_buf_get_lines(0, 0, -1, false),
       mode = api.nvim_get_mode().mode,
       engine = require("integrations.snippets").engine(),
+      filetype = vim.bo.filetype,
+      legacy_loaded = package.loaded.luasnip ~= nil,
       errors = config_test_errors,
       loaded = package.loaded.snippet_tools ~= nil,
       screen = table.concat(screen),

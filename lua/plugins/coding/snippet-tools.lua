@@ -6,6 +6,48 @@ return {
     module = false,
     event = "InsertEnter",
     cmd = { "SnippetToolsInspect", "SnippetToolsStop", "SnippetToolsReload" },
+    keys = {
+      {
+        "<A-l>",
+        function()
+          require("integrations.snippets").jump(1)
+        end,
+        mode = { "i", "s" },
+        desc = "Snippet next field",
+      },
+      {
+        "<A-h>",
+        function()
+          require("integrations.snippets").jump(-1)
+        end,
+        mode = { "i", "s" },
+        desc = "Snippet previous field",
+      },
+      {
+        "<A-j>",
+        function()
+          require("integrations.snippets").choice(1)
+        end,
+        mode = { "i", "s" },
+        desc = "Snippet next choice",
+      },
+      {
+        "<A-k>",
+        function()
+          require("integrations.snippets").choice(-1)
+        end,
+        mode = { "i", "s" },
+        desc = "Snippet previous choice",
+      },
+      {
+        "<A-c>",
+        function()
+          require("integrations.snippets").select_choice()
+        end,
+        mode = { "i", "s" },
+        desc = "Snippet choice selection",
+      },
+    },
     init = function()
       require("integrations.snippets").setup()
     end,

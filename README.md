@@ -48,7 +48,8 @@ runtime-path handling.
 - `lua/utils/`: shared helpers for resource paths, platform discovery, and system commands.
 - `ftplugin/`: settings needed before runtime ftplugins, such as style and mapping switches.
 - `after/ftplugin/`: buffer-local settings; `after/lsp/`: native server overrides.
-- `lua/snippets/` and `queries/`: native discovery paths; `lua/features/tasks.lua`: personal task workflows.
+- `lua/snippet_collections/`: native snippets; `lua/snippets/`: retained LuaSnip comparison definitions;
+  `queries/`: Tree-sitter queries; `lua/features/tasks.lua`: personal task workflows.
 
 See [the architecture guide](docs/architecture.md) for ownership and lifecycle rules.
 
@@ -256,6 +257,13 @@ math, `]i/[i` items and `]t/[t` table cells.
 out of Insert mode so typing Space stays immediate; Enter remains composed
 by Blink and pairs.nvim.
 TeX snippets use tex-tools math context; Markdown retains its own detection.
+
+All filetypes use snippet-tools by default. Native collections include Lua,
+Python, Rust, Typst, Verilog/SystemVerilog, Markdown, TeX and global date/time/TODO
+snippets. `<A-l>`/`<A-h>` navigate fields, `<A-j>`/`<A-k>` cycle choices and `<A-c>`
+opens the choice picker. Visual backtick captures text for the next snippet.
+LuaSnip remains available through `:SnippetEngine luasnip` for explicit comparison;
+`:SnippetEngine auto` restores the native route. Normal editing does not load LuaSnip.
 
 VimTeX-only selected-region compilation, structural `%`, environment/math/section
 end motions, frame/comment motions, `ds$`, Visual fraction/size toggles, `tsb`,

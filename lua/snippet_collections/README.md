@@ -1,9 +1,19 @@
 # Native snippet collections
 
-Markdown and TeX default to `snippet-tools`. The other filetypes retain LuaSnip.
+All filetypes default to `snippet-tools`, including Lua, Python, Rust, Typst,
+Verilog/SystemVerilog, Markdown and TeX. Date/time and signed TODO comments are
+native global definitions. Normal completion, automatic expansion, navigation
+and Visual capture do not load LuaSnip.
 `:SnippetEngine luasnip`, `:SnippetEngine snippet-tools` and `:SnippetEngine auto`
-switch the current buffer; `:SnippetEngineToggle` toggles the engines. Global
-LuaSnip definitions such as `date`, `datetime` and TODO comments remain available.
+switch the current buffer; `:SnippetEngineToggle` toggles the engines. LuaSnip
+loads only when explicitly selected or opened through its commands, using the
+retained definitions under `lua/snippets/` for comparison. Sources are never mixed;
+returning to `auto` selects the native engine for every filetype.
+
+The native Lua `snippet` template now writes snippet-tools definitions. Other
+migrated language/global triggers and default text are checked against the retained
+collections in `tests/snippet_collections.lua`. Dynamic module names, computed
+Typst labels, Verilog mirrors and TODO alias/signature choices use native nodes.
 
 `tex.lua` loads 92 migrated definitions from `tex/text.lua`, `environments.lua`,
 `math.lua` and `beamer.lua`. Their trigger names, priorities, word boundaries and

@@ -1,22 +1,12 @@
 return {
   {
     "L3MON4D3/LuaSnip",
-    event = "InsertEnter",
+    lazy = true, -- Explicit :SnippetEngine luasnip comparison only.
     cmd = { "LuaSnipList", "LuaSnipEdit" },
     -- version = "v2.*",
     version = "*",
     -- install jsregexp (optional!:).
     build = "make install_jsregexp",
-    -- stylua: ignore
-    keys = {
-      -- { "<A-n>" , function() require('luasnip').expand() end,                         mode = { "i", "s" }, silent = true, desc = "luasnip expand" },
-      { "<A-l>" , function() require('integrations.snippets').jump(1) end,                         mode = { "i", "s" }, silent = true, desc = "snippet next field" },
-      { "<A-h>" , function() require('integrations.snippets').jump(-1) end,                        mode = { "i", "s" }, silent = true, desc = "snippet previous field" },
-      { "<A-j>" , function() require('integrations.snippets').choice(1) end,                mode = { "i", "s" }, silent = true, desc = "snippet next choice" },
-      { "<A-k>" , function() require('integrations.snippets').choice(-1) end,               mode = { "i", "s" }, silent = true, desc = "snippet previous choice" },
-      { "<A-c>" , function() require("integrations.snippets").select_choice() end,         mode = { "i", "s" }, silent = true, desc = "choice selection" },
-      -- { "<C-E>" , "luasnip#choice_active() ? '<Plug>luasnip-next-choice' : '<C-E>'", mode = { "i", "s" }, silent = true, desc = "luasnip choice", remap = true, expr = true },
-    },
     opts = function()
       local types = require("luasnip.util.types")
       return {
@@ -97,6 +87,9 @@ return {
       local expand_auto = ls.expand_auto
       ls.expand_auto = function(...)
         local integration = require("integrations.snippets")
+        if integration.engine() ~= "luasnip" then
+          return
+        end
         integration.configure_legacy()
         return expand_auto(...)
       end

@@ -51,11 +51,16 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
                 return latest
         raise AssertionError(f"{label}: {latest}; tail={output[-1600:]!r}")
 
-    def reset():
+    def reset(filetype="markdown"):
         send(b"\x1b")
         wait(lambda s: s["mode"] == "n", "normal")
-        send(b":lua snippet_config_reset()\r")
-        wait(lambda s: s["lines"] == [""] and s["mode"] == "n", "fresh Markdown")
+        send((":lua snippet_config_reset('" + filetype + "')\r").encode())
+        wait(lambda s: s["lines"] == [""] and s["mode"] == "n" and s["filetype"] == filetype, "fresh " + filetype)
+
+    def expand(trigger):
+        send(b"i" + trigger.encode())
+        wait(lambda s: s["menu"] and s.get("selected") == trigger, trigger + " menu")
+        send(b"\t")
 
     try:
         initial = wait(lambda s: s["mode"] == "n" and s["engine"] == "snippet-tools", "startup")
@@ -76,6 +81,34 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
         reset()
         send(b"imkx\x1bl!")
         wait(lambda s: s["lines"] == ["$x$!"], "native math single expansion")
+
+        reset("lua")
+        expand("req")
+        send(b"pkg.module\x1bl")
+        wait(lambda s: s["lines"] == ['local module = require("pkg.module")'] and s["mode"] == "s", "Lua dynamic local name")
+        send(b"Alias\x1bl!")
+        wait(lambda s: s["lines"] == ['local Alias = require("pkg.module")!'], "editable Lua dynamic field")
+
+        reset("python")
+        expand("fras")
+        send(b"pathlib\x1blPath\x1blP\x1bl!")
+        wait(lambda s: s["lines"] == ["from pathlib import Path as P!"], "Python import field burst")
+
+        reset("rust")
+        expand("hello")
+        send(b"!")
+        wait(lambda s: s["lines"] == ['println!("Hello world");!'], "Rust native expansion")
+
+        reset("typst")
+        expand("figure")
+        send(b"my_plot.png\x1blCaption\x1bl!")
+        wait(lambda s: s["lines"] == ['#figure(image("./Figures/my_plot.png", width: 80%), caption: [Caption]) <fig:my_plot>!'], "Typst computed figure label")
+
+        reset("systemverilog")
+        expand("for")
+        send(b"index\x1bl10\x1blbody\x1bl!")
+        state = wait(lambda s: s["lines"] == ["for (index= 0; index < 10; index = index + 1) begin", "  body!", "end"], "Verilog mirror burst")
+        assert not state["legacy_loaded"], "Native language snippets loaded LuaSnip"
 
         reset()
         send(b":SnippetEngine luasnip\r")

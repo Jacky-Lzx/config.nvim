@@ -79,10 +79,19 @@ plugin dependency.
 Pairing declares `Jacky-Lzx/pairs.nvim` with lazy.nvim's `dev = true`. The shared `dev.path`
 comes from `NVIM_DEV_PLUGIN_ROOT` (default `~/Documents/Github/nvim_plugins`), and
 `dev.fallback = true` selects the GitHub version pinned in `lazy-lock.json` when the local
-`pairs.nvim` directory is absent. Pairing and LuaSnip load on `InsertEnter`, while
-`integrations/blink_pairs.lua` composes Enter after completion confirmation. lazy.nvim owns
+`pairs.nvim` directory is absent. Pairing and snippet-tools load on `InsertEnter`, while
+`integrations/completion.lua` composes Enter after completion confirmation. lazy.nvim owns
 source selection; `:checkhealth pairs` provides the plugin's own diagnostics. Plugin source
 is not copied into this repo.
+
+snippet-tools owns snippets for every filetype and loads native definitions from
+`lua/snippet_collections/`, including global date/time and TODO comments.
+`integrations/snippets.lua` routes completion, LSP expansion, navigation, choices
+and Visual capture to the buffer's selected engine. LuaSnip and its retained
+`lua/snippets/` definitions are available only through an explicit engine switch
+or LuaSnip command; normal native editing never loads or queries that engine.
+Switching stops the old buffer's session and clears pending selected text. Native
+completion keeps the highest-priority definition for a duplicate trigger.
 
 completion-tools owns the completion menu and connects directly to the official
 Copilot Language Server, without copilot.lua. The server starts on a completion request
