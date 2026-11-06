@@ -3,7 +3,7 @@ return {
   {
     main = "conform",
     id = "conform.nvim",
-    enabled = false,
+    -- enabled = false,
     source = "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = vim.tbl_extend(
