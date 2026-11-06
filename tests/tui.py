@@ -8,6 +8,7 @@ from pathlib import Path
 import pty
 import re
 import select
+import signal
 import struct
 import subprocess
 import sys
@@ -44,6 +45,8 @@ def main():
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case in ("ui_tools", "bars", "folding") else 120, 0, 0))
     test_file = {"markdown_direct": "markdown_demand.lua", "markdown_demand": "markdown_demand.lua", "demand": "demand_startup.lua", "python_environment": "python_environment_tui.lua", "native_utilities": "native_utilities_tui.lua", "editing_input": "editing_tui.lua", "tasks": "tasks_tui.lua", "motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lifecycle_startup.lua")
+    if case == "nested_keymaps":
+        test_file = "nested_keymaps_tui.lua"
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
@@ -103,6 +106,20 @@ def main():
                     # Lua observes typed-key consumption and waits for the result.
                     os.write(master, json.loads(stage[1]).encode())
                     handled.add(stage[0])
+            elif case == "nested_keymaps":
+                directory = Path(env["NVIM_TEST_TMP"])
+                stage_file = directory / "stage"
+                stage = stage_file.read_text().strip() if stage_file.exists() else ""
+                if stage and stage not in handled:
+                    resize = directory / "resize"
+                    if resize.exists():
+                        columns = int(resize.read_text())
+                        resize.unlink()
+                        fcntl.ioctl(master, termios.TIOCSWINSZ, struct.pack("HHHH", 40, columns, 0, 0))
+                        os.kill(process.pid, signal.SIGWINCH)
+                    os.write(master, (directory / "input").read_bytes())
+                    (directory / "ack").write_text(stage)
+                    handled.add(stage)
             elif case == "keymaps":
                 stage_file = Path(env["NVIM_TEST_TMP"], "keymap-stage")
                 lines = stage_file.read_text().splitlines() if stage_file.exists() else []
