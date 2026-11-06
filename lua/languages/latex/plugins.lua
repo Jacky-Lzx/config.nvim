@@ -1,3 +1,8 @@
+local latex_source = {
+  url = "https://github.com/Jacky-Lzx/tree-sitter-latex",
+  revision = "e1cad6c26868e986911e364cc2655fd4ec81bdf7",
+}
+
 return {
   {
     id = "toolchain-tools.nvim",
@@ -5,11 +10,12 @@ return {
       parsers = {
         sources = {
           latex = {
-            parser = {
-              url = "https://github.com/Jacky-Lzx/tree-sitter-latex",
-              revision = "921e4a5d8903e50735e8f613d85586f44e857b01",
+            parser = vim.tbl_extend("force", latex_source, {
               generate = true,
-            },
+              queries = "neovim/queries/latex",
+            }),
+            query_source = latex_source,
+            query_path = "neovim/queries/latex",
           },
         },
       },

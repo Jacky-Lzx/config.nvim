@@ -24,9 +24,8 @@ local function check_capture(row, col, expected)
   local captures = vim.inspect_pos(0, row, col).treesitter
   local math, token = false, false
   for _, capture in ipairs(captures) do
-    assert(capture.capture ~= "markup.math", "upstream math capture is still active")
     local priority = tonumber(capture.metadata.priority) or 100
-    if capture.capture == "markup.math.background" then
+    if capture.capture == "markup.math" then
       assert(priority == 90)
       math = true
     elseif capture.capture == expected then
@@ -107,8 +106,7 @@ local function verify()
   assert(text:find("\\alpha", 1, true), "Math symbols must retain source spelling")
   assert(not vim.b.vimtex and vim.b.tex_tools_generation)
   local math = vim.api.nvim_get_hl(0, { name = "@markup.math", link = false })
-  local background = vim.api.nvim_get_hl(0, { name = "@markup.math.background.latex", link = false })
-  assert(math.fg and math.fg == background.fg, "math theme color was lost")
+  assert(math.fg, "math theme color was lost")
 end
 
 local ok, err = pcall(function()

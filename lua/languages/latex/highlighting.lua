@@ -37,12 +37,6 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 
 function M.attach(bufnr)
   semantic_highlights()
-  require("languages.latex.queries").prepare()
-  local ok, query = pcall(vim.treesitter.query.get, "latex", "highlights")
-  if ok and query then
-    -- Keep the priority-90 math background and priority-100 token colors.
-    query.query:disable_capture("markup.math")
-  end
   pcall(vim.treesitter.start, bufnr, "latex")
   -- Conceal is provided by tex-tools decorations, independently of syntax.
   vim.bo[bufnr].syntax = ""
