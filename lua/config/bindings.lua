@@ -52,7 +52,7 @@ function M.set(id, entries)
     if entry[2] ~= nil then
       local options = {}
       for key, value in pairs(entry) do
-        if type(key) == "string" and key ~= "mode" and key ~= "ft" then
+        if type(key) == "string" and key ~= "mode" and key ~= "ft" and key ~= "id" then
           options[key] = value
         end
       end

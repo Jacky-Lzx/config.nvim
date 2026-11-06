@@ -2,6 +2,7 @@ local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.runtimepath:prepend(root)
 vim.g.mapleader = " "
 local api = vim.api
+local actions = dofile(root .. "/tests/actions.lua")
 local dev = require("utils.platform").dev_plugin_root()
 local installed = vim.fn.stdpath("data") .. "/plugin-tools/"
 for _, path in ipairs({
@@ -15,10 +16,13 @@ for _, path in ipairs({
 end
 local tools = require("keymap_tools")
 local function row(key, opts)
+  if key:sub(1, 1) ~= "<" then
+    key = "<leader>" .. key
+  end
   local rows, info = tools.list(vim.tbl_extend("force", { mode = "n" }, opts or {}))
   assert(#info.errors == 0, vim.inspect(info.errors))
   for _, item in ipairs(rows) do
-    if item.keys == "<Space>" .. key then
+    if vim.keycode(item.keys) == vim.keycode(key) then
       return item
     end
   end
@@ -92,13 +96,13 @@ vim.wo.wrap = true
 vim.cmd("vnew")
 local second = api.nvim_get_current_win()
 vim.wo.wrap = false
-assert(row("tw", { win = first }).toggle.state == true)
-assert(row("tw", { win = second }).toggle.state == false)
+assert(row(actions.binding("toggle.wrap").lhs, { win = first }).toggle.state == true)
+assert(row(actions.binding("toggle.wrap").lhs, { win = second }).toggle.state == false)
 assert(api.nvim_get_current_win() == second)
-vim.fn.maparg("<leader>tw", "n", false, true).callback()
-assert(vim.wo.wrap and row("tw").desc == "Disable Wrap")
+vim.fn.maparg(actions.binding("toggle.wrap").lhs, "n", false, true).callback()
+assert(vim.wo.wrap and row(actions.binding("toggle.wrap").lhs).desc == "Disable Wrap")
 local hidden = api.nvim_create_buf(false, true)
-assert(row("tw", { buf = hidden }).toggle.state == nil)
+assert(row(actions.binding("toggle.wrap").lhs, { buf = hidden }).toggle.state == nil)
 vim.lsp.inlay_hint.enable(true)
 vim.fn.maparg("<leader>th", "n", false, true).callback()
 assert(row("th").toggle.state == false)

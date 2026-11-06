@@ -63,6 +63,9 @@ elseif scenario == "writing" then
   }
 end
 vim.opt.runtimepath:prepend(vim.env.NVIM_CONFIG_ROOT)
+if vim.env.NVIM_TEST_REMAP_ACTIONS == "1" then
+  dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/remapped_actions.lua")
+end
 require("config.context").initialize(selection)
 
 -- Permission-warning floats must not obscure rendered-screen assertions.

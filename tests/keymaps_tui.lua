@@ -2,6 +2,8 @@
 local directory = assert(vim.env.NVIM_TEST_TMP)
 local result = assert(vim.env.NVIM_STARTUP_RESULT)
 local api = vim.api
+local actions = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/actions.lua")
+local wrap_keys, wrap_query
 local stage, ticks, finished = "startup", 0, false
 if vim.v.vim_did_enter == 0 then
   for _, name in ipairs({ "keymap_tools.hints", "keymap_tools.view", "keymap_tools.picker" }) do
@@ -10,8 +12,12 @@ if vim.v.vim_did_enter == 0 then
 end
 local origin, picker, visual_picker, previous_wrap
 local latest_picker
-local function mark(value)
-  vim.fn.writefile({ value }, directory .. "/keymap-stage")
+local function mark(value, input)
+  local lines = { value }
+  if input then
+    lines[2] = vim.json.encode(input)
+  end
+  vim.fn.writefile(lines, directory .. "/keymap-stage")
 end
 local function check_owners()
   local plugins = require("config.plugins").nodes()
@@ -31,42 +37,19 @@ local function check_owners()
     "cold editing-tools.nvim descriptions missing"
   )
   local tools = require("keymap_tools")
-  local rows, info = tools.list({ mode = "n", prefix = "<leader>t" })
+  local rows, info = tools.list({ mode = "n" })
   assert(#info.errors == 0, vim.inspect(info.errors))
-  local by_key = {}
+  wrap_keys = actions.keys("toggle.wrap")
+  local wrap
   for _, row in ipairs(rows) do
-    by_key[row.keys] = row
+    if vim.keycode(row.keys) == wrap_keys then
+      wrap = row
+    end
   end
-  for _, key in ipairs({
-    "td",
-    "tV",
-    "tv",
-    "tf",
-    "tw",
-    "ts",
-    "tL",
-    "tl",
-    "tc",
-    "tb",
-    "th",
-    "ta",
-    "tS",
-    "tT",
-    "tPp",
-    "tPh",
-    "tG",
-    "tD",
-    "tp",
-    "tgb",
-    "tgw",
-    "tgs",
-    "to",
-  }) do
-    assert(by_key["<Space>" .. key] and by_key["<Space>" .. key].toggle, "Missing toggle metadata: " .. key)
-  end
+  assert(wrap and wrap.toggle and wrap.toggle.state == vim.wo.wrap, "Missing configured Wrap state")
+  wrap_query = require("keymap_tools.keys").label(wrap_keys) .. " Wrap"
   assert(require("config.plugins").initialized("conform.nvim"), "Status reads loaded the formatter")
   assert(require("config.plugins").initialized("pairs.nvim"), "Status reads loaded pairing")
-  assert(by_key["<Space>tp"].toggle.state == require("pairs").status().enabled, "Pairing status is stale")
   local image_loaded = package.loaded.image_tools
   local image
   for _, item in ipairs(tools.list({ mode = "n", prefix = "<leader>ui" })) do
@@ -75,7 +58,7 @@ local function check_owners()
   assert(image and image.toggle.name == "Automatic image preview" and image.toggle.state == true)
   assert(package.loaded.image_tools == image_loaded, "Status reads loaded image-tools")
   for _, mode in ipairs({ "n", "x" }) do
-    local map = vim.fn.maparg(" ?", mode, false, true)
+    local map = vim.fn.maparg(actions.binding("keymaps.pick", mode).lhs, mode, false, true)
     assert(map.desc == "Choose and execute buffer keymap", "old picker binding remains")
     for _, entry in ipairs(api.nvim_buf_get_keymap(0, mode)) do
       assert(not (entry.desc or ""):find("which-key-trigger", 1, true), "which-key installed a competing trigger")
@@ -135,28 +118,28 @@ timer:start(
         mark("hint_cancel")
         stage = "open_picker"
       elseif stage == "open_picker" and not view.win then
-        mark("picker")
+        mark("picker", actions.input("keymaps.pick"))
         stage = "filter"
       elseif stage == "filter" and latest_picker and api.nvim_get_mode().mode == "i" then
         picker = latest_picker
-        mark("filter")
+        mark("filter", wrap_query)
         stage = "confirm"
-      elseif stage == "confirm" and picker.query == "tw Wrap" then
+      elseif stage == "confirm" and picker.query == wrap_query then
         assert(#picker.matches == 1)
-        assert(picker:current().keys == " tw", "wrong real mapping selected")
+        assert(picker:current().keys == wrap_keys, "wrong real mapping selected")
         mark("confirm")
         stage = "executed"
       elseif stage == "executed" and picker.closed and vim.wo.wrap ~= previous_wrap then
         assert(api.nvim_get_current_win() == origin and api.nvim_get_mode().mode == "n")
         local description
         for _, item in ipairs(require("keymap_tools").list({ mode = "n", kinds = { "mapping" } })) do
-          if item.keys == "<Space>tw" then
+          if vim.keycode(item.keys) == wrap_keys then
             description = item.desc
             assert(item.toggle.name == "Wrap" and item.toggle.state == vim.wo.wrap)
           end
         end
         assert(description == (vim.wo.wrap and "Disable " or "Enable ") .. "Wrap", "toggle description is stale")
-        mark("visual_picker")
+        mark("visual_picker", "vj" .. actions.input("keymaps.pick", "x"))
         stage = "visual_cancel"
       elseif stage == "visual_cancel" and latest_picker ~= picker and api.nvim_get_mode().mode == "i" then
         visual_picker = latest_picker

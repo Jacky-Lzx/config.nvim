@@ -5,19 +5,22 @@ function M.map(owner, lhs, opts)
   local mode = opts.mode or "n"
   opts.mode = nil
   opts.desc = opts.desc or ("Toggle " .. owner.name)
-  vim.keymap.set(mode, lhs, function()
+  local callback = function()
     local ok, err = pcall(function()
       owner.set(not owner.get())
     end)
     if not ok then
       vim.notify(tostring(err), vim.log.levels.ERROR, { title = owner.name })
     end
-  end, opts)
+  end
+  require("config.bindings").set("config.toggle." .. owner.id, {
+    vim.tbl_extend("force", opts, { lhs, callback, id = "toggle." .. owner.id, mode = mode }),
+  })
   local buf = opts.buffer
   if buf == 0 or buf == true then
     buf = vim.api.nvim_get_current_buf()
   end
-  return require("keymap_tools").register("config.toggle." .. owner.id .. ":" .. lhs, {
+  return require("keymap_tools").register("config.toggle." .. owner.id, {
     buf = buf,
     modes = type(mode) == "table" and mode or { mode },
     toggles = {

@@ -15,6 +15,7 @@ return {
           function()
             require("features.tasks").prompt()
           end,
+          id = "tasks.prompt",
           desc = "[Build] Enter command",
         },
         {
@@ -22,6 +23,7 @@ return {
           function()
             require("features.tasks").rerun()
           end,
+          id = "tasks.rerun",
           desc = "[Build] Run again",
         },
         {
@@ -29,6 +31,7 @@ return {
           function()
             require("features.tasks").stop()
           end,
+          id = "tasks.stop_build",
           desc = "[Build] Stop",
         },
         {
@@ -36,6 +39,7 @@ return {
           function()
             require("features.tasks").output()
           end,
+          id = "tasks.build_output",
           desc = "[Build] Open output",
         },
         {
@@ -43,16 +47,18 @@ return {
           function()
             require("features.tasks").quickfix()
           end,
+          id = "tasks.build_quickfix",
           desc = "[Build] Export quickfix",
         },
         { "<F17>", "<cmd>TaskRun<cr>", desc = "[Tasks] Run" },
-        { "<leader>or", "<cmd>TaskRun<cr>", desc = "[Tasks] Run" },
-        { "<leader>ot", "<cmd>TaskToggle<cr>", desc = "[Tasks] Toggle list" },
+        { "<leader>or", "<cmd>TaskRun<cr>", id = "tasks.select", desc = "[Tasks] Run" },
+        { "<leader>ot", "<cmd>TaskToggle<cr>", id = "tasks.list", desc = "[Tasks] Toggle list" },
         {
           "<leader>oa",
           function()
             require("features.tasks").run_file()
           end,
+          id = "tasks.run_file",
           desc = "[Tasks] Run file with arguments",
         },
         { "<leader>os", "<cmd>TaskStop<cr>", desc = "[Tasks] Stop latest" },
@@ -63,6 +69,7 @@ return {
           function()
             require("task_tools").terminal()
           end,
+          id = "tasks.terminal",
           desc = "[Tasks] Toggle terminal",
           mode = { "n", "t" },
         },

@@ -2,9 +2,28 @@
 local function pause(ms)
   coroutine.yield(ms)
 end
+local actions = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/actions.lua")
+local action_ids = {
+  prompt = "tasks.prompt",
+  manual_output = "tasks.build_output",
+  quickfix = "tasks.build_quickfix",
+  terminal = "tasks.terminal",
+  terminal_hide = "tasks.terminal",
+  terminal_reopen = "tasks.terminal",
+  terminal_hide_again = "tasks.terminal",
+  rerun = "tasks.rerun",
+  list = "tasks.list",
+  select_task = "tasks.select",
+  run_args = "tasks.run_file",
+}
 local stage_file = vim.env.NVIM_TEST_TMP .. "/tasks-stage"
 local function await(name, predicate)
-  vim.fn.writefile({ name }, stage_file)
+  local lines = { name }
+  if action_ids[name] then
+    local mode = vim.api.nvim_get_mode().mode == "t" and "t" or "n"
+    lines[2] = vim.json.encode(actions.input(action_ids[name], mode))
+  end
+  vim.fn.writefile(lines, stage_file)
   local start = vim.uv.hrtime()
   while not predicate() do
     assert(
@@ -86,7 +105,7 @@ local function check()
   await("terminal_reopen", function()
     return #vim.fn.win_findbuf(shell.buf) > 0 and vim.api.nvim_get_mode().mode == "t"
   end)
-  assert(tasks.get(shell.id).job == shell.job, "Alt-i must reuse the original PTY")
+  assert(tasks.get(shell.id).job == shell.job, "Terminal action must reuse the original PTY")
   await("terminal_hide_again", function()
     return #vim.fn.win_findbuf(shell.buf) == 0 and vim.api.nvim_get_mode().mode:sub(1, 1) == "n"
   end)
@@ -152,7 +171,7 @@ vim.api.nvim_create_autocmd("User", {
       local ok, delay = coroutine.resume(worker)
       if not ok or coroutine.status(worker) == "dead" then
         local message = ok
-            and "tasks TUI: lazy loading, manual commands, quickfix jumps, Alt-i PTY, Python arguments and task discovery passed"
+            and "tasks TUI: lazy loading, manual commands, quickfix jumps, terminal PTY, Python arguments and task discovery passed"
           or debug.traceback(worker, tostring(delay))
         vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_STARTUP_RESULT)
         vim.cmd(ok and "qa!" or "cquit 1")

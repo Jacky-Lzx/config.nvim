@@ -33,7 +33,7 @@ export NVIM_SMOKE_TEST=1
 export NVIM_PLUGIN_TOOLS_PATH="${NVIM_PLUGIN_TOOLS_PATH:-$HOME/Documents/Github/nvim_plugins/plugin-tools.nvim}"
 export NVIM_LOG_FILE="$test_tmp/nvim.log"
 export SSH_CONNECTION=
-unset PROF NVIM_PLUGIN_LOCKFILE NVIM_TEST_SCENARIO NVIM_COLUMN_GUIDE_STARTUP BARS_TEST NVIM_TEST_LINK_FIRST
+unset PROF NVIM_PLUGIN_LOCKFILE NVIM_TEST_SCENARIO NVIM_COLUMN_GUIDE_STARTUP BARS_TEST NVIM_TEST_LINK_FIRST NVIM_TEST_REMAP_ACTIONS
 # Plugin startup may refresh locks; smoke runs must not rewrite the checkout.
 cp "$root/plugin-tools-lock.json" "$test_tmp/plugin-tools-lock.json"
 export NVIM_PLUGIN_LOCKFILE="$test_tmp/plugin-tools-lock.json"
@@ -65,7 +65,7 @@ native_checks() (
   export NVIM_DEV_PLUGIN_ROOT="$test_tmp/native-dev-plugins"
   printf '\nRunning native checks with isolated plugin data\n'
   nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/smoke.lua"
-  run_tests plugin_bootstrap profiling lockfile schema selection info config platform core bindings clipboard diagnostics \
+  run_tests plugin_bootstrap profiling lockfile schema selection info config platform core bindings action_contracts clipboard diagnostics \
     completion math_conditions latex_forward_search commands python tasks integrations image_activation tooling toolchain lsp_config files
 )
 
@@ -141,6 +141,9 @@ integration_checks() (
     image_plain image_edit image_existing image_tex_reference image_typst_reference image_markdown_formula \
     image_disabled image_formula image_file; do
     python3 "$root/tests/tui.py" "$scenario"
+  done
+  for scenario in tasks keymaps; do
+    NVIM_TEST_REMAP_ACTIONS=1 python3 "$root/tests/tui.py" "$scenario"
   done
 )
 

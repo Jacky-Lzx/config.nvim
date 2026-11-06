@@ -53,14 +53,13 @@ def main():
     process = subprocess.Popen(command, env=env, stdin=slave, stdout=slave, stderr=slave, start_new_session=True)
     os.close(slave)
     keymap_actions = {
-        "prefix": b" ", "subgroup": b"s", "hint_cancel": b"\x1b", "picker": b" ?",
-        "filter": b"tw Wrap", "confirm": b"\r", "visual_picker": b"vj ?",
+        "prefix": b" ", "subgroup": b"s", "hint_cancel": b"\x1b", "confirm": b"\r",
         "visual_cancel": b"\x1b", "visual_escape": b"\x1b", "operator_prefix": b"d", "object_prefix": b"i", "object_apply": b"(",
         "insert_register": b"i\x12", "insert_register_apply": b"z", "leave_insert": b"\x1b",
         "command_register": b":\x12", "command_register_apply": b"z", "command_cancel": b"\x1b",
     }
     annotation_actions = {"insert": b"3GA TODO: live #abcdef", "burst": b" " + b"x" * 200 + b" #00ff00", "normal": b"\x1b"}
-    task_actions = {'prompt': b' mc', 'command': b"\x15printf 'src/failure.c:2:3: error: demo\\n'\r", 'manual_output': b' mo', 'quickfix': b' mq', 'jump': b'\r', 'terminal': b'\x1bi', 'terminal_input': b"printf 'TASKS_PTY_OK\\n'\r", 'terminal_hide': b'\x1bi', 'terminal_reopen': b'\x1bi', 'terminal_hide_again': b'\x1bi', 'rerun': b' mr', 'list': b' ot', 'list_close': b'q', 'args_normal': bytes([29]), 'args_close': b'q', 'select_task': b' or', 'task_choice': b'Python: run file\r', 'run_args': b' oa', 'args': b'\'hello world\' ""\r'}
+    task_actions = {'command': b"\x15printf 'src/failure.c:2:3: error: demo\\n'\r", 'jump': b'\r', 'terminal_input': b"printf 'TASKS_PTY_OK\\n'\r", 'list_close': b'q', 'args_normal': bytes([29]), 'args_close': b'q', 'task_choice': b'Python: run file\r', 'args': b'\'hello world\' ""\r'}
     output = bytearray()
     handled = set()
     motion_sentinel_at = None
@@ -89,10 +88,13 @@ def main():
                     handled.add(stage)
             elif case == "tasks":
                 stage_file = Path(env["NVIM_TEST_TMP"], "tasks-stage")
-                stage = stage_file.read_text().strip() if stage_file.exists() else ""
-                if stage in task_actions and stage not in handled:
-                    os.write(master, task_actions[stage])
-                    handled.add(stage)
+                lines = stage_file.read_text().splitlines() if stage_file.exists() else []
+                stage = lines[0] if lines else ""
+                if stage and stage not in handled:
+                    data = json.loads(lines[1]).encode() if len(lines) == 2 else task_actions.get(stage)
+                    if data is not None:
+                        os.write(master, data)
+                        handled.add(stage)
             elif case in ("motion", "editing_input"):
                 stage_file = Path(env["NVIM_TEST_TMP"], "editing-stage" if case == "editing_input" else "motion-stage")
                 stage = stage_file.read_text().splitlines() if stage_file.exists() else []
@@ -102,10 +104,13 @@ def main():
                     motion_sentinel_at = time.monotonic() + 0.06
             elif case == "keymaps":
                 stage_file = Path(env["NVIM_TEST_TMP"], "keymap-stage")
-                stage = stage_file.read_text().strip() if stage_file.exists() else ""
-                if stage in keymap_actions and stage not in handled:
-                    os.write(master, keymap_actions[stage])
-                    handled.add(stage)
+                lines = stage_file.read_text().splitlines() if stage_file.exists() else []
+                stage = lines[0] if lines else ""
+                if stage and stage not in handled:
+                    data = json.loads(lines[1]).encode() if len(lines) == 2 else keymap_actions.get(stage)
+                    if data is not None:
+                        os.write(master, data)
+                        handled.add(stage)
             elif case == "annotations":
                 stage_file = Path(env["NVIM_TEST_TMP"], "annotations-stage")
                 stage = stage_file.read_text().strip() if stage_file.exists() else ""
