@@ -142,6 +142,7 @@ def suites():
         tui("markdown_demand"),
         tui("markdown_demand", {"NVIM_TEST_MARKDOWN_WORKSPACE": "1"}),
         tui("markdown_direct"),
+        tui("markdown_tools"),
     ]
     integration += [
         lua(name)

@@ -16,7 +16,16 @@ assert(require("languages.vue.compatibility").server_path() == expected)
 vim.fn.exepath, vim.fn.resolve, vim.uv.fs_stat = exepath, resolve, stat
 
 local pdf = require("features.tasks").definitions({ filetype = "markdown", file = root .. "/a file.md" })[1]
-assert(pdf.cmd[7] == "CJKmainfont=华文黑体")
+local pdf_font = vim.env.NVIM_MARKDOWN_PDF_FONT
+  or (require("utils.platform").is("macos") and "Heiti SC" or "Noto Sans CJK SC")
+assert(pdf.cmd[7] == "CJKmainfont=" .. pdf_font)
+local previous_font = vim.env.NVIM_MARKDOWN_PDF_FONT
+vim.env.NVIM_MARKDOWN_PDF_FONT = "Fixture CJK Font"
+assert(
+  require("features.tasks").definitions({ filetype = "markdown", file = root .. "/a file.md" })[1].cmd[7]
+    == "CJKmainfont=Fixture CJK Font"
+)
+vim.env.NVIM_MARKDOWN_PDF_FONT = previous_font
 assert(pdf.cmd[4] == root .. "/a file.pdf")
 
 dofile(root .. "/lua/integrations/neovide.lua")

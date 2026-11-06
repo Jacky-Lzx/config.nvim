@@ -44,7 +44,7 @@ def main():
     env["TERM"] = "xterm-256color"
     master, slave = pty.openpty()
     fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 40, 160 if case in ("ui_tools", "bars", "folding") else 120, 0, 0))
-    test_file = {"markdown_direct": "markdown_demand.lua", "markdown_demand": "markdown_demand.lua", "demand": "demand_startup.lua", "python_environment": "python_environment_tui.lua", "native_utilities": "native_utilities_tui.lua", "editing_input": "editing_tui.lua", "tasks": "tasks_tui.lua", "motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lifecycle_startup.lua")
+    test_file = {"markdown_tools": "markdown_tools_tui.lua", "markdown_direct": "markdown_demand.lua", "markdown_demand": "markdown_demand.lua", "demand": "demand_startup.lua", "python_environment": "python_environment_tui.lua", "native_utilities": "native_utilities_tui.lua", "editing_input": "editing_tui.lua", "tasks": "tasks_tui.lua", "motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lifecycle_startup.lua")
     if case == "nested_keymaps":
         test_file = "nested_keymaps_tui.lua"
     command = [
@@ -99,8 +99,8 @@ def main():
                     if data is not None:
                         os.write(master, data)
                         handled.add(stage)
-            elif case in ("motion", "editing_input"):
-                stage_file = Path(env["NVIM_TEST_TMP"], "editing-stage" if case == "editing_input" else "motion-stage")
+            elif case in ("motion", "editing_input", "markdown_tools"):
+                stage_file = Path(env["NVIM_TEST_TMP"], "markdown-stage" if case == "markdown_tools" else "editing-stage" if case == "editing_input" else "motion-stage")
                 stage = stage_file.read_text().splitlines() if stage_file.exists() else []
                 if len(stage) == 2 and stage[0] not in handled:
                     # Lua observes typed-key consumption and waits for the result.

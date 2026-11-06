@@ -94,6 +94,21 @@ render-markdown and Peek mount and initialize only on the first Markdown buffer.
 Rendering remains off until `<leader>tm`; `:MarkdownPreview` opens Peek after
 initialization. Peek requires Deno and its configured build task.
 
+`markdown-tools.nvim` provides structural editing and loads with the first Markdown
+buffer from `~/Documents/Github/nvim_plugins/markdown-tools.nvim` (or
+`NVIM_DEV_PLUGIN_ROOT`). It is currently a local package. Its implementation owns
+commands and edits; `lua/languages/markdown/tools.lua` owns personal buffer mappings.
+The `<localleader>M` group provides `x` checkboxes (also Visual), `i` list item,
+`n` renumbering, `o` outline, `t` TOC, `h`/`l` heading promotion/demotion,
+`]`/`[` next/previous heading, `f` link,
+`a` table alignment, `j`/`k` next/previous cell, `r`/`R` table row insertion/deletion, `c`/`C` column
+insertion/deletion, `p` Peek preview, and `e` PDF export. Unoccupied `]h`/`[h`
+and `]t`/`[t` navigate headings and cells. Enter and Tab keep their current owners.
+Export uses the existing Pandoc/XeLaTeX task with `Heiti SC` on macOS and
+`Noto Sans CJK SC` elsewhere; set `NVIM_MARKDOWN_PDF_FONT` to override the font.
+Save the file first and enable the tasks feature. Rendering remains under
+`<leader>tm`; Obsidian remains vault-local.
+
 Local plugins keep their workflow directories. Language and feature selections
 still control which declarations enter the manifest. Each declaration's `enabled`
 field and project selection control activation; the directory itself does not override

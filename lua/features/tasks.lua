@@ -23,7 +23,11 @@ function M.definitions(ctx)
         ctx.file:gsub("%.[^/.]+$", "") .. ".pdf",
         "--pdf-engine=xelatex",
         "-V",
-        "CJKmainfont=华文黑体",
+        "CJKmainfont="
+          .. (
+            vim.env.NVIM_MARKDOWN_PDF_FONT
+            or (require("utils.platform").is("macos") and "Heiti SC" or "Noto Sans CJK SC")
+          ),
       },
       cwd = vim.fs.dirname(ctx.file),
     },

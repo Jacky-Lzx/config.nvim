@@ -1,4 +1,33 @@
 return {
+  {
+    id = "markdown-tools.nvim",
+    -- Local package until the new plugin is published.
+    dir = require("utils.platform").dev_plugin_root() .. "/markdown-tools.nvim",
+    main = "markdown_tools",
+    mount = "on-demand",
+    ft = { "markdown" },
+    config = function(ctx)
+      require("languages.markdown.tools").setup(ctx.opts)
+    end,
+    opts = {
+      preview = function()
+        require("peek").open()
+      end,
+      export = function(ctx)
+        if not require("config.context").current().selection.features.tasks then
+          return false, "Enable the tasks feature to export Markdown"
+        end
+        if ctx.file == "" or vim.bo[ctx.buf].modified then
+          return false, "Save the Markdown file before exporting"
+        end
+        local spec = require("features.tasks").definitions(ctx)[1]
+        if not spec then
+          return false, "No Markdown PDF task is configured"
+        end
+        return require("task_tools").run(spec)
+      end,
+    },
+  },
   "plugins.third_party.peek",
   "plugins.third_party.render-markdown",
   {
