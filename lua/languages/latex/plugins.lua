@@ -32,7 +32,7 @@ return {
     dev = true,
     main = "tex-tools",
     mount = "on-demand",
-    ft = { "tex", "plaintex" },
+    ft = { "tex", "plaintex", "bib", "bst" },
     -- Formula display requires image-tools only after a preview is ready.
     opts = {
       lsp = "texquill",

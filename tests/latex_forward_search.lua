@@ -49,6 +49,24 @@ assert(get({ buf = bufnr }) == true)
 package.loaded["tex-tools"] = nil
 verify()
 assert(called == 4)
+vim.cmd.enew()
+local bib = vim.api.nvim_get_current_buf()
+require("languages.latex.buffer").setup_actions(bib)
+assert(vim.fn.maparg(" ll", "n") == "<Cmd>TexToolsBuild<CR>")
+assert(vim.fn.maparg(" lq", "n") == "<Cmd>TexToolsLog<CR>")
+assert(vim.fn.maparg("ie", "o") == "", "Bibliography actions installed TeX structural objects")
+vim.bo.filetype = "bib"
+local builds = 0
+package.loaded["tex-tools"] = {
+  build = function()
+    builds = builds + 1
+    return true
+  end,
+}
+require("languages.latex.buffer").setup_actions(bib)
+vim.fn.maparg(" ll", "n", false, true).callback()
+assert(builds == 1, "Bibliography builds must reach the shared public API")
+package.loaded["tex-tools"] = nil
 print(
   "LaTeX forward search passed: focus preference, native mappings and plugin-owned builds and cold state inspection"
 )

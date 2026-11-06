@@ -22,6 +22,25 @@ local function check()
   local function keys(text)
     vim.api.nvim_feedkeys(vim.keycode(text), "xt", false)
   end
+  -- Project actions also work when a bibliography is the first opened file.
+  vim.cmd("enew!")
+  vim.bo.filetype = "bib"
+  assert(require("config.plugins").initialized("tex-tools.nvim"))
+  assert(not vim.api.nvim_buf_get_commands(0, {}).TexToolsUnwrapEnvironment)
+  local tools = require("tex-tools")
+  local build, hits = tools.build, 0
+  tools.build = function()
+    hits = hits + 1
+    return true
+  end
+  vim.fn.maparg("<localleader>ll", "n", false, true).callback()
+  tools.build = build
+  assert(hits == 1, "First bibliography action did not reach tex-tools")
+  for _, ft in ipairs({ "bst", "plaintex" }) do
+    vim.cmd("enew!")
+    vim.bo.filetype = ft
+    assert(vim.fn.maparg("<localleader>ll", "n") ~= "", "Missing build mapping: " .. ft)
+  end
   buffer("$\\frac{x}{y}$")
   assert(require("config.plugins").initialized("tex-tools.nvim"))
   local tex = require("tex-tools")
