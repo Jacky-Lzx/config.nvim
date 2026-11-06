@@ -140,7 +140,7 @@ return {
         {
           "<leader>sk",
           function()
-            require("selection_tools").keymaps()
+            require("keymap_tools").pick()
           end,
           desc = "[Selection] Keymaps",
         },

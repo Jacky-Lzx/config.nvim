@@ -37,6 +37,16 @@ local function check_owners()
     end),
     "cold motion-tools.nvim descriptions missing"
   )
+  -- Both daily entry points share mode restoration and effective-map execution.
+  local owner = require("keymap_tools")
+  local pick, hits = owner.pick, 0
+  owner.pick = function()
+    hits = hits + 1
+  end
+  vim.fn.maparg("<leader>sk", "n", false, true).callback()
+  vim.fn.maparg(actions.binding("keymaps.pick").lhs, "n", false, true).callback()
+  owner.pick = pick
+  assert(hits == 2, "Configured keymap entry points diverged")
   local tools = require("keymap_tools")
   local rows, info = tools.list({ mode = "n" })
   assert(#info.errors == 0, vim.inspect(info.errors))

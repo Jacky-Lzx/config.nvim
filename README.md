@@ -203,7 +203,7 @@ follow the actual switch scope. Diagnostics and formatting keep their native map
 when feature providers initialize. Switches are registered by their explicit owner,
 without matching descriptions or replacing global mapping hooks.
 
-`Ctrl+/` opens the searchable, executable keymap picker in Normal, Visual and
+`<leader>sk` and `Ctrl+/` open the same searchable, executable keymap picker in Normal, Visual and
 Insert modes. `Space+?` remains available in Normal and Visual modes. The picker
 uses the source buffer's effective mappings for that mode and restores the Visual
 selection or Insert position on cancellation. `Ctrl+_` also opens it for terminals
