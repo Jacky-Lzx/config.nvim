@@ -294,6 +294,21 @@ Use `q` or Escape there to close it. Moving the source cursor or entering Insert
 also closes it. Previews show at most 200 lines in a window up to 100 columns and
 20 rows; longer folds are marked in the title. `K` keeps native LSP hover.
 
+## Writing diagnostics
+
+The writing profile uses **LTeX+** (`ltex_plus`) for English grammar in Markdown,
+plain text and TeX, alongside Marksman and TeXquill for document structure.
+Checks run when a document is opened or saved; picky style rules are disabled.
+`typos_lsp` retains spelling checks, so LTeX+'s English spelling rule is disabled.
+Use `<leader>a` on a diagnostic for replacement suggestions.
+
+`after/lsp/ltex_plus.lua` owns language and grammar settings. The default is
+`en-US`; document language overrides can use LTeX+ magic comments, for example
+`<!-- LTeX: language=zh-CN -->` in Markdown or `% LTeX: language=zh-CN` in TeX.
+`lua/config/tool_sources.lua` supplies official, checksum-pinned LTeX+ releases
+with a bundled Java runtime. `:ConfigToolsInstall` installs the managed version
+recorded in `toolchain-lock.json`.
+
 ## LaTeX
 
 The writing profile loads `tex-tools.nvim` for TeX buffers, using the development

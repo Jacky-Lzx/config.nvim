@@ -1,8 +1,8 @@
 return {
-  servers = { "marksman", "harper_ls", "typos_lsp" },
+  servers = { "marksman", "ltex_plus", "typos_lsp" },
   tools = {
     { package = "marksman", executable = "marksman" },
-    { package = "harper-ls", executable = "harper-ls" },
+    { package = "ltex-ls-plus", executable = "ltex-ls-plus" },
     { package = "prettierd", executable = "prettierd" },
     { package = "prettier", executable = "prettier" },
     { package = "mmdc", executable = "mmdc" },

@@ -1682,6 +1682,83 @@
             "version": "v0.1.7"
           }
         },
+        "ltex-ls-plus": {
+          "downloads": {
+            "https://github.com/ltex-plus/ltex-ls-plus/releases/download/18.7.0/ltex-ls-plus-18.7.0-mac-aarch64.tar.gz": "2255eadb7be3b58b93d17efcd6fb10809e40e2b28289fdb1af966a874dac13e4"
+          },
+          "files": {},
+          "recipe": {
+            "assets": {
+              "darwin_arm64": {
+                "bin": {
+                  "ltex-ls-plus": {
+                    "path": "payload/ltex-ls-plus-18.7.0/bin/ltex-ls-plus"
+                  }
+                },
+                "files": [
+                  {
+                    "archive": "tar",
+                    "name": "ltex-ls-plus-18.7.0-mac-aarch64.tar.gz",
+                    "sha256": "2255eadb7be3b58b93d17efcd6fb10809e40e2b28289fdb1af966a874dac13e4",
+                    "url": "https://github.com/ltex-plus/ltex-ls-plus/releases/download/18.7.0/ltex-ls-plus-18.7.0-mac-aarch64.tar.gz"
+                  }
+                ]
+              },
+              "darwin_x64": {
+                "bin": {
+                  "ltex-ls-plus": {
+                    "path": "payload/ltex-ls-plus-18.7.0/bin/ltex-ls-plus"
+                  }
+                },
+                "files": [
+                  {
+                    "archive": "tar",
+                    "name": "ltex-ls-plus-18.7.0-mac-x64.tar.gz",
+                    "sha256": "90cf632a89604172b8170701bd04745dc73de4ac48d2eb4ced879bed532eaa4f",
+                    "url": "https://github.com/ltex-plus/ltex-ls-plus/releases/download/18.7.0/ltex-ls-plus-18.7.0-mac-x64.tar.gz"
+                  }
+                ]
+              },
+              "linux_arm64_gnu": {
+                "bin": {
+                  "ltex-ls-plus": {
+                    "path": "payload/ltex-ls-plus-18.7.0/bin/ltex-ls-plus"
+                  }
+                },
+                "files": [
+                  {
+                    "archive": "tar",
+                    "name": "ltex-ls-plus-18.7.0-linux-aarch64.tar.gz",
+                    "sha256": "3a92a4dd22ea87ff5d4de4891581ff41bacc7210256ebe9d0e496f1da8382f54",
+                    "url": "https://github.com/ltex-plus/ltex-ls-plus/releases/download/18.7.0/ltex-ls-plus-18.7.0-linux-aarch64.tar.gz"
+                  }
+                ]
+              },
+              "linux_x64_gnu": {
+                "bin": {
+                  "ltex-ls-plus": {
+                    "path": "payload/ltex-ls-plus-18.7.0/bin/ltex-ls-plus"
+                  }
+                },
+                "files": [
+                  {
+                    "archive": "tar",
+                    "name": "ltex-ls-plus-18.7.0-linux-x64.tar.gz",
+                    "sha256": "1e16df6c578dc76ff97d644445d126ba6fba5c2e8e174178ab86372652fd7612",
+                    "url": "https://github.com/ltex-plus/ltex-ls-plus/releases/download/18.7.0/ltex-ls-plus-18.7.0-linux-x64.tar.gz"
+                  }
+                ]
+              }
+            },
+            "bin": {
+              "ltex-ls-plus": {
+                "path": "payload/ltex-ls-plus-18.7.0/bin/ltex-ls-plus"
+              }
+            },
+            "kind": "download",
+            "version": "18.7.0"
+          }
+        },
         "lua-language-server": {
           "downloads": {
             "https://github.com/LuaLS/lua-language-server/releases/download/3.19.2/lua-language-server-3.19.2-darwin-arm64.tar.gz": "79149584320a23bd5fcd5bc31f47a1975acd8a4560a0e89036bb1016fa61687f"
