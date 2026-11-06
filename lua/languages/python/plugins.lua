@@ -24,5 +24,5 @@ return {
       },
     },
   },
-  "plugins.disabled.nvim-dap.python",
+  "languages.python.debug",
 }

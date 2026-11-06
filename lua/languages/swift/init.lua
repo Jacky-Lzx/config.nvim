@@ -16,5 +16,5 @@ return {
   parsers = { "swift" },
   formatters = { swift = { "swift" } },
   linters = { swift = { "swiftlint" } },
-  plugins = { "plugins.disabled.nvim-dap.swift" },
+  plugins = { "languages.swift.debug" },
 }

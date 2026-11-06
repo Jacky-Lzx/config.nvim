@@ -19,6 +19,9 @@
   resolves declarative platform settings, environment overrides and executables.
 - Native snippet definitions remain in `lua/snippet_collections/`; personal query
   extensions remain in `queries/`. Plugin code is never vendored into this checkout.
+- `dap-tools.nvim` owns debug configuration and its independent panel. `nvim-dap`
+  owns protocol/session behavior, toolchain-tools installs adapters, and language
+  declarations supply preset options. The configuration owns debugger keymaps.
 
 ## Startup and plugin lifecycle
 

@@ -21,8 +21,7 @@ end
 local function check()
   assert(vim.g.config_ready, "This check must run after the real ConfigReady event")
   registered(
-    "nvim-dap",
-    "nvim-dap-view",
+    "dap-tools.nvim",
     "file-tools.nvim",
     "task-tools.nvim",
     "format-tools.nvim",
@@ -83,16 +82,17 @@ local function check()
     loaded("crates.nvim")
     loaded("pairs.nvim") -- Reading/creating a file enables rainbow before InsertEnter.
     assert(require("pairs.rainbow").status().enabled)
-    registered("nvim-dap", "snippet-tools.nvim")
+    registered("dap-tools.nvim", "snippet-tools.nvim")
     loaded("file-tools.nvim")
     assert(not package.loaded["file_tools.tree"], "LSP capabilities must not initialize the tree")
     for _, extension in ipairs({ "cpp", "swift" }) do
       vim.cmd.edit(temp .. "/lazy-file." .. extension)
-      registered("nvim-dap", "nvim-dap-view")
+      registered("dap-tools.nvim")
+      assert(not package.loaded.dap and not package.loaded["dap_tools.ui"], "Opening source files initialized DAP")
       assert(not package.loaded["file_tools.tree"])
     end
     vim.api.nvim_exec_autocmds("LspAttach", { buffer = 0, data = { client_id = 999999 } })
-    registered("nvim-dap")
+    registered("dap-tools.nvim")
     assert(not package.loaded["file_tools.tree"])
 
     if case == "boundaries_files" then
@@ -138,8 +138,17 @@ local function check()
     loaded("task-tools.nvim")
     vim.cmd("TaskClose")
     feed(" b")
-    loaded("nvim-dap")
-    loaded("nvim-dap-view")
+    loaded("dap-tools.nvim")
+    assert(require("dap_tools").status().initialized)
+    assert(not package.loaded["dap-view"] and not plugins["nvim-dap-view"])
+    require("dap_tools").open("breakpoints", true)
+    local panel = require("dap_tools.ui").snapshot()
+    assert(panel.open and vim.bo[panel.buf].filetype == "daptools")
+    require("ui_tools.winbar").refresh()
+    assert(vim.wo[panel.win].winbar:find("4:breakpoints", 1, true), "Generic winbar replaced the DAP panel tabs")
+    assert(#panel.lines >= 4, "Configured breakpoint was absent from the independent panel")
+    feed("q")
+    assert(not require("dap_tools.ui").is_open(), "Panel q mapping did not close the configured panel")
   elseif case == "editing" then
     contents({ "a=1", "long=2" })
     vim.fn.writefile({ "Running first alignment" }, vim.env.NVIM_STARTUP_RESULT)

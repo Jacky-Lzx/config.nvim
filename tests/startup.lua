@@ -250,11 +250,9 @@ local function check()
   vim.api.nvim_set_current_buf(attached)
   formatter.format, vim.lsp.buf.format = original_format, original_lsp_format
   if features.debugging then
-    for _, id in ipairs({ "nvim-dap" }) do
-      require("plugin_tools").activate(id)
-    end
+    local dap = require("dap_tools").backend()
     if require("languages").is_enabled("python") then
-      assert(require("dap").configurations.python[1].type == "python")
+      assert(dap.configurations.python[1].type == "python")
     end
   end
 

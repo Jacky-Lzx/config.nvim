@@ -113,9 +113,7 @@ assert(vim.list_contains(definition("toml").parsers, "toml"))
 assert(vim.list_contains(definition("swift").parsers, "swift"))
 assert(vim.deep_equal(definition("swift").formatters.swift, { "swift" }))
 assert(vim.deep_equal(definition("swift").linters.swift, { "swiftlint" }))
-local swift_dap = require("plugins.disabled.nvim-dap.swift")[1].opts
-assert(swift_dap.configurations.swift[1].type == "lldb")
-assert(swift_dap.adapters.lldb.command == (vim.fn.has("mac") == 1 and "xcrun" or "lldb-dap"))
+assert(require("languages.swift.debug")[1].opts.presets.swift)
 assert(not has_tool("python", "pyright"))
 assert(not has_tool("vue", "typescript-language-server"))
 local formats = definition("verilog").formatters

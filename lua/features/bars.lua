@@ -55,7 +55,7 @@ end
 -- Component selection stays in the config; ui-tools owns all window UI.
 function M.winbar_options()
   return {
-    exclude = { "file-tools", "lsp-tools-results", "dap-view", "dap-view-term", "dap-repl" },
+    exclude = { "file-tools", "lsp-tools-results", "daptools", "dap-repl" },
     breadcrumbs = function(ctx)
       local tools = package.loaded["lsp-tools"]
       return tools and tools.breadcrumbs({ winid = ctx.win }) or ""

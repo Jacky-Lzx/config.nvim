@@ -6,7 +6,6 @@ end
 _G.full_plugins_fixture = true
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 local modules = {
-  ["plugins.disabled.nvim-dap"] = { "nvim-dap", "nvim-dap-view" },
   ["plugins.disabled.crates"] = { "crates.nvim" },
 }
 for name, ids in pairs(modules) do

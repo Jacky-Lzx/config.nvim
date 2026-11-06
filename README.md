@@ -352,6 +352,27 @@ first entry; picker configuration and LSP attachment keep the result engine defe
 Other persistent panels use `q` / Escape to close. Server-dependent features are
 available only when a client advertises the corresponding methods.
 
+## Debugging
+
+With `features.debugging = true`, `dap-tools.nvim` owns debug configuration and an
+independent panel; `nvim-dap` remains the protocol/session backend. The backend and
+panel load on first action. There is no dependency on nvim-dap-view or nvim-dap-ui.
+Python, C/C++, Rust and Swift opt into plugin presets through their language
+declarations. toolchain-tools installs adapters; Python shares the selected project
+interpreter/environment with LSP and tasks. Rust builds asynchronously and selects
+an executable from Cargo's emitted artifacts.
+
+`F5` launches/continues; `F6`/`F7`/`F8` step over/into/out; `F9` pauses; `F10`
+terminates. `Space b` toggles a breakpoint, `Space B` prompts for its condition,
+`Space D b` creates a logpoint, `Space D c` chooses a configuration and `Space D a`
+launches with quoted arguments. `Space t w a` toggles the panel.
+
+In the panel, `1`–`5` select scopes, stack, watches, breakpoints and output. Enter
+expands/jumps, `a` adds a watch, `d` deletes a watch/breakpoint, `s` switches sessions,
+and `q` hides the panel without ending debugging. Automatic opening preserves source
+focus. Use `:DapToolsRepl` for interactive evaluation and `:checkhealth dap_tools`
+for adapter checks. See the plugin README for custom launch/attach configurations.
+
 ## Tasks and terminals
 
 With `features.tasks = true`, `task-tools.nvim` (preferring the checkout at

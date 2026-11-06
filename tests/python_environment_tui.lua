@@ -80,7 +80,7 @@ local function after_selection()
     end
   end
   assert(task and task.cmd[1] == selected and task.env.VIRTUAL_ENV == folder .. "/envs/chosen")
-  local dap = require("dap").configurations.python[1]
+  local dap = require("dap_tools").backend().configurations.python[1]
   assert(dap.pythonPath() == selected and dap.env().VIRTUAL_ENV == folder .. "/envs/chosen")
   assert(
     vim.wait(12000, function()

@@ -27,7 +27,11 @@ assert(local_graph.nodes["completion-tools.nvim"].dependencies["snippet-tools.nv
 assert(local_graph.nodes["image-tools.nvim"].dependencies["git-tools.nvim"] == true)
 assert(local_graph.nodes["selection-tools.nvim"].dependencies["image-tools.nvim"] == true)
 assert(local_graph.nodes["lsp-tools.nvim"].dependencies[provider.id] == false)
-assert(not local_graph.nodes["nvim-dap"] and not local_graph.nodes["task-tools.nvim"])
+assert(
+  not local_graph.nodes["dap-tools.nvim"]
+    and not local_graph.nodes["nvim-dap"]
+    and not local_graph.nodes["task-tools.nvim"]
+)
 local remote = resolve(
   specs,
   { root = vim.env.NVIM_TEST_TMP .. "/packages", dev = { path = vim.env.NVIM_TEST_TMP .. "/missing", fallback = true } }

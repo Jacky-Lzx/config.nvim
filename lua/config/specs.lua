@@ -29,7 +29,7 @@ local groups = {
   git = { "git.git-tools" },
   integrations = { "integrations.debug-tools", "third_party.wakatime" },
   ai = {},
-  debugging = { "disabled.nvim-dap" },
+  debugging = { "debugging.dap-tools" },
   tasks = { "tasks.task-tools" },
   sessions = { "sessions.workspace-tools" },
 }

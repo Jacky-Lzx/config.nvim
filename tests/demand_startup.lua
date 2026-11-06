@@ -21,6 +21,10 @@ local function check()
   end
   cold("tex-tools.nvim", "tex-tools")
   cold("nvim-lspconfig", "lspconfig")
+  if require("config.context").current().selection.features.debugging then
+    cold("nvim-dap", "dap")
+    assert(vim.fn.exists(":DapTools") == 2 and not package.loaded["dap_tools.ui"])
+  end
   assert(not package.loaded["workspace_tools.environments.python"])
   assert(not package.loaded["languages.python.interpreter"])
   assert(not package.loaded["completion_tools"] and not package.loaded["snippet_tools"])

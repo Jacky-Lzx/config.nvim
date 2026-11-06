@@ -11,5 +11,5 @@ return {
     cpp = { "clang-format" },
     cuda = { "clang-format" },
   },
-  plugins = { "plugins.disabled.nvim-dap.cpp" },
+  plugins = { "languages.cpp.debug" },
 }

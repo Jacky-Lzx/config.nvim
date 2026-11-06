@@ -1,8 +1,9 @@
 vim.opt.runtimepath:prepend(vim.fn.getcwd())
 vim.opt.runtimepath:prepend(vim.fn.stdpath("data") .. "/plugin-tools/nvim-dap")
+vim.opt.runtimepath:prepend(require("utils.platform").dev_plugin_root() .. "/dap-tools.nvim")
 local dap = require("dap")
 local abort = dap.ABORT
-local program = require("plugins.disabled.nvim-dap.rust")[1].opts.configurations.rust[1].program
+local program = require("dap_tools.presets").cargo_program()
 local notices, callback, selection, result, resumed
 vim.notify = function(message)
   notices[#notices + 1] = message
