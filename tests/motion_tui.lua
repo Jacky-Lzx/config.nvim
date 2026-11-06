@@ -144,20 +144,18 @@ local function advance()
     return
   end
   cases[index].setup()
-  vim.fn.writefile({ tostring(index), vim.json.encode(cases[index].input) }, stage)
-end
-vim.keymap.set({ "n", "x" }, "<F12>", function()
-  vim.schedule(function()
-    local ok, err = xpcall(function()
-      assert(not Session.active and not View.prompt_win and not View.panel_win, "Motion UI leaked")
-      cases[index].verify()
-      advance()
-    end, debug.traceback)
-    if not ok then
+  dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/terminal_input.lua")(cases[index].input, function()
+    assert(not Session.active and not View.prompt_win and not View.panel_win, "Motion UI leaked")
+    cases[index].verify()
+  end, function(err)
+    if err then
       finish(false, cases[index].name .. ": " .. err)
+    else
+      advance()
     end
   end)
-end)
+  vim.fn.writefile({ tostring(index), vim.json.encode(cases[index].input) }, stage)
+end
 vim.api.nvim_create_autocmd("User", {
   pattern = "ConfigReady",
   once = true,

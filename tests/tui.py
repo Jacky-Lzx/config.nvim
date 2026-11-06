@@ -62,14 +62,10 @@ def main():
     task_actions = {'command': b"\x15printf 'src/failure.c:2:3: error: demo\\n'\r", 'jump': b'\r', 'terminal_input': b"printf 'TASKS_PTY_OK\\n'\r", 'list_close': b'q', 'args_normal': bytes([29]), 'args_close': b'q', 'task_choice': b'Python: run file\r', 'args': b'\'hello world\' ""\r'}
     output = bytearray()
     handled = set()
-    motion_sentinel_at = None
     toolchain_actions = {"plan": b"q", "install": b":ConfigToolsInstall\r", "tasks": b"\r", "retry": b"r", "close": b"q"}
     deadline = time.monotonic() + (50 if case == "python_environment" else 30)
     try:
         while process.poll() is None and time.monotonic() < deadline:
-            if motion_sentinel_at is not None and time.monotonic() >= motion_sentinel_at:
-                os.write(master, b"\x1b[24~")
-                motion_sentinel_at = None
             ready, _, _ = select.select([master], [], [], 0.1)
             if ready:
                 try:
@@ -99,9 +95,9 @@ def main():
                 stage_file = Path(env["NVIM_TEST_TMP"], "editing-stage" if case == "editing_input" else "motion-stage")
                 stage = stage_file.read_text().splitlines() if stage_file.exists() else []
                 if len(stage) == 2 and stage[0] not in handled:
+                    # Lua observes typed-key consumption and waits for the result.
                     os.write(master, json.loads(stage[1]).encode())
                     handled.add(stage[0])
-                    motion_sentinel_at = time.monotonic() + 0.06
             elif case == "keymaps":
                 stage_file = Path(env["NVIM_TEST_TMP"], "keymap-stage")
                 lines = stage_file.read_text().splitlines() if stage_file.exists() else []
@@ -133,7 +129,7 @@ def main():
             plain = re.sub(r"\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\)|[()#][0-9A-Z]|[@-_])", "", output.decode(errors="replace"))
             print(plain[-4000:], file=sys.stderr)
             if result.exists():
-                print(result.read_text(), end="", file=sys.stderr)
+                print(result.read_text(errors="replace"), end="", file=sys.stderr)
             return 1
     finally:
         if process.poll() is None:
@@ -141,7 +137,7 @@ def main():
         process.wait()
         os.close(master)
     if result.exists():
-        print(result.read_text(), end="")
+        print(result.read_text(errors="replace"), end="")
     else:
         print("Terminal check produced no result: " + case, file=sys.stderr)
         return 1

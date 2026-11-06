@@ -213,21 +213,22 @@ local function next_case()
       cases[index].setup()
     end
     vim.cmd("redraw!")
+    dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/terminal_input.lua")(cases[index].input, function()
+      vim.cmd("redraw!")
+      cases[index].verify()
+    end, function(err)
+      if err then
+        finish(cases[index].name .. ": " .. err)
+      else
+        vim.schedule(next_case)
+      end
+    end)
     vim.fn.writefile({ tostring(index), vim.json.encode(cases[index].input) }, directory .. "/editing-stage")
   end, debug.traceback)
   if not ok then
     finish(err)
   end
 end
-vim.keymap.set({ "n", "i" }, "<F12>", function()
-  vim.cmd("redraw!")
-  local ok, err = xpcall(cases[index].verify, debug.traceback)
-  if not ok then
-    finish(cases[index].name .. ": " .. err)
-    return
-  end
-  vim.schedule(next_case)
-end)
 local function start()
   if vim.g.config_ready then
     next_case()
