@@ -25,9 +25,10 @@ local function refresh_icons()
   end
   -- Re-show cached diagnostics so both native signs and virtual text update.
   vim.diagnostic.config(options)
-  local column = package.loaded["ui_tools.statuscolumn"]
+  local ui = package.loaded.ui_tools
+  local column = ui and ui.get_state("statuscolumn")
   if column and column.enabled then
-    column.refresh()
+    require("ui_tools.statuscolumn").refresh()
   end
 end
 local text = { spacing = 4, prefix = prefix }
@@ -59,9 +60,10 @@ end
 function M.set_enabled(state)
   vim.diagnostic.enable(state)
   -- Native enable/hide updates signs without emitting DiagnosticChanged.
-  local column = package.loaded["ui_tools.statuscolumn"]
+  local ui = package.loaded.ui_tools
+  local column = ui and ui.get_state("statuscolumn")
   if column and column.enabled then
-    column.refresh()
+    require("ui_tools.statuscolumn").refresh()
   end
 end
 

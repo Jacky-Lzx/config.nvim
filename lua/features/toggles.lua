@@ -40,7 +40,8 @@ end
 function M.scroll_bindings()
   local bindings = require("config.bindings")
   bindings.set("config.scroll", {})
-  local scroll = package.loaded["ui_tools.scroll"]
+  local ui = package.loaded.ui_tools
+  local scroll = ui and ui.get_state("scroll")
   if not scroll or not scroll.enabled then
     return
   end
@@ -130,8 +131,9 @@ function M.setup()
       id = spec[1],
       name = spec[3],
       get = function()
-        local module = package.loaded["ui_tools." .. spec[1]]
-        return module ~= nil and module.enabled == true
+        local ui = package.loaded.ui_tools
+        local state = ui and ui.get_state(spec[1])
+        return state ~= nil and state.enabled == true
       end,
       set = function()
         require("ui_tools").toggle(spec[1])
@@ -149,8 +151,9 @@ function M.setup()
       id = spec[1],
       name = spec[3],
       get = function()
-        local p = package.loaded["debug_tools.profiler"]
-        return p ~= nil and p[spec[1]] == true
+        local debug = package.loaded.debug_tools
+        local state = debug and debug.get_state().profiler
+        return state ~= nil and state[spec[1]] == true
       end,
       set = function()
         require("debug_tools").profiler[spec[4]]()

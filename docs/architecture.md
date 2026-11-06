@@ -128,7 +128,9 @@ not imply that their user interfaces have initialized.
 ui-tools owns bars, folds, annotations and window presentation. The configuration
 supplies preferences and data callbacks. keymap-tools inspects native mappings,
 provides hints and the executable picker, and accepts metadata from feature owners.
-Read-only status queries must not activate providers.
+Read-only status queries must not activate providers. Git, UI and Debug toggle
+integrations consume their owners' public `get_state` snapshots; unavailable state
+remains unknown rather than initializing a provider.
 
 TeX buffer mappings call tex-tools commands; LSP attachment does not redefine build,
 log, cancellation or viewer actions. tex-tools owns TeX editing, builds, forward/inverse search, conceal and preview

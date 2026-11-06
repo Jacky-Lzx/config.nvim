@@ -1,24 +1,20 @@
+local function state(name)
+  local ui = package.loaded.ui_tools
+  return ui and ui.get_state(name)
+end
 local function focus_mode(mode)
-  local focus = package.loaded["ui_tools.focus"]
+  local focus = state("focus")
   if focus then
-    local state = focus.state()
-    return state ~= nil and state.mode == mode
+    return focus.mode == mode
   end
 end
-
 local function indent_enabled()
-  local indent = package.loaded["ui_tools.indent"]
-  if indent then
-    local render = package.loaded["ui_tools.render"]
-    return indent.enabled == true or (render ~= nil and render.sources.indent ~= nil)
-  end
+  local indent = state("indent")
+  return indent and indent.enabled
 end
-
 local function dim_enabled()
-  local focus = package.loaded["ui_tools.focus"]
-  if focus then
-    return focus.dimmed == true
-  end
+  local focus = state("focus")
+  return focus and focus.dimmed
 end
 
 return {

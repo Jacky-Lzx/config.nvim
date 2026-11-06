@@ -50,19 +50,12 @@ return {
   {
     config = function(ctx)
       do
-        local function option(name)
-          return function()
-            local buffer = package.loaded["git_tools.buffer"]
-            if buffer then
-              return buffer.config[name]
+        local function state(name)
+          return function(ctx)
+            local git = package.loaded.git_tools
+            if git then
+              return git.get_state(ctx)[name]
             end
-          end
-        end
-        local function overlay(ctx)
-          local buffer = package.loaded["git_tools.buffer"]
-          local state = buffer and buffer.states[ctx.buf]
-          if state then
-            return state.overlay == true
           end
         end
         require("keymap_tools").register("git-tools.toggles", {
@@ -70,26 +63,13 @@ return {
             {
               keys = "<leader>Dt",
               name = "Git diff view",
-              get = function(ctx)
-                if not ctx.win then
-                  return nil
-                end
-                local view = package.loaded["git_tools.view"]
-                if package.loaded.git_tools then
-                  for active in pairs(view and view.active or {}) do
-                    if active.tab == vim.api.nvim_win_get_tabpage(ctx.win) then
-                      return true
-                    end
-                  end
-                  return false
-                end
-              end,
+              get = state("compare"),
             },
-            { keys = "<leader>to", name = "Git diff overlay", get = overlay },
-            { keys = "<leader>ggP", name = "Git inline preview", get = overlay },
-            { keys = "<leader>tgb", name = "Git line blame", get = option("line_blame") },
-            { keys = "<leader>tgw", name = "Git word diff", get = option("word_diff") },
-            { keys = "<leader>tgs", name = "Git signs", get = option("signs") },
+            { keys = "<leader>to", name = "Git diff overlay", get = state("overlay") },
+            { keys = "<leader>ggP", name = "Git inline preview", get = state("overlay") },
+            { keys = "<leader>tgb", name = "Git line blame", get = state("line_blame") },
+            { keys = "<leader>tgw", name = "Git word diff", get = state("word_diff") },
+            { keys = "<leader>tgs", name = "Git signs", get = state("signs") },
           },
         })
       end

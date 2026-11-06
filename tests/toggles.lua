@@ -74,7 +74,7 @@ local function configure(spec)
   local previous = {}
   for _, name in ipairs(mocked) do
     previous[name] = package.loaded[name]
-    package.loaded[name] = { setup = function() end }
+    package.loaded[name] = { setup = function() end, get_state = function() end }
   end
   local ok, err = xpcall(function()
     spec.config({ opts = vim.deepcopy(spec.opts), dir = spec.dir })
