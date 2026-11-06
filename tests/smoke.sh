@@ -23,6 +23,7 @@ esac
 
 root=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 test_tmp=$(mktemp -d "${TMPDIR:-/tmp}/nvim-smoke.XXXXXX")
+test_tmp=$(CDPATH='' cd -- "$test_tmp" && pwd -P)
 trap 'rm -rf "$test_tmp"' EXIT HUP INT TERM
 export XDG_CACHE_HOME="$test_tmp/cache"
 export XDG_STATE_HOME="$test_tmp/state"
@@ -38,7 +39,7 @@ cp "$root/plugin-tools-lock.json" "$test_tmp/plugin-tools-lock.json"
 export NVIM_PLUGIN_LOCKFILE="$test_tmp/plugin-tools-lock.json"
 
 # Test-only fixtures exercise the restorable optional integrations. Production
-# startup reads only each declaration's enabled field.
+# startup uses declaration flags and trusted project selection.
 export NVIM_TEST_ENABLE_THIRD_PARTY=1
 
 cat >"$test_tmp/sample.tex" <<'EOF'
@@ -64,15 +65,16 @@ native_checks() (
   export NVIM_DEV_PLUGIN_ROOT="$test_tmp/native-dev-plugins"
   printf '\nRunning native checks with isolated plugin data\n'
   nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/smoke.lua"
-  run_tests plugin_bootstrap profiling lockfile schema selection info config platform core bindings obsidian_specs clipboard diagnostics \
+  run_tests plugin_bootstrap profiling lockfile schema selection info config platform core bindings clipboard diagnostics \
     completion math_conditions latex_forward_search commands python tasks integrations image_activation tooling toolchain lsp_config files
 )
 
 integration_checks() (
   cd -- "$root"
   printf '\nRunning integration checks with installed plugins\n'
-  run_tests open_at_cursor toggles obsidian_local comments folding rust treesitter_runtime tools_runtime lsp_tools notifications image_preview bars semantic_icons git_tools column_guide toolchain_backend tasks_session workspaces
+  run_tests open_at_cursor toggles project_plugins obsidian_local comments folding rust treesitter_runtime tools_runtime lsp_tools notifications image_preview bars semantic_icons git_tools column_guide toolchain_backend tasks_session workspaces
   python3 "$root/tests/open_at_cursor_tui.py"
+  python3 "$root/tests/project_plugins_tui.py"
   NVIM_TEST_LINK_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   NVIM_TEST_REFERENCE_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   BARS_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/bars.lua"

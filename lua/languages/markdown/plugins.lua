@@ -25,8 +25,16 @@ return {
     main = "obsidian",
     id = "obsidian.nvim",
     enabled = true,
+    optional = true,
     source = "obsidian-nvim/obsidian.nvim",
     -- These only contribute options; opening a vault does not need image APIs.
+    children = {
+      {
+        id = "image-tools.nvim",
+        source = "Jacky-Lzx/image-tools.nvim",
+        opts = { insert = { directory = "assets/imgs" } },
+      },
+    },
     opts = {
       -- Keep notes in a specific subdirectory of the vault.
       notes_subdir = "notes",

@@ -87,9 +87,6 @@ function M.build(selection)
       selected[#selected + 1] = spec
     end
   end
-  for _, integration in ipairs({ "integrations.obsidian" }) do
-    selected = require(integration).specs(selected)
-  end
   return selected
 end
 return M

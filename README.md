@@ -77,8 +77,8 @@ Third-party declarations are grouped by their current enabled state:
 
 Local plugins keep their workflow directories. Language and feature selections
 still control which declarations enter the manifest. Each declaration's `enabled`
-field controls activation; the directory itself does not override it. To restore
-one plugin, enable its declaration and required dependencies, move its configuration
+field and project selection control activation; the directory itself does not override
+them. To restore one plugin, enable its declaration and required dependencies, move its configuration
 to `third_party/` or its language module, and update the module referencing it.
 There is no global third-party switch. Installed checkouts and lock entries are retained;
 theme-tools continues to manage its own theme/icon providers.
@@ -107,6 +107,15 @@ return { { id = "obsidian.nvim", opts = {
   workspaces = { { name = "Notes", path = "~/Documents/Notes" } },
 } } }
 ```
+
+Declare a shared plugin with `optional = true` to keep its source, options and
+configuration dormant until a project selects its ID. The project declaration
+above selects the optional Obsidian declaration in `languages/markdown/plugins.lua`
+and merges its workspace options with the shared defaults. Unselected optional
+plugins and their children do not enter the resolved graph or `runtimepath`, run
+setup or native runtime scripts, or participate in installation. Dependencies do
+not select them. `start = false` only skips setup and still mounts the runtime.
+Project selection is resolved at startup; restart Neovim when changing projects.
 
 In a writable checkout, `:PluginTools update` writes `plugin-tools-lock.json` directly. Review,
 test and commit that file with any configuration changes. `NVIM_PLUGIN_LOCKFILE`
@@ -669,7 +678,9 @@ corresponding optional integration.
 
 Obsidian workspaces belong to the vault's `.nvim-plugins.lua`, in the Obsidian spec's
 `opts.workspaces`. The shared spec in `lua/languages/markdown/plugins.lua` keeps plugin
-behavior and mappings, and only enables Obsidian when the merged options contain a workspace.
+behavior and mappings as an optional declaration. The project must select Obsidian
+by ID and provide its workspace options. Its `assets/imgs` image-directory defaults
+are contributed only when Obsidian is selected.
 Start Neovim inside the vault or one of its subdirectories so the configuration can
 securely read that local spec.
 
