@@ -59,6 +59,7 @@ return {
           "<leader>tm",
           function()
             require("render-markdown").toggle()
+            require("features.toggles").notify("Render Markdown", require("render-markdown.state").enabled)
           end,
           desc = "Toggle render markdown",
         },

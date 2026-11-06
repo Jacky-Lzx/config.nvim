@@ -28,7 +28,9 @@ end
 
 function M.setup()
   vim.keymap.set("n", "<leader>si", M.preview, { desc = "[Image] Preview image or formula on current line" })
-  vim.keymap.set("n", "<leader>ui", M.toggle, { desc = "[Image] Toggle automatic preview" })
+  vim.keymap.set("n", "<leader>ui", function()
+    require("features.toggles").notify("Automatic image preview", M.toggle())
+  end, { desc = "[Image] Toggle automatic preview" })
   require("keymap_tools").register("image-tools.toggle", {
     toggles = { { keys = "<leader>ui", name = "Automatic image preview", get = M.enabled } },
   })

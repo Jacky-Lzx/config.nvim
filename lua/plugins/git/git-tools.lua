@@ -225,21 +225,21 @@ return {
         {
           "<leader>tgb",
           function()
-            require("git_tools").toggle("line_blame")
+            require("features.toggles").notify("Git line blame", require("git_tools").toggle("line_blame"))
           end,
           desc = "[Git] Toggle line blame",
         },
         {
           "<leader>tgw",
           function()
-            require("git_tools").toggle("word_diff")
+            require("features.toggles").notify("Git word diff", require("git_tools").toggle("word_diff"))
           end,
           desc = "[Git] Toggle word diff",
         },
         {
           "<leader>tgs",
           function()
-            require("git_tools").toggle("signs")
+            require("features.toggles").notify("Git signs", require("git_tools").toggle("signs"))
           end,
           desc = "[Git] Toggle signs",
         },

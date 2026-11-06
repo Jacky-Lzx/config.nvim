@@ -1,3 +1,26 @@
+local function focus_mode(mode)
+  local focus = package.loaded["ui_tools.focus"]
+  if focus then
+    local state = focus.state()
+    return state ~= nil and state.mode == mode
+  end
+end
+
+local function indent_enabled()
+  local indent = package.loaded["ui_tools.indent"]
+  if indent then
+    local render = package.loaded["ui_tools.render"]
+    return indent.enabled == true or (render ~= nil and render.sources.indent ~= nil)
+  end
+end
+
+local function dim_enabled()
+  local focus = package.loaded["ui_tools.focus"]
+  if focus then
+    return focus.dimmed == true
+  end
+end
+
 return {
   {
     id = "ui-tools.nvim",
@@ -97,39 +120,31 @@ return {
     },
     config = function(ctx)
       do
-        local function focus_mode(mode)
-          return function()
-            local focus = package.loaded["ui_tools.focus"]
-            if focus then
-              local state = focus.state()
-              return state ~= nil and state.mode == mode
-            end
-          end
-        end
         require("keymap_tools").register("ui-tools.toggles", {
           toggles = {
-            { keys = "<leader>Z", name = "Zen Mode", get = focus_mode("zen") },
-            { keys = "<leader>z", name = "Zoom", get = focus_mode("zoom") },
+            {
+              keys = "<leader>Z",
+              name = "Zen Mode",
+              get = function()
+                return focus_mode("zen")
+              end,
+            },
+            {
+              keys = "<leader>z",
+              name = "Zoom",
+              get = function()
+                return focus_mode("zoom")
+              end,
+            },
             {
               keys = "<leader>tG",
               name = "Indent guides",
-              get = function()
-                local indent = package.loaded["ui_tools.indent"]
-                if indent then
-                  local render = package.loaded["ui_tools.render"]
-                  return indent.enabled == true or (render ~= nil and render.sources.indent ~= nil)
-                end
-              end,
+              get = indent_enabled,
             },
             {
               keys = "<leader>tD",
               name = "Scope dimming",
-              get = function()
-                local focus = package.loaded["ui_tools.focus"]
-                if focus then
-                  return focus.dimmed == true
-                end
-              end,
+              get = dim_enabled,
             },
           },
         })
@@ -279,6 +294,7 @@ return {
           "<leader>Z",
           function()
             require("ui_tools").zen()
+            require("features.toggles").notify("Zen Mode", focus_mode("zen"))
           end,
           desc = "[UI] Toggle Zen Mode",
         },
@@ -286,6 +302,7 @@ return {
           "<leader>z",
           function()
             require("ui_tools").zoom()
+            require("features.toggles").notify("Zoom", focus_mode("zoom"))
           end,
           desc = "[UI] Toggle Zoom",
         },
@@ -293,6 +310,7 @@ return {
           "<leader>tG",
           function()
             require("ui_tools").toggle("indent")
+            require("features.toggles").notify("Indent guides", indent_enabled())
           end,
           desc = "[UI] Toggle indent guides",
         },
@@ -300,6 +318,7 @@ return {
           "<leader>tD",
           function()
             require("ui_tools").dim()
+            require("features.toggles").notify("Scope dimming", dim_enabled())
           end,
           desc = "[UI] Toggle scope dimming",
         },

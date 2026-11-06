@@ -58,4 +58,14 @@ automatic = false
 assert(not registration.get(), "Status ignored plugin-owned state")
 assert(integration.toggle() == true)
 assert(formula_enabled and loads == 1, "Non-TeX toggles must not load providers or change formula state")
+local notices, notify = {}, vim.notify
+vim.notify = function(message)
+  notices[#notices + 1] = message
+end
+local mapping = vim.fn.maparg("<leader>ui", "n", false, true).callback
+mapping()
+assert(not registration.get() and notices[1] == "Automatic image preview: Disabled")
+mapping()
+assert(registration.get() and notices[2] == "Automatic image preview: Enabled" and #notices == 2)
+vim.notify = notify
 print("Personal TeX/generic preview dispatch and plugin-owned automatic state passed")

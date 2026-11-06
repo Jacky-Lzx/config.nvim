@@ -109,12 +109,15 @@ function M.setup()
 
   vim.keymap.set("n", "<leader>td", function()
     M.set_enabled(not M.enabled())
+    require("features.toggles").notify("Diagnostics", M.enabled())
   end, { desc = "Toggle diagnostics" })
   vim.keymap.set("n", "<leader>tV", function()
     M.set_virtual_lines(not M.virtual_lines_enabled())
+    require("features.toggles").notify("Diagnostic virtual lines", M.virtual_lines_enabled())
   end, { desc = "Toggle Diagnostic virtual lines" })
   vim.keymap.set("n", "<leader>tv", function()
     M.set_virtual_text(not M.virtual_text_enabled())
+    require("features.toggles").notify("Diagnostic text", M.virtual_text_enabled())
   end, { desc = "Toggle Diagnostic text" })
 end
 

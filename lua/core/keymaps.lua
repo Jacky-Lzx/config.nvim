@@ -53,7 +53,10 @@ function M.setup()
 
   map("n", "<leader>J", "<Cmd>cnext<CR>", { desc = "Next quickfix entry" })
   map("n", "<leader>K", "<Cmd>cprevious<CR>", { desc = "Previous quickfix entry" })
-  map("n", "<A-z>", "<Cmd>setlocal wrap!<CR>", { desc = "Toggle line wrap" })
+  map("n", "<A-z>", function()
+    vim.wo.wrap = not vim.wo.wrap
+    require("features.toggles").notify("Wrap", vim.wo.wrap)
+  end, { desc = "Toggle line wrap" })
   map("n", "//", "<Cmd>nohlsearch<Bar>diffupdate<Bar>normal! <C-L><CR>", {
     desc = "Clear search highlighting and redraw",
     silent = true,

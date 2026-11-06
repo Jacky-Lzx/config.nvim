@@ -1,5 +1,12 @@
 local M = {}
 
+-- Report live state only after an explicit action, never while inspecting keymaps.
+function M.notify(name, enabled)
+  if type(enabled) == "boolean" then
+    vim.notify(name .. ": " .. (enabled and "Enabled" or "Disabled"), vim.log.levels.INFO, { title = "Toggle" })
+  end
+end
+
 function M.map(owner, lhs, opts)
   opts = vim.deepcopy(opts or {})
   local mode = opts.mode or "n"
@@ -8,6 +15,7 @@ function M.map(owner, lhs, opts)
   local callback = function()
     local ok, err = pcall(function()
       owner.set(not owner.get())
+      M.notify(owner.name, owner.get())
     end)
     if not ok then
       vim.notify(tostring(err), vim.log.levels.ERROR, { title = owner.name })

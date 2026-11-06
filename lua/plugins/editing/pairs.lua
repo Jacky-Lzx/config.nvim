@@ -43,7 +43,9 @@ return {
         {
           "<leader>tp",
           function()
-            require("pairs").toggle()
+            local pairs = require("pairs")
+            pairs.toggle()
+            require("features.toggles").notify("Pairing", pairs.status().enabled)
           end,
           desc = "[Pairs] Toggle pairing",
         },

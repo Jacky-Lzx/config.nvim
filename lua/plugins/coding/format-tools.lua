@@ -33,6 +33,7 @@ return {
         -- Honor a session preference before the first save.
         vim.keymap.set("n", "<leader>tf", function()
           vim.g.enable_autoformat = not vim.g.enable_autoformat
+          require("features.toggles").notify("Auto format", vim.g.enable_autoformat)
         end, { desc = "Toggle auto format" })
         require("keymap_tools").register("formatting", {
           toggles = {

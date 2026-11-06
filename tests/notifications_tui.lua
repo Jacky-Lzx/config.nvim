@@ -61,6 +61,39 @@ local function capture()
   return table.concat(rows, "\n")
 end
 
+local function check_toggle_feedback()
+  local await = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/await_state.lua")
+  local function step(enabled, complete)
+    tools.dismiss()
+    tools.clear_history()
+    vim.api.nvim_feedkeys(" tf", "mt", false)
+    await("Rendered auto format toggle", function()
+      local message = "Auto format: " .. (enabled and "Enabled" or "Disabled")
+      assert(vim.g.enable_autoformat == enabled, "Space tf did not change the setting")
+      local history = tools.history()
+      assert(#history == 1 and history[1].message == message, vim.inspect(history))
+      assert(capture():find(message, 1, true), "Toggle notification is not visible")
+      assert(vim.api.nvim_get_current_win() == original_win, "Toggle notification stole focus")
+      assert(vim.api.nvim_get_mode().mode == "n", "Toggle notification interrupted Normal mode")
+    end, function(err)
+      if err then
+        finish(false, err)
+      else
+        complete()
+      end
+    end)
+  end
+  vim.g.enable_autoformat = true
+  step(false, function()
+    step(true, function()
+      finish(
+        true,
+        "Terminal checks passed: toggle feedback, notifications, native command/input completion and modified-buffer quit confirmation"
+      )
+    end)
+  end)
+end
+
 vim.api.nvim_create_autocmd("User", {
   pattern = "ConfigReady",
   once = true,
@@ -279,10 +312,7 @@ vim.api.nvim_create_autocmd("User", {
       assert(not require("input-tools").get_layout())
       assert(vim.api.nvim_get_current_win() == original_win and vim.bo[original_buf].modified)
       assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
-      finish(
-        true,
-        "Terminal checks passed: notifications, native command/input completion and persistent modified-buffer quit confirmation"
-      )
+      check_toggle_feedback()
     end)
   end,
 })
