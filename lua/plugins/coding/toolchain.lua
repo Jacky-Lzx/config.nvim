@@ -1,7 +1,7 @@
 return {
   {
     id = "toolchain-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/toolchain-tools.nvim.git",
+    source = "Jacky-Lzx/toolchain-tools.nvim",
     dev = true,
     main = "toolchain",
     opts = {

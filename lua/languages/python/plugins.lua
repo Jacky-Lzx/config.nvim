@@ -1,7 +1,7 @@
 return {
   {
     id = "workspace-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/workspace-tools.nvim.git",
+    source = "Jacky-Lzx/workspace-tools.nvim",
     dev = true,
     start = require("config.context").current().selection.features.sessions,
     children = {

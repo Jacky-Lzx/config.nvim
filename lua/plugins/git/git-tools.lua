@@ -247,7 +247,7 @@ return {
       require("git_tools").setup(ctx.opts)
     end,
     id = "git-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/git-tools.nvim.git",
+    source = "Jacky-Lzx/git-tools.nvim",
     dev = true,
     main = "git_tools",
     opts = { buffer = { signs = false, numhl = true, on_attach = on_attach } },

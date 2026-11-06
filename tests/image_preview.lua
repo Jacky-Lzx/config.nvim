@@ -9,7 +9,8 @@ dofile(root .. "/tests/native_plugins.lua")
 local plugins = require("config.plugins").nodes()
 assert(not plugins["snacks.nvim"], "Snacks image must not be configured")
 local spec = plugins["image-tools.nvim"]
-assert(spec and spec.dev and spec.package.source == "https://github.com/Jacky-Lzx/image-tools.nvim.git")
+assert(spec and spec.dev and spec.source == "Jacky-Lzx/image-tools.nvim")
+assert(spec.package.source == require("config.plugins").manager.options.url_format:format(spec.source))
 local development = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
 local local_checkout = vim.uv.fs_stat(development .. "/lua/image_tools/init.lua") ~= nil
 local expected = local_checkout and development

@@ -1,7 +1,7 @@
 return {
   {
     id = "ui-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/ui-tools.nvim.git",
+    source = "Jacky-Lzx/ui-tools.nvim",
     dev = true,
     main = "ui_tools",
     opts = {

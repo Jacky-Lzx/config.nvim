@@ -183,7 +183,7 @@ return {
       require("selection_tools").setup(ctx.opts)
     end,
     id = "selection-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/selection-tools.nvim.git",
+    source = "Jacky-Lzx/selection-tools.nvim",
     dev = true,
     main = "selection_tools",
     opts = {

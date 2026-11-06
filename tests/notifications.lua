@@ -13,8 +13,8 @@ assert(not plugins["snacks.nvim"])
 assert(not plugins["fidget.nvim"] and not package.loaded.fidget, "Fidget must be removed")
 local plugin = assert(plugins["notification-tools.nvim"])
 assert(
-  plugin.package.source == "git@github.com:Jacky-Lzx/notification-tools.nvim.git",
-  "Use the published SSH repository"
+  plugin.package.source == require("config.plugins").manager.options.url_format:format(plugin.source),
+  "Use the published repository with the shared protocol"
 )
 local dev_root = require("utils.platform").dev_plugin_root() .. "/notification-tools.nvim"
 local local_checkout = vim.uv.fs_stat(dev_root .. "/lua/notification-tools/init.lua") ~= nil

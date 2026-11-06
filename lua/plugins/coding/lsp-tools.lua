@@ -10,7 +10,7 @@ return {
   {
     id = "lsp-tools.nvim",
     after = { "toolchain-tools.nvim" },
-    source = "git@github.com:Jacky-Lzx/lsp-tools.nvim.git",
+    source = "Jacky-Lzx/lsp-tools.nvim",
     dev = true,
     -- Register servers before attachment; keep empty-editor startup lightweight.
     dependencies = {

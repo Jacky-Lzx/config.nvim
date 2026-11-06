@@ -1,7 +1,7 @@
 return {
   {
     id = "theme-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/theme-tools.nvim.git",
+    source = "Jacky-Lzx/theme-tools.nvim",
     dev = true,
     main = "theme_tools",
     opts = {

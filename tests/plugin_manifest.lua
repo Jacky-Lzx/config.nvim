@@ -24,7 +24,7 @@ local remote = resolve(
   { root = vim.env.NVIM_TEST_TMP .. "/packages", dev = { path = vim.env.NVIM_TEST_TMP .. "/missing", fallback = true } }
 )
 assert(remote.packages["notification-tools.nvim"].managed)
-assert(remote.packages["notification-tools.nvim"].source == "git@github.com:Jacky-Lzx/notification-tools.nvim.git")
+assert(remote.packages["notification-tools.nvim"].source == "https://github.com/Jacky-Lzx/notification-tools.nvim.git")
 assert(remote.packages["image-tools.nvim"].managed, "Published image-tools must have a remote fallback")
 
 for _, node in pairs(local_graph.nodes) do

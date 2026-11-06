@@ -70,7 +70,7 @@ return {
       require("task_tools").setup(ctx.opts)
     end,
     id = "task-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/task-tools.nvim.git",
+    source = "Jacky-Lzx/task-tools.nvim",
     dev = true,
     main = "task_tools",
     opts = {

@@ -1,7 +1,7 @@
 return {
   {
     id = "completion-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/completion-tools.nvim.git",
+    source = "Jacky-Lzx/completion-tools.nvim",
     dev = true,
     main = "completion-tools",
     opts = require("integrations.completion").options(),

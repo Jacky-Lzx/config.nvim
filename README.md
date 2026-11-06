@@ -24,10 +24,17 @@ the manager selects `NVIM_PLUGIN_ROOT/<plugin>` (default
 `stdpath('data')/plugin-tools/<plugin>`) for explicit installation from GitHub.
 Startup does not clone repositories automatically.
 
+All GitHub plugin sources use the `owner/repo` shorthand. Set `url_format` in
+`lua/config/plugins.lua` to select the shared transport:
+`"https://github.com/%s.git"` (the current default) or `"git@github.com:%s.git"`.
+This applies to personal and third-party plugin sources; local development
+directories keep priority. Existing managed installs and lock entries record the
+resolved URL, so changing transport also requires migrating those source records.
+
 GitHub sources are configured for completion-tools, git-tools, image-tools,
 input-tools, lsp-tools, notification-tools, pairs, selection-tools, task-tools,
 tex-tools, theme-tools, toolchain-tools, ui-tools and workspace-tools (all `.nvim`,
-under `Jacky-Lzx`). image-tools is public and uses HTTPS for managed installation.
+under `Jacky-Lzx`). image-tools is public and follows the same shared transport.
 debug-tools, editing-tools, file-tools, keymap-tools, motion-tools and snippet-tools
 remain local-only; plugin-tools itself still requires its local bootstrap checkout.
 
@@ -198,7 +205,7 @@ highlighting, so Snacks.words is disabled. `]]` / `[[` retain native section and
 terminal-prompt navigation. Reference navigation itself does not require Snacks.
 
 The configuration prefers the local development checkout through plugin-tools'
-`dev = true`, and falls back to GitHub over SSH when it is absent. Code action options live
+`dev = true`, and falls back to GitHub using the shared transport when it is absent. Code action options live
 under `opts.code_actions`; the public API is `require("lsp-tools").code_action()`.
 
 LSP tools also owns the code-action indicator and linked editing (including
@@ -799,7 +806,7 @@ with full previews; `<leader>un` dismisses ordinary notifications.
 `:NotificationToolsDemo` previews both areas. Successful native file-write status
 messages are filtered from notifications/history; errors and other sources remain visible.
 
-The plugin is installed from `Jacky-Lzx/notification-tools.nvim` over SSH.
+The plugin is installed from `Jacky-Lzx/notification-tools.nvim` using the shared transport.
 `dev = true` prefers `NVIM_DEV_PLUGIN_ROOT/notification-tools.nvim`
 (default `~/Documents/Github/nvim_plugins/notification-tools.nvim`); plugin-tools'
 `dev.fallback = true` selects the published repository when that checkout is absent.

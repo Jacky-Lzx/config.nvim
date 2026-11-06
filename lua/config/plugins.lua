@@ -6,6 +6,8 @@ function M.setup()
   vim.opt.runtimepath:prepend(directory)
   M.manager = require("plugin_tools").setup({
     specs = require("config.specs").build(),
+    -- GitHub owner/repo sources share this protocol; SSH: "git@github.com:%s.git".
+    url_format = "https://github.com/%s.git",
     dev = { path = require("utils.platform").dev_plugin_root(), fallback = true },
     lockfile = require("config.lockfile").resolve(),
     root = vim.env.NVIM_PLUGIN_ROOT or (vim.fn.stdpath("data") .. "/plugin-tools"),

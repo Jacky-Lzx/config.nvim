@@ -10,7 +10,7 @@ return {
       require("workspace_tools").setup(ctx.opts)
     end,
     id = "workspace-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/workspace-tools.nvim.git",
+    source = "Jacky-Lzx/workspace-tools.nvim",
     dev = true,
     main = "workspace_tools",
     opts = {

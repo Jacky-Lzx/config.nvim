@@ -13,7 +13,8 @@ assert(not plugins["outline.nvim"], "Standalone outline.nvim remains configured"
 assert(not plugins["nvim-lightbulb"], "Standalone lightbulb remains configured")
 assert(not plugins["trouble.nvim"], "Trouble must be replaced by LSP tools")
 local spec = plugins["lsp-tools.nvim"]
-assert(spec and spec.package.source == "git@github.com:Jacky-Lzx/lsp-tools.nvim.git")
+assert(spec and spec.source == "Jacky-Lzx/lsp-tools.nvim")
+assert(spec.package.source == require("config.plugins").manager.options.url_format:format(spec.source))
 local dev_directory = require("utils.platform").dev_plugin_root() .. "/lsp-tools.nvim"
 local expected_directory
 if vim.uv.fs_stat(dev_directory) then

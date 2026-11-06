@@ -11,7 +11,7 @@ return {
       require("notification-tools").setup(ctx.opts)
     end,
     id = "notification-tools.nvim",
-    source = "git@github.com:Jacky-Lzx/notification-tools.nvim.git",
+    source = "Jacky-Lzx/notification-tools.nvim",
     dev = true,
     main = "notification-tools",
     opts = {
