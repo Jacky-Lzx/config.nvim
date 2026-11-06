@@ -191,8 +191,8 @@ configuration-side linked-editing adapter are no longer needed.
   again to enter it. `<A-j>` / `<A-k>` navigate diagnostics and show the same native floats.
 - `<leader>gH`: pin hover documentation; `r` refreshes, `f` follows the source cursor,
   `y` copies, and `gx` opens a documentation link. `K` keeps ordinary hover.
-- `go` in Normal mode: open the LSP document link, falling back to the existing
-  path opener. Visual `go` still opens the selected text. A path-only open keeps
+- `go` in Normal mode: open the LSP document link, falling back to file-tools'
+  system path opener. Visual `go` opens the selected text. A path-only open keeps
   lsp-tools unloaded when no server offers document links.
 - `<leader>g?` / `:LspToolsInfo`: inspect clients, roots, providers and requests.
 - `gci` / `gco`: persistent incoming/outgoing call trees; `<leader>gT`: type tree.
@@ -425,6 +425,11 @@ permanent deletion; `y/x/p` copy, cut and paste. `h/l` fold or open directories.
 merges file-operation capabilities with completion capabilities before enabling
 servers. nvim-tree, its separate LSP file-operation adapter, and Yazi are removed.
 Sidebar bufferline spacing and progress-notification avoidance use `file-tools`.
+
+File-tools also owns `go` path/URL opening through `open_at_cursor()` and
+`open_external(target)`. Relative paths are tried beside the current buffer,
+then in cwd, then at the Git root. The configuration supplies its platform opener,
+including the `NVIM_OPEN_CMD` override; `utils/open.lua` is no longer needed.
 
 `:FileToolsRead[!] [path]` and `:FileToolsWrite [path]` provide explicit sudo reads
 and writes, replacing vim-suda. Existing `:SudaRead` / `:SudaWrite` commands forward

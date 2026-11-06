@@ -6,7 +6,10 @@ return {
     dir = root .. "/file-tools.nvim",
     main = "file_tools",
     dependencies = { "theme-tools.nvim" },
-    opts = { tree = { width = 40, follow = true } },
+    opts = {
+      tree = { width = 40, follow = true },
+      opener = require("utils.platform").open,
+    },
     config = function(ctx)
       do
         local unsupported = {

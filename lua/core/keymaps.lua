@@ -62,13 +62,15 @@ function M.setup()
   -- Only a bare Visual :write loses its range; substitutions and exports retain it.
   map("c", "<CR>", command_enter, { expr = true, desc = "Confirm command; save full buffer with Visual :write" })
 
-  map("x", "go", require("utils.open").open_at_cursor, { desc = "Open selected path or URL", nowait = true })
+  map("x", "go", function()
+    require("file_tools").open_at_cursor()
+  end, { desc = "Open selected path or URL", nowait = true })
   map("n", "go", function()
     local lsp = package.loaded["vim.lsp"]
     if lsp and #lsp.get_clients({ bufnr = 0, method = "textDocument/documentLink" }) > 0 then
       require("lsp-tools").open_link()
     else
-      require("utils.open").open_at_cursor()
+      require("file_tools").open_at_cursor()
     end
   end, { desc = "Open semantic link or path", nowait = true })
 end

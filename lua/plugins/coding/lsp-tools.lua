@@ -34,7 +34,7 @@ return {
       hierarchy = true,
       links = {
         fallback = function()
-          require("utils.open").open_at_cursor()
+          require("file_tools").open_at_cursor()
         end,
       },
       outline = {

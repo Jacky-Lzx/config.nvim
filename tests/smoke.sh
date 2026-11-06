@@ -65,13 +65,14 @@ native_checks() (
   printf '\nRunning native checks with isolated plugin data\n'
   nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/smoke.lua"
   run_tests lockfile schema selection info config platform core clipboard diagnostics \
-    completion math_conditions latex_forward_search commands python tasks integrations image_activation open_at_cursor tooling toolchain lsp_config files
+    completion math_conditions latex_forward_search commands python tasks integrations image_activation tooling toolchain lsp_config files
 )
 
 integration_checks() (
   cd -- "$root"
   printf '\nRunning integration checks with installed plugins\n'
-  run_tests toggles obsidian_local comments folding rust treesitter_runtime tools_runtime lsp_tools notifications image_preview bars semantic_icons git_tools column_guide toolchain_backend tasks_session workspaces
+  run_tests open_at_cursor toggles obsidian_local comments folding rust treesitter_runtime tools_runtime lsp_tools notifications image_preview bars semantic_icons git_tools column_guide toolchain_backend tasks_session workspaces
+  python3 "$root/tests/open_at_cursor_tui.py"
   NVIM_TEST_LINK_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   NVIM_TEST_REFERENCE_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   BARS_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/bars.lua"

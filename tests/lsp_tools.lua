@@ -27,7 +27,7 @@ assert(spec.dir == expected_directory, "Plugin resolved the wrong development/fa
 assert(spec.dependencies["nvim-lspconfig"] ~= nil, "LSP tools must declare its server config provider")
 assert(not plugins["nvim-lspconfig"].config, "Config provider must not enable servers separately")
 if vim.env.NVIM_TEST_LINK_FIRST == "1" then
-  local opener = require("utils.open")
+  local opener = require("file_tools")
   local original_open, fallback_calls = opener.open_at_cursor, 0
   opener.open_at_cursor = function()
     fallback_calls = fallback_calls + 1
