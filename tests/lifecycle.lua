@@ -25,6 +25,7 @@ for _, entry in ipairs({
   { "task-tools.nvim", "task_tools" },
   { "format-tools.nvim", "format_tools" },
   { "lint-tools.nvim", "lint_tools" },
+  { "keymap-tools.nvim", "keymap_tools" },
 }) do
   local id, module = entry[1], entry[2]
   if plugins.manager:has(id) then

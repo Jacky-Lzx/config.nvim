@@ -52,6 +52,8 @@ setup/disposal during installations or lock writes, and retains installed files,
 activation paths and live-session leases. TeX disposal releases its integration
 without cancelling server-owned builds or stopping native clients. A blocked
 modified focus buffer can make UI disposal return `false` without forced deletion.
+Keymap tools preserves caller-owned metadata/toggle registrations across runtime
+disposal; their owners release those handles when their own feature unloads.
 
 Resolving declarations must not bind keys or initialize plugins. `config(ctx)`
 receives plugin-owned copies of options and registers ordinary personal mappings
