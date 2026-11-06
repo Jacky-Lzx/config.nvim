@@ -139,6 +139,7 @@ def suites():
         lua(name)
         for name in [
             "mapping_contracts",
+            "lint_runtime",
             "treesitter_runtime",
             "project_plugins",
             "obsidian_local",

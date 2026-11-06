@@ -17,5 +17,4 @@ return {
     },
   },
   linters = { verilog = { "iverilog" }, systemverilog = { "iverilog" } },
-  plugins = { "plugins.third_party.nvim-lint.verilog" },
 }

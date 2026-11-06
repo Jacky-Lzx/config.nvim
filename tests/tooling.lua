@@ -64,37 +64,26 @@ for _, b in ipairs({ unrelated, huge, special, unloaded }) do
   assert(not vim.list_contains(selected, b), "exclude irrelevant, huge, special, and unloaded buffers")
 end
 
-local calls, available, typos = {}, true, false
-package.loaded.lint = {
-  linters = {},
-  try_lint = function(name)
-    calls[#calls + 1] = { name = name, buf = vim.api.nvim_get_current_buf() }
+local configured, typos = nil, false
+package.loaded.lint_tools = {
+  setup = function(opts)
+    configured = opts
   end,
 }
-local executable, clients = vim.fn.executable, vim.lsp.get_clients
-vim.fn.executable = function(name)
-  assert(name == "codespell")
-  return available and 1 or 0
-end
+local clients = vim.lsp.get_clients
 vim.lsp.get_clients = function(opts)
   assert(opts.name == "typos_lsp" and opts.bufnr == relevant)
   return typos and { {} } or {}
 end
-local lint = require("plugins.third_party.nvim-lint")[1]
+local lint = require("plugins.coding.lint-tools")[1]
 lint.config({ opts = lint.opts, dir = lint.dir })
-local function lint_buffer(b)
-  calls = {}
-  vim.api.nvim_exec_autocmds("BufWritePost", { buffer = b })
-  return #calls
-end
-assert(lint_buffer(relevant) == 2 and calls[2].name == "codespell" and calls[2].buf == relevant)
+assert(configured == lint.opts)
+assert(configured.extra_linters[1] == "codespell")
+assert(vim.deep_equal(configured.linters_by_ft, require("languages").current().linters))
+assert(configured.linters.codespell.condition({ bufnr = relevant }))
 typos = true
-assert(lint_buffer(relevant) == 1)
-typos, available = false, false
-assert(lint_buffer(relevant) == 1)
-assert(lint_buffer(huge) == 0 and lint_buffer(special) == 0)
-assert(lint_buffer(buffer("")) == 0)
-vim.fn.executable, vim.lsp.get_clients = executable, clients
+assert(not configured.linters.codespell.condition({ bufnr = relevant }))
+vim.lsp.get_clients = clients
 
 local function definition(language)
   return require("languages." .. language)

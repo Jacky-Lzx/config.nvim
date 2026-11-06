@@ -216,11 +216,12 @@ local function check()
   vim.api.nvim_win_close(0, true)
 
   -- Exercise actual plugin setup, not just spec merging.
-  for _, id in ipairs({ "conform.nvim", "nvim-lint", "completion-tools.nvim" }) do
+  for _, id in ipairs({ "conform.nvim", "lint-tools.nvim", "completion-tools.nvim" }) do
     require("plugin_tools").activate(id)
   end
   assert(vim.deep_equal(require("conform").formatters_by_ft, opts("conform.nvim").formatters_by_ft))
-  assert(vim.deep_equal(require("lint").linters_by_ft, opts("nvim-lint").linters_by_ft))
+  assert(vim.deep_equal(require("lint_tools").config().linters_by_ft, opts("lint-tools.nvim").linters_by_ft))
+  assert(not plugins["nvim-lint"] and not package.loaded.lint)
   -- The same physical format key must use Conform in attached and unattached buffers.
   local conform = require("conform")
   local original_format, original_lsp_format = conform.format, vim.lsp.buf.format

@@ -60,10 +60,6 @@
       "commit": "b4486a6e83c45db4712849c09a76ef95b41a2133",
       "source": "https://github.com/igorlfs/nvim-dap-view.git"
     },
-    "nvim-lint": {
-      "commit": "52107ce2076a27a285af781248e2c59bad817cd0",
-      "source": "https://github.com/mfussenegger/nvim-lint.git"
-    },
     "nvim-lspconfig": {
       "commit": "77b7432d4770d23b277d37923e5a08a442d8bb07",
       "source": "https://github.com/neovim/nvim-lspconfig.git"

@@ -69,7 +69,7 @@ and paths replaced by project overrides. Metadata resolution remains side-effect
 
 Third-party declarations are grouped by their current enabled state:
 
-- `lua/plugins/third_party/`: Conform, nvim-lint, WakaTime, and the nvim-lspconfig
+- `lua/plugins/third_party/`: Conform, WakaTime, and the nvim-lspconfig
   provider loaded as a child of lsp-tools.
 - `lua/languages/markdown/plugins.lua`: Obsidian, enabled inside a configured vault.
 - `lua/plugins/disabled/`: disabled third-party plugins and their language-specific
@@ -82,6 +82,14 @@ them. To restore one plugin, enable its declaration and required dependencies, m
 to `third_party/` or its language module, and update the module referencing it.
 There is no global third-party switch. Installed checkouts and lock entries are retained;
 theme-tools continues to manage its own theme/icon providers.
+
+External lint checks are owned by `lint-tools.nvim`, configured in
+`lua/plugins/coding/lint-tools.lua`. Language definitions supply filetype bindings;
+the plugin owns save triggers, process cancellation, parsers and diagnostic
+namespaces. Codespell runs when available unless `typos_lsp` is attached.
+`:LintToolsInfo` and `:checkhealth lint-tools` explain tool selection and failures.
+The new plugin currently uses a local checkout at `dev_plugin_root()/lint-tools.nvim`;
+create that checkout on another machine before enabling the configuration.
 
 Managed Git packages live under `stdpath("data")/plugin-tools` (override with
 `NVIM_PLUGIN_ROOT`); development checkouts remain external. To prepare a new

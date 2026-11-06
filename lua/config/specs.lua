@@ -24,7 +24,7 @@ local groups = {
     "coding.completion",
     "coding.lsp-tools",
     "third_party.conform",
-    "third_party.nvim-lint",
+    "coding.lint-tools",
   },
   git = { "git.git-tools" },
   integrations = { "integrations.debug-tools", "third_party.wakatime" },
