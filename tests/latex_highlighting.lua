@@ -136,7 +136,6 @@ local ok, err = pcall(function()
   flush_scheduled()
   verify()
   vim.cmd("syntax enable")
-  vim.bo.syntax = "tex"
   flush_scheduled()
   verify()
 

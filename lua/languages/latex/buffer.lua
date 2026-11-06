@@ -1,8 +1,6 @@
 local M = {}
 
 function M.setup(bufnr)
-  require("languages.latex.highlighting").attach(bufnr)
-
   local function map(key, action, description, modes)
     vim.keymap.set(modes or "n", key, action, { buffer = bufnr, remap = true, desc = description })
   end

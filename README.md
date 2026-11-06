@@ -360,9 +360,9 @@ The writing profile loads `tex-tools.nvim` for TeX buffers, using the developmen
 checkout when available and the pinned Git checkout otherwise. Tree-sitter owns
 highlighting and folding; tex-tools supplies conceal while preserving math command
 spelling (`math_symbols = false`). VimTeX and nvim-texlabconfig are no longer loaded.
+LaTeX uses the same Tree-sitter startup logic as other languages.
 theme-tools owns TeX semantic-token colors; attaching another TeX buffer does not
-rewrite global highlight groups. If the parser or queries cannot start, the buffer
-retains native syntax highlighting as a fallback.
+rewrite global highlight groups.
 The parser and Neovim queries both come from the pinned `Jacky-Lzx/tree-sitter-latex`
 fork in `lua/languages/latex/plugins.lua`. Its bundled queries own delimiter
 compilation and math/path highlight priorities; no runtime query rewriting or
@@ -544,7 +544,7 @@ version receipts and repair on explicit installation. The custom LaTeX grammar i
 in `languages/latex/plugins.lua`. Restart Neovim after parser installation to activate it.
 
 Toolchain activates immutable parser/query runtime paths at startup; highlighting is owned
-by `features/treesitter.lua` and the TeX buffer policy. Toolchain now also registers parser
+by `features/treesitter.lua`. Toolchain now also registers parser
 filetype aliases and query predicate compatibility. The nvim-treesitter main plugin is no
 longer declared or loaded; Markdown rendering depends on toolchain instead.
 The independently installed runtime covers all 45 previously installed parser languages,
