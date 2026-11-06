@@ -22,7 +22,20 @@ local function check()
     vim.cmd.edit(temp .. "/unrelated.lua")
     cold()
     vim.fn.writefile(source, temp .. "/first.md")
-    vim.cmd.edit(temp .. "/first.md")
+    if vim.env.NVIM_TEST_MARKDOWN_WORKSPACE == "1" then
+      -- Capture a workspace before the renderer has ever been mounted.
+      vim.cmd("noautocmd edit " .. vim.fn.fnameescape(temp .. "/first.md"))
+      vim.cmd("noautocmd setfiletype markdown")
+      local workspace = require("workspace_tools")
+      local entry, err = workspace.save({ name = "Markdown demand" })
+      assert(entry, err)
+      vim.cmd("bwipeout")
+      cold()
+      local restored, restore_err = workspace.restore(entry)
+      assert(restored, restore_err)
+    else
+      vim.cmd.edit(temp .. "/first.md")
+    end
   end
   local first = vim.api.nvim_get_current_buf()
   for _, id in ipairs({ "render-markdown.nvim", "peek.nvim" }) do
@@ -37,10 +50,28 @@ local function check()
   assert(not peek.is_open(), "Opening Markdown opened a Peek preview")
   assert(vim.fn.exists(":MarkdownPreview") == 2)
 
+  -- Let work queued by plugin scripts finish before checking the disabled view.
+  local settled = false
+  vim.schedule(function()
+    settled = true
+  end)
+  assert(
+    vim.wait(2000, function()
+      return settled
+    end),
+    "Markdown startup work did not settle"
+  )
+  local ns = require("render-markdown.core.ui").ns
+  assert(#vim.api.nvim_buf_get_extmarks(first, ns, 0, -1, {}) == 0, "Disabled renderer drew Markdown")
+  vim.cmd.redraw()
+  if #vim.api.nvim_list_uis() > 0 then
+    local position = vim.fn.screenpos(0, 5, 1)
+    assert(vim.fn.screenstring(position.row, position.col) == "-", "Disabled view hid the source bullet")
+  end
+
   vim.api.nvim_win_set_cursor(0, { 3, 0 })
   vim.api.nvim_feedkeys(vim.keycode("<Space>tm"), "xt", false)
   assert(state.enabled and state.get(first).enabled)
-  local ns = require("render-markdown.core.ui").ns
   assert(
     vim.wait(2000, function()
       return #vim.api.nvim_buf_get_extmarks(first, ns, 0, -1, {}) > 0

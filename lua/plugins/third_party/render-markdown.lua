@@ -1,3 +1,7 @@
+-- The native plugin script runs before the config callback on first FileType.
+-- Seed its initial setup so it cannot queue a render with enabled=true.
+vim.g.render_markdown_config = { enabled = false }
+
 return {
   {
     main = "render-markdown",
