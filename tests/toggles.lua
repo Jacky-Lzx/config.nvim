@@ -223,6 +223,7 @@ for _, setting in ipairs({ { "tgb", "line_blame" }, { "tgw", "word_diff" }, { "t
   toggle("<leader>" .. setting[1], label, false)
   assert(row(setting[1]).toggle.state == false)
 end
+assert(row("Dt", { buf = hidden }).toggle.state == nil, "Hidden buffers have no Git comparison tab scope")
 local ui = require("ui_tools")
 ui.setup({ indent = {}, focus = {} })
 assert(row("tG").toggle.state and not row("tD").toggle.state)

@@ -52,6 +52,9 @@ return {
       do
         local function state(name)
           return function(ctx)
+            if name == "compare" and not ctx.win then
+              return nil
+            end
             local git = package.loaded.git_tools
             if git then
               return git.get_state(ctx)[name]

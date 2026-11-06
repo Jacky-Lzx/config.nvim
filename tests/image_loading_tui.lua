@@ -47,13 +47,10 @@ end
 local function check()
   assert(vim.g.config_ready, "This test requires the real terminal startup lifecycle")
   cold()
-  assert(next(plugins["tex-tools.nvim"].dependencies) == nil)
-  for name in pairs(plugins["lsp-tools.nvim"].dependencies) do
-    assert(
-      name ~= "image-tools.nvim" and name ~= "git-tools.nvim" and name ~= "selection-tools.nvim",
-      "LSP setup must keep image, diff and picker backends deferred"
-    )
-  end
+  assert(plugins["tex-tools.nvim"].dependencies["image-tools.nvim"] == false)
+  assert(plugins["lsp-tools.nvim"].dependencies["git-tools.nvim"] == false)
+  assert(plugins["lsp-tools.nvim"].dependencies["selection-tools.nvim"] == false)
+  -- Availability metadata must not initialize the providers; cold() checks runtime state.
   if case == "image_plain" then
     for _, ft in ipairs({ "markdown", "tex", "plaintex", "typst", "html" }) do
       document(ft)
