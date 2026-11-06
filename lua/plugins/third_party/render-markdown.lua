@@ -2,7 +2,9 @@ return {
   {
     main = "render-markdown",
     id = "render-markdown.nvim",
-    enabled = false,
+    enabled = true,
+    mount = "on-demand",
+    ft = { "markdown" },
     source = "MeanderingProgrammer/render-markdown.nvim",
     dependencies = {
       "toolchain-tools.nvim",

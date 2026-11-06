@@ -3,7 +3,9 @@ return {
     main = "peek",
     id = "peek.nvim",
     source = "toppair/peek.nvim",
-    enabled = false, -- Requires deno when enabled.
+    enabled = true,
+    mount = "on-demand",
+    ft = { "markdown" }, -- Requires deno and the configured build task.
     build = { "deno", "task", "--quiet", "build:fast" },
     opts = {},
     config = function(ctx)

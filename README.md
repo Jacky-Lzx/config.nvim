@@ -83,11 +83,16 @@ and paths replaced by project overrides. Metadata resolution remains side-effect
 
 Third-party declarations are grouped by their current enabled state:
 
-- `lua/plugins/third_party/`: WakaTime and the nvim-lspconfig
+- `lua/plugins/third_party/`: WakaTime, render-markdown, Peek and the nvim-lspconfig
   provider loaded as a child of lsp-tools.
-- `lua/languages/markdown/plugins.lua`: Obsidian, enabled inside a configured vault.
+- `lua/languages/markdown/plugins.lua`: selects Markdown rendering/preview declarations
+  and Obsidian, which is enabled inside a configured vault.
 - `lua/plugins/disabled/`: disabled third-party plugins and their language-specific
   options. CodeSnap is retained without a manifest entry.
+
+render-markdown and Peek mount and initialize only on the first Markdown buffer.
+Rendering remains off until `<leader>tm`; `:MarkdownPreview` opens Peek after
+initialization. Peek requires Deno and its configured build task.
 
 Local plugins keep their workflow directories. Language and feature selections
 still control which declarations enter the manifest. Each declaration's `enabled`

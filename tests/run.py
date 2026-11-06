@@ -137,6 +137,9 @@ def suites():
         startup("demand_startup"),
         startup("demand_startup", {"NVIM_TEST_SCENARIO": "python", "NVIM_DEMAND_COMMANDS": "1"}),
         tui("demand"),
+        startup("markdown_demand"),
+        tui("markdown_demand"),
+        tui("markdown_direct"),
     ]
     integration += [
         lua(name)
