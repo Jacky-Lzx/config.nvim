@@ -68,12 +68,6 @@ local function check()
   assert(not plugins["nvim-treesitter-textobjects"])
   assert(not package.loaded["mini.ai"])
   assert(vim.treesitter.query.get("lua", "textobjects"))
-  if plugins["codecompanion.nvim"] then
-    for _, id in ipairs({ "codecompanion.nvim" }) do
-      require("plugin_tools").activate(id)
-    end
-    assert(require("config.plugins").initialized("codecompanion.nvim") and not plugins["nvim-treesitter"])
-  end
   assert(not package.loaded["nvim-treesitter"])
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
@@ -87,6 +81,4 @@ if not ok then
   io.stderr:write(err .. "\n")
   error(err, 0)
 end
-io.stdout:write(
-  "Independent Tree-sitter runtime: 45 libraries, aliases, predicates, textobjects and CodeCompanion passed\n"
-)
+io.stdout:write("Independent Tree-sitter runtime: 45 libraries, aliases, predicates, textobjects passed\n")

@@ -1,7 +1,7 @@
 -- Invoked by tests/tui.py after the full real configuration has started.
 local tools = require("notification-tools")
 local result = assert(vim.env.NVIM_STARTUP_RESULT)
-local original_win, original_buf, notice, before, original_theme
+local original_win, original_buf, notice, task_handle, before, original_theme
 local buffer_done, buffer_value
 local failed = false
 local function finish(ok, message)
@@ -79,10 +79,11 @@ vim.api.nvim_create_autocmd("User", {
       vim.api.nvim_win_set_buf(original_win, original_buf)
       vim.api.nvim_buf_set_lines(original_buf, 0, -1, false, { "" })
       notice = vim.notify("中文通知", "info", { title = "Build", timeout = 0 })
-      require("integrations.codecompanion_notifications").setup()
-      vim.api.nvim_exec_autocmds("User", {
-        pattern = "CodeCompanionRequestStarted",
-        data = { id = "tui", adapter = { formatted_name = "External API" } },
+      task_handle = tools.progress({
+        id = "notification-tui",
+        title = "Background task",
+        source = "External API",
+        message = "In progress…",
       })
       -- Native LSP notices use vim.notify; native warning messages use the message handoff.
       local get_client = vim.lsp.get_client_by_id
@@ -98,7 +99,7 @@ vim.api.nvim_create_autocmd("User", {
       assert(vim.tbl_count(floats()) == 4, "Expected three notifications and a task panel")
       assert(vim.api.nvim_get_current_win() == original_win)
       local text = capture()
-      assert(text:find("中文通知", 1, true) and text:find("Requesting assistance", 1, true))
+      assert(text:find("中文通知", 1, true) and text:find("Background task", 1, true))
       assert(text:find("Native LSP warning", 1, true), "The native LSP handler did not route the message")
       assert(text:find("Native warning route", 1, true), "Native messages did not route the warning message")
       before = floats()
@@ -127,10 +128,7 @@ vim.api.nvim_create_autocmd("User", {
         assert(after[win] == buf, "An existing float was recreated while typing: " .. vim.inspect(tools.history()))
       end
       vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "n", false)
-      vim.api.nvim_exec_autocmds("User", {
-        pattern = "CodeCompanionRequestFinished",
-        data = { id = "tui", status = "success" },
-      })
+      task_handle:finish(nil, "success")
       assert(tools.tasks()[1].status == "success")
     end)
     later(1200, function()
@@ -139,7 +137,7 @@ vim.api.nvim_create_autocmd("User", {
       assert(task.done and task.status == "success" and task.message == "Completed")
       -- Successful tasks keep their title and compact result row; the default
       -- completion message is intentionally omitted from the rendered panel.
-      assert(text:find("Requesting assistance", 1, true), "Completed task title disappeared")
+      assert(text:find("Background task", 1, true), "Completed task title disappeared")
       assert(not text:find("In progress…", 1, true), "Completed task still shows its running message")
       assert(not text:find("Completed", 1, true), "Default completion text should stay compact")
       assert(vim.g.colors_name == original_theme, "Notification UI changed the selected theme")

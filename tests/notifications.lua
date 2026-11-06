@@ -63,29 +63,6 @@ assert(tools.notify(success, "error", { source = "neovim" }), "Never filter an e
 assert(tools.notify('"main.tex" 370L, 23103B', "info", { source = "neovim" }), "Keep file-read messages")
 assert(tools.notify(success, "info", { source = "compiler" }), "Only filter native save status")
 
-local hooks = require("integrations.codecompanion_notifications")
-hooks.setup()
-hooks.setup()
-assert(#vim.api.nvim_get_autocmds({ group = "CodeCompanionNotificationHooks" }) == 2)
-local function event(kind, data)
-  vim.api.nvim_exec_autocmds("User", { pattern = "CodeCompanionRequest" .. kind, data = data })
-end
-event("Finished", { id = "unknown", status = "error" })
-event("Started", {})
-event("Started", { id = 1, adapter = { formatted_name = "Claude", model = "test" } })
-event("Started", { id = "1" })
-assert(#tools.tasks() == 2, "Concurrent IDs must remain independent")
-event("Finished", { id = 1, status = "error" })
-event("Finished", { id = "1", status = "success" })
-local tasks = tools.tasks()
-assert(tasks[1].status == "success" and tasks[2].status == "error")
-assert(tasks[2].source == "Claude (test)")
-event("Started", { id = 2, adapter = "missing" })
-event("Finished", { id = 2, status = "cancelled" })
-assert(tools.tasks()[1].status == "cancelled")
-event("Started", { id = 3 })
-hooks.setup()
-assert(tools.tasks()[1].status == "cancelled", "Repeated setup must finish orphaned tasks")
 tools.dismiss()
 tools.clear_tasks()
 local function feed(keys)
@@ -111,7 +88,5 @@ assert(vim.wait(500, function()
   end
   return true
 end, 10))
-io.stdout:write(
-  "notifications: startup, ownership, native messages, input-tools, CodeCompanion API adapter and mappings passed\n"
-)
+io.stdout:write("notifications: startup, ownership, native messages, input-tools and mappings passed\n")
 vim.cmd("qa!")

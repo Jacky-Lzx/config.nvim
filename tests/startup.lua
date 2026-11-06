@@ -171,14 +171,6 @@ local function check()
   }) do
     assert(vim.fn.maparg(key, "n", false, true).callback, "Missing buffer mapping: " .. key)
   end
-  assert(not plugins["codecompanion.nvim"] and not package.loaded.codecompanion)
-  assert(not plugins["plenary.nvim"], "Disabled CodeCompanion retained its exclusive dependency")
-  assert(vim.fn.exists(":CodeCompanionChat") == 0 and vim.fn.exists(":CodeCompanion") == 0)
-  for _, key in ipairs({ "cca", "cci", "ccc", "ccp", "cce" }) do
-    for _, mode in ipairs({ "n", "x" }) do
-      assert(vim.fn.maparg("<leader>" .. key, mode) == "", "Disabled CodeCompanion mapping remains: " .. key)
-    end
-  end
   assert((plugins["tex-tools.nvim"] ~= nil) == require("languages").is_enabled("latex"))
   assert(not plugins["lazydev.nvim"] and not plugins["vim-startuptime"] and not plugins["vim-suda"])
   assert((opts("lsp-tools.nvim").lua ~= nil) == require("languages").is_enabled("lua"))

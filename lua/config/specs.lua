@@ -14,7 +14,7 @@ local groups = {
   coding = { "toolchain", "snippet-tools", "completion", "lsp-tools", "conform", "nvim-lint" },
   git = { "git-tools" },
   integrations = { "debug-tools", "wakatime" },
-  ai = { "copilot", "codecompanion" },
+  ai = { "copilot" },
   debugging = { "nvim-dap" },
   tasks = { "task-tools" },
   sessions = { "workspace-tools" },
@@ -67,9 +67,6 @@ function M.build(selection)
     end
   end
   add(context.languages.plugins)
-  if owners["codecompanion.nvim"] then
-    add({ { id = "plenary.nvim", source = "nvim-lua/plenary.nvim", start = false } })
-  end
   add(M.project())
   local selected, obsidian_options = {}, {}
   for _, spec in ipairs(specs) do

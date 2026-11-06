@@ -28,7 +28,6 @@ LuaSnip 依赖、旧定义与引擎切换已移除。
 暂未适配的来源：
 
 - lazydev.integrations.blink：LazyDev 专用模块/路径候选；独立 LazyDev 已移除，LuaLS 类型库按需加载由 lsp-tools 的 Lua 模块提供。
-- CodeCompanion 的 Blink 来源：聊天 buffer 中专用候选；聊天、请求通知不受影响。
 - input-tools.blink / input_tools 来源：输入框自动候选、声明来源自动筛选；
   保留原生 completefunc 的显式补全，Enter 仍先接受候选、再确认输入。
 

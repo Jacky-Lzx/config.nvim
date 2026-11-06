@@ -42,7 +42,6 @@ return {
         groups = {
           { prefix = "<leader>tg", label = "[Git] Toggle" },
           { prefix = "<leader>gg", label = "[Git]" },
-          { prefix = "<leader>cc", label = "[CodeCompanion]" },
           { prefix = "<leader>D", label = "[Dap]" },
           { prefix = "<leader>w", label = "[Workspace]" },
           { prefix = "<leader>s", label = "[Selection]" },

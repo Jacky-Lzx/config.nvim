@@ -487,7 +487,7 @@ in `languages/latex/plugins.lua`. Restart Neovim after parser installation to ac
 Toolchain activates immutable parser/query runtime paths at startup; highlighting is owned
 by `features/treesitter.lua` and the TeX buffer policy. Toolchain now also registers parser
 filetype aliases and query predicate compatibility. The nvim-treesitter main plugin is no
-longer declared or loaded; Markdown rendering and CodeCompanion depend on toolchain instead.
+longer declared or loaded; Markdown rendering depends on toolchain instead.
 The independently installed runtime covers all 45 previously installed parser languages,
 including Vimdoc, XML, TSX and Svelte. `editing-tools.nvim` owns text objects,
 editing operators, alignment and bundled textobject queries.
@@ -781,13 +781,7 @@ notification history. `:NotificationsPick` uses selection-tools to search comple
 messages and details; Enter opens the selected record for reading. Native LSP
 show-message notices still use `vim.notify`.
 
-CodeCompanion is currently disabled in `lua/plugins/ai/codecompanion.lua`; its
-commands, mappings and exclusive Plenary dependency are omitted. Independent
 Copilot completion remains controlled by the `ai` feature.
-
-CodeCompanion hooks live
-in `integrations.codecompanion_notifications` and create/finish tasks through the
-public API; notification-tools itself has no CodeCompanion integration.
 
 Third-party producers can call `require("notification-tools").progress()` and then
 use the returned handle's `update`, `finish`, and `cancel` methods. The caller owns

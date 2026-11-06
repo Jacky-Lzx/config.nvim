@@ -15,8 +15,6 @@ local function check()
     "obsidian.nvim",
     "typst-preview.nvim",
     "texpresso.vim",
-    "codecompanion.nvim",
-    "plenary.nvim",
   }
   for _, id in ipairs(disabled) do
     assert(not nodes[id], "Standalone third-party plugin is still active: " .. id)
