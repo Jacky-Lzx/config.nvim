@@ -14,7 +14,21 @@ function M.setup(bufnr)
     groups = { { prefix = "<localleader>l", label = "LaTeX" } },
   })
 
+  map("<leader>lb", "<Cmd>TexToolsBuild<CR>", "Build LaTeX document")
   map("<localleader>lv", "<Cmd>TexToolsForwardSearch<CR>", "PDF forward search")
+  require("keymap_tools").register("latex.build-on-save", {
+    buf = bufnr,
+    toggles = {
+      {
+        keys = "<localleader>la",
+        name = "Build on save",
+        get = function(ctx)
+          local tex = package.loaded["tex-tools"]
+          return tex and tex.build_on_save_enabled(ctx.buf)
+        end,
+      },
+    },
+  })
   -- The plugin publishes Plug endpoints; this configuration owns physical keys.
   for key, action in pairs({
     ["<localleader>lt"] = "Outline",

@@ -130,7 +130,8 @@ supplies preferences and data callbacks. keymap-tools inspects native mappings,
 provides hints and the executable picker, and accepts metadata from feature owners.
 Read-only status queries must not activate providers.
 
-tex-tools owns TeX editing, builds, forward/inverse search, conceal and preview
+TeX buffer mappings call tex-tools commands; LSP attachment does not redefine build,
+log, cancellation or viewer actions. tex-tools owns TeX editing, builds, forward/inverse search, conceal and preview
 selection. Formula compilation loads image rendering only when needed. The
 configuration dispatches TeX preview to its unified API and other files to image-tools.
 The selected parser and Neovim queries come from the pinned tree-sitter-latex fork.

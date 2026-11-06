@@ -32,30 +32,23 @@ local function verify()
 end
 require("languages.latex.buffer").setup(bufnr)
 verify()
-local client = { id = 123, settings = { latex = { build = { onSave = true } } } }
-local accepted = true
-function client:notify(method, params)
-  assert(method == "workspace/didChangeConfiguration")
-  assert(type(params.settings.latex.build.onSave) == "boolean")
-  return accepted
-end
-local get_client = vim.lsp.get_client_by_id
-vim.lsp.get_client_by_id = function(id)
-  return id == client.id and client or nil
-end
-require("languages.latex.lsp").attach(client, bufnr)
-assert(registration.buf == bufnr and registration.priority == 10)
+local before = vim.fn.maparg(" ll", "n", false, true)
+require("languages.latex.lsp").attach({}, bufnr)
+assert(vim.deep_equal(before, vim.fn.maparg(" ll", "n", false, true)), "LSP attachment replaced the build mapping")
+assert(vim.fn.maparg("<leader>lb", "n") == "<Cmd>TexToolsBuild<CR>")
+assert(vim.fn.maparg(" la", "n") == "<Cmd>TexToolsBuildOnSave toggle<CR>")
+assert(registration.buf == bufnr)
 local get = registration.toggles[1].get
-assert(get())
-local toggle = vim.fn.maparg(" la", "n", false, true).callback
-toggle()
-assert(not get(), "State must follow the LSP owner's accepted settings")
-accepted = false
-toggle()
-assert(not get(), "Rejected settings must not change the registered state")
-vim.lsp.get_client_by_id = function() end
-assert(get() == nil, "A detached client must have unknown state")
-vim.lsp.get_client_by_id = get_client
+assert(get({ buf = bufnr }) == nil, "Cold state inspection must not load tex-tools")
+package.loaded["tex-tools"] = {
+  build_on_save_enabled = function(buf)
+    return buf == bufnr
+  end,
+}
+assert(get({ buf = bufnr }) == true)
+package.loaded["tex-tools"] = nil
 verify()
 assert(called == 4)
-print("LaTeX forward search passed: focus preference, native mappings and owner build-on-save state")
+print(
+  "LaTeX forward search passed: focus preference, native mappings and plugin-owned builds and cold state inspection"
+)

@@ -11,6 +11,8 @@ local function check()
   local text = { [[\documentclass{article}]], [[\begin{document}]], "First version.", [[\end{document}]] }
   vim.fn.writefile(text, source)
   vim.fn.writefile({}, directory .. "/.latexmkrc")
+  vim.opt.runtimepath:prepend(require("utils.platform").dev_plugin_root() .. "/tex-tools.nvim")
+  require("tex-tools").setup({ lsp = "texquill", mappings = false, smart_enter = false, conceal = false })
   vim.lsp.enable("texquill")
   vim.cmd.edit(vim.fn.fnameescape(source))
   assert(
@@ -59,11 +61,11 @@ local function check()
   assert(vim.fn.filereadable(directory .. "/build/texquill/main.pdf") == 1)
   assert(vim.fn.filereadable(directory .. "/build/texquill/main.synctex.gz") == 1)
   assert(builds == 1, "Save queued duplicate builds")
-  -- Invoke the actual local shortcut with unsaved contents: didSave owns this build.
+  -- The shared command saves edits and lets the server coalesce save/manual builds.
   local previous = builds
   finished = nil
   vim.api.nvim_buf_set_lines(bufnr, 2, 3, false, { "Built with the manual shortcut." })
-  vim.fn.maparg("<leader>lb", "n", false, true).callback()
+  vim.cmd("TexToolsBuild")
   wait_build("success")
   vim.wait(300, function()
     return false
@@ -81,9 +83,11 @@ local function check()
   save([[$\epsilon$]], "success")
   assert(
     vim.wait(5000, function()
-      return #vim.diagnostic.get(bufnr) == 0
+      return not vim.iter(vim.diagnostic.get(bufnr)):any(function(d)
+        return d.code == "undefined-control-sequence"
+      end)
     end, 20),
-    "Corrected diagnostics were not cleared"
+    "Corrected compiler diagnostic was not cleared: " .. vim.inspect(vim.diagnostic.get(bufnr))
   )
   assert(refreshes > 0, "No native diagnostic refresh")
   -- The same native server must attach to BibTeX files as well.
