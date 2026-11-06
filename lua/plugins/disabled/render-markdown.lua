@@ -6,7 +6,6 @@ return {
     source = "MeanderingProgrammer/render-markdown.nvim",
     dependencies = {
       "toolchain-tools.nvim",
-      "nvim-web-devicons", -- if you prefer nvim-web-devicons
     },
     opts = {
       file_types = { "markdown" },

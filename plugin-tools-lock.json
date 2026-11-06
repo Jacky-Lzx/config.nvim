@@ -24,10 +24,6 @@
       "commit": "77b7432d4770d23b277d37923e5a08a442d8bb07",
       "source": "https://github.com/neovim/nvim-lspconfig.git"
     },
-    "nvim-web-devicons": {
-      "commit": "ec309a0eaff6ea967e58c275996155ab5c16938d",
-      "source": "https://github.com/nvim-tree/nvim-web-devicons.git"
-    },
     "obsidian.nvim": {
       "commit": "1212014bb22a1f44a655e8e706659892b8e43e59",
       "source": "https://github.com/obsidian-nvim/obsidian.nvim.git"
@@ -39,10 +35,6 @@
     "render-markdown.nvim": {
       "commit": "8e8795368391036643b622875a6da6a51bcd33f4",
       "source": "https://github.com/MeanderingProgrammer/render-markdown.nvim.git"
-    },
-    "typst-preview.nvim": {
-      "commit": "1c2e19486397be1c580b560fc50ee36abe329c46",
-      "source": "https://github.com/chomosuke/typst-preview.nvim.git"
     },
     "vim-wakatime": {
       "commit": "9f8a1d3b9c6f3a948988a0896b3227c1e1f74a58",

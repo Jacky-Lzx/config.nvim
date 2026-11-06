@@ -14,13 +14,13 @@ assert(not disabled.nodes["conform.nvim"], "Disabling one plugin kept option-onl
 assert(disabled.nodes["nvim-lint"] and disabled.nodes["vim-wakatime"])
 assert(disabled.nodes["lsp-tools.nvim"] and disabled.nodes["theme-tools.nvim"])
 formatter.enabled = true
-local icons = require("plugins.disabled.nvim-web-devicons")[1]
-assert(icons.enabled == false)
-icons.enabled = true
+local crates = require("plugins.disabled.crates")[1]
+assert(crates.enabled == false)
+crates.enabled = true
 local restored = graph()
-assert(restored.nodes["nvim-web-devicons"], "A declaration's enabled flag did not enable that plugin")
+assert(restored.nodes["crates.nvim"], "A declaration's enabled flag did not enable that plugin")
 assert(restored.nodes["conform.nvim"] and not restored.nodes["render-markdown.nvim"])
 assert(restored.nodes["nvim-lspconfig"].parents["lsp-tools.nvim"])
-icons.enabled = false
-assert(not graph().nodes["nvim-web-devicons"])
+crates.enabled = false
+assert(not graph().nodes["crates.nvim"])
 print("Per-plugin flags independently disable enabled plugins and restore disabled declarations")

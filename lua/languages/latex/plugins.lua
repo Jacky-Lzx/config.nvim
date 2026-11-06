@@ -56,5 +56,4 @@ return {
       },
     },
   },
-  "plugins.disabled.texpresso",
 }

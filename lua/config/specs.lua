@@ -8,7 +8,7 @@ local function annotate(spec, origin)
 end
 -- Explicit module lists keep startup deterministic and avoid directory scans.
 local groups = {
-  ui = { "ui.theme-tools", "ui.notification-tools", "ui.input-tools", "disabled.nvim-web-devicons", "ui.ui-tools" },
+  ui = { "ui.theme-tools", "ui.notification-tools", "ui.input-tools", "ui.ui-tools" },
   navigation = {
     "navigation.keymap-tools",
     "navigation.selection-tools",

@@ -6,14 +6,11 @@ end
 _G.full_plugins_fixture = true
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 local modules = {
-  ["plugins.disabled.nvim-web-devicons"] = { "nvim-web-devicons" },
   ["plugins.disabled.nvim-dap"] = { "nvim-dap", "nvim-dap-view" },
   ["plugins.disabled.crates"] = { "crates.nvim" },
   ["plugins.disabled.render-markdown"] = { "render-markdown.nvim" },
   ["plugins.disabled.peek"] = { "peek.nvim" },
   ["plugins.disabled.obsidian"] = { "obsidian.nvim" },
-  ["plugins.disabled.typst-preview"] = { "typst-preview.nvim" },
-  ["plugins.disabled.texpresso"] = { "texpresso.vim" },
 }
 for name, ids in pairs(modules) do
   local module_name, enabled_ids = name, ids
@@ -21,7 +18,7 @@ for name, ids in pairs(modules) do
     local value = assert(loadfile(root .. "/lua/" .. module_name:gsub("%.", "/") .. ".lua"))()
     for _, spec in ipairs(value.plugins or value) do
       if vim.list_contains(enabled_ids, spec.id) then
-        local executable = ({ ["peek.nvim"] = "deno", ["texpresso.vim"] = "texpresso" })[spec.id]
+        local executable = spec.id == "peek.nvim" and "deno" or nil
         spec.enabled = not executable or require("utils.platform").executable(executable) ~= nil
       end
     end

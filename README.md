@@ -33,7 +33,7 @@ Third-party declarations are grouped by their current enabled state:
 - `lua/plugins/third_party/`: Conform, nvim-lint, WakaTime, and the nvim-lspconfig
   provider loaded as a child of lsp-tools.
 - `lua/plugins/disabled/`: disabled third-party plugins and their language-specific
-  options. Bullets, CodeSnap and SnipRun are retained without a manifest entry.
+  options. CodeSnap is retained without a manifest entry.
 
 Local plugins keep their workflow directories. Language and feature selections
 still control which declarations enter the manifest. Each declaration's `enabled`
@@ -229,9 +229,8 @@ available only when a client advertises the corresponding methods.
 With `features.tasks = true`, the local `task-tools.nvim` checkout at
 `NVIM_DEV_PLUGIN_ROOT/task-tools.nvim` (default `~/Documents/Github/nvim_plugins`)
 owns builds, project task discovery, save watchers and interactive terminals.
-It replaces compile.nvim, Overseer and Snacks terminal. SnipRun remains available
-for snippet execution. With the tasks feature disabled, task commands and the
-normal/terminal `<A-i>` mapping are not registered.
+It replaces compile.nvim, Overseer and Snacks terminal. With the tasks feature
+disabled, task commands and the normal/terminal `<A-i>` mapping are not registered.
 
 - `<leader>mc`: enter a manual build command (initially `make`).
 - `<leader>mr/ms/mo`: rerun/stop/show that manual build, even after other tasks or terminals run.

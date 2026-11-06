@@ -3,15 +3,12 @@ local function check()
   local plugins = require("config.plugins")
   local manager, nodes = plugins.manager, plugins.nodes()
   local disabled = {
-    "nvim-web-devicons",
     "nvim-dap",
     "nvim-dap-view",
     "crates.nvim",
     "peek.nvim",
     "render-markdown.nvim",
     "obsidian.nvim",
-    "typst-preview.nvim",
-    "texpresso.vim",
   }
   for _, id in ipairs(disabled) do
     assert(not nodes[id], "Standalone third-party plugin is still active: " .. id)
@@ -31,7 +28,7 @@ local function check()
   }) do
     assert(nodes[id], "Owned functionality disappeared: " .. id)
   end
-  for _, command in ipairs({ "MarkdownPreview", "TypstPreview", "Obsidian", "DapContinue" }) do
+  for _, command in ipairs({ "MarkdownPreview", "Obsidian", "DapContinue" }) do
     assert(vim.fn.exists(":" .. command) == 0, "Disabled command survived: " .. command)
   end
   for _, key in ipairs({ "<leader>tm", "<F5>", "<leader>Du", "<leader>OO" }) do
@@ -53,7 +50,7 @@ local function check()
     vim.api.nvim_buf_set_lines(0, 0, -1, false, { "unchanged text" })
     assert(package.loaded.conform and package.loaded.lint and not package.loaded.dap)
     assert(not package.loaded.crates and not package.loaded.peek and not package.loaded["render-markdown"])
-    assert(not package.loaded["typst-preview"] and not package.loaded.obsidian)
+    assert(not package.loaded.obsidian)
   end
   assert(vim.lsp.config.lua_ls and vim.lsp.config.basedpyright, "Preserved provider no longer supplies configs")
   assert(require("theme_tools").current())

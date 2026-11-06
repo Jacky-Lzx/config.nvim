@@ -13,5 +13,4 @@ return {
       prepend_args = { "-l", "120", "--wrap-text" },
     },
   },
-  plugins = { "plugins.disabled.typst-preview" },
 }
