@@ -91,18 +91,45 @@ local function check()
     local displayed = automatic_request()
     document("markdown", "$x$")
     assert(displayed():find("math:", 1, true), "Markdown formula preview was lost")
-  elseif case == "image_tex_reference" or case == "image_typst_reference" then
-    local ft = case == "image_tex_reference" and "tex" or "typst"
-    document(ft)
+  elseif case == "image_tex_reference" then
+    document("tex")
+    api.nvim_buf_set_name(0, temp .. "/image-document.tex")
+    local tex = require("tex-tools")
+    api.nvim_buf_set_lines(0, 0, -1, false, { "\\includegraphics{missing.png}" })
+    local ok, err = tex.preview()
+    assert(not ok and err:find("Image not found", 1, true), tostring(err))
     cold()
-    api.nvim_buf_set_lines(0, 0, -1, false, {
-      ft == "tex" and "\\includegraphics[width=\\linewidth]{missing.png}" or '#image("missing.png")',
-    })
+    local request
+    require("image_tools.runtime").float = function(_, opts)
+      request = opts
+      return {
+        close = function() end,
+        status = function()
+          return { stage = "ready" }
+        end,
+      }
+    end
+    local path = pixel()
+    api.nvim_buf_set_lines(0, 0, -1, false, { "\\includegraphics{" .. path .. "}" })
+    api.nvim_exec_autocmds("TextChanged", { buffer = 0 })
+    assert(
+      vim.wait(2000, function()
+        return request ~= nil
+      end),
+      "Valid TeX image did not reach the display backend"
+    )
+    assert(request.path == path and request.is_valid(), "TeX preview selected the wrong image")
+    assert(tex.formula_info().kind == "image" and active())
+    tex.close_formula_preview()
+  elseif case == "image_typst_reference" then
+    document("typst")
+    cold()
+    api.nvim_buf_set_lines(0, 0, -1, false, { '#image("missing.png")' })
     assert(
       vim.wait(1000, function()
         return active()
       end),
-      "An edited " .. ft .. " image reference did not initialize automatic preview"
+      "An edited Typst image reference did not initialize automatic preview"
     )
   elseif case == "image_disabled" then
     document("tex")
