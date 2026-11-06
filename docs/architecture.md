@@ -32,6 +32,27 @@ and defer expensive features internally. Completion, image and snippet frontends
 register commands/events without immediately loading their full implementations.
 There are no manager event/key/command proxies or require interception.
 
+Feature plugin `setup(nil)`/`setup({})` starts from fresh defaults. Options are
+copied, dictionaries merge recursively, and lists replace defaults (including an
+empty list). Existing validation runs before replacing live resources; repeating
+setup must not accumulate commands, callbacks, timers or observers. LSP tools
+exposes `update(opts)` for explicit partial feature changes. Native server
+definitions retain Neovim's overlay semantics and independent client ownership.
+
+Where available, `disable()` is temporary and retains configuration;
+`dispose()` releases owned resources and forgets feature configuration. Disposal
+is safe when cold or repeated. Cleanup restores only registrations/options still
+owned by that instance, preserving later user replacements, personal bindings
+and buffer contents. Queued work must not revive a disposed instance. Explicit
+subsequent use can initialize resources again.
+
+Resource boundaries remain explicit: plugin-tools accepts singleton setup once
+because native plugin scripts cannot be generically unloaded. Toolchain refuses
+setup/disposal during installations or lock writes, and retains installed files,
+activation paths and live-session leases. TeX disposal releases its integration
+without cancelling server-owned builds or stopping native clients. A blocked
+modified focus buffer can make UI disposal return `false` without forced deletion.
+
 Resolving declarations must not bind keys or initialize plugins. `config(ctx)`
 receives plugin-owned copies of options and registers ordinary personal mappings
 through `config.bindings.set()`. Replacing registrations clears old owned mappings
@@ -131,6 +152,9 @@ Each check has isolated state and bounded lifetime; independent failures are
 aggregated, with logs and a JSON summary retained. `--filter` selects a case and
 `--keep` retains evidence even on success. Stable action IDs let workflow inputs
 follow declared keys while expected results and ownership checks stay independent.
+The configured lifecycle check verifies that invalid setup, repeated disposal
+and reinitialization preserve personal bindings. Individual plugin repositories
+exercise their setup/disposal contracts alongside their own headless and PTY tests.
 `python3 tests/remote_install.py` explicitly installs pinned GitHub versions into
 isolated directories and starts editors with development paths hidden. It checks
 minimal/default startup and first-use public APIs; it requires network access.

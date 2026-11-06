@@ -145,6 +145,7 @@ def suites():
         lua(name)
         for name in [
             "mapping_contracts",
+            "lifecycle",
             "lint_runtime",
             "format_runtime",
             "treesitter_runtime",
