@@ -597,11 +597,17 @@ explicit `:PluginTools install` installs the GitHub version pinned in `plugin-to
 ## Image insertion
 
 Image tools load on image commands, image mappings and picker preview/API calls.
-For automatic preview, a lightweight configuration adapter watches Markdown,
-LaTeX, Typst and HTML for image-reference candidates, including later edits.
-Markdown formula candidates also activate its existing math-preview backend.
-Plain documents and disabled automatic preview leave the plugin unloaded;
-image-tools still owns syntax exclusions, reference parsing and rendering.
+For automatic preview, image-tools' lightweight bootstrap watches document
+references and literal local image paths in filetypes without an adapter,
+including later edits and cursor movement. Quoted paths can contain spaces;
+relative paths resolve against the document directory. Set `path_preview = false`
+in image-tools options to disable the generic fallback. Existing document adapters
+retain their syntax exclusions. Plain documents without candidates and disabled
+automatic preview leave the display backend unloaded.
+
+tex-tools owns LaTeX image/formula selection, graphicspath resolution and formula
+compilation, calling image-tools only for display. `<leader>si` uses its unified
+`preview()` API in LaTeX buffers; other filetypes use image-tools lookup.
 Formula previews request the image backend only after compilation succeeds.
 The shared preview/toggle mappings do not initialize the image backend merely
 to inspect a formula or turn automatic preview off. A `BufReadCmd` trigger

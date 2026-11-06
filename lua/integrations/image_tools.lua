@@ -7,8 +7,8 @@ end
 
 function M.preview()
   local tools = tex()
-  if tools and tools.formula_at() then
-    return tools.preview_formula()
+  if tools then
+    return tools.preview()
   end
   return require("image_tools.bootstrap").ensure().hover()
 end
