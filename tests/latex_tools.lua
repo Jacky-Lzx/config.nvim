@@ -24,6 +24,16 @@ local function check()
   end
   buffer("$\\frac{x}{y}$")
   assert(require("config.plugins").initialized("tex-tools.nvim"))
+  local tex = require("tex-tools")
+  local original_preview, preview_calls = tex.preview, 0
+  assert(type(original_preview) == "function", "Configured tex-tools must provide the unified preview API")
+  tex.preview = function()
+    preview_calls = preview_calls + 1
+    return true
+  end
+  assert(require("integrations.image_tools").preview() == true)
+  assert(preview_calls == 1, "Personal TeX preview must reach the configured tex-tools API")
+  tex.preview = original_preview
   assert(vim.api.nvim_buf_get_commands(0, {}).TexToolsCompiler)
   -- Every configured Plug target must exist in the mode where it is invoked.
   for _, mode in ipairs({ "n", "i", "x", "o" }) do

@@ -2,7 +2,7 @@ local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.rtp:prepend(root)
 require("config.context").initialize({ profiles = { "writing" }, features = {} })
 vim.g.mapleader = " "
-local registration, automatic, hovers, formulas, loads = nil, true, 0, 0, 0
+local registration, automatic, formula_enabled, hovers, previews, loads = nil, true, true, 0, 0, 0
 package.loaded.keymap_tools = {
   register = function(_, spec)
     registration = spec.toggles[1]
@@ -25,32 +25,37 @@ package.loaded["image_tools.bootstrap"] = {
     }
   end,
 }
-local at_formula = true
 package.loaded["tex-tools"] = {
-  formula_at = function()
-    return at_formula
-  end,
-  preview_formula = function()
-    formulas = formulas + 1
+  preview = function()
+    previews = previews + 1
+    return "tex-preview"
   end,
   formula_info = function()
-    return { enabled = automatic }
+    return { enabled = formula_enabled }
   end,
-  toggle_formula_preview = function() end,
+  toggle_formula_preview = function()
+    formula_enabled = not formula_enabled
+  end,
 }
 local integration = require("integrations.image_tools")
 integration.setup()
 assert(registration.get == integration.enabled and registration.get())
-vim.bo.filetype = "tex"
-integration.preview()
-assert(formulas == 1 and loads == 0, "Formula selection activated the image backend")
+for _, ft in ipairs({ "tex", "plaintex", "latex" }) do
+  vim.bo.filetype = ft
+  assert(integration.preview() == "tex-preview", "TeX preview result must pass through")
+end
+assert(previews == 3 and loads == 0, "TeX preview dispatch must stay inside tex-tools")
 assert(integration.toggle() == false and not registration.get())
+assert(not formula_enabled, "Automatic image and formula preview state must agree")
 assert(loads == 0, "Toggling automatic preview requested an image provider")
 assert(integration.toggle() == true)
-at_formula = false
+assert(formula_enabled)
+vim.bo.filetype = "markdown"
 integration.preview()
 assert(hovers == 1 and loads == 1)
+assert(previews == 3, "Non-TeX files must use the generic image provider")
 automatic = false
 assert(not registration.get(), "Status ignored plugin-owned state")
 assert(integration.toggle() == true)
-print("Personal image/formula dispatch and plugin-owned automatic state passed")
+assert(formula_enabled and loads == 1, "Non-TeX toggles must not load providers or change formula state")
+print("Personal TeX/generic preview dispatch and plugin-owned automatic state passed")
