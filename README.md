@@ -966,5 +966,7 @@ state with keymap-tools; `<leader>th` retains a session-wide inlay-hint preferen
 Animations and smooth scrolling are off by default. `<leader>ta` toggles the
 ui-tools animation engine; `<leader>tS` toggles smooth Ctrl-d/u/f/b/e/y scrolling.
 Enable both for animated scrolling. Existing custom mappings keep ownership.
-Obsidian uses its built-in native picker when no external picker is configured. The unused
+Obsidian uses its built-in native picker when no external picker is configured. Simple menus,
+including `:Obsidian`, use `vim.ui.select` through selection-tools; previews, multi-selection
+and picker-specific mappings retain Obsidian's native UI. The unused
 `<leader>sp` plugin-spec picker shortcut has been removed.

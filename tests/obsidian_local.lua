@@ -45,8 +45,50 @@ assert(obsidian.opts.picker.name == nil and shared.opts.workspaces == nil)
 vim.opt.rtp:append(vim.fn.stdpath("data") .. "/plugin-tools/obsidian.nvim")
 local normalized = require("obsidian.config").normalize(obsidian.opts)
 assert(normalized.picker.name == nil)
+local default_picker = require("obsidian.picker.default")
+local native_calls, select_calls, choices = 0, 0
+default_picker.select = function(_, opts)
+  native_calls = native_calls + 1
+  assert(opts.preview_item or opts.allow_multiple or opts.query or opts.selection_mappings)
+  return "native"
+end
+local integration = require("integrations.obsidian")
+integration.setup()
+local adapter = default_picker.select
+integration.setup()
+assert(default_picker.select == adapter, "Repeated setup must not wrap the adapter again")
 local picker = require("obsidian.picker").get(normalized.picker.name)
 assert(type(picker.select) == "function")
+local original_select = vim.ui.select
+local items = { "today", "search", false }
+local selected = items[2]
+vim.ui.select = function(actual, opts, callback)
+  select_calls = select_calls + 1
+  assert(actual == items and opts.prompt == "Obsidian Commands")
+  callback(selected)
+  return "select"
+end
+local function choose(value)
+  choices = value
+end
+assert(picker.select(items, { prompt = "Obsidian Commands" }, choose) == "select")
+assert(vim.deep_equal(choices, { "search" }))
+selected = nil
+picker.select(items, { prompt = "Obsidian Commands" }, choose)
+assert(vim.deep_equal(choices, {}), "Cancellation must return an empty list to Obsidian")
+selected = false
+picker.select(items, { prompt = "Obsidian Commands" }, choose)
+assert(vim.deep_equal(choices, { false }), "A false item is still a selection")
+for _, opts in ipairs({
+  { preview_item = function() end },
+  { allow_multiple = true },
+  { query = "note" },
+  { selection_mappings = {} },
+}) do
+  assert(picker.select(items, opts, choose) == "native")
+end
+assert(select_calls == 3 and native_calls == 4)
+vim.ui.select = original_select
 assert(not package.loaded["snacks.picker"] and not package.loaded.lazy)
 vim.cmd.cd(root)
 print("Optional Obsidian project selection, workspace merging and selected-only image options passed")

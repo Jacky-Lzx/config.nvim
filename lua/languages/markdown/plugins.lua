@@ -20,6 +20,7 @@ return {
         { "<leader>Ot", "<CMD>Obsidian tags<CR>", desc = "[Obsidian] Tags" }, -- codespell:ignore "Ot"
         { "<leader>Op", "<CMD>Obsidian paste_img<CR>", desc = "[Obsidian] Paste image" },
       })
+      require("integrations.obsidian").setup()
       require("obsidian").setup(ctx.opts)
     end,
     main = "obsidian",
@@ -84,7 +85,7 @@ return {
       },
 
       picker = {
-        -- No external picker is configured; Obsidian uses its native fallback.
+        -- Native picker, with simple menus delegated to vim.ui.select.
         -- Optional, configure key mappings for the picker. These are the defaults.
         -- Not all pickers support all mappings.
         note_mappings = {
