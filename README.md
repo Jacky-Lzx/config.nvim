@@ -145,7 +145,7 @@ Project/vault configuration uses a nearest `.nvim-plugins.lua` file, read throug
 `vim.secure.read`. It returns native declarations, for example:
 
 ```lua
-return { { id = "obsidian.nvim", opts = {
+return { { id = "obsidian-tools.nvim", opts = {
   workspaces = { { name = "Notes", path = "~/Documents/Notes" } },
 } } }
 ```
@@ -754,13 +754,23 @@ macOS uses `open`; Linux uses `xdg-open`. LaTeX PDF viewing is configured in
 checks provided by `:checkhealth tex-tools`. Missing Delta or Kitty disables the
 corresponding optional integration.
 
-Obsidian workspaces belong to the vault's `.nvim-plugins.lua`, in the Obsidian spec's
-`opts.workspaces`. The shared spec in `lua/languages/markdown/plugins.lua` keeps plugin
-behavior and mappings as an optional declaration. The project must select Obsidian
-by ID and provide its workspace options. Its `assets/imgs` image-directory defaults
-are contributed only when Obsidian is selected.
-Start Neovim inside the vault or one of its subdirectories so the configuration can
-securely read that local spec.
+Obsidian workspaces belong to the vault's `.nvim-plugins.lua`, under the
+`obsidian-tools.nvim` declaration's `opts.workspaces`. The new native plugin loads
+only when a trusted project selects it and a Markdown buffer opens. It uses the
+local `dev_plugin_root()/obsidian-tools.nvim` checkout and depends on
+`markdown-tools.nvim` for shared syntax; the former third-party `obsidian.nvim`
+is no longer selected. Its `assets/imgs` image defaults remain project-local.
+Start Neovim inside the vault or one of its subdirectories to read the local spec.
+
+`<leader>OO` opens the command menu; `Of`/`Oq` switch notes, `Og` searches,
+`Od` follows a vault link, `Ob` shows backlinks, `Ot` selects tags, and `Op`
+delegates image paste to image-tools. `On` creates a note, `ON` opens today's daily,
+`OD` selects a daily, `OT` inserts a template, `Ol` inserts a note link, and `Or`
+renames/moves a note and updates supported references. Rename takes a vault-relative
+path and requires clean affected notes. `<localleader>Mf` delegates to the same
+vault resolver. The completion-tools source supplies notes, aliases, headings,
+block IDs and tags only inside the selected vault. Existing Enter/Tab ownership
+is retained. See the plugin README for parser coverage and rename semantics.
 
 Pairing uses [Jacky-Lzx/pairs.nvim](https://github.com/Jacky-Lzx/pairs.nvim) with plugin-tools'
 `dev = true` and `dev.fallback = true`. It prefers `NVIM_DEV_PLUGIN_ROOT/pairs.nvim`
@@ -1023,10 +1033,11 @@ state with keymap-tools; `<leader>th` retains a session-wide inlay-hint preferen
 Animations and smooth scrolling are off by default. `<leader>ta` toggles the
 ui-tools animation engine; `<leader>tS` toggles smooth Ctrl-d/u/f/b/e/y scrolling.
 Enable both for animated scrolling. Existing custom mappings keep ownership.
-Obsidian uses its built-in native picker when no external picker is configured. Simple menus,
-including `:Obsidian`, use `vim.ui.select` through selection-tools; previews, multi-selection
-and picker-specific mappings retain Obsidian's native UI. The unused
-`<leader>sp` plugin-spec picker shortcut has been removed.
+Obsidian note menus use `vim.ui.select` through selection-tools. Text prompts use
+`vim.ui.input` through the existing native input UI. Vault behavior lives in
+`obsidian-tools.nvim`; `lua/integrations/obsidian.lua` owns personal mappings and
+the completion adapter. The unused `<leader>sp` plugin-spec picker shortcut has
+been removed.
 
 ## Shortcut and command ownership
 

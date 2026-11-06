@@ -167,6 +167,7 @@ def suites():
         for name in (
             "open_at_cursor_tui",
             "project_plugins_tui",
+            "obsidian_tools_tui",
             "project_snippets_tui",
         )
     ]

@@ -60,10 +60,6 @@
       "commit": "77b7432d4770d23b277d37923e5a08a442d8bb07",
       "source": "https://github.com/neovim/nvim-lspconfig.git"
     },
-    "obsidian.nvim": {
-      "commit": "1212014bb22a1f44a655e8e706659892b8e43e59",
-      "source": "https://github.com/obsidian-nvim/obsidian.nvim.git"
-    },
     "pairs.nvim": {
       "commit": "ba4c22b3784b044a93ffbc36203aad0c17cbc850",
       "source": "https://github.com/Jacky-Lzx/pairs.nvim.git"

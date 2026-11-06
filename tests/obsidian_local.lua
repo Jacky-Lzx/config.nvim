@@ -5,21 +5,21 @@ vim.opt.rtp:prepend(assert(vim.env.NVIM_PLUGIN_TOOLS_PATH))
 require("config.context").initialize({ profiles = { "writing" }, features = {} })
 local specs = require("config.specs")
 local shared = assert(vim.iter(require("languages.markdown.plugins")):find(function(spec)
-  return type(spec) == "table" and spec.id == "obsidian.nvim"
+  return type(spec) == "table" and spec.id == "obsidian-tools.nvim"
 end))
 assert(shared.enabled == true and shared.optional == true and shared.opts.workspaces == nil)
-assert(shared.version == nil, "Use the lock and upstream HEAD; the native manager has no wildcard version solver")
+assert(shared.dir:match("/obsidian%-tools.nvim$"), "New Obsidian package remains local until published")
 local resolve = require("plugin_tools.graph").resolve
 local options = { dev = { path = require("utils.platform").dev_plugin_root(), fallback = true } }
 local plain = resolve(specs.build(), options)
-assert(not plain.nodes["obsidian.nvim"] and not plain.packages["obsidian.nvim"])
+assert(not plain.nodes["obsidian-tools.nvim"] and not plain.packages["obsidian-tools.nvim"])
 assert(plain.nodes["image-tools.nvim"].opts.insert.directory == "Figures")
 local vault = temp .. "/vault"
 vim.fn.mkdir(vault .. "/nested", "p")
 vault = assert(vim.uv.fs_realpath(vault))
 local file = vault .. "/.nvim-plugins.lua"
 vim.fn.writefile({
-  'return {{id="obsidian.nvim",opts={workspaces={{name="Fixture",path='
+  'return {{id="obsidian-tools.nvim",opts={workspaces={{name="Fixture",path='
     .. string.format("%q", vault)
     .. '}},daily_notes={template="daily-note.md"}}}}',
 }, file)
@@ -33,62 +33,61 @@ end
 local graph = resolve(specs.build(), options)
 vim.secure.read = read
 assert(reads == 1)
-local obsidian = assert(graph.nodes["obsidian.nvim"])
+local obsidian = assert(graph.nodes["obsidian-tools.nvim"])
 assert(vim.deep_equal(obsidian.opts.workspaces, { { name = "Fixture", path = vault } }))
 assert(obsidian.opts.daily_notes.folder == "dailies" and obsidian.opts.daily_notes.template == "daily-note.md")
 assert(obsidian.declarations[#obsidian.declarations].origin == file)
 assert(obsidian.option_history[#obsidian.option_history].origin == file)
-assert(next(obsidian.dependencies) == nil)
+assert(obsidian.dependencies["markdown-tools.nvim"] == false)
 assert(graph.nodes["image-tools.nvim"].opts.insert.directory == "assets/imgs")
-assert(graph.nodes["image-tools.nvim"].parents["obsidian.nvim"])
-assert(obsidian.opts.picker.name == nil and shared.opts.workspaces == nil)
-vim.opt.rtp:append(vim.fn.stdpath("data") .. "/plugin-tools/obsidian.nvim")
-local normalized = require("obsidian.config").normalize(obsidian.opts)
-assert(normalized.picker.name == nil)
-local default_picker = require("obsidian.picker.default")
-local native_calls, select_calls, choices = 0, 0
-default_picker.select = function(_, opts)
-  native_calls = native_calls + 1
-  assert(opts.preview_item or opts.allow_multiple or opts.query or opts.selection_mappings)
-  return "native"
-end
+assert(graph.nodes["image-tools.nvim"].parents["obsidian-tools.nvim"])
+assert(shared.opts.workspaces == nil)
+vim.opt.rtp:append(obsidian.dir)
+vim.opt.rtp:append(graph.nodes["markdown-tools.nvim"].dir)
+vim.opt.rtp:append(graph.nodes["keymap-tools.nvim"].dir)
+local normalized = require("obsidian_tools.config").normalize(obsidian.opts)
+assert(normalized.workspaces[1].path == vault)
+assert(normalized.daily_notes.template == "daily-note.md")
+assert(not package.loaded["obsidian_tools.index"], "Configuration must not scan a vault")
+local file = vault .. "/nested/note.md"
+vim.fn.writefile({ "# Fixture" }, file)
+vim.cmd.edit(file)
+vim.bo.filetype = "markdown"
 local integration = require("integrations.obsidian")
-integration.setup()
-local adapter = default_picker.select
-integration.setup()
-assert(default_picker.select == adapter, "Repeated setup must not wrap the adapter again")
-local picker = require("obsidian.picker").get(normalized.picker.name)
-assert(type(picker.select) == "function")
-local original_select = vim.ui.select
-local items = { "today", "search", false }
-local selected = items[2]
-vim.ui.select = function(actual, opts, callback)
-  select_calls = select_calls + 1
-  assert(actual == items and opts.prompt == "Obsidian Commands")
-  callback(selected)
-  return "select"
+vim.g.mapleader = " "
+integration.setup(obsidian.opts)
+assert(vim.fn.exists(":ObsidianTools") == 2)
+assert(vim.fn.maparg("<Space>OO", "n", false, true).buffer == 1)
+assert(not package.loaded["obsidian_tools.index"], "Attaching must not scan a vault")
+local tools = require("obsidian_tools")
+local selected, action
+local original_select, original_refresh = vim.ui.select, tools.refresh
+vim.ui.select = function(items, opts, callback)
+  assert(opts.prompt == "Obsidian Commands")
+  assert(vim.tbl_contains(items, "refresh"))
+  selected = callback
+  return "menu"
 end
-local function choose(value)
-  choices = value
+tools.refresh = function()
+  action = true
 end
-assert(picker.select(items, { prompt = "Obsidian Commands" }, choose) == "select")
-assert(vim.deep_equal(choices, { "search" }))
-selected = nil
-picker.select(items, { prompt = "Obsidian Commands" }, choose)
-assert(vim.deep_equal(choices, {}), "Cancellation must return an empty list to Obsidian")
-selected = false
-picker.select(items, { prompt = "Obsidian Commands" }, choose)
-assert(vim.deep_equal(choices, { false }), "A false item is still a selection")
-for _, opts in ipairs({
-  { preview_item = function() end },
-  { allow_multiple = true },
-  { query = "note" },
-  { selection_mappings = {} },
-}) do
-  assert(picker.select(items, opts, choose) == "native")
-end
-assert(select_calls == 3 and native_calls == 4)
-vim.ui.select = original_select
-assert(not package.loaded["snacks.picker"] and not package.loaded.lazy)
+assert(tools.menu() == "menu")
+selected(nil)
+assert(not action)
+tools.menu()
+selected("refresh")
+assert(vim.wait(1000, function()
+  return action
+end))
+tools.refresh, vim.ui.select = original_refresh, original_select
+local callback = vim.fn.maparg("<Space>OO", "n", false, true).rhs
+integration.setup(obsidian.opts)
+assert(vim.fn.maparg("<Space>OO", "n", false, true).rhs == callback)
+vim.cmd("enew!")
+vim.api.nvim_buf_set_name(0, temp .. "/outside.md")
+vim.bo.filetype = "markdown"
+assert(vim.fn.maparg("<Space>OO", "n") == "")
+assert(vim.fn.exists(":ObsidianTools") == 0)
+assert(not package.loaded.obsidian)
 vim.cmd.cd(root)
-print("Optional Obsidian project selection, workspace merging and selected-only image options passed")
+print("Optional native Obsidian selection, cold setup, buffer isolation and menu dispatch passed")

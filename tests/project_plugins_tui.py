@@ -28,16 +28,16 @@ with tempfile.TemporaryDirectory(prefix="nvim-project-plugins-") as temporary:
 local function check()
   local selected = vim.env.PROJECT_PLUGIN_SELECTED == '1'
   local manager = require('config.plugins').manager
-  local node = manager.graph.nodes['obsidian.nvim']
+  local node = manager.graph.nodes['obsidian-tools.nvim']
   assert((node ~= nil) == selected)
-  assert((package.loaded.obsidian ~= nil) == selected)
-  assert((vim.fn.exists(':Obsidian') == 2) == selected)
+  assert((package.loaded.obsidian_tools ~= nil) == selected)
+  assert((vim.fn.exists(':ObsidianTools') == 2) == selected)
   assert((vim.fn.maparg(' OO', 'n') ~= '') == selected)
   local paths = require('plugin_tools.util').runtime_paths()
-  local directory = node and node.dir or vim.fn.stdpath('data') .. '/plugin-tools/obsidian.nvim'
+  local directory = node and node.dir or require('utils.platform').dev_plugin_root() .. '/obsidian-tools.nvim'
   assert(vim.list_contains(paths, directory) == selected)
   if selected then
-    assert(manager.states['obsidian.nvim'].phase == 'ready')
+    assert(manager.states['obsidian-tools.nvim'].phase == 'ready')
     assert(node.opts.workspaces[1].path == vim.env.PROJECT_PLUGIN_VAULT)
     assert(node.opts.notes_subdir == 'notes')
   end
@@ -66,16 +66,16 @@ end
 local function menu_check()
   local origin = vim.api.nvim_get_current_win()
   local dispatched, menu = false, nil
-  require('obsidian.commands').register('fixture_select', {nargs=0, func=function() dispatched=true end})
+  require('obsidian_tools').refresh = function() dispatched=true end
   local original_select = vim.ui.select
   vim.ui.select = function(items, opts, callback)
     assert(opts.prompt == 'Obsidian Commands')
-    assert(vim.list_contains(items, 'fixture_select'))
+    assert(vim.list_contains(items, 'refresh'))
     menu = original_select(items, opts, callback)
     return menu
   end
   local function open(stage, next_step)
-    vim.cmd.Obsidian()
+    vim.cmd.ObsidianTools()
     await(function()
       return menu and not menu.closed and vim.api.nvim_get_current_win() == menu.input_win
         and vim.api.nvim_get_mode().mode:sub(1, 1) == 'i'
@@ -120,7 +120,7 @@ end})
 """)
     for selected in (False, True):
         manifest.write_text("""
-return {{id='obsidian.nvim', opts={workspaces={{name='Fixture', path=vim.env.PROJECT_PLUGIN_VAULT}}}}}
+return {{id='obsidian-tools.nvim', opts={workspaces={{name='Fixture', path=vim.env.PROJECT_PLUGIN_VAULT}}}}}
 """ if selected else "return {}")
         result = temp / f"result-{selected}"
         stage_file = temp / f"stage-{selected}"
@@ -156,7 +156,7 @@ return {{id='obsidian.nvim', opts={workspaces={{name='Fixture', path=vim.env.PRO
                         break
                 stage = stage_file.read_text().strip() if stage_file.exists() else ""
                 if stage and stage not in handled:
-                    os.write(master, {"cancel": b"\x1b", "choose": b"fixture_select\r"}[stage])
+                    os.write(master, {"cancel": b"\x1b", "choose": b"refresh\r"}[stage])
                     handled.add(stage)
             if process.poll() is None:
                 raise AssertionError("Startup timed out\n" + output.decode(errors="replace")[-4000:])

@@ -32,11 +32,32 @@ function M.options()
       -- input-tools owns its native completefunc/popupmenu and confirmation.
       return vim.b.completion ~= false and vim.bo.filetype ~= "input-tools-input"
     end,
-    trigger_characters = { ".", "/" },
-    sources = function()
-      return require("features.completion").active_sources(M.source_config)
+    sources = function(ctx)
+      local sources = require("features.completion").active_sources(M.source_config)
+      local obsidian = package.loaded.obsidian_tools
+      if obsidian and obsidian.workspace(vim.api.nvim_buf_get_name(ctx and ctx.bufnr or 0)) then
+        sources = vim.list_extend(vim.deepcopy(sources), { "obsidian" })
+      end
+      return sources
+    end,
+    trigger_characters = function(ctx)
+      local obsidian = package.loaded.obsidian_tools
+      if obsidian and obsidian.workspace(vim.api.nvim_buf_get_name(ctx.bufnr)) then
+        if ctx.before:match("%[%[[^%[%]]*$") then
+          return { ".", "[", "#", "^", "/", " " }
+        end
+        if ctx.before:match("#([%w_/%-]*)$") then
+          return { ".", "#", "/" }
+        end
+      end
+      return { ".", "/" }
     end,
     providers = {
+      obsidian = vim.tbl_extend(
+        "force",
+        require("integrations.obsidian").source(),
+        { score_offset = 100, timeout_ms = 10000 }
+      ),
       copilot = ai and { score_offset = 100, timeout_ms = 10000 } or nil,
       lsp = {
         score_offset = 60,
