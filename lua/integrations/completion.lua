@@ -114,12 +114,14 @@ function M.options()
             return cmp.select_prev({ count = 5, wrap = false })
           end,
           "fallback",
+          desc = "Previous five completions",
         },
         ["<A-d>"] = {
           function(cmp)
             return cmp.select_next({ count = 5, wrap = false })
           end,
           "fallback",
+          desc = "Next five completions",
         },
         ["<Tab>"] = { "accept", "show", "fallback" },
         ["<S-Tab>"] = { "select_prev", "show", "fallback" },
@@ -131,6 +133,7 @@ function M.options()
             return cmp.show()
           end,
           "fallback",
+          desc = "Toggle completion menu",
         },
         -- Enter retains the native command/search confirmation mapping.
       },
@@ -140,6 +143,7 @@ function M.options()
         function(cmp)
           return M.toggle_source(cmp, "copilot")
         end,
+        desc = "Toggle Copilot completion source",
       } or nil,
       ["<C-Space>"] = { "show", "show_documentation" },
       ["<A-k>"] = { "select_prev", "fallback" },
@@ -151,22 +155,25 @@ function M.options()
           return cmp.select_prev({ count = 5, wrap = false })
         end,
         "fallback",
+        desc = "Previous five completions",
       },
       ["<A-d>"] = {
         function(cmp)
           return cmp.select_next({ count = 5, wrap = false })
         end,
         "fallback",
+        desc = "Next five completions",
       },
       ["<C-u>"] = { "scroll_documentation_up", "fallback" },
       ["<C-d>"] = { "scroll_documentation_down", "fallback" },
       ["<Tab>"] = { "accept", "snippet_forward", "fallback" },
-      ["<CR>"] = { "accept", M.newline, "fallback" },
+      ["<CR>"] = { "accept", M.newline, "fallback", desc = "Accept completion or insert paired newline" },
       ["<S-CR>"] = {
         function(cmp)
           cmp.hide()
           return "<CR>"
         end,
+        desc = "Insert newline without accepting completion",
       },
       ["<A-/>"] = {
         function(cmp)
@@ -176,16 +183,19 @@ function M.options()
           return cmp.show()
         end,
         "fallback",
+        desc = "Toggle completion menu",
       },
       ["<A-n>"] = {
         function(cmp)
           return M.cycle(cmp, 1)
         end,
+        desc = "Next completion source",
       },
       ["<A-p>"] = {
         function(cmp)
           return M.cycle(cmp, -1)
         end,
+        desc = "Previous completion source",
       },
     },
   }
