@@ -19,6 +19,13 @@ return {
       "file-tools.nvim",
       "toolchain-tools.nvim",
     },
+    children = {
+      {
+        -- Config provider only; lsp-tools applies overrides and enables servers.
+        id = "nvim-lspconfig",
+        source = "neovim/nvim-lspconfig",
+      },
+    },
     opts = {
       server_activation = "filetype",
       server_filetypes = filetypes,

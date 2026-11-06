@@ -82,9 +82,8 @@ local function check()
     end
     assert(vim.deep_equal(vim.tbl_deep_extend("force", actual, completion), actual), name)
   end
-  assert(
-    require("config.plugins").initialized("lsp-tools.nvim") and require("config.plugins").initialized("nvim-lspconfig")
-  )
+  assert(require("config.plugins").initialized("lsp-tools.nvim"))
+  assert(require("config.plugins").manager.states["nvim-lspconfig"].phase == "mounted")
   local selected, active = {}, {}
   for _, server in ipairs(require("lsp-tools").server_status()) do
     selected[server.name] = server

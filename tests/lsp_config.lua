@@ -1,9 +1,10 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT, "NVIM_CONFIG_ROOT is required")
 vim.opt.runtimepath:prepend(root)
 
-local provider = require("plugins.coding.nvim-lspconfig")[1]
-assert(provider.source == "neovim/nvim-lspconfig" and not provider.main and not provider.config and not provider.opts)
 local lsp = require("plugins.coding.lsp-tools")[1]
+local provider = assert(lsp.children[1])
+assert(provider.id == "nvim-lspconfig" and provider.source == "neovim/nvim-lspconfig")
+assert(not provider.main and not provider.config and not provider.opts)
 assert(lsp.opts.server_activation == "filetype", "Servers must activate only when their filetypes are opened")
 assert(not lsp.event and vim.list_contains(lsp.after, "toolchain-tools.nvim"))
 assert(vim.list_contains(lsp.dependencies, "nvim-lspconfig"))

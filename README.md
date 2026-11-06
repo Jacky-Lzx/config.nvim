@@ -126,9 +126,10 @@ before the first matching server is enabled. Completion's pure capability API is
 available before LSP startup; its
 interactive setup waits for `InsertEnter`, `CmdlineEnter`, or an explicit completion command.
 Requiring the capability API does not initialize completion sources or timers.
-nvim-lspconfig is a dependency that supplies
-maintained configs; it has no separate setup or activation hook. Existing
-`after/lsp/` settings and the custom `lsp/texquill.lua` config retain native merge
+nvim-lspconfig is declared as a child of lsp-tools and an explicit dependency.
+It keeps its own checkout and lockfile entry, supplies maintained configs, and
+has no separate setup or activation hook. Existing `after/lsp/` settings and the
+custom `lsp/texquill.lua` config retain native merge
 semantics. Tool installation stays with toolchain-tools. `:checkhealth lsp-tools`
 and `:LspToolsInfo` show selected server configuration and attachment state.
 
