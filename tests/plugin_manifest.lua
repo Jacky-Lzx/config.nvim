@@ -25,7 +25,8 @@ local remote = resolve(
 )
 assert(remote.packages["notification-tools.nvim"].managed)
 assert(remote.packages["notification-tools.nvim"].source == "git@github.com:Jacky-Lzx/notification-tools.nvim.git")
-assert(not remote.packages["image-tools.nvim"].managed, "Unpublished local-only plugins acquired a remote fallback")
+assert(remote.packages["image-tools.nvim"].managed, "Published image-tools must have a remote fallback")
+
 for _, node in pairs(local_graph.nodes) do
   assert(node.event == nil and node.cmd == nil and node.ft == nil and node.lazy == nil and node.bootstrap == nil)
 end

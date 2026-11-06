@@ -183,8 +183,8 @@ return {
       require("selection_tools").setup(ctx.opts)
     end,
     id = "selection-tools.nvim",
-    -- Local-only until selection-tools has a published remote repository.
-    dir = require("utils.platform").dev_plugin_root() .. "/selection-tools.nvim",
+    source = "git@github.com:Jacky-Lzx/selection-tools.nvim.git",
+    dev = true,
     main = "selection_tools",
     opts = {
       ui_select = true,

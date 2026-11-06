@@ -8,8 +8,13 @@ dofile(root .. "/init.lua")
 dofile(root .. "/tests/native_plugins.lua")
 local plugins = require("config.plugins").nodes()
 assert(not plugins["snacks.nvim"], "Snacks image must not be configured")
-local expected = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
 local spec = plugins["image-tools.nvim"]
+assert(spec and spec.dev and spec.package.source == "https://github.com/Jacky-Lzx/image-tools.nvim.git")
+local development = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
+local local_checkout = vim.uv.fs_stat(development .. "/lua/image_tools/init.lua") ~= nil
+local expected = local_checkout and development
+  or (vim.env.NVIM_PLUGIN_ROOT or (vim.fn.stdpath("data") .. "/plugin-tools")) .. "/image-tools.nvim"
+assert(spec.dir == expected, "Prefer the local checkout and otherwise use the managed GitHub checkout")
 local available = vim.uv.fs_stat(expected .. "/lua/image_tools/init.lua") ~= nil
 if available then
   assert(spec, "Independent preview spec missing")
@@ -47,11 +52,13 @@ if available then
   assert(vim.fn.exists(":ImagePreview") == 2, "Independent preview command missing")
   assert(vim.fn.exists(":ImagePreviewClearCache") == 2, "Terminal cache cleanup command missing")
 else
-  assert(not spec or spec.enabled == false, "Missing unpublished plugin should be disabled without cloning")
+  assert(spec.package.managed, "Missing development checkout must select the managed GitHub source")
 end
 assert(package.loaded["snacks.image"] == nil, "Snacks image was loaded despite being disabled")
 print(
-  "image_preview: independent local plugin "
+  "image_preview: independent "
+    .. (local_checkout and "development" or "GitHub")
+    .. " plugin "
     .. (available and "loaded" or "gracefully absent")
     .. ", Snacks image disabled"
 )

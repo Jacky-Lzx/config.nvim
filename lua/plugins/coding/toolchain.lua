@@ -1,7 +1,8 @@
 return {
   {
     id = "toolchain-tools.nvim",
-    dir = require("utils.platform").dev_plugin_root() .. "/toolchain-tools.nvim",
+    source = "git@github.com:Jacky-Lzx/toolchain-tools.nvim.git",
+    dev = true,
     main = "toolchain",
     opts = {
       concurrency = 2,

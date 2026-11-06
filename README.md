@@ -18,6 +18,24 @@ own their first-use initialization inside their respective plugins. Other setup
 callbacks register native behavior immediately; the manager has no loading
 triggers or `require()` interception.
 
+Published personal plugins declare their GitHub `source` with `dev = true`.
+The shared development policy prefers `NVIM_DEV_PLUGIN_ROOT/<plugin>`; if absent,
+the manager selects `NVIM_PLUGIN_ROOT/<plugin>` (default
+`stdpath('data')/plugin-tools/<plugin>`) for explicit installation from GitHub.
+Startup does not clone repositories automatically.
+
+GitHub sources are configured for completion-tools, git-tools, image-tools,
+input-tools, lsp-tools, notification-tools, pairs, selection-tools, task-tools,
+tex-tools, theme-tools, toolchain-tools, ui-tools and workspace-tools (all `.nvim`,
+under `Jacky-Lzx`). image-tools is public and uses HTTPS for managed installation.
+debug-tools, editing-tools, file-tools, keymap-tools, motion-tools and snippet-tools
+remain local-only; plugin-tools itself still requires its local bootstrap checkout.
+
+Declaring a remote source does not publish local changes. Remote revisions must
+provide the APIs used here, including the completion/image bootstrap modules;
+synchronize compatible plugin revisions before relying on startup without those
+development directories.
+
 Each plugin's `config(ctx)` applies its options and binds personal shortcuts with
 `config.bindings.set()`. There is no separate manager bootstrap phase. Plugins
 register their own commands and APIs, and keep expensive first-use initialization
@@ -226,8 +244,8 @@ available only when a client advertises the corresponding methods.
 
 ## Tasks and terminals
 
-With `features.tasks = true`, the local `task-tools.nvim` checkout at
-`NVIM_DEV_PLUGIN_ROOT/task-tools.nvim` (default `~/Documents/Github/nvim_plugins`)
+With `features.tasks = true`, `task-tools.nvim` (preferring the checkout at
+`NVIM_DEV_PLUGIN_ROOT/task-tools.nvim`, with GitHub as the managed fallback)
 owns builds, project task discovery, save watchers and interactive terminals.
 It replaces compile.nvim, Overseer and Snacks terminal. With the tasks feature
 disabled, task commands and the normal/terminal `<A-i>` mapping are not registered.
@@ -263,8 +281,8 @@ See `:help task-tools` for project JSON, watch options and the Lua API.
 ## Workspaces
 
 `workspace-tools.nvim` owns workspace persistence and history search when
-`features.sessions` is enabled. The local checkout comes from `NVIM_DEV_PLUGIN_ROOT`
-(or the default development plugin directory).
+`features.sessions` is enabled. It prefers the checkout under `NVIM_DEV_PLUGIN_ROOT`
+and selects the GitHub repository for managed installation when that checkout is absent.
 
 | Key | Action |
 | --- | --- |

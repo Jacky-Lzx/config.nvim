@@ -1,9 +1,8 @@
-local root = require("utils.platform").dev_plugin_root()
-
 return {
   {
     id = "theme-tools.nvim",
-    dir = root .. "/theme-tools.nvim",
+    source = "git@github.com:Jacky-Lzx/theme-tools.nvim.git",
+    dev = true,
     main = "theme_tools",
     opts = {
       dracula = { transparent_bg = true },

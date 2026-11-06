@@ -10,7 +10,8 @@ return {
       require("workspace_tools").setup(ctx.opts)
     end,
     id = "workspace-tools.nvim",
-    dir = require("utils.platform").dev_plugin_root() .. "/workspace-tools.nvim",
+    source = "git@github.com:Jacky-Lzx/workspace-tools.nvim.git",
+    dev = true,
     main = "workspace_tools",
     opts = {
       auto_restore = false,

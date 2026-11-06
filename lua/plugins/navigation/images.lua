@@ -1,10 +1,8 @@
-local directory = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
-
 return {
   {
     id = "image-tools.nvim",
-    -- Local-only until this plugin has a published remote repository.
-    dir = directory,
+    source = "Jacky-Lzx/image-tools.nvim",
+    dev = true,
     opts = {
       -- The old plugin saved in cwd/Figures and emitted document-relative paths.
       root = function(document)

@@ -1,7 +1,8 @@
 return {
   {
     id = "workspace-tools.nvim",
-    dir = require("utils.platform").dev_plugin_root() .. "/workspace-tools.nvim",
+    source = "git@github.com:Jacky-Lzx/workspace-tools.nvim.git",
+    dev = true,
     start = require("config.context").current().selection.features.sessions,
     children = {
       {

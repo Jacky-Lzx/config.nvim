@@ -76,7 +76,7 @@ integration_checks() (
   NVIM_TEST_LINK_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   NVIM_TEST_REFERENCE_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   BARS_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/bars.lua"
-  run_tests plugin_manifest
+  run_tests plugin_manifest plugin_sources
   installed_plugins=$(nvim --headless -u NONE -i NONE --noplugin \
     --cmd "lua io.stdout:write(vim.fn.stdpath('data') .. '/plugin-tools')" +qa)
   fallback_ready=true

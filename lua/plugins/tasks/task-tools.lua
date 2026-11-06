@@ -70,7 +70,8 @@ return {
       require("task_tools").setup(ctx.opts)
     end,
     id = "task-tools.nvim",
-    dir = require("utils.platform").dev_plugin_root() .. "/task-tools.nvim",
+    source = "git@github.com:Jacky-Lzx/task-tools.nvim.git",
+    dev = true,
     main = "task_tools",
     opts = {
       python = function(ctx)
