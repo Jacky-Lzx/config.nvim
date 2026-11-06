@@ -169,6 +169,7 @@ vim.api.nvim_del_augroup_by_name("ConfigLsp")
 local editing = require("plugins.editing.editing-tools")[1]
 assert(editing.id == "editing-tools.nvim" and editing.main == "editing_tools")
 assert(editing.source == "Jacky-Lzx/editing-tools.nvim" and editing.dev == true)
+assert(vim.list_contains(editing.dependencies, "motion-tools.nvim"))
 assert(editing.opts and not editing.event and not editing.cmd)
 assert(not vim.list_contains(editing.dependencies or {}, "nvim-treesitter/nvim-treesitter-textobjects"))
 print("LSP capability ordering and buffer-local feature checks passed")

@@ -27,6 +27,26 @@ end
 local function case(name, input, setup, verify)
   cases[#cases + 1] = { name = name, input = input, setup = setup or reset, verify = verify }
 end
+local function object_source()
+  reset({ "xx ((中)) tail" }, { 1, 5 })
+end
+case("object-first-start", "g[b", function()
+  object_source()
+  assert(not package.loaded["motion_tools.objects"], "Object scanning loaded before first jump")
+end, function()
+  at(1, 4)
+  assert(vim.fn.getpos("''")[3] == 6)
+  assert(package.loaded["motion_tools.objects"])
+end)
+case("object-count-start", "2g[b", object_source, function() at(1, 3) end)
+case("object-exclusive-end", "g]b", object_source, function() at(1, 9) end)
+case("object-count-end", "2g]b", object_source, function() at(1, 10) end)
+case("object-cancel", "g[\27", object_source, function() at(1, 5) end)
+case("object-missing", "g[z", object_source, function() at(1, 5) end)
+case("object-syntax", "g[f", function()
+  reset({ "local function example()", "  return 1", "end", "tail" }, { 2, 3 })
+  vim.bo.filetype = "lua"
+end, function() at(1, 0) end)
 case("jump", " fgam\r", nil, function()
   at(1, 11)
   assert(vim.fn.getreg("/") == "previous-search")
@@ -164,6 +184,12 @@ vim.api.nvim_create_autocmd("User", {
       local ok, err = xpcall(function()
         assert(require("config.plugins").initialized("motion-tools.nvim"), "Motion feedback must load at startup")
         assert(require("motion_tools.config").options.mappings == false, "Config must own explicit mappings")
+        for _, lhs in ipairs({ "g[", "g]" }) do
+          local map = vim.fn.maparg(lhs, "n", false, true)
+          assert(map.rhs:find("<Plug>(MotionTools-", 1, true), lhs .. " must belong to motion")
+        end
+        assert(vim.fn.maparg("<Plug>(EditingTools-goto_start)", "n") == "")
+        assert(vim.fn.maparg("<Plug>(EditingTools-goto_end)", "n") == "")
         for _, mode in ipairs({ "n", "x", "o" }) do
           for _, lhs in ipairs({ " f", " F", " j", " k", "]i", "[i", "]o", "[o", "]d", "[d", "]t", "[t" }) do
             local map = vim.fn.maparg(lhs, mode, false, true)
