@@ -41,27 +41,9 @@ vim.lsp.enable = function(names, enabled)
 end
 
 local scenario = vim.env.NVIM_TEST_SCENARIO
-local selection
-if scenario == "python_environment" then
-  selection = { profiles = { "data" }, features = { debugging = true, tasks = true, sessions = false } }
-elseif scenario == "lua" then
-  selection = { profiles = { "base" }, features = {} }
-elseif scenario == "minimal" then
-  selection = {
-    profiles = {},
-    features = {},
-  }
-elseif scenario == "python" then
-  selection = {
-    profiles = { "data" },
-    features = { ai = false, debugging = true, tasks = false, sessions = false },
-  }
-elseif scenario == "writing" then
-  selection = {
-    profiles = { "writing" },
-    features = { tasks = true },
-  }
-end
+local scenarios = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/scenarios.lua")
+assert(not scenario or scenario == "default" or scenarios[scenario], "Unknown test scenario: " .. tostring(scenario))
+local selection = scenarios[scenario]
 vim.opt.runtimepath:prepend(vim.env.NVIM_CONFIG_ROOT)
 if vim.env.NVIM_TEST_REMAP_ACTIONS == "1" then
   dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/remapped_actions.lua")

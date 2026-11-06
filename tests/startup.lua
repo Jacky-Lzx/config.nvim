@@ -23,7 +23,8 @@ local function check()
   assert(not plugins.showkeys and not package.loaded.showkeys, "Screencast must use keymap-tools")
   assert(vim.fn.exists(":ShowkeysToggle") == 0, "Legacy showkeys command remains")
   local screencast = require("keymap_tools.config").get().showkeys
-  assert(not screencast.enabled and screencast.maxkeys == 5, "Screencast must remain opt-in with five keys")
+  assert(not screencast.enabled, "Screencast must remain opt-in")
+  assert(screencast.maxkeys == plugins["keymap-tools.nvim"].opts.showkeys.maxkeys)
   assert(not require("keymap_tools").showkeys.is_enabled())
   assert(not package.loaded["keymap_tools.showkeys"], "Inactive screencast must stay lazy")
   for _, entry in ipairs(info.plugins.entries) do

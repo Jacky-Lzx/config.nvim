@@ -122,7 +122,14 @@ silently restarting processes.
 ## Validation and performance
 
 `sh tests/smoke.sh native` isolates plugin data and runs offline native tests.
-`sh tests/smoke.sh integration` exercises installed plugins, parsers and real PTYs.
+`sh tests/smoke.sh integration` exercises current defaults and critical real-PTY workflows.
+`sh tests/smoke.sh compatibility` opts into optional plugins with fixed selections.
+`sh tests/smoke.sh acceptance` exercises real local LSPs and installed fallback paths.
+Historical snippet parity is an explicit `migration` suite, outside `all`.
+Each check has isolated state and bounded lifetime; independent failures are
+aggregated, with logs and a JSON summary retained. `--filter` selects a case and
+`--keep` retains evidence even on success. Stable action IDs let workflow inputs
+follow declared keys while expected results and ownership checks stay independent.
 `python3 tests/remote_install.py` explicitly installs pinned GitHub versions into
 isolated directories and starts editors with development paths hidden. It checks
 minimal/default startup and first-use public APIs; it requires network access.

@@ -6,21 +6,27 @@ local build = require("config.specs").build
 local function graph()
   return resolve(build(), { dev = { path = require("utils.platform").dev_plugin_root(), fallback = true } })
 end
-local formatter = require("plugins.third_party.conform")[1]
-assert(formatter.enabled == true and graph().nodes["conform.nvim"])
-formatter.enabled = false
-local disabled = graph()
-assert(not disabled.nodes["conform.nvim"], "Disabling one plugin kept option-only contributions alive")
-assert(disabled.nodes["nvim-lint"] and disabled.nodes["vim-wakatime"])
-assert(disabled.nodes["lsp-tools.nvim"] and disabled.nodes["theme-tools.nvim"])
-formatter.enabled = true
-local crates = require("plugins.disabled.crates")[1]
-assert(crates.enabled == false)
-crates.enabled = true
-local restored = graph()
-assert(restored.nodes["crates.nvim"], "A declaration's enabled flag did not enable that plugin")
-assert(restored.nodes["conform.nvim"] and not restored.nodes["render-markdown.nvim"])
-assert(restored.nodes["nvim-lspconfig"].parents["lsp-tools.nvim"])
-crates.enabled = false
-assert(not graph().nodes["crates.nvim"])
-print("Per-plugin flags independently disable enabled plugins and restore disabled declarations")
+local function names(value, excluded_owner)
+  local result = {}
+  for id, node in pairs(value.nodes) do
+    if node.owner ~= excluded_owner then
+      result[#result + 1] = id
+    end
+  end
+  table.sort(result)
+  return result
+end
+local baseline = graph()
+for _, module in ipairs({ "plugins.third_party.conform", "plugins.disabled.crates" }) do
+  local spec = require(module)[1]
+  local original = spec.enabled
+  for _, enabled in ipairs({ false, true }) do
+    spec.enabled = enabled
+    local changed = graph()
+    assert((changed.nodes[spec.id] ~= nil) == enabled, "Plugin flag did not control its declaration: " .. spec.id)
+    assert(vim.deep_equal(names(changed, spec.id), names(baseline, spec.id)), "Flag changed unrelated owners")
+  end
+  spec.enabled = original
+  assert(vim.deep_equal(names(graph()), names(baseline)), "Restoring a flag changed the graph")
+end
+print("Per-plugin flags: enabled/disabled behavior and independent restoration follow current defaults")

@@ -135,7 +135,7 @@ directory in Home Manager while retaining its Neovim and language-tool packages.
 
 Run `sh tests/smoke.sh native` for offline tests with isolated plugin data, and
 `sh tests/smoke.sh integration` for tests using installed plugins and parsers.
-Integration checks also use Python 3 and a terminal PTY to verify native startup and plugin-owned first-use initialization, mappings/commands, and first-save formatting behavior.
+Integration checks use Python 3 and real PTYs. Broader optional-plugin and fixed-profile checks run with `sh tests/smoke.sh compatibility`.
 To review startup independently, create an isolated XDG config tree with a
 `nvim-review` symlink to this checkout and launch with `NVIM_APPNAME=nvim-review`.
 That also isolates plugin data, state and cache; prepare those dependencies
@@ -809,37 +809,54 @@ enabled LSP servers, live tool paths, and resolved plugin directories/sources/lo
 Run the smoke runner with:
 
 ```sh
-./tests/smoke.sh native       # Native behavior and configuration, no installed plugins
-./tests/smoke.sh integration  # Installed plugins, parsers, startup and actual input
-./tests/smoke.sh              # Both suites; equivalent to ./tests/smoke.sh all
+./tests/smoke.sh native         # Offline configuration helpers; isolated plugin data
+./tests/smoke.sh integration    # Current defaults and critical configured workflows
+./tests/smoke.sh compatibility  # Fixed profiles, optional owners and broader interactions
+./tests/smoke.sh acceptance     # Actual local LSPs and installed-plugin fallback
+./tests/smoke.sh migration      # Explicit historical snippet parity audit
+./tests/smoke.sh all            # All current checks; excludes historical migration parity
+./tests/smoke.sh integration --filter tui:tasks --keep
 ```
 
-The native suite isolates the data and development-plugin directories as well as cache/state,
-so it can run on a fresh machine without any plugin manager, other plugins, or extra parsers installed.
-It covers syntax/profile resolution, declaration validation, diagnostic snapshots, core behavior,
-clipboard, diagnostics, column guide rendering, completion policy, snippet math, commands,
-Python tasks, mocked integrations, links, tooling, and LSP setup contracts.
+No argument runs `all`. Use `native` and `integration` during daily configuration
+changes, then `compatibility` for changes involving optional owners or their
+integration. `acceptance` needs the installed language servers. Remote network
+installation and real TeX compilation remain separate explicit commands.
 
-The integration suite preserves real plugin checks for vault-local options, commenting and
-native snippets, folding queries, Rust DAP, code actions, image preview, statusline, and Mini.diff.
-Image checks also exercise configured insertion templates, cursor positions, working-directory
-asset storage, document-relative references, clipboard conversion, menu cancellation, and batch
-file selection, using fixture images without accessing the desktop clipboard.
-Individual tests run in separate Neovim processes with `-u NONE -i NONE --noplugin`.
-Statusline and Mini.diff tests exercise both provider load orders or first-invocation paths.
+The actual personal-startup check uses `lua/config/selection.lua` and current
+per-plugin enable flags. It does not restore disabled third-party plugins.
+Fixed scenarios live in `tests/scenarios.lua`; only the compatibility suite opts
+into the optional declarations through `tests/full_plugins.lua`. Shared plugin
+algorithms belong in the owning plugin's suite; config checks concentrate on
+options, activation, mapping ownership and selected cross-plugin workflows.
 
-The syntax/profile pass uses fixed profile selections. The integration startup passes cover
-the personal defaults, no languages/workflows, Python with debugging, and writing with tasks. They load the installed
-plugins and exercise TeX/Python/Vue filetype hooks, completion, formatting/lint configuration,
-DAP configuration, feature isolation, and colorscheme reloads. Actual input checks cover
-command-line-first completion loading, paired Enter/Backspace, development checkout selection,
-and configured color/TODO ownership, Insert-mode annotation refresh and independent toggles.
+`tests/mapping_contracts.lua` audits current `config.bindings` declarations against
+effective mode/filetype mappings, including callback/target, expression and prefix
+waiting policy. Workflow tests can use a declaration's stable `id` with
+`tests/actions.lua`; the ID stays beside the owning plugin's key declaration.
+Tasks and Wrap/keymap-picker workflows run with both current and deliberately
+remapped declarations. The expected task output, window state, focus and editing
+results remain independent assertions. Missing actions and overwritten mappings
+fail rather than being skipped. Other explicit behavior cases retain their own
+reviewable expectations; changing behavior still requires updating those cases.
 
-Tests isolate cache/state/log files, disable session saving and WakaTime, stub external LSP
-startup, and set `NVIM_SMOKE_TEST=1` to disable project-local configuration and dependency
-installation. They never invoke tool or Tree-sitter installation commands. The full default
-pass requires the configured plugins and LaTeX parser to be installed. It verifies local
-configuration and plugin setup, not live LSP responses, a running debugger, or PDF compilation.
+Each check gets its own cache, state, log, temporary fixtures and copy of the
+plugin lockfile. Native checks also isolate data and development-plugin paths.
+The runner continues after independent failures and reports passed, failed and
+skipped checks separately. Failures automatically retain `output.log`, Neovim
+logs and state plus `summary.json`; `--keep` also retains successful runs.
+Environment checks record resolved plugin paths, Git revisions and dirty state.
+The runner does not download missing dependencies: install required plugins,
+tools and selected parsers explicitly. Selected requirements are checked instead
+of assuming the host retains a historical parser inventory.
+
+Setup disables session saving and WakaTime, replaces the desktop clipboard and
+stubs external LSP startup. PTY cases still validate actual input and intermediate
+UI states. Motion/editing checks observe typed-key consumption before waiting for
+the asserted editor state, instead of assuming input finishes within a fixed
+number of milliseconds. Image checks use temporary assets and a harmless display
+boundary; they validate references, routing, insertion and cancellation without
+reading the desktop clipboard.
 
 The optional real LaTeX check requires the configured `texquill` binary, `latexmk`
 and a TeX distribution. It uses temporary documents to verify automatic TeX/BibTeX

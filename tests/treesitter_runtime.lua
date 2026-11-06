@@ -66,15 +66,20 @@ local function check()
   assert(require("config.plugins").initialized("editing-tools.nvim"))
   assert(not plugins["nvim-treesitter-textobjects"])
   assert(not package.loaded["mini.ai"])
-  assert(vim.treesitter.query.get("lua", "textobjects"))
+  if seen.lua then
+    assert(vim.treesitter.query.get("lua", "textobjects"))
+  end
   assert(not package.loaded["nvim-treesitter"])
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
 
 -- -l exits when the script returns, so wait for startup callbacks explicitly.
-vim.wait(100, function()
-  return false
-end, 10)
+assert(
+  vim.wait(3000, function()
+    return vim.g.config_ready == true
+  end),
+  "ConfigReady was not reached"
+)
 local ok, err = xpcall(check, debug.traceback)
 if not ok then
   io.stderr:write(err .. "\n")

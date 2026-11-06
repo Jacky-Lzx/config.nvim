@@ -4,9 +4,12 @@ vim.o.loadplugins = true
 dofile(root .. "/tests/setup.lua")
 dofile(root .. "/init.lua")
 dofile(root .. "/tests/native_plugins.lua")
-vim.wait(100, function()
-  return false
-end, 10)
+assert(
+  vim.wait(3000, function()
+    return vim.g.config_ready == true
+  end),
+  "ConfigReady was not reached"
+)
 local plugins = require("config.plugins").nodes()
 assert(not plugins["mason.nvim"] and not package.loaded.mason and not package.loaded["mason-registry"])
 for _, path in ipairs(vim.opt.rtp:get()) do
