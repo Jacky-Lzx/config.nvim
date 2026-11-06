@@ -21,3 +21,7 @@ it intentionally emits native definitions after migration.
 
 Do not regenerate this fixture from native snippets to make a failing comparison
 pass. Changes to defaults should be deliberate and reviewed against this baseline.
+
+The baseline is checked by the explicit `sh tests/smoke.sh migration` suite.
+Daily integration checks validate current definitions and selected behavior instead
+of requiring every present-day trigger and template to match this old export.

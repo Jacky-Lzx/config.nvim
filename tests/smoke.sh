@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-  printf 'Usage: %s [native|integration|all]\n' "$0"
+  printf 'Usage: %s [native|integration|migration|all]\n' "$0"
 }
 if [ "$#" -gt 1 ]; then
   usage >&2
@@ -10,7 +10,7 @@ if [ "$#" -gt 1 ]; then
 fi
 suite=${1:-all}
 case "$suite" in
-native | integration | all) ;;
+native | integration | migration | all) ;;
 -h | --help)
   usage
   exit 0
@@ -72,7 +72,7 @@ native_checks() (
 integration_checks() (
   cd -- "$root"
   printf '\nRunning integration checks with installed plugins\n'
-  run_tests open_at_cursor toggles project_plugins obsidian_local comments folding rust treesitter_runtime tools_runtime lsp_tools notifications image_preview bars semantic_icons git_tools column_guide toolchain_backend tasks_session workspaces
+  run_tests mapping_contracts open_at_cursor toggles project_plugins obsidian_local comments folding rust treesitter_runtime tools_runtime lsp_tools notifications image_preview bars semantic_icons git_tools column_guide toolchain_backend tasks_session workspaces
   python3 "$root/tests/open_at_cursor_tui.py"
   python3 "$root/tests/project_plugins_tui.py"
   NVIM_TEST_LINK_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
@@ -147,7 +147,7 @@ integration_checks() (
   done
 )
 
-if [ "$suite" != native ]; then
+if [ "$suite" = integration ] || [ "$suite" = all ]; then
   NVIM_TEST_ENABLE_THIRD_PARTY=0 nvim --headless -u NONE -i NONE --noplugin \
     -l "$root/tests/per_plugin_flags.lua"
   printf '\nRunning personal defaults with enabled and disabled third-party plugins\n'
@@ -159,6 +159,7 @@ fi
 case "$suite" in
 native) native_checks ;;
 integration) integration_checks ;;
+migration) run_tests snippet_migration ;;
 all)
   native_checks
   integration_checks

@@ -9,6 +9,22 @@ local function modes(entry)
   end
   return result
 end
+local function check(entry, mode, label)
+  local actual = vim.fn.maparg(entry[1], mode, false, true)
+  local target = entry.buffer
+  local local_map = entry.ft or (target ~= nil and target ~= false)
+  if type(target) == "number" and target ~= 0 then
+    assert(target == vim.api.nvim_get_current_buf(), "Action targets a different buffer: " .. label)
+  end
+  assert(actual.lhs and (actual.buffer == 1) == not not local_map, "Wrong mapping scope: " .. label)
+  assert(actual.expr == (entry.expr and 1 or 0), "Wrong expression mapping: " .. label)
+  assert(actual.nowait == (entry.nowait and 1 or 0), "Wrong prefix waiting policy: " .. label)
+  assert(
+    type(entry[2]) == "function" and actual.callback == entry[2]
+      or type(entry[2]) == "string" and vim.keycode(actual.rhs or "") == vim.keycode(entry[2]),
+    "Action mapping was replaced: " .. label
+  )
+end
 function M.binding(id, mode)
   mode = mode or "n"
   local found
@@ -26,21 +42,30 @@ function M.binding(id, mode)
     end
   end
   assert(found, "Missing declared action: " .. id .. " (" .. mode .. ")")
-  local entry = found.entry
-  local actual = vim.fn.maparg(found.lhs, mode, false, true)
-  local target = entry.buffer
-  local local_map = entry.ft or (target ~= nil and target ~= false)
-  if type(target) == "number" and target ~= 0 then
-    assert(target == vim.api.nvim_get_current_buf(), "Action targets a different buffer: " .. id)
-  end
-  assert(actual.lhs and (actual.buffer == 1) == not not local_map, "Wrong mapping scope: " .. id)
-  assert(
-    type(entry[2]) == "function" and actual.callback == entry[2]
-      or type(entry[2]) == "string" and actual.rhs == entry[2],
-    "Action mapping was replaced: " .. id
-  )
+  check(found.entry, mode, id)
   return found
 end
+function M.audit()
+  local count = 0
+  for owner, entries in pairs(require("config.bindings").entries) do
+    for _, entry in ipairs(entries) do
+      local filetypes = type(entry.ft) == "table" and entry.ft or { entry.ft }
+      local target = entry.buffer
+      if
+        entry[2] ~= nil
+        and (not entry.ft or vim.list_contains(filetypes, vim.bo.filetype))
+        and (type(target) ~= "number" or target == 0 or target == vim.api.nvim_get_current_buf())
+      then
+        for _, mode in ipairs(modes(entry)) do
+          check(entry, mode, owner .. ": " .. (entry.id or entry[1]) .. " (" .. mode .. ")")
+          count = count + 1
+        end
+      end
+    end
+  end
+  return count
+end
+
 function M.keys(id, mode)
   return vim.keycode(M.binding(id, mode).lhs)
 end

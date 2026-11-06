@@ -300,16 +300,6 @@ local ok, err = xpcall(function()
     wait_line("  Body")
     assert(table.concat(lines(), "\n"):find("\\begin{frame}[fragile]{Intro}", 1, true))
   end)
-  test("native equation default matches the frozen migration baseline", function()
-    expand("equation")
-    wait([[return table.concat(vim.api.nvim_buf_get_lines(0,0,-1,false),'\n'):find('\\label{eq:}',1,true)~=nil]])
-    local expected = lua([[
-      local root=vim.env.NVIM_CONFIG_ROOT
-      local baseline=vim.json.decode(table.concat(vim.fn.readfile(root..'/tests/fixtures/snippets-legacy.json'),'\n'))
-      for _, entry in ipairs(baseline.filetypes.tex) do if entry.trigger=='equation' then return entry.text end end
-    ]])
-    eq(expected, table.concat(lines(), "\n"))
-  end)
   test("native TeX reload preserves formatting and field navigation", function()
     lua([[vim.cmd('SnippetToolsReload')]])
     expand("bf")

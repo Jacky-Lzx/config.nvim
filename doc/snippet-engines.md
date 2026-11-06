@@ -1,6 +1,6 @@
 # Native snippets
 
-All filetypes use the local `snippet-tools.nvim` engine. The 154 personal snippets
+All filetypes use the local `snippet-tools.nvim` engine. The personal snippets
 live in `lua/snippet_collections/`: global date/time and TODO comments, Lua, Python,
 Rust, Typst, Verilog/SystemVerilog, Markdown and TeX. LuaSnip, its old definitions
 and the engine-switch commands have been removed. Restart Neovim after updating
@@ -33,14 +33,19 @@ Useful Markdown checks:
 - Type `mk` or `dm` outside existing math for inline/display math.
 - Select text, press backtick, type `bold` and confirm to wrap it.
 
-`tests/snippet_collections.lua` compares every definition's trigger, priority, word
-boundary and default text with the frozen original export in
-`tests/fixtures/snippets-legacy.json`. The fixture README records its provenance
-and exceptions. No test needs an installed LuaSnip checkout.
+`tests/snippet_collections.lua` validates and renders the current declarations. New
+snippets and deliberate template changes do not need an old inventory update.
+Attached-UI and PTY checks retain independent expectations for selected workflows.
+
+`tests/snippet_migration.lua` preserves the historical comparison against
+`tests/fixtures/snippets-legacy.json`. Run it explicitly when auditing migration
+parity; it is not a daily requirement that personal definitions remain frozen.
+Do not regenerate the historical fixture from current definitions.
 
 ```sh
 sh tests/smoke.sh native
 sh tests/smoke.sh integration
+sh tests/smoke.sh migration   # Historical parity; may differ after deliberate edits
 ```
 
 Integration checks include attached-UI scenarios in `tests/snippets.lua` and
