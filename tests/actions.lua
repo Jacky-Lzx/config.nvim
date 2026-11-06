@@ -35,6 +35,7 @@ function M.binding(id, mode)
         entry.id == id
         and vim.list_contains(modes(entry), mode)
         and (not entry.ft or vim.list_contains(filetypes, vim.bo.filetype))
+        and (type(entry.buffer) ~= "number" or entry.buffer == 0 or entry.buffer == vim.api.nvim_get_current_buf())
       then
         assert(not found, "Ambiguous action: " .. id .. " (" .. mode .. ")")
         found = { owner = owner, entry = entry, lhs = entry[1] }

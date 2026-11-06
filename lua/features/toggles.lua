@@ -13,13 +13,15 @@ function M.map(owner, lhs, opts)
       vim.notify(tostring(err), vim.log.levels.ERROR, { title = owner.name })
     end
   end
-  require("config.bindings").set("config.toggle." .. owner.id, {
-    vim.tbl_extend("force", opts, { lhs, callback, id = "toggle." .. owner.id, mode = mode }),
-  })
   local buf = opts.buffer
   if buf == 0 or buf == true then
     buf = vim.api.nvim_get_current_buf()
+  elseif buf == false then
+    buf = nil
   end
+  require("config.bindings").set("config.toggle." .. owner.id .. ":" .. (buf or 0), {
+    vim.tbl_extend("force", opts, { lhs, callback, id = "toggle." .. owner.id, mode = mode, buffer = buf }),
+  })
   return require("keymap_tools").register("config.toggle." .. owner.id, {
     buf = buf,
     modes = type(mode) == "table" and mode or { mode },

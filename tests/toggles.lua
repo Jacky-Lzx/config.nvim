@@ -109,6 +109,34 @@ assert(row("th").toggle.state == false)
 local new = api.nvim_create_buf(false, true)
 assert(not vim.lsp.inlay_hint.is_enabled({ bufnr = new }), "New buffers must inherit the session toggle")
 
+-- The same action in two buffers has independent mapping ownership.
+local scoped = { api.nvim_create_buf(false, true), api.nvim_create_buf(false, true) }
+local calls = 0
+for _, buf in ipairs(scoped) do
+  adapter.map({
+    id = "scoped",
+    name = "Scoped",
+    get = function()
+      return true
+    end,
+    set = function()
+      calls = calls + 1
+    end,
+  }, "<leader>qz", { buffer = buf })
+end
+for _, buf in ipairs(scoped) do
+  api.nvim_buf_call(buf, function()
+    local action = actions.binding("toggle.scoped")
+    assert(action.entry.buffer == buf)
+    vim.fn.maparg(action.lhs, "n", false, true).callback()
+    assert(row("qz").toggle.name == "Scoped")
+  end)
+end
+assert(calls == 2, "Registering a second buffer removed the first buffer's toggle")
+for _, buf in ipairs(scoped) do
+  api.nvim_buf_delete(buf, { force = true })
+end
+
 -- Same descriptions cannot confuse explicit owner registration.
 for i, enabled in ipairs({ true, false }) do
   adapter.map({
