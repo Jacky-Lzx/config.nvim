@@ -37,7 +37,7 @@
       "source": "https://github.com/Jacky-Lzx/keymap-tools.nvim.git"
     },
     "lsp-tools.nvim": {
-      "commit": "cef60100b933bc48c1a35296854bdc7607cc9c44",
+      "commit": "e7f07e7dcf538775764d9b7ec352dc03d2a4d8cb",
       "source": "https://github.com/Jacky-Lzx/lsp-tools.nvim.git"
     },
     "motion-tools.nvim": {
@@ -89,7 +89,7 @@
       "source": "https://github.com/Jacky-Lzx/task-tools.nvim.git"
     },
     "tex-tools.nvim": {
-      "commit": "565b3c8f09310f055f1b27ee01b982213cbdacb1",
+      "commit": "0fa46a2e0563cf38ec43c530dd4ce2cbcaeef932",
       "source": "https://github.com/Jacky-Lzx/tex-tools.nvim.git"
     },
     "theme-tools.nvim": {

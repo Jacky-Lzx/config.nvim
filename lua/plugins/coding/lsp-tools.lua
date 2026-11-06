@@ -225,6 +225,9 @@ return {
         },
       })
       local opts = ctx.opts
+      opts.server_provider = function()
+        ctx.mount("nvim-lspconfig")
+      end
       vim.lsp.config("*", {
         capabilities = vim.tbl_deep_extend(
           "force",

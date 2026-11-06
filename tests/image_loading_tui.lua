@@ -146,7 +146,7 @@ local function check()
     -- display. The real controller/parser and Lazy provider setup still run.
     local opts = vim.deepcopy((plugins["tex-tools.nvim"]).opts)
     opts.formula_preview.enabled = false
-    require("tex-tools").setup(opts)
+    require("config.plugins").manager:use("tex-tools.nvim").setup(opts)
     document("tex", "$x$")
     vim.treesitter.get_parser(0, "latex"):parse()
     api.nvim_win_set_cursor(0, { 1, 1 })

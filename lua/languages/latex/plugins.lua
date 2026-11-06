@@ -23,9 +23,6 @@ return {
   },
   {
     config = function(ctx)
-      vim.g.tex_flavor = "latex"
-      -- tex-tools owns conceal; native TeX syntax must not add replacements.
-      vim.g.tex_conceal = ""
       require("tex-tools").setup(ctx.opts)
     end,
     id = "tex-tools.nvim",
@@ -33,6 +30,8 @@ return {
     version = "main",
     dev = true,
     main = "tex-tools",
+    mount = "on-demand",
+    ft = { "tex", "plaintex" },
     -- Formula display requires image-tools only after a preview is ready.
     opts = {
       lsp = "texquill",

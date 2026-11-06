@@ -4,11 +4,12 @@ return {
     source = "Jacky-Lzx/workspace-tools.nvim",
     version = "main",
     dev = true,
+    mount = "on-demand",
     start = require("config.context").current().selection.features.sessions,
     children = {
       {
         id = "workspace-tools.python",
-        start = true,
+        ft = { "python" },
         opts = {
           python = {},
         },

@@ -10,6 +10,17 @@ function M.setup()
     vim.print(require("config").info())
   end, { desc = "Show active selection, tool paths and resolved plugin sources", force = true })
 
+  if require("languages").is_enabled("python") then
+    -- The alias remains available before a Python buffer has initialized its provider.
+    create("VenvSelect", function(args)
+      require("config.plugins").manager:activate("workspace-tools.python")
+      vim.api.nvim_cmd(
+        { cmd = "WorkspacePython", args = args.args ~= "" and { args.args } or {}, bang = args.bang },
+        {}
+      )
+    end, { nargs = "?", bang = true, complete = "file", desc = "Select project Python environment" })
+  end
+
   create("ConvertTabToSpace", "%s/\t/  /g", {})
 
   create("KeyTest", function()

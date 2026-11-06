@@ -1,6 +1,6 @@
 local M = {
   source = "Jacky-Lzx/plugin-tools.nvim",
-  commit = "d60f8b689af2b92ef5da3bf87e2aea0fa107d12f",
+  commit = "4d91ef702d2f770dc32236f928ca8f17448a2691",
 }
 
 function M.installed()

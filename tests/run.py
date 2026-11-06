@@ -134,6 +134,9 @@ def suites():
         lua("environment"),
         lua("per_plugin_flags"),
         startup("personal_startup"),
+        startup("demand_startup"),
+        startup("demand_startup", {"NVIM_TEST_SCENARIO": "python", "NVIM_DEMAND_COMMANDS": "1"}),
+        tui("demand"),
     ]
     integration += [
         lua(name)

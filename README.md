@@ -20,11 +20,25 @@ nvim --headless -u NONE -i NONE -l ~/.config/nvim/scripts/install-plugins.lua
 
 This installs the pinned manager and plugin lock without starting plugin features.
 Language tools and parsers are installed separately with `:ConfigToolsInstall`.
-Startup mounts plugins and registers their configuration without running Git,
-checking updates, or installing missing packages. Completion, snippets and images
-own their first-use initialization inside their respective plugins. Other setup
-callbacks register native behavior immediately; the manager has no loading
-triggers or `require()` interception.
+Startup resolves plugin declarations without running Git, checking updates, or
+installing missing packages. Ordinary plugins mount at startup; packages declaring
+`mount = "on-demand"` wait for a matching `ft` or explicit manager call. Completion,
+snippets and images retain their own first-use initialization. There is no
+`require()` interception.
+
+TeX tools mount and initialize on the first `tex`/`plaintex` buffer. The TeX
+flavor/conceal globals stay in early filetype configuration so native detection
+and ftplugins see them in time. Python environment setup waits for a Python
+buffer or `:VenvSelect`; session management can mount their shared package earlier
+without initializing the Python child. BasedPyright root resolution also ensures
+that child is ready before looking up the project environment.
+
+LSP names and filetype hints register at startup. `lsp-tools` prepares the
+`nvim-lspconfig` runtime provider just before the first native server config
+resolution. An explicit LSP status inspection may also resolve those definitions.
+Installation and health still consume the complete selected language declarations.
+`:PluginTools explain {id}` exposes mount policy, filetypes, phase and activation
+reason; the panel also shows mounting and initialization timings.
 
 Published personal plugins declare their GitHub `source` with `dev = true`.
 The shared development policy prefers `NVIM_DEV_PLUGIN_ROOT/<plugin>`; if absent,

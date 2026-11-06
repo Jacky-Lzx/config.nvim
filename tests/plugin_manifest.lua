@@ -8,7 +8,9 @@ local local_graph = resolve(specs, { dev = { path = require("utils.platform").de
 assert(not local_graph.packages["notification-tools.nvim"].managed)
 assert(local_graph.nodes["workspace-tools.python"].owner == "workspace-tools.nvim")
 assert(local_graph.nodes["workspace-tools.nvim"].start == false)
-assert(local_graph.nodes["workspace-tools.python"].start == true)
+assert(local_graph.nodes["workspace-tools.python"].start == false)
+assert(vim.deep_equal(local_graph.nodes["workspace-tools.python"].ft, { "python" }))
+assert(local_graph.nodes["workspace-tools.nvim"].mount == "on-demand")
 assert(local_graph.nodes["workspace-tools.python"].declarations[1].origin == "languages.python.plugins")
 assert(local_graph.nodes["notification-tools.nvim"].declarations[1].origin == "plugins.ui.notification-tools")
 local provider = local_graph.nodes["nvim-lspconfig"]
@@ -17,6 +19,7 @@ assert(provider.owner == provider.id and local_graph.packages[provider.id].manag
 assert(provider.package.source == "https://github.com/neovim/nvim-lspconfig.git")
 assert(provider.declarations[1].origin == "plugins.third_party.nvim-lspconfig")
 assert(provider.start == false and not provider.main and not provider.config)
+assert(provider.mount == "on-demand")
 assert(local_graph.nodes["lsp-tools.nvim"].dependencies[provider.id] == false)
 assert(not local_graph.nodes["nvim-dap"] and not local_graph.nodes["task-tools.nvim"])
 local remote = resolve(
@@ -28,7 +31,8 @@ assert(remote.packages["notification-tools.nvim"].source == "https://github.com/
 assert(remote.packages["image-tools.nvim"].managed, "Published image-tools must have a remote fallback")
 
 for _, node in pairs(local_graph.nodes) do
-  assert(node.event == nil and node.cmd == nil and node.ft == nil and node.lazy == nil and node.bootstrap == nil)
+  assert(node.event == nil and node.cmd == nil and node.lazy == nil and node.bootstrap == nil)
+  assert(type(node.ft) == "table")
 end
 assert(not package.loaded.lazy and not package.loaded["image_tools.runtime"])
 assert(not package.loaded["config.bindings"], "Resolving specs must not register personal keymaps")
