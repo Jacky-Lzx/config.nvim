@@ -37,6 +37,10 @@ unset PROF NVIM_PLUGIN_LOCKFILE NVIM_TEST_SCENARIO NVIM_COLUMN_GUIDE_STARTUP BAR
 cp "$root/plugin-tools-lock.json" "$test_tmp/plugin-tools-lock.json"
 export NVIM_PLUGIN_LOCKFILE="$test_tmp/plugin-tools-lock.json"
 
+# Retain coverage for the restorable third-party configuration. The dedicated
+# personal-default check below exercises the policy with this opt-in disabled.
+export NVIM_THIRD_PARTY_PLUGINS=1
+
 cat >"$test_tmp/sample.tex" <<'EOF'
 \documentclass{article}
 \begin{document}
@@ -71,7 +75,7 @@ integration_checks() (
   NVIM_TEST_LINK_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   NVIM_TEST_REFERENCE_FIRST=1 nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/lsp_tools.lua"
   BARS_TEST=before nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/bars.lua"
-  run_tests plugin_manifest
+  run_tests plugin_manifest third_party_policy
   installed_plugins=$(nvim --headless -u NONE -i NONE --noplugin \
     --cmd "lua io.stdout:write(vim.fn.stdpath('data') .. '/plugin-tools')" +qa)
   fallback_ready=true
@@ -136,6 +140,13 @@ integration_checks() (
   done
 )
 
+if [ "$suite" != native ]; then
+  printf '\nRunning personal defaults with standalone third-party plugins disabled\n'
+  NVIM_THIRD_PARTY_PLUGINS=0 nvim --headless -i NONE \
+    --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
+    -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/third_party_disabled.lua')"
+fi
+
 case "$suite" in
 native) native_checks ;;
 integration) integration_checks ;;
@@ -144,4 +155,5 @@ all)
   integration_checks
   ;;
 esac
+
 printf '\nSmoke checks passed (%s)\n' "$suite"

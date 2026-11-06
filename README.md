@@ -28,6 +28,17 @@ contributions use the `.nvim-plugins.lua` path. `:PluginTools explain {id}` show
 declarations and option assignments in merge order, including disabled contributions
 and paths replaced by project overrides. Metadata resolution remains side-effect free.
 
+Standalone third-party plugins are temporarily disabled by `lua/config/third_party.lua`.
+This pauses Conform formatting, nvim-lint save hooks, DAP, Crates, Markdown/Typst
+preview/rendering, Obsidian and WakaTime, including their commands and mappings.
+Declarations, installed checkouts and lock entries are retained. Owned plugins
+stay enabled; dependencies declared beneath them, including
+`lsp-tools.children`'s nvim-lspconfig, remain available. Theme-tools continues to
+manage its own theme and icon providers without changes.
+Set the policy's `enabled` to true, or launch with `NVIM_THIRD_PARTY_PLUGINS=1`,
+then restart Neovim to restore the original standalone plugins. `:ConfigInfo`
+reports the switch as `plugins.third_party`.
+
 Managed Git packages live under `stdpath("data")/plugin-tools` (override with
 `NVIM_PLUGIN_ROOT`); development checkouts remain external. To prepare a new
 machine, mount the manager and run its explicit `install()` API with the native
