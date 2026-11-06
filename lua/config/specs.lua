@@ -81,22 +81,14 @@ function M.build(selection)
   end
   add(context.languages.plugins)
   add(M.project())
-  local selected, obsidian_options = {}, {}
+  local selected = {}
   for _, spec in ipairs(specs) do
     if owners[spec.id] then
-      if spec.id == "obsidian.nvim" then
-        obsidian_options = vim.tbl_deep_extend("force", obsidian_options, spec.opts or {})
-      end
       selected[#selected + 1] = spec
     end
   end
-  if type(obsidian_options.workspaces) ~= "table" or #obsidian_options.workspaces == 0 then
-    selected = vim.tbl_filter(function(spec)
-      return spec.id ~= "obsidian.nvim"
-    end, selected)
-  else
-    selected[#selected + 1] =
-      { id = "image-tools.nvim", origin = "config.specs:obsidian", opts = { insert = { directory = "assets/imgs" } } }
+  for _, integration in ipairs({ "integrations.obsidian" }) do
+    selected = require(integration).specs(selected)
   end
   return selected
 end

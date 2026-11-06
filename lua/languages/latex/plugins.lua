@@ -45,7 +45,7 @@ return {
       },
       -- mappings = false, -- languages.latex.buffer owns the existing key layout.
       mappings = true,
-      smart_enter = false, -- Blink -> pairs.nvim owns Insert-mode Enter.
+      smart_enter = false, -- completion-tools and pairs.nvim own Insert-mode Enter.
       conceal = { math_symbols = false, spacing = false },
       build = {
         profiles = {

@@ -24,7 +24,6 @@ return {
     id = "obsidian.nvim",
     enabled = true,
     source = "obsidian-nvim/obsidian.nvim",
-    version = "*", -- Recommended, use latest release instead of latest commit
     -- These only contribute options; opening a vault does not need image APIs.
     opts = {
       -- Keep notes in a specific subdirectory of the vault.

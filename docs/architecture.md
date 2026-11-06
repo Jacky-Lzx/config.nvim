@@ -2,263 +2,136 @@
 
 ## Ownership
 
-- `init.lua` invokes `config.setup()`. `config/` owns startup composition, platform
-  settings, selection, and plugin-manager bootstrap.
-- `core/` owns editor options, general mappings, commands, and autocmds.
-- `features/` owns capability behavior and state. Native folding, column guide,
-  LSP/diagnostic behavior, and completion source selection can run without plugin APIs.
-- `plugins/` owns native plugin-tools specs, explicit dependencies, personal mappings,
-  and plugin-specific configuration. Small adapters used by one plugin stay with its spec.
-- `integrations/` connects feature behavior to plugin APIs. Snacks diagnostic toggles,
-  Blink completion actions, and Blink/pairing Enter composition live here.
-- `languages/` owns language metadata and language-specific plugin contributions.
-  Selection, installation, and health checks must consume the same metadata.
-- `after/lsp/` owns native server overrides. The language registry only selects servers.
-- `ftplugin/` owns settings needed before runtime ftplugins. Neovim 0.12 loads Lua
-  ftplugins after Vimscript ftplugins per runtime directory, so the configuration's
-  Lua hooks run before the built-in scripts. Markdown style and Python/Rust mapping
-  switches belong here; these hooks must not set `b:did_ftplugin` and skip the defaults.
-- `after/ftplugin/` owns buffer options and buffer-local mappings applied after runtime defaults.
-- `config/platform.lua` declares shared defaults and per-platform settings as a data table.
-- `utils/` holds shared helpers: `utils/paths.lua` locates checkout-relative resources;
-  `utils/platform.lua` selects platform settings, resolves environment overrides and
-  executable availability, and runs system commands.
-- Snippets, Tree-sitter queries, and Overseer templates keep their native discovery paths.
+- `init.lua` delegates to `config.setup()`. `config/` composes startup, profiles,
+  platform settings, plugin declarations and the pinned manager bootstrap.
+- `core/` owns editor options, generic commands, mappings and autocmds.
+- `features/` owns native file policy, folding integration, LSP/diagnostic behavior,
+  bars data and completion source preferences. Large/minified files are classified
+  before filetype consumers start expensive work.
+- `plugins/` declares packages and applies personal options and mappings.
+  `integrations/` connects plugin APIs and project-specific policies; the generic
+  declaration collector does not implement Obsidian workspace behavior.
+- `languages/` declares servers, parsers, tools, formatters, linters and plugin
+  contributions. `lsp/` and `after/lsp/` provide native server definitions/overrides.
+- `ftplugin/` supplies early filetype settings; `after/ftplugin/` applies buffer
+  options and mappings after runtime defaults. These hooks retain native ftplugins.
+- `utils.paths` locates resources relative to this checkout. `utils.platform`
+  resolves declarative platform settings, environment overrides and executables.
+- Native snippet definitions remain in `lua/snippet_collections/`; personal query
+  extensions remain in `queries/`. Plugin code is never vendored into this checkout.
 
-## Lifecycle
+## Startup and plugin lifecycle
 
-Set options and early globals, register editor behavior and LSP attach handlers, then
-initialize plugin-tools. It resolves the manifest, mounts runtime directories, and
-executes configuration in explicit `after` order. There is one configuration phase;
-`config(ctx)` applies options, adapters, and ordinary personal mappings through
-`config.bindings.set()`. Merely resolving specs must not bind keys or run plugin APIs.
+`config.setup()` registers the large-file policy, resolves the selected context,
+sets editor options and native behavior, then starts plugin-tools. Startup does
+not fetch Git repositories or install tools. `ConfigReady` follows configuration.
 
-Plugins own their commands, public APIs, and feature-specific event handlers. Lightweight
-setup registers those entry points, while the plugin defers expensive implementations
-until needed. Plugin-owned bootstrap modules can implement that internal lifecycle;
-the manager has no bootstrap hook, key/command/event loading proxies, or require hooks.
-Register UI integrations on explicit events, not scheduled callbacks used as dependency ordering.
+The manager resolves all declarations, mounts runtime directories, and runs each
+root's `config(ctx)` or `main.setup(opts)` once. Plugins own their entry points
+and defer expensive features internally. Completion, image and snippet frontends
+register commands/events without immediately loading their full implementations.
+There are no manager event/key/command proxies or require interception.
 
-Requiring a feature or its adapter must not start plugins or register behavior. Native
-behavior is installed through `setup()` or an attach handler. Adapters are invoked by
-plugin lifecycle hooks or user actions; Snacks is passed explicitly to its diagnostic
-adapter, while Blink configuration is read only when a completion action runs.
+Resolving declarations must not bind keys or initialize plugins. `config(ctx)`
+receives plugin-owned copies of options and registers ordinary personal mappings
+through `config.bindings.set()`. Replacing registrations clears old owned mappings
+and FileType callbacks while preserving manual/other-owner overrides.
 
-Platform settings remain declarative: loading `config.platform` does not inspect the machine
-or start jobs. `utils.platform` matches each platform's `sysname`, falls back to `other`, and
-overlays its fields on `defaults`. Lists are replaced as a whole. Environment overrides and
-executable availability are evaluated when an accessor is called; changing the configuration
-table requires a Neovim restart. Python project interpreter selection remains dynamic.
-`languages/python/interpreter.lua` owns the live project interpreter provider.
-The Python profile connects workspace-tools environment selection through
-`integrations/python_environment.lua`, independently of session persistence.
-BasedPyright, tasks and DAP consume the project interpreter; child environment
-variables are passed explicitly without changing global PATH.
-Platform discovery accepts the selected path as data and handles executable/environment
-fallbacks without inspecting plugin state. Tasks and `:make` use the language accessor.
-Native LSP mapping removal runs in `features.lsp.setup()`, independent of Snacks events.
+Declarations use ordered lists. First appearance establishes a node's position;
+children are traversed before the next sibling. Later contributions to the same
+ID merge dictionaries recursively, replace lists, and can clear a key with an
+empty table. Scalar declaration fields must agree. Merging completes before setup.
+`dependencies` require availability; only `after` imposes initialization order and
+activates its targets. Root nodes default to `start = true`, children to false.
+Runtime directories follow first-declaration order, independently of `after`.
 
-Obsidian workspace paths belong to the vault's `.lazy.lua`, not platform settings. The
-shared spec provides plugin behavior and checks `opts.workspaces` after lazy.nvim merges
-the local spec. Without a configured workspace, Obsidian remains disabled.
+## Sources and installation
 
-Conform owns `<leader>gf` globally and uses configured formatters with LSP fallback.
-LSP attachment must not replace this mapping with a buffer-local native formatting action.
-Diagnostic getters/setters are shared by native mappings and Snacks toggles, so connecting
-Snacks preserves the current diagnostic state.
+GitHub declarations use `owner/repo`. The shared `url_format` in
+`config.plugins.settings()` selects HTTPS or SSH. `dev = true` prefers the external
+checkout under `NVIM_DEV_PLUGIN_ROOT`; absent checkouts use the managed package
+root. Personal plugins target `main` for updates and use exact locked commits for
+installation. Managed Git checkouts are detached at their locked commits.
 
-LSP configuration depends on blink.cmp so its native capability registration runs before
-`vim.lsp.enable()`. Completion has one setup owner. keymap-tools owns Normal/Visual
-prefix hints, operator-pending motions/textobjects, register/mark/spelling hints,
-and `<leader>?`, with selection-tools providing the executable keymap picker.
-keymap-tools initializes at VimEnter, before the first input; early metadata
-registration uses deferred setup without loading the hint engine. Rendering loads
-on first display. selection-tools has its own setup owner and is required only by
-the executable picker. editing-tools publishes text-object metadata at VimEnter
-without initializing its implementation; it loads on the first editing key or
-:EditingTools command. It owns text objects, editing operators and alignment.
-mini.ai, mini.align and mini.operators are no longer declared.
-editing-tools bundles the textobject query data for the configured languages,
-and owns the mI/mA live insertion sessions. LaTeX publishes buffer-scoped groups. Snacks
-registers dynamic toggle descriptions. Each integration registers named groups/hints
-under its own source ID; registrations have replace/dispose lifecycles. Native
-vim.keymap.set() owns real mappings. The picker shortcut is explicitly declared in
-its lazy.nvim spec. Dynamic descriptions use the supplied source context; list()
-provides read-only inspection without initializing UI. which-key is no longer a
-plugin dependency.
+The manager itself prefers an explicit `NVIM_PLUGIN_TOOLS_PATH`, then its local
+development checkout, then the immutable revision in `config/plugin_bootstrap.lua`.
+Run `scripts/install-plugins.lua` explicitly with headless Neovim to prepare a new
+machine. Installation does not start plugin features. Existing managed packages
+can be reconciled with a changed lock using `:PluginTools restore`.
 
-Pairing declares `Jacky-Lzx/pairs.nvim` with lazy.nvim's `dev = true`. The shared `dev.path`
-comes from `NVIM_DEV_PLUGIN_ROOT` (default `~/Documents/Github/nvim_plugins`), and
-`dev.fallback = true` selects the GitHub version pinned in `lazy-lock.json` when the local
-`pairs.nvim` directory is absent. Pairing and snippet-tools load on `InsertEnter`, while
-`integrations/completion.lua` composes Enter after completion confirmation. lazy.nvim owns
-source selection; `:checkhealth pairs` provides the plugin's own diagnostics. Plugin source
-is not copied into this repo.
+`plugin-tools-lock.json` owns plugin revisions. `toolchain-lock.json` separately
+owns managed language tools. Toolchain installs immutable parser/query bundles
+and tool versions; it does not own language behavior. System/Nix executables may
+satisfy requirements without installing managed fallback packages. Installation,
+local tests, Git commits, publication and hosted CI are distinct states.
 
-snippet-tools owns snippets for every filetype and loads native definitions from
-`lua/snippet_collections/`, including global date/time and TODO comments.
-`integrations/snippets.lua` connects completion, LSP expansion, navigation, choices
-and Visual capture directly to snippet-tools. Completion keeps the highest-priority
-definition for a duplicate trigger. The collection owns the TeX context detector and
-injected-language comment delimiters. LuaSnip and its engine-switch commands have
-been removed; regression tests use a frozen export of the 154 original definitions.
+## Selection and language metadata
 
-completion-tools owns the completion menu and connects directly to the official
-Copilot Language Server, without copilot.lua. The server starts on a completion request
-or `:CompletionToolsCopilot auth`; the command lazy-loads completion-tools when needed. Command-line completion does not initialize
-pairing, snippets, or AI. LSP depends on completion-tools so capability negotiation is
-complete before servers start. With the AI feature enabled, Copilot is in the default
-source list and Alt-i toggles it for the current buffer. Copilot status uses the original icons and a loading spinner in the completion window footer, updated by
-`User CompletionToolsCopilotStatus`. The statusline has no Copilot component; drawing
-either UI never starts the server.
+`config.selection` chooses profiles and optional workflows. The selection schema
+validates those fields without loading plugins. `config.context.initialize()`
+resolves the active selection once; a later different selection requires restart.
+`languages.current()` and all installation/health consumers read that context.
+Independent `languages.resolve()` and `config.context.resolve()` calls support tests.
 
-ui-tools owns the native bufferline, statusline and per-window winbar. Its winbar
-module manages window ownership, view preservation, filename/client caches and themes;
-inactive splits retain their own filename and cursor-specific breadcrumbs.
-`features/bars.lua` supplies component options, a lazy lsp-tools breadcrumb callback
-and task-status snapshots. It does not draw bars or manage window-local options.
+The collector imports shared groups, enabled workflows, language contributions,
+then the trusted project's `.nvim-plugins.lua`. Integration adapters finalize
+project-specific policy. `integrations.obsidian` enables Obsidian only when an
+active contribution supplies workspaces, and contributes the vault image directory.
+Workspace paths live in the vault's trusted project file, never platform settings.
 
-ui-tools also owns native folding sources, highlighted fold text, preview floats
-and per-window initialization/restoration. The config chooses the fold-count
-suffix and keeps the `zS`/`zK` mappings. `features/folding.lua` is only a forwarding
-compatibility entry for old session foldtext expressions.
+Language fields describe servers, parsers, tools, formatter/linter bindings and
+plugin contributions. Schemas reject malformed lists, unknown fields and conflicting
+owners. Shared plugin configuration runs once; language contributions supply options.
+Optional executable requirements are probed through the platform resolver, which
+can be replaced in deterministic tests. Selected and enabled servers remain separate.
 
-Use `specs` for optional configuration contributions and `dependencies` only when
-loading order is required. Obsidian's image options use `specs`; lsp-tools requests
-picker/diff APIs only on use. tex-tools requests image-tools only when a compiled
-formula is ready for display. `integrations/image_tools.lua` installs lightweight
-reference-candidate watchers for automatic preview without loading the backend
-for plain documents. Changes inspect only the edited lines, and activation is
-scheduled outside textlock and rechecked before loading. These hints do not
-resolve paths or replace the plugin's authoritative reference parser. Preview
-and toggle mappings dispatch before requesting a provider; disabling automatic
-preview while the backend is unloaded does not initialize it. Markdown formula
-candidates retain image-tools' existing math-preview activation unless disabled.
-Language DAP contributions supply options without adding filetype triggers.
-The file tree configures its file-operation integration before
-the first tree window opens; LSP attachment alone does not load the tree.
+Python's interpreter accessor stays dynamic. workspace-tools environment selection
+works independently of saved sessions; LSP, tasks and DAP consume the same accessor.
+Child process environment changes do not mutate global PATH.
 
-VimTeX loads at startup so headless inverse-search clients can invoke its global
-command. Its buffer behavior remains filetype-driven. Conform's initial formatting
-toggle is registered before its first save trigger, so opting out does not load the
-formatter. Alignment, textobjects, surround, and operators load on their first keys;
-file decorations load on file read/create and search decorations on first search.
+## Feature boundaries
 
-A language definition must not register autocmds, mutate globals, run external commands, or
-install dependencies while being read. Its plugin specs may do these things in explicit
-lifecycle hooks. Tool/parser installation remains an explicit user command.
+completion-tools owns the completion UI and optional Copilot server connection;
+snippet-tools owns snippets, choices, selection capture and completion integration.
+pairs owns pairing. Their frontends handle first-use initialization. Command-line
+completion and status inspection do not initialize unrelated engines or AI servers.
 
-Profiles select languages; feature switches select AI, debugging, tasks, and sessions.
-Unknown profile/feature names should fail with an actionable error. Disabling a language
-removes its servers, tool contributions, and dedicated plugins; basic filetype behavior
-may remain.
+lsp-tools owns LSP semantics, requests and result validation; selection-tools owns
+picker presentation and lifecycle; git-tools owns Git workflows and diff rendering.
+File-tools owns filesystem operations, external opening and the tree. Its LSP
+file-operation capabilities are available before servers start. Dependencies do
+not imply that their user interfaces have initialized.
 
-## Migration and validation
+ui-tools owns bars, folds, annotations and window presentation. The configuration
+supplies preferences and data callbacks. keymap-tools inspects native mappings,
+provides hints and the executable picker, and accepts metadata from feature owners.
+Read-only status queries must not activate providers.
 
-Runtime directories contain active configuration only. The former `config/legacy/`
-modules and unimported `plugins/disable/` collection were removed after migration;
-their exact previous contents remain in Git commit `f68a371`. To inspect an old spec,
-use `git show f68a371:lua/plugins/disable/<name>.lua` rather than restoring an entire
-inactive import tree. Candidates included Avante, Bufferline, Comment.nvim, copilot-lsp,
-im-select, llm.nvim, Minuet, Neo-tree, neoconf, Sidekick, smear-cursor, and treesitter-context.
-Reintroduce a chosen plugin in its current capability group with explicit lifecycle rules.
+tex-tools owns TeX editing, builds, forward/inverse search, conceal and preview
+selection. Formula compilation loads image rendering only when needed. The
+configuration dispatches TeX preview to its unified API and other files to image-tools.
+The selected parser and Neovim queries come from the pinned tree-sitter-latex fork.
+Queries own math/path priorities; theme-tools owns TeX semantic colors. Buffer
+attachment starts highlighting and preserves syntax fallback if the parser fails.
 
-1. Make startup and editor behavior explicit.
-2. Group plugin specs by purpose and introduce feature selection.
-3. Consolidate language metadata; share it with tool installation and health checks.
-4. Preserve and verify Vue and LaTeX integration behavior.
+Conform owns the shared format mapping, with native LSP fallback. LSP attachment
+must not replace it. Diagnostic switches share the same native state. Tasks and
+workspace persistence remain separate: sessions restore task definitions without
+silently restarting processes.
 
-Use fixed profile fixtures for registry tests. Compare resolved plugin/tool/formatter
-configuration against the pre-migration baseline. Check real startup and representative
-filetypes with installed plugins, without installing or updating dependencies.
-`tests/smoke.sh native` isolates plugin data and development roots, exercising native behavior
-and contracts with plugin APIs mocked. `tests/smoke.sh integration` exercises installed plugins,
-parser queries, startup profiles, and actual input. The default `all` entry runs both suites.
-Integration checks also require Python 3 and a POSIX PTY. `tests/tui.py` exercises
-the real `UIEnter` and `VeryLazy` path, cold command/key entry points, first-save
-formatting control, and deferred completion/debugging/tree integrations. Ordinary
-headless startup does not emit `UIEnter` and cannot cover that path by waiting.
-`PROF=1 nvim` keeps the Snacks profiler running through the synchronous `VeryLazy`
-handlers instead of stopping at `VimEnter`.
+## Validation and performance
 
-Test setup redirects toolchain live-session leases into the temporary state tree,
-while retaining the real installed tools, parsers and lease implementation. UI
-checks therefore neither write into the host tool store nor sample permission
-warning floats. Snippet PTY snapshots publish JSON by atomic rename so external
-readers always receive a complete UTF-8 frame.
+`sh tests/smoke.sh native` isolates plugin data and runs offline native tests.
+`sh tests/smoke.sh integration` exercises installed plugins, parsers and real PTYs.
+`python3 tests/remote_install.py` explicitly installs pinned GitHub versions into
+isolated directories and starts editors with development paths hidden. It checks
+minimal/default startup and first-use public APIs; it requires network access.
 
-## Language metadata API
+`ConfigInfo` and `checkhealth config` report the already-resolved context without
+starting plugins. Health checks distinguish optional/system/managed tools.
 
-`config/inspect.lua` builds fresh diagnostic snapshots for `config.info()` and health checks.
-Selected servers and enabled servers are separate fields. Tool paths are resolved live;
-plugin sources/directories/loading states come from the already-loaded lazy.nvim registry.
-Inspection never starts a plugin, installs dependencies, or mutates the active context.
-
-`languages.resolve(selection)` returns a fresh aggregate for a fixed selection;
-`config/selection_schema.lua` validates selection without loading languages or the
-active context. Both independent language resolution and context composition use it.
-`config.context.initialize(selection)` resolves the active selection and language data once.
-`config.setup()` obtains this context before editor behavior or lazy.nvim imports, reusing
-an explicitly initialized selection when present. Every consumer, including `languages.current()`, reads this
-same context. A later different selection fails explicitly; restart after changing profiles.
-`config.context.resolve(selection)` produces independent contexts for validation.
-`config/specs.lua` imports shared feature groups and appends the active language specs.
-
-Resource paths use `utils.paths.config(...)`, anchored to the checkout containing that
-module instead of an unrelated default `stdpath("config")` when using an explicit init file.
-
-Plugin declarations use explicit module lists. Enabled third-party declarations live in
-`plugins/third_party/`, while disabled declarations and their dedicated language options
-live in `plugins/disabled/`. Language modules reference these declarations to retain profile
-selection, and nvim-lspconfig remains a child of lsp-tools. Local plugins retain their
-workflow directories. Completion configuration lives in `plugins/coding/completion/`;
-shared source cycling/toggling in `features/completion/init.lua` accepts provider configuration
-as data. `integrations/completion.lua` connects these preferences to completion-tools.
-
-A language may declare:
-
-| Field | Consumer |
-| --- | --- |
-| `servers` | nvim-lspconfig enables these native LSP config names |
-| `parsers` | Tree-sitter's explicit installation command |
-| `tools` | Toolchain installation and `checkhealth config` |
-| `formatters`, `formatter_options` | Conform filetype assignments and custom formatter settings |
-| `linters`, `linter_options` | nvim-lint assignments and static custom linter settings |
-| `plugins` | Native lazy.nvim specs or targeted imports for complex integrations |
-| `requires` | Optional executable requirements for filetype formatter/linter bindings |
-
-A tool has a `package` name (optional), an `executable` name or a `resolve` function,
-an optional `feature` requirement, and an optional `post_install` callback. System requirements
-and managed packages are deduplicated separately so a system requirement cannot suppress a
-later language's package installation. Health checks deduplicate executable checks.
-
-Conflicting filetype formatter/linter definitions fail explicitly. Shared plugin setup runs
-once in `plugins/coding/`; language contributions never call the same plugin's setup again.
-A custom linter needing plugin APIs (Verilog's parser) can use a language plugin `opts` hook.
-
-`languages/schema.lua` checks declaration fields, types, feature names, and tool identity.
-Linter bindings must be contiguous lists of non-empty names. Formatter bindings use the
-same list shape plus Conform's typed filetype options (`stop_after_first`, `quiet`,
-`timeout_ms`, `lsp_format`, `id`, `name`, `filter`, and `formatting_options`). Unknown
-options, sparse indices, and invalid option types fail while reading the declaration.
-Duplicate tools must have identical definitions; conflicts report both language owners.
-Optional bindings use `requires = { formatters = { html = "html_beautify" } }` rather than
-probing the machine while requiring a definition. `languages.resolve(selection, capabilities)`
-accepts an executable resolver for deterministic availability tests; production uses the
-platform resolver and probes each requirement once per resolution.
-
-## Preserved defaults and deliberate corrections
-
-All existing default profiles, including `optional`, remain enabled. Default plugin, managed-tool,
-parser, formatter, linter, and DAP selections were compared with the original resolved specs.
-
-- KDL no longer falls back to being treated as an LSP server name.
-- LaTeX math insertion mappings are buffer-local.
-- VimTeX globals are set in `init`, before its filetype scripts run.
-- Custom theme highlights reapply on colorscheme changes.
-- Lua completion and AI completion integrations follow their owning language/feature.
-- Snippet discovery uses the configuration path, independent of the working directory.
-
-No plugin versions were updated. Integration checks use installed plugins with external LSP
-startup stubbed; live server responses, PDF tools, and actual debugger sessions need separate
-interactive verification when those integrations change.
+Performance work starts with fresh-process startup and actual first-use measurements.
+Use interleaved real PTYs for visible behavior; verify cursor/mode/focus, burst input,
+theme changes and asynchronous completion boundaries. Headless or isolated component
+timings do not establish a visible startup improvement. `PROF=1 nvim` records through
+`ConfigReady` using debug-tools; startup profiling itself must not run in normal use.

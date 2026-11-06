@@ -56,7 +56,7 @@ end
 assert(not package.loaded["debug_tools.profiler"], "Profiling must remain opt-in")
 assert(not package.loaded.lazy and not package.loaded.snacks, "Core setup must remain plugin-independent")
 
--- Opting into profiling uses the local debug-tools runtime and its startup hook.
+-- Opting into profiling invokes the selected debug-tools startup hook.
 local profiling = require("extra.profiling")
 local started = false
 package.preload["debug_tools.profiler"] = function()
@@ -70,5 +70,4 @@ end
 vim.env.PROF = "1"
 profiling.setup()
 assert(started)
-assert(vim.list_contains(vim.opt.runtimepath:get(), require("utils.platform").dev_plugin_root() .. "/debug-tools.nvim"))
 print("Configuration entry point and profiling lifecycle checks passed")

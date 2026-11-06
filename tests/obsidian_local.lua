@@ -6,6 +6,7 @@ require("config.context").initialize({ profiles = { "writing" }, features = {} }
 local specs = require("config.specs")
 local shared = require("plugins.third_party.obsidian")[1]
 assert(shared.enabled == true and shared.opts.workspaces == nil)
+assert(shared.version == nil, "Use the lock and upstream HEAD; the native manager has no wildcard version solver")
 local plain = specs.build()
 for _, node in ipairs(plain) do
   assert(node.id ~= "obsidian.nvim")

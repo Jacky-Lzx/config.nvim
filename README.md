@@ -139,7 +139,7 @@ runtime-path handling.
 - `lua/core/`: editor options, general mappings, commands, and autocmds.
 - `lua/features/`: native folding, column guide, LSP/diagnostic behavior, and completion source state.
 - `lua/plugins/`: native plugin-tools specs, dependencies, ordinary mappings, and plugin-specific configuration.
-- `lua/integrations/`: adapters connecting native completion, snippets, images and other plugins.
+- `lua/integrations/`: adapters connecting native completion, snippets, images and project-specific plugin policies.
 - `lua/languages/`: language metadata and dedicated plugin specs.
 - `lua/utils/`: shared helpers for resource paths, platform discovery, and system commands.
 - `ftplugin/`: settings needed before runtime ftplugins, such as style and mapping switches.
@@ -154,7 +154,7 @@ LSP attachment adds navigation/refactoring mappings without replacing the shared
 `<leader>tf` toggles automatic formatting before the first save.
 Debugging loads on debugger keys; merely opening C/C++ or Swift does not
 initialize DAP. Pairing/snippets load on Insert mode, and optional completion providers
-load when used. VimTeX stays available at startup for headless inverse search.
+load when used. tex-tools and the selected PDF viewer own inverse search.
 
 Toggle descriptions and state are registered with keymap-tools alongside their feature
 owners. Hints and the mapping picker share `Enable` / `Disable` descriptions, and
@@ -162,8 +162,8 @@ owners. Hints and the mapping picker share `Enable` / `Disable` descriptions, an
 Status reads do not activate lazy Git, pairing, Markdown or image providers; unavailable
 state displays a neutral `Toggle` description. Window, buffer, tab and session state
 follow the actual switch scope. Diagnostics and formatting keep their native mappings
-when Snacks or Conform loads. Snacks switches are registered by their explicit object,
-without matching descriptions or replacing the global Snacks mapping hook.
+when feature providers initialize. Switches are registered by their explicit owner,
+without matching descriptions or replacing global mapping hooks.
 
 ## LSP tools
 
@@ -215,7 +215,7 @@ cancels the input.
 Normal-mode counts work (for example, `3]r`); jumps stop at the ends and add a
 jumplist entry. LSP document highlights provide semantic positions, with read/write
 highlight groups when supported by the server. lsp-tools owns automatic reference
-highlighting, so Snacks.words is disabled. `]]` / `[[` retain native section and
+highlighting; the former Snacks.words provider is removed. `]]` / `[[` retain native section and
 terminal-prompt navigation. Reference navigation itself does not require Snacks.
 
 The configuration prefers the local development checkout through plugin-tools'
@@ -232,12 +232,12 @@ configuration-side linked-editing adapter are no longer needed.
   `y` copies, and `gx` opens a documentation link. `K` keeps ordinary hover.
 - `go` in Normal mode: open the LSP document link, falling back to file-tools'
   system path opener. Visual `go` opens the selected text. A path-only open keeps
-  lsp-tools unloaded when no server offers document links.
+  file-tools as the fallback when no server offers document links.
 - `<leader>g?` / `:LspToolsInfo`: inspect clients, roots, providers and requests.
 - `gci` / `gco`: persistent incoming/outgoing call trees; `<leader>gT`: type tree.
   Tab/`l` expands, `h` collapses, `d` switches direction, `p` previews source,
   Enter jumps to the symbol and `g` jumps to a call site.
-- `<leader>go`: outline. Both `gi` and `<leader>gr` use the same Snacks references picker.
+- `<leader>go`: outline. Both `gi` and `<leader>gr` use the same lsp-tools references picker.
 - `<leader>gd`: live diagnostic overview of all received diagnostics, grouped by
   directory/file. `<LocalLeader>S` cycles all/project/original-buffer scopes;
   `<LocalLeader>d` opens details, `<LocalLeader>a` previews a fix, and
@@ -246,8 +246,8 @@ configuration-side linked-editing adapter are no longer needed.
   declarations on the right. `<LocalLeader>r` queries the source window's current symbol.
 - `<leader>gq` / `<leader>gL`: quickfix / original window's location list. Native
   ordering, current index, visual columns and list history remain canonical.
-- `<C-t>` in Snacks picker input (Normal/Insert): import selected items, or all
-  filtered items when nothing is selected, into a persistent result snapshot.
+- `<C-t>` opens the selected picker item in a tab; `<C-q>` and `<C-l>` export
+  marked items, or the filtered results, to quickfix and the location list.
 
 Trouble is replaced by lsp-tools. Result lists keep source focus when opened;
 Enter jumps; groups use native Neovim folds: `za`, `zc`/`zo`, `zM`/`zR`,
@@ -412,7 +412,7 @@ math, `]i/[i` items and `]t/[t` table cells.
 `<localleader>li` shows project information; use `:TexToolsInsertItem` or
 `<Plug>(TexToolsInsertItem)` to insert an item. Space-prefixed shortcuts stay
 out of Insert mode so typing Space stays immediate; Enter remains composed
-by Blink and pairs.nvim.
+by completion-tools and pairs.nvim.
 TeX snippets use tex-tools math context; Markdown retains its own detection.
 
 All filetypes use snippet-tools. Native collections include Lua,

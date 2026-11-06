@@ -68,7 +68,7 @@ end
 if vim.env.NVIM_TEST_REFERENCE_FIRST == "1" then
   feed("2]r")
   assert(require("config.plugins").initialized(spec.id), "Reference mapping did not load lsp-tools")
-  assert(vim.api.nvim_win_get_cursor(0)[2] == 8, "Lazy reference replay lost the count")
+  assert(vim.api.nvim_win_get_cursor(0)[2] == 8, "Reference navigation lost the count")
 end
 if vim.env.NVIM_TEST_OUTLINE_FIRST == "1" then
   -- Exercise first-use outline loading before any LspAttach.
@@ -90,7 +90,7 @@ local calls = 0
 vim.lsp.buf.code_action = function()
   calls = calls + 1
 end
--- Exercise Lazy's first-key loading and replay, then the installed callback.
+-- Exercise the configured native mapping, then invoke it again.
 local keys = vim.api.nvim_replace_termcodes(vim.g.mapleader .. "a", true, true, true)
 vim.api.nvim_feedkeys(keys, "xt", false)
 assert(require("config.plugins").initialized(spec.id), "First code action key did not load the local project")
@@ -250,6 +250,6 @@ assert(opts.code_actions.native.file_header == false, "Native previews must omit
 print(
   "lsp_tools: "
     .. ((not spec.package.managed) and "dev" or "GitHub fallback")
-    .. ", Lazy code action/reference replay, counts and native mappings passed"
+    .. ", code action/reference mappings and counts passed"
 )
 vim.cmd("qa!")
