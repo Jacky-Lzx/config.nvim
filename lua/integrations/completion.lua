@@ -32,6 +32,7 @@ function M.options()
       -- input-tools owns its native completefunc/popupmenu and confirmation.
       return vim.b.completion ~= false and vim.bo.filetype ~= "input-tools-input"
     end,
+    trigger_characters = { ".", "/" },
     sources = function()
       return require("features.completion").active_sources(M.source_config)
     end,
