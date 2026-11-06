@@ -12,7 +12,7 @@ return {
   },
   parsers = { "markdown", "markdown_inline" },
   formatters = {
-    -- Conform will run the first available formatter
+    -- Run the first available formatter
     markdown = { "prettierd", "prettier", stop_after_first = true },
   },
   plugins = { "languages.markdown.plugins" },

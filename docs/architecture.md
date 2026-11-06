@@ -114,9 +114,10 @@ The selected parser and Neovim queries come from the pinned tree-sitter-latex fo
 Queries own math/path priorities; theme-tools owns TeX semantic colors. Buffer
 attachment starts highlighting and preserves syntax fallback if the parser fails.
 
-Conform owns the shared format mapping, with native LSP fallback. LSP attachment
-must not replace it. Diagnostic switches share the same native state. Tasks and
-workspace persistence remain separate: sessions restore task definitions without
+format-tools.nvim owns formatting execution, with native LSP fallback. The shared
+format mapping is declared in its coding spec. LSP attachment must not replace
+it. Diagnostic switches share the same native state. Tasks and workspace
+persistence remain separate: sessions restore task definitions without
 silently restarting processes.
 
 ## Validation and performance

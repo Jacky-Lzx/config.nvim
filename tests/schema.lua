@@ -17,9 +17,11 @@ rejects("formatters", { [0] = "ruff" }, "positive integer indices")
 rejects("formatters", { [1.5] = "ruff" }, "positive integer indices")
 rejects("formatters", { "ruff", stop_after_first = "yes" }, "expected boolean")
 rejects("formatters", { "ruff", quiet = 1 }, "expected boolean")
-rejects("formatters", { "ruff", timeout_ms = -1 }, "non-negative integer")
-rejects("formatters", { "ruff", timeout_ms = 1.5 }, "non-negative integer")
+rejects("formatters", { "ruff", timeout_ms = -1 }, "positive integer")
+rejects("formatters", { "ruff", timeout_ms = 0 }, "positive integer")
+rejects("formatters", { "ruff", timeout_ms = 1.5 }, "positive integer")
 rejects("formatters", { "ruff", lsp_format = "typo" }, "invalid LSP formatting mode")
+rejects("formatters", { "ruff", lsp_format = "first" }, "invalid LSP formatting mode")
 rejects("formatters", { "ruff", filter = true }, "expected function")
 
 local valid = {
@@ -46,7 +48,9 @@ local valid = {
 local original = vim.deepcopy(valid)
 schema.validate("fixture", valid)
 assert(vim.deep_equal(valid, original), "Validation must not mutate declarations")
-assert(not package.loaded.lazy and not package.loaded.conform and not package.loaded.lint)
+assert(
+  not package.loaded.lazy and not package.loaded.format_tools and not package.loaded.conform and not package.loaded.lint
+)
 print("Language binding schema rejects malformed lists and formatter options")
 
 for _, tool in ipairs({

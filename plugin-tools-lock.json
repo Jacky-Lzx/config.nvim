@@ -4,10 +4,6 @@
       "commit": "686bc35a1b1e5a497329d4c3bc584f1c74fb90b3",
       "source": "https://github.com/Jacky-Lzx/completion-tools.nvim.git"
     },
-    "conform.nvim": {
-      "commit": "016802de402556da54c36bd7359b441266b01cdd",
-      "source": "https://github.com/stevearc/conform.nvim.git"
-    },
     "crates.nvim": {
       "commit": "7039bc1d130e424232a7aa64ceddb170a154ff5b",
       "source": "https://github.com/Saecki/crates.nvim.git"

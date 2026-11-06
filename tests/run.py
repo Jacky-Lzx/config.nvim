@@ -140,6 +140,7 @@ def suites():
         for name in [
             "mapping_contracts",
             "lint_runtime",
+            "format_runtime",
             "treesitter_runtime",
             "project_plugins",
             "obsidian_local",

@@ -69,7 +69,7 @@ and paths replaced by project overrides. Metadata resolution remains side-effect
 
 Third-party declarations are grouped by their current enabled state:
 
-- `lua/plugins/third_party/`: Conform, WakaTime, and the nvim-lspconfig
+- `lua/plugins/third_party/`: WakaTime and the nvim-lspconfig
   provider loaded as a child of lsp-tools.
 - `lua/languages/markdown/plugins.lua`: Obsidian, enabled inside a configured vault.
 - `lua/plugins/disabled/`: disabled third-party plugins and their language-specific
@@ -167,9 +167,10 @@ runtime-path handling.
 
 See [the architecture guide](docs/architecture.md) for ownership and lifecycle rules.
 
-`<leader>gf` uses Conform's configured formatters with LSP fallback in all buffers.
+`<leader>gf` uses format-tools.nvim's configured formatters with LSP fallback in all buffers.
+`<leader>tf` toggles save-time formatting (500ms total budget). Use `:FormatToolsInfo`
+to inspect selection and the last result; executables are managed by toolchain-tools.nvim.
 LSP attachment adds navigation/refactoring mappings without replacing the shared format key.
-`<leader>tf` toggles automatic formatting before the first save.
 Debugging loads on debugger keys; merely opening C/C++ or Swift does not
 initialize DAP. Pairing/snippets load on Insert mode, and optional completion providers
 load when used. tex-tools and the selected PDF viewer own inverse search.
@@ -658,7 +659,7 @@ the resolver checks availability rather than freezing it when the language modul
 ## Nix / NixOS editing
 
 The `base` profile enables Nix Tree-sitter highlighting/folding, the `nil_ls` language
-server, and `nixfmt` through Conform. Saving formats the buffer when autoformat is
+server, and `nixfmt` through format-tools.nvim. Saving formats the buffer when autoformat is
 enabled; `<leader>gf` formats manually. Existing LSP mappings provide completion,
 hover, definitions, references, renaming, and code actions.
 
@@ -672,7 +673,7 @@ Evaluating flake inputs and NixOS options requires a working `nix` installation 
 flakes enabled and locally available inputs. `nil` recognizes the `nixpkgs` flake
 input for NixOS options. Automatic input downloading is disabled; prepare inputs
 explicitly with `nix flake archive` from the project directory. Use `:LspInfo`,
-`:ConformInfo`, and `:checkhealth config` to inspect the setup.
+`:FormatToolsInfo`, and `:checkhealth config` to inspect the setup.
 
 ## Platform configuration
 

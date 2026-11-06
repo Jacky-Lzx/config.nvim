@@ -37,10 +37,10 @@ assert(row("td").toggle.state)
 diagnostic_mapping()
 assert(row("td").toggle.state == false and row("td").desc == "Enable Diagnostics")
 diagnostic_mapping()
-local conform = require("plugins.third_party.conform")[1]
+local formatter = require("plugins.coding.format-tools")[1]
 -- Isolate configuration-owned mappings/metadata from plugin initialization.
 local mocked = {
-  "conform",
+  "format_tools",
   "ui_tools",
   "git_tools",
   "pairs",
@@ -63,7 +63,7 @@ local function configure(spec)
   end
   assert(ok, err)
 end
-configure(conform)
+configure(formatter)
 local format_mapping = vim.fn.maparg("<leader>tf", "n", false, true).callback
 assert(row("tf").toggle.state)
 format_mapping()

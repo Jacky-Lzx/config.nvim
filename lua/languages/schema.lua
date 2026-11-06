@@ -60,14 +60,12 @@ local function formatter_list(value, path)
       local expected = formatter_fields[key]
       check(expected ~= nil, option_path, "unknown formatter option")
       check(type(item) == expected, option_path, "expected " .. tostring(expected))
-      if key == "timeout_ms" or key == "id" then
+      if key == "timeout_ms" then
+        check(item >= 1 and item % 1 == 0, option_path, "expected a positive integer")
+      elseif key == "id" then
         check(item >= 0 and item % 1 == 0, option_path, "expected a non-negative integer")
       elseif key == "lsp_format" then
-        check(
-          vim.list_contains({ "never", "fallback", "prefer", "first", "last" }, item),
-          option_path,
-          "invalid LSP formatting mode"
-        )
+        check(vim.list_contains({ "never", "fallback", "prefer" }, item), option_path, "invalid LSP formatting mode")
       elseif key == "name" then
         string_value(item, option_path)
       end

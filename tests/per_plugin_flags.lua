@@ -17,7 +17,7 @@ local function names(value, excluded_owner)
   return result
 end
 local baseline = graph()
-for _, module in ipairs({ "plugins.third_party.conform", "plugins.disabled.crates" }) do
+for _, module in ipairs({ "plugins.coding.format-tools", "plugins.disabled.crates" }) do
   local spec = require(module)[1]
   local original = spec.enabled
   for _, enabled in ipairs({ false, true }) do

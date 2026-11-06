@@ -3,7 +3,7 @@ local root = assert(vim.env.NVIM_CONFIG_ROOT, "NVIM_CONFIG_ROOT is required")
 vim.opt.runtimepath:prepend(root)
 
 local formatted
-package.loaded.conform = {
+package.loaded.format_tools = {
   setup = function(opts)
     assert(opts.formatters_by_ft._[1] == "trim_whitespace")
   end,
@@ -21,12 +21,12 @@ package.loaded.keymap_tools = {
 package.preload.snacks = function()
   error("Formatting must not load Snacks")
 end
-local conform = require("plugins.third_party.conform")[1]
+local formatter = require("plugins.coding.format-tools")[1]
 vim.g.enable_autoformat = false
-conform.config({ opts = vim.deepcopy(conform.opts), dir = conform.dir })
+formatter.config({ opts = vim.deepcopy(formatter.opts), dir = formatter.dir })
 assert(vim.g.enable_autoformat == false, "preserve explicit autoformat preference")
 vim.g.enable_autoformat = nil
-conform.config({ opts = vim.deepcopy(conform.opts), dir = conform.dir })
+formatter.config({ opts = vim.deepcopy(formatter.opts), dir = formatter.dir })
 local toggle_format = vim.fn.maparg("<leader>tf", "n", false, true).callback
 toggle_format()
 assert(vim.g.enable_autoformat == false, "Allow disabling formatting before the first save")
@@ -36,14 +36,14 @@ assert(not package.loaded.snacks)
 toggle_format()
 assert(vim.g.enable_autoformat == true)
 local buf = vim.api.nvim_get_current_buf()
-assert(conform.opts.format_on_save(buf).lsp_format == "fallback")
+assert(formatter.opts.format_on_save(buf).lsp_format == "fallback")
 vim.b[buf].disable_autoformat = true
-assert(conform.opts.format_on_save(buf) == nil)
+assert(formatter.opts.format_on_save(buf) == nil)
 vim.b[buf].disable_autoformat = nil
 vim.b[buf].enable_autoformat = false
-assert(conform.opts.format_on_save(buf) == nil)
+assert(formatter.opts.format_on_save(buf) == nil)
 vim.b[buf].enable_autoformat = nil
-require("config.bindings").entries[conform.id][1][2]()
+require("config.bindings").entries[formatter.id][1][2]()
 assert(formatted.lsp_format == "fallback")
 local function buffer(ft, text, scratch)
   local b = vim.api.nvim_create_buf(true, scratch or false)

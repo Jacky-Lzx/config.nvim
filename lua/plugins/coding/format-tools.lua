@@ -1,10 +1,12 @@
 return {
-  -- formatters
   {
-    main = "conform",
-    id = "conform.nvim",
+    main = "format_tools",
+    id = "format-tools.nvim",
     enabled = true,
-    source = "stevearc/conform.nvim",
+    -- Local checkout until this new plugin has a published source.
+    dir = vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "format-tools.nvim"),
+    after = { "toolchain-tools.nvim" },
+    dependencies = { "toolchain-tools.nvim" },
     opts = {
       formatters_by_ft = vim.tbl_extend(
         "force",
@@ -28,7 +30,7 @@ return {
         if vim.g.enable_autoformat == nil then
           vim.g.enable_autoformat = true
         end
-        -- Allow opting out before the first save, without loading the formatter.
+        -- Honor a session preference before the first save.
         vim.keymap.set("n", "<leader>tf", function()
           vim.g.enable_autoformat = not vim.g.enable_autoformat
         end, { desc = "Toggle auto format" })
@@ -44,17 +46,17 @@ return {
           },
         })
       end
-      require("config.bindings").set("conform.nvim", {
+      require("config.bindings").set("format-tools.nvim", {
         {
           "<leader>gf",
           function()
-            require("conform").format({ lsp_format = "fallback" })
+            require("format_tools").format({ lsp_format = "fallback" })
           end,
           desc = "Format",
         },
       })
       local opts = ctx.opts
-      require("conform").setup(opts)
+      require("format_tools").setup(opts)
     end,
   },
 }

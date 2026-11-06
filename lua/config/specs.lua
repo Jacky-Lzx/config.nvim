@@ -23,7 +23,7 @@ local groups = {
     "coding.snippet-tools",
     "coding.completion",
     "coding.lsp-tools",
-    "third_party.conform",
+    "coding.format-tools",
     "coding.lint-tools",
   },
   git = { "git.git-tools" },

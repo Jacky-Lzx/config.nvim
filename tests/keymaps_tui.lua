@@ -48,7 +48,7 @@ local function check_owners()
   end
   assert(wrap and wrap.toggle and wrap.toggle.state == vim.wo.wrap, "Missing configured Wrap state")
   wrap_query = require("keymap_tools.keys").label(wrap_keys) .. " Wrap"
-  assert(require("config.plugins").initialized("conform.nvim"), "Status reads loaded the formatter")
+  assert(require("config.plugins").initialized("format-tools.nvim"), "Status reads loaded the formatter")
   assert(require("config.plugins").initialized("pairs.nvim"), "Status reads loaded pairing")
   local image_loaded = package.loaded.image_tools
   local image

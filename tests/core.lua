@@ -121,5 +121,10 @@ feed("ggVj:write " .. vim.fn.fnameescape(exported) .. "<CR>")
 assert(vim.deep_equal(vim.fn.readfile(exported), { "changed", "second" }), "Selection export lost its range")
 feed(":write<CR>")
 assert(vim.deep_equal(vim.fn.readfile(path), { "changed", "second", "third" }))
-assert(not package.loaded.lazy and not package.loaded.snacks and not package.loaded.conform)
+assert(
+  not package.loaded.lazy
+    and not package.loaded.snacks
+    and not package.loaded.format_tools
+    and not package.loaded.conform
+)
 print("Core setup, buffer/window isolation and Visual write checks passed")

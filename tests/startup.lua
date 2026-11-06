@@ -216,22 +216,23 @@ local function check()
   vim.api.nvim_win_close(0, true)
 
   -- Exercise actual plugin setup, not just spec merging.
-  for _, id in ipairs({ "conform.nvim", "lint-tools.nvim", "completion-tools.nvim" }) do
+  for _, id in ipairs({ "format-tools.nvim", "lint-tools.nvim", "completion-tools.nvim" }) do
     require("plugin_tools").activate(id)
   end
-  assert(vim.deep_equal(require("conform").formatters_by_ft, opts("conform.nvim").formatters_by_ft))
+  assert(vim.deep_equal(require("format_tools").config().formatters_by_ft, opts("format-tools.nvim").formatters_by_ft))
   assert(vim.deep_equal(require("lint_tools").config().linters_by_ft, opts("lint-tools.nvim").linters_by_ft))
   assert(not plugins["nvim-lint"] and not package.loaded.lint)
-  -- The same physical format key must use Conform in attached and unattached buffers.
-  local conform = require("conform")
-  local original_format, original_lsp_format = conform.format, vim.lsp.buf.format
+  assert(not plugins["conform.nvim"] and not package.loaded.conform)
+  -- The same physical format key must use format-tools in attached and unattached buffers.
+  local formatter = require("format_tools")
+  local original_format, original_lsp_format = formatter.format, vim.lsp.buf.format
   local formatted
-  conform.format = function(options)
+  formatter.format = function(options)
     assert(options.lsp_format == "fallback")
     formatted = vim.api.nvim_get_current_buf()
   end
   vim.lsp.buf.format = function()
-    error("The shared format key bypassed Conform")
+    error("The shared format key bypassed format-tools")
   end
   local unattached = vim.api.nvim_create_buf(true, false)
   local attached = vim.api.nvim_get_current_buf()
@@ -245,7 +246,7 @@ local function check()
     assert(formatted == buffer, "The format key did not operate on the current buffer")
   end
   vim.api.nvim_set_current_buf(attached)
-  conform.format, vim.lsp.buf.format = original_format, original_lsp_format
+  formatter.format, vim.lsp.buf.format = original_format, original_lsp_format
   if features.debugging then
     for _, id in ipairs({ "nvim-dap" }) do
       require("plugin_tools").activate(id)

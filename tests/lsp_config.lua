@@ -103,7 +103,7 @@ for _, key in ipairs({ "grn", "gra", "grr", "gri" }) do
 end
 assert(not package.loaded.snacks)
 assert(#vim.api.nvim_get_autocmds({ group = "ConfigLsp", event = "LspAttach" }) == 1)
-assert(not package.loaded.conform, "LSP setup must not load formatters")
+assert(not package.loaded.format_tools and not package.loaded.conform, "LSP setup must not load formatters")
 
 assert(vim.lsp.inlay_hint.is_enabled(), "Inlay hints must default to enabled for the session")
 local hints_before_toggle = vim.api.nvim_create_buf(true, false)

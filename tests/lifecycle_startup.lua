@@ -25,7 +25,7 @@ local function check()
     "nvim-dap-view",
     "file-tools.nvim",
     "task-tools.nvim",
-    "conform.nvim",
+    "format-tools.nvim",
     "pairs.nvim",
     "editing-tools.nvim"
   )
@@ -65,14 +65,14 @@ local function check()
   -- dictionary watchers. These leave v:errmsg without reporting an error.
   vim.v.errmsg = ""
   if case == "boundaries" or case == "boundaries_files" then
-    -- First-save opt-out must not initialize Conform or trim whitespace.
+    -- First-save opt-out must preserve whitespace.
     feed(" tf")
     assert(vim.g.enable_autoformat == false)
-    registered("conform.nvim")
+    registered("format-tools.nvim")
     vim.cmd.edit(temp .. "/lazy-save.txt")
     vim.api.nvim_buf_set_lines(0, 0, -1, false, { "keep spaces   " })
     vim.cmd.write()
-    loaded("conform.nvim")
+    loaded("format-tools.nvim")
     assert(vim.api.nvim_get_current_line() == "keep spaces   ", "First save ignored the formatting opt-out")
     feed(" tf")
     vim.cmd.write()
