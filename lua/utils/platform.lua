@@ -113,14 +113,6 @@ function M.open(target)
   return true
 end
 
-function M.external_terminal()
-  return executable_path(vim.env.NVIM_EXTERNAL_TERMINAL) or configured_executable(config.external_terminal)
-end
-
-function M.skim_displayline()
-  return executable_path(vim.env.NVIM_SKIM_DISPLAYLINE) or executable_path(config.skim_displayline)
-end
-
 function M.dev_plugin_root()
   return vim.fn.expand(vim.env.NVIM_DEV_PLUGIN_ROOT or config.dev_plugin_root)
 end

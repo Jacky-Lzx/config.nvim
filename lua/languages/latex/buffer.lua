@@ -1,7 +1,7 @@
 local M = {}
 
 function M.setup(bufnr)
-  require("utils.latex_highlighting").attach(bufnr)
+  require("languages.latex.highlighting").attach(bufnr)
 
   local function map(key, action, description, modes)
     vim.keymap.set(modes or "n", key, action, { buffer = bufnr, remap = true, desc = description })
@@ -83,10 +83,6 @@ function M.setup(bufnr)
   --   map(entry[1], "<Cmd>TexTools" .. entry[2] .. "<CR>", entry[3])
   -- end
   --
-  -- map("<localleader>lr", function()
-  --   local viewer = require("utils.platform").skim_displayline() and "skim" or "zathura"
-  --   vim.cmd("TexToolsInverseSearch " .. viewer)
-  -- end, "Show inverse-search setup")
   map("<localleader>lv", "<Cmd>TexToolsForwardSearch<CR>", "PDF forward search")
   for _, object in ipairs({
     { "e", "Environment" },

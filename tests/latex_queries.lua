@@ -1,5 +1,5 @@
 -- Run after configuration startup with installed managed LaTeX parser/queries.
-local optimize = require("utils.latex_queries").optimize
+local optimize = require("languages.latex.queries").optimize
 local parts = {}
 for _, path in ipairs(vim.treesitter.query.get_files("latex", "highlights")) do
   parts[#parts + 1] = table.concat(vim.fn.readfile(path), "\n") .. "\n"

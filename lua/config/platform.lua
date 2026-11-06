@@ -7,7 +7,6 @@ return {
     python_host = "~/.uv/neovim/bin/python3",
     python = { "python3", "python" },
     virtualenv_python = "bin/python",
-    external_terminal = "kitty",
     dev_plugin_root = "~/Documents/Github/nvim_plugins",
   },
   macos = {
@@ -17,7 +16,6 @@ return {
       "/opt/homebrew/opt/openjdk@25/libexec/openjdk.jdk/Contents/Home",
       "/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home",
     },
-    skim_displayline = "/Applications/Skim.app/Contents/SharedSupport/displayline",
   },
   linux = {
     sysname = "Linux",

@@ -55,14 +55,8 @@ function M.check()
   for _, executable in ipairs({ "delta", "lazygit", "kitty", "magick" }) do
     check_executable(executable, false)
   end
-  if platform.is("macos") then
-    if platform.skim_displayline() then
-      vim.health.ok("Skim forward search is available")
-    else
-      vim.health.warn("Skim is unavailable; LaTeX preview will use zathura when available")
-    end
-  else
-    check_executable("zathura", false)
+  if vim.list_contains(info.languages.names, "latex") then
+    vim.health.info("LaTeX build, preview and PDF viewer: :checkhealth tex-tools")
   end
 
   vim.health.start("Enabled language tools")

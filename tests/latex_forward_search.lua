@@ -3,7 +3,7 @@ local root = vim.fs.dirname(vim.fs.dirname(vim.fs.abspath(debug.getinfo(1, "S").
 vim.opt.runtimepath:prepend(root)
 vim.g.maplocalleader = " "
 package.loaded["utils.platform"] = { executable = function() end }
-package.loaded["utils.latex_highlighting"] = { attach = function() end }
+package.loaded["languages.latex.highlighting"] = { attach = function() end }
 local registration
 package.loaded["keymap_tools"] = {
   register = function(source, spec)

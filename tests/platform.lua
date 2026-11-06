@@ -31,8 +31,6 @@ for _, name in ipairs({
   "NVIM_JDTLS_JAVA_HOME",
   "JAVA_HOME",
   "NVIM_OPEN_CMD",
-  "NVIM_EXTERNAL_TERMINAL",
-  "NVIM_SKIM_DISPLAYLINE",
   "NVIM_DEV_PLUGIN_ROOT",
   "VIRTUAL_ENV",
   "CONDA_PREFIX",
@@ -64,11 +62,8 @@ local ok, err = platform.open("target")
 assert(not ok and err == "Failed to start system opener")
 job_result = 1
 
-executables[definitions.macos.skim_displayline] = true
-assert(platform.skim_displayline() == definitions.macos.skim_displayline)
 platform = load_platform("Linux")
 assert(platform.os == "linux" and vim.deep_equal(platform.opener(), { "/system/xdg-open" }))
-assert(platform.skim_displayline() == nil, "macOS settings must not leak into Linux")
 platform = load_platform("FreeBSD")
 assert(platform.os == "other" and platform.opener() == nil)
 local job_count = #jobs
@@ -130,14 +125,6 @@ package.loaded["toolchain.tools"] = {
 assert(platform.debugpy_python() == debugpy)
 vim.env.NVIM_DEBUGPY_PYTHON = "/override/debugpy"
 assert(platform.debugpy_python() == "/override/debugpy")
-paths.kitty = "/system/kitty"
-assert(platform.external_terminal() == "/system/kitty")
-executables["/override/terminal"] = true
-vim.env.NVIM_EXTERNAL_TERMINAL = "/override/terminal"
-assert(platform.external_terminal() == "/override/terminal")
-executables["/override/displayline"] = true
-vim.env.NVIM_SKIM_DISPLAYLINE = "/override/displayline"
-assert(platform.skim_displayline() == "/override/displayline")
 vim.env.NVIM_OPEN_CMD = "open --wait"
 assert(vim.deep_equal(platform.opener(), { "/system/open", "--wait" }))
 vim.env.NVIM_OPEN_CMD = "/override/open --wait"

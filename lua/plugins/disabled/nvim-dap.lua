@@ -187,11 +187,6 @@ local opts = ctx.opts
         dap.configurations[filetype] = dap.configurations[source]
       end
 
-      local terminal = require("utils.platform").external_terminal()
-      if terminal then
-        dap.defaults.fallback.external_terminal = { command = terminal }
-      end
-
       --stylua: ignore
       local dap_breakpoint = {
         -- Nerd font: nf-cod-activate_breakpoints

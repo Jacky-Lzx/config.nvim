@@ -71,6 +71,21 @@ require("config.health").check()
 assert(vim.list_contains(reports, 'ruff: "/fixture/updated/ruff"'))
 assert(vim.list_contains(reports, "Enabled LSP servers: basedpyright"))
 assert(vim.list_contains(reports, "Workflows: ai=false, debugging=true, tasks=false, sessions=false"))
+local viewer_checks = "LaTeX build, preview and PDF viewer: :checkhealth tex-tools"
+assert(not vim.list_contains(reports, viewer_checks), "Do not suggest LaTeX checks for an unselected language")
+local snapshot = inspect.snapshot
+inspect.snapshot = function()
+  local value = snapshot()
+  value.languages.names = { "latex" }
+  return value
+end
+reports = {}
+require("config.health").check()
+inspect.snapshot = snapshot
+assert(vim.list_contains(reports, viewer_checks))
+local report = table.concat(reports, "\n")
+assert(not report:find("Skim", 1, true) and not report:find("zathura", 1, true))
+assert(not package.loaded["tex-tools"], "Configuration health must not initialize the viewer plugin")
 vim.lsp.is_enabled = original_enabled
 assert(#vim.api.nvim_get_autocmds({}) == before and not package.loaded.lazy)
 print("ConfigInfo snapshots, live tool paths, plugin sources and shared health checks passed")

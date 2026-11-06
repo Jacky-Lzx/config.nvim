@@ -606,12 +606,12 @@ The following environment variables override local paths or commands:
 - `NVIM_PYTHON3_HOST_PROG`
 - `NVIM_DEBUGPY_PYTHON`
 - `NVIM_OPEN_CMD`
-- `NVIM_EXTERNAL_TERMINAL`
-- `NVIM_SKIM_DISPLAYLINE`
 - `NVIM_DEV_PLUGIN_ROOT`
 
-macOS uses `open` and optionally Skim. Linux uses `xdg-open` and optionally Zathura. Missing
-Delta, Kitty, and Skim degrade to built-in behavior or disable their integration.
+macOS uses `open`; Linux uses `xdg-open`. LaTeX PDF viewing is configured in
+`lua/languages/latex/plugins.lua` (currently Pagewing), with build, preview and viewer
+checks provided by `:checkhealth tex-tools`. Missing Delta or Kitty disables the
+corresponding optional integration.
 
 Obsidian workspaces belong to the vault's `.nvim-plugins.lua`, in the Obsidian spec's
 `opts.workspaces`. The shared spec keeps plugin behavior and mappings, and only enables
