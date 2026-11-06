@@ -2,6 +2,7 @@ return {
   {
     id = "workspace-tools.nvim",
     source = "Jacky-Lzx/workspace-tools.nvim",
+    version = "main",
     dev = true,
     start = require("config.context").current().selection.features.sessions,
     children = {

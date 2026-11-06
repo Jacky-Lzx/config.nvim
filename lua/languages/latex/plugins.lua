@@ -30,6 +30,7 @@ return {
     end,
     id = "tex-tools.nvim",
     source = "Jacky-Lzx/tex-tools.nvim",
+    version = "main",
     dev = true,
     main = "tex-tools",
     -- Formula display requires image-tools only after a preview is ready.

@@ -184,6 +184,7 @@ return {
     end,
     id = "selection-tools.nvim",
     source = "Jacky-Lzx/selection-tools.nvim",
+    version = "main",
     dev = true,
     main = "selection_tools",
     opts = {

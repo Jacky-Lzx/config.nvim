@@ -8,13 +8,19 @@ require("config.context").initialize({
 local resolve = require("plugin_tools.graph").resolve
 local published = {
   "completion-tools.nvim",
+  "debug-tools.nvim",
+  "editing-tools.nvim",
+  "file-tools.nvim",
   "git-tools.nvim",
   "image-tools.nvim",
   "input-tools.nvim",
+  "keymap-tools.nvim",
   "lsp-tools.nvim",
+  "motion-tools.nvim",
   "notification-tools.nvim",
   "pairs.nvim",
   "selection-tools.nvim",
+  "snippet-tools.nvim",
   "task-tools.nvim",
   "tex-tools.nvim",
   "theme-tools.nvim",
@@ -47,20 +53,10 @@ for _, format in ipairs({ "https://github.com/%s.git", "git@github.com:%s.git" }
   for _, id in ipairs(published) do
     local node, package = development.nodes[id], development.packages[id]
     assert(node.source == "Jacky-Lzx/" .. id, id)
+    assert(node.version == "main" and package.version == "main", id)
     assert(node.dev and not package.managed and node.dir == development_root .. "/" .. id, id)
     assert(fallback.packages[id].managed and fallback.packages[id].source == package.source, id)
     assert(fallback.nodes[id].dir == installed_root .. "/" .. id, id)
-  end
-  for _, id in ipairs({
-    "debug-tools.nvim",
-    "editing-tools.nvim",
-    "file-tools.nvim",
-    "keymap-tools.nvim",
-    "motion-tools.nvim",
-    "snippet-tools.nvim",
-  }) do
-    assert(not fallback.packages[id].managed and fallback.packages[id].source == nil, id)
-    assert(fallback.nodes[id].dir == development_root .. "/" .. id, id)
   end
   assert(fallback.nodes["workspace-tools.python"].owner == "workspace-tools.nvim")
   assert(fallback.nodes["workspace-tools.python"].dir == fallback.nodes["workspace-tools.nvim"].dir)

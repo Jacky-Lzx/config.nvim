@@ -11,6 +11,7 @@ return {
     end,
     id = "workspace-tools.nvim",
     source = "Jacky-Lzx/workspace-tools.nvim",
+    version = "main",
     dev = true,
     main = "workspace_tools",
     opts = {

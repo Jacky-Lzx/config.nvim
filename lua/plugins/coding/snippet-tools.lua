@@ -1,7 +1,9 @@
 return {
   {
     id = "snippet-tools.nvim",
-    dir = vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "snippet-tools.nvim"),
+    source = "Jacky-Lzx/snippet-tools.nvim",
+    version = "main",
+    dev = true,
     main = "snippet_tools",
     config = function()
       require("integrations.snippets").setup()

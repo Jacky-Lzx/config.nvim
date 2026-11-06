@@ -71,6 +71,7 @@ return {
     end,
     id = "task-tools.nvim",
     source = "Jacky-Lzx/task-tools.nvim",
+    version = "main",
     dev = true,
     main = "task_tools",
     opts = {

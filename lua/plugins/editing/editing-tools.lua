@@ -96,7 +96,9 @@ return {
       require("editing_tools").setup(ctx.opts)
     end,
     id = "editing-tools.nvim",
-    dir = require("utils.platform").dev_plugin_root() .. "/editing-tools.nvim",
+    source = "Jacky-Lzx/editing-tools.nvim",
+    version = "main",
+    dev = true,
     main = "editing_tools",
     opts = {},
   },

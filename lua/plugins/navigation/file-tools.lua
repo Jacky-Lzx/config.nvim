@@ -1,9 +1,9 @@
-local root = require("utils.platform").dev_plugin_root()
-
 return {
   {
     id = "file-tools.nvim",
-    dir = root .. "/file-tools.nvim",
+    source = "Jacky-Lzx/file-tools.nvim",
+    version = "main",
+    dev = true,
     main = "file_tools",
     dependencies = { "theme-tools.nvim" },
     opts = {

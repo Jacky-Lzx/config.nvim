@@ -12,6 +12,7 @@ return {
     end,
     id = "notification-tools.nvim",
     source = "Jacky-Lzx/notification-tools.nvim",
+    version = "main",
     dev = true,
     main = "notification-tools",
     opts = {

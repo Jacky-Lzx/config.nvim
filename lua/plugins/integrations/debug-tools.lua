@@ -1,7 +1,9 @@
 return {
   {
     id = "debug-tools.nvim",
-    dir = require("utils.platform").dev_plugin_root() .. "/debug-tools.nvim",
+    source = "Jacky-Lzx/debug-tools.nvim",
+    version = "main",
+    dev = true,
     main = "debug_tools",
     opts = { globals = true, override_print = true },
     config = function(ctx)

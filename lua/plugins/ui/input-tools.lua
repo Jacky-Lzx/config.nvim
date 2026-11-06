@@ -2,6 +2,7 @@ return {
   {
     id = "input-tools.nvim",
     source = "Jacky-Lzx/input-tools.nvim",
+    version = "main",
     dev = true,
     main = "input-tools",
     opts = {

@@ -2,6 +2,7 @@ return {
   {
     id = "image-tools.nvim",
     source = "Jacky-Lzx/image-tools.nvim",
+    version = "main",
     dev = true,
     opts = {
       -- The old plugin saved in cwd/Figures and emitted document-relative paths.

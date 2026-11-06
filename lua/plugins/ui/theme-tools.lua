@@ -2,6 +2,7 @@ return {
   {
     id = "theme-tools.nvim",
     source = "Jacky-Lzx/theme-tools.nvim",
+    version = "main",
     dev = true,
     main = "theme_tools",
     opts = {

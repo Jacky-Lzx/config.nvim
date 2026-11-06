@@ -1,17 +1,17 @@
 local M = {}
-function M.setup()
-  local directory = vim.env.NVIM_PLUGIN_TOOLS_PATH
-    or (require("utils.platform").dev_plugin_root() .. "/plugin-tools.nvim")
-  assert(vim.uv.fs_stat(directory .. "/lua/plugin_tools/init.lua"), "plugin-tools.nvim is missing: " .. directory)
-  vim.opt.runtimepath:prepend(directory)
-  M.manager = require("plugin_tools").setup({
+function M.settings()
+  return {
     specs = require("config.specs").build(),
     -- GitHub owner/repo sources share this protocol; SSH: "git@github.com:%s.git".
     url_format = "https://github.com/%s.git",
     dev = { path = require("utils.platform").dev_plugin_root(), fallback = true },
     lockfile = require("config.lockfile").resolve(),
     root = vim.env.NVIM_PLUGIN_ROOT or (vim.fn.stdpath("data") .. "/plugin-tools"),
-  })
+  }
+end
+function M.setup()
+  require("config.plugin_bootstrap").mount()
+  M.manager = require("plugin_tools").setup(M.settings())
   vim.keymap.set("n", "<leader>L", "<cmd>PluginTools<cr>", { desc = "[Plugins] Open plugin status" })
   vim.api.nvim_create_user_command("ConfigToolsInstall", function()
     require("integrations.toolchain").install()

@@ -11,6 +11,7 @@ return {
     id = "lsp-tools.nvim",
     after = { "toolchain-tools.nvim" },
     source = "Jacky-Lzx/lsp-tools.nvim",
+    version = "main",
     dev = true,
     -- Register servers before attachment; keep empty-editor startup lightweight.
     dependencies = {

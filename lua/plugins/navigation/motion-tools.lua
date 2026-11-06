@@ -55,7 +55,9 @@ return {
       require("motion_tools").setup(ctx.opts)
     end,
     id = "motion-tools.nvim",
-    dir = require("utils.platform").dev_plugin_root() .. "/motion-tools.nvim",
+    source = "Jacky-Lzx/motion-tools.nvim",
+    version = "main",
+    dev = true,
     main = "motion_tools",
     opts = { mappings = false }, -- This spec owns keys; preserve other plugin owners.
   },

@@ -2,6 +2,7 @@ return {
   {
     id = "ui-tools.nvim",
     source = "Jacky-Lzx/ui-tools.nvim",
+    version = "main",
     dev = true,
     main = "ui_tools",
     opts = {

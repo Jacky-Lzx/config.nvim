@@ -53,6 +53,7 @@ return {
     main = "pairs",
     id = "pairs.nvim",
     source = "Jacky-Lzx/pairs.nvim",
+    version = "main",
     dev = true,
     opts = {
       treesitter = true,

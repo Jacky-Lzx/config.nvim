@@ -248,6 +248,7 @@ return {
     end,
     id = "git-tools.nvim",
     source = "Jacky-Lzx/git-tools.nvim",
+    version = "main",
     dev = true,
     main = "git_tools",
     opts = { buffer = { signs = false, numhl = true, on_attach = on_attach } },

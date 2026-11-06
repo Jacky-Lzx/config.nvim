@@ -10,8 +10,16 @@ direct editing, or consume a pinned revision as a non-flake Nix input.
 
 ## Plugin versions and Nix deployment
 
-The manager checkout must be available at
-`NVIM_PLUGIN_TOOLS_PATH` (default `NVIM_DEV_PLUGIN_ROOT/plugin-tools.nvim`).
+The manager prefers `NVIM_PLUGIN_TOOLS_PATH`, then the development checkout at
+`NVIM_DEV_PLUGIN_ROOT/plugin-tools.nvim`, then its immutable installed revision.
+`lua/config/plugin_bootstrap.lua` pins that revision. For a new machine, explicitly run:
+
+```sh
+nvim --headless -u NONE -i NONE -l ~/.config/nvim/scripts/install-plugins.lua
+```
+
+This installs the pinned manager and plugin lock without starting plugin features.
+Language tools and parsers are installed separately with `:ConfigToolsInstall`.
 Startup mounts plugins and registers their configuration without running Git,
 checking updates, or installing missing packages. Completion, snippets and images
 own their first-use initialization inside their respective plugins. Other setup
@@ -31,17 +39,23 @@ This applies to personal and third-party plugin sources; local development
 directories keep priority. Existing managed installs and lock entries record the
 resolved URL, so changing transport also requires migrating those source records.
 
-GitHub sources are configured for completion-tools, git-tools, image-tools,
-input-tools, lsp-tools, notification-tools, pairs, selection-tools, task-tools,
-tex-tools, theme-tools, toolchain-tools, ui-tools and workspace-tools (all `.nvim`,
-under `Jacky-Lzx`). image-tools is public and follows the same shared transport.
-debug-tools, editing-tools, file-tools, keymap-tools, motion-tools and snippet-tools
-remain local-only; plugin-tools itself still requires its local bootstrap checkout.
+All personal plugins have public GitHub sources under `Jacky-Lzx`, including
+plugin-tools, debug-tools, editing-tools, file-tools, keymap-tools, motion-tools
+and snippet-tools (all `.nvim`). Compatible commits are pinned in the plugin lock;
+development overrides keep priority and are excluded from managed operations.
+Personal plugin updates target `main`; installs still use the exact locked commit
+(a managed Git checkout is detached at that commit). Development checkouts use
+their local `main` branches.
 
 Declaring a remote source does not publish local changes. Remote revisions must
 provide the APIs used here, including the completion/image bootstrap modules;
 synchronize compatible plugin revisions before relying on startup without those
 development directories.
+
+`python3 tests/remote_install.py` performs an explicit network acceptance check:
+it installs into isolated data/package directories, hides development checkouts,
+and verifies minimal/default startup and completion/image/snippet first-use APIs.
+Use `--directory /tmp/nvim-remote-check` to retain the installation for inspection.
 
 Each plugin's `config(ctx)` applies its options and binds personal shortcuts with
 `config.bindings.set()`. There is no separate manager bootstrap phase. Plugins

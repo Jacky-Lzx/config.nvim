@@ -1,7 +1,9 @@
 return {
   {
     id = "keymap-tools.nvim",
-    dir = require("utils.platform").dev_plugin_root() .. "/keymap-tools.nvim",
+    source = "Jacky-Lzx/keymap-tools.nvim",
+    version = "main",
+    dev = true,
     main = "keymap_tools",
     opts = {
       defer = true,

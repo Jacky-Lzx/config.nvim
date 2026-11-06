@@ -2,6 +2,7 @@ return {
   {
     id = "completion-tools.nvim",
     source = "Jacky-Lzx/completion-tools.nvim",
+    version = "main",
     dev = true,
     main = "completion-tools",
     opts = require("integrations.completion").options(),

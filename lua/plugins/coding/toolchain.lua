@@ -2,6 +2,7 @@ return {
   {
     id = "toolchain-tools.nvim",
     source = "Jacky-Lzx/toolchain-tools.nvim",
+    version = "main",
     dev = true,
     main = "toolchain",
     opts = {
