@@ -65,7 +65,7 @@ native_checks() (
   printf '\nRunning native checks with isolated plugin data\n'
   nvim --headless -u NONE -i NONE --noplugin -l "$root/tests/smoke.lua"
   run_tests plugin_bootstrap lockfile schema selection info config platform core bindings clipboard diagnostics \
-    completion math_conditions latex_forward_search commands python tasks integrations image_activation tooling toolchain lsp_config files
+    completion math_conditions latex_forward_search latex_highlighting_fallback commands python tasks integrations image_activation tooling toolchain lsp_config files
 )
 
 integration_checks() (

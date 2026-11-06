@@ -101,7 +101,7 @@
       "source": "https://github.com/Jacky-Lzx/tex-tools.nvim.git"
     },
     "theme-tools.nvim": {
-      "commit": "4c691df20f4c454a53dc7bfbd236d6851e7eacca",
+      "commit": "d27fc633b6e3a157c3814d09d064aa09abe4fd8d",
       "source": "https://github.com/Jacky-Lzx/theme-tools.nvim.git"
     },
     "toolchain-tools.nvim": {

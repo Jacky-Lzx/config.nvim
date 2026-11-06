@@ -360,6 +360,9 @@ The writing profile loads `tex-tools.nvim` for TeX buffers, using the developmen
 checkout when available and the pinned Git checkout otherwise. Tree-sitter owns
 highlighting and folding; tex-tools supplies conceal while preserving math command
 spelling (`math_symbols = false`). VimTeX and nvim-texlabconfig are no longer loaded.
+theme-tools owns TeX semantic-token colors; attaching another TeX buffer does not
+rewrite global highlight groups. If the parser or queries cannot start, the buffer
+retains native syntax highlighting as a fallback.
 The parser and Neovim queries both come from the pinned `Jacky-Lzx/tree-sitter-latex`
 fork in `lua/languages/latex/plugins.lua`. Its bundled queries own delimiter
 compilation and math/path highlight priorities; no runtime query rewriting or
