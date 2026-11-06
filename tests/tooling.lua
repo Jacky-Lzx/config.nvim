@@ -13,9 +13,16 @@ package.loaded.format_tools = {
 }
 local format_registration
 package.loaded.keymap_tools = {
-  register = function(source, spec)
-    assert(source == "formatting")
-    format_registration = spec.toggles[1]
+  register_toggle = function(source, spec)
+    assert(source == "config.toggle.autoformat")
+    format_registration = {
+      get = function()
+        return spec.get({ win = vim.api.nvim_get_current_win() })
+      end,
+    }
+    return function()
+      spec.set(not format_registration.get())
+    end, format_registration
   end,
 }
 package.preload.snacks = function()
