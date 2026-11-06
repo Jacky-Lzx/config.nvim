@@ -63,9 +63,11 @@ local function check()
     vim.v.errmsg = ""
   end
   assert(require("config.plugins").initialized("completion-tools.nvim"), "Completion bootstrap registration is missing")
-  local cmp = require("completion-tools")
-  assert(not cmp.get_status().configured, "Capability lookup initialized the completion engine")
-  local completion = cmp.get_lsp_capabilities().textDocument.completion
+  assert(
+    not package.loaded.completion_tools and not package.loaded["completion_tools.ui"],
+    "Capability lookup must not import the completion engine or UI"
+  )
+  local completion = require("completion_tools.capabilities").get_lsp_capabilities().textDocument.completion
   local function check_completion(capabilities, name)
     local actual = capabilities.textDocument.completion
     local operations = assert(capabilities.workspace.fileOperations, "Missing file operations: " .. tostring(name))
@@ -109,6 +111,7 @@ local function check()
   assert(vim.deep_equal(active_info.languages.servers, languages.servers))
   assert(vim.deep_equal(active_info.lsp.enabled_servers, active))
   vim.api.nvim_exec_autocmds("InsertEnter", {})
+  local cmp = require("completion-tools")
   assert(
     require("config.plugins").initialized("completion-tools.nvim") and cmp.get_status().configured,
     "First InsertEnter must initialize completion"

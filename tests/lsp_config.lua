@@ -20,6 +20,7 @@ end
 local completion_spec = require("plugins.coding.completion.core")[1]
 assert(completion_spec.main == "completion-tools" and not completion_spec.event and not completion_spec.module)
 local original_completion = package.loaded["completion-tools"]
+local original_capabilities = package.loaded["completion_tools.capabilities"]
 local original_files = package.loaded.file_tools
 local file_capabilities = {
   workspace = {
@@ -48,6 +49,8 @@ package.loaded["completion-tools"] = {
     assert(opts == completion_spec.opts)
     setup = true
   end,
+}
+package.loaded["completion_tools.capabilities"] = {
   get_lsp_capabilities = function(override, defaults)
     assert(not setup, "Capabilities must be available before completion setup")
     assert(override == nil and defaults == nil, "completion-tools includes Neovim defaults")
@@ -159,6 +162,7 @@ vim.api.nvim_buf_call(unrelated, function()
 end)
 vim.lsp.config, vim.lsp.enable = original_config, original_enable
 package.loaded["completion-tools"] = original_completion
+package.loaded["completion_tools.capabilities"] = original_capabilities
 package.loaded.file_tools = original_files
 vim.api.nvim_del_augroup_by_name("ConfigLsp")
 

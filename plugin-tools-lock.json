@@ -1,7 +1,7 @@
 {
   "plugins": {
     "completion-tools.nvim": {
-      "commit": "4aa207c0949fa1642c171f287263a86325cdb0a6",
+      "commit": "686bc35a1b1e5a497329d4c3bc584f1c74fb90b3",
       "source": "https://github.com/Jacky-Lzx/completion-tools.nvim.git"
     },
     "conform.nvim": {

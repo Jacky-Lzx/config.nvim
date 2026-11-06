@@ -19,6 +19,10 @@ vim.api.nvim_create_autocmd("User", {
         for _, path in ipairs(vim.opt.rtp:get()) do
           assert(not path:find("/Github/nvim_plugins/", 1, true), "Development runtime leaked: " .. path)
         end
+        assert(
+          not package.loaded.completion_tools and not package.loaded["completion_tools.ui"],
+          "Remote capability lookup imported the input engine"
+        )
         for _, name in ipairs({ "completion_tools.bootstrap", "image_tools.bootstrap", "snippet_tools.bootstrap" }) do
           local frontend = require(name)
           assert(type(frontend.ensure) == "function", "Missing published API: " .. name)

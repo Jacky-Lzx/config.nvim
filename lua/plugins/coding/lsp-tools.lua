@@ -229,7 +229,7 @@ return {
         capabilities = vim.tbl_deep_extend(
           "force",
           {},
-          require("completion-tools").get_lsp_capabilities(),
+          require("completion_tools.capabilities").get_lsp_capabilities(),
           require("file_tools").capabilities()
         ),
       })

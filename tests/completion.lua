@@ -65,4 +65,19 @@ for _, maps in ipairs({ opts.keymap, opts.cmdline.keymap }) do
   end
 end
 assert(not package.loaded["completion-tools"] and not package.loaded["blink.cmp"], "Policy must remain pure")
+integration.setup()
+vim.api.nvim_exec_autocmds("User", { pattern = "ConfigReady" })
+vim.api.nvim_exec_autocmds("User", { pattern = "SnippetToolsReady" })
+assert(not package.loaded.completion_tools, "Readiness events must not import an unused completion engine")
+local refreshed = 0
+package.loaded.completion_tools = {
+  refresh_keymaps = function()
+    refreshed = refreshed + 1
+  end,
+}
+vim.api.nvim_exec_autocmds("User", { pattern = "SnippetToolsReady" })
+assert(refreshed == 1, "A loaded engine must refresh when snippet bindings become available")
+package.loaded.completion_tools = nil
+vim.api.nvim_del_augroup_by_name("ConfigCompletion")
+vim.api.nvim_del_augroup_by_name("ConfigCompletionLayout")
 print("Completion policy, persistent buffer-local sources and adapter checks passed")

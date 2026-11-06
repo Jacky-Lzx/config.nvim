@@ -892,6 +892,18 @@ headless startups with isolated state/cache and mocked external LSP/clipboard.
 It reports native startup and registration times, and verifies that completion,
 snippet and image engines remain uninitialized in an empty editor.
 
+`python3 tests/benchmark_interaction.py --samples 5 --output /tmp/nvim-input.json`
+uses fresh real PTYs for empty, Lua, Python and TeX startup, then measures the first
+insert, command line or file picker in a separate process. It isolates state/cache,
+stubs external LSP and disables AI. Input latency ends after the mode or picker is
+ready and a redraw completes; it does not measure display hardware or server replies.
+`--baseline /tmp/modules.json` accepts a JSON map of module names to old Lua source
+files and interleaves those snapshots with the current configuration. LSP capability
+negotiation uses the pure `completion_tools.capabilities` API so the completion core
+and UI remain unloaded until input needs them.
+Deferring those imports moves work to the first input; assess startup and input
+latency together rather than treating a lower startup time alone as an improvement.
+
 `lua/features/files.lua` owns early startup highlighting and large/minified file
 guards. Files above 1.5 MiB or averaging over 1000 bytes per line use `bigfile`
 filetype and disable completion, Tree-sitter and expensive UI scanning.

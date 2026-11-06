@@ -196,7 +196,7 @@ function M.setup()
     group = vim.api.nvim_create_augroup("ConfigCompletionLayout", { clear = true }),
     pattern = { "InputToolsOpen", "InputToolsLayoutChanged", "InputToolsClose" },
     callback = function()
-      local cmp = package.loaded["completion-tools"]
+      local cmp = package.loaded.completion_tools
       if cmp then
         cmp.refresh_cmdline()
       end
@@ -205,8 +205,11 @@ function M.setup()
   vim.api.nvim_create_autocmd("User", {
     group = vim.api.nvim_create_augroup("ConfigCompletion", { clear = true }),
     pattern = { "ConfigReady", "SnippetToolsReady" },
-    callback = function(args)
-      require("completion-tools").refresh_keymaps()
+    callback = function()
+      local cmp = package.loaded.completion_tools
+      if cmp then
+        cmp.refresh_keymaps()
+      end
     end,
   })
 end
