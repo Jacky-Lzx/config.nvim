@@ -10,7 +10,6 @@ local modules = {
   ["plugins.disabled.crates"] = { "crates.nvim" },
   ["plugins.disabled.render-markdown"] = { "render-markdown.nvim" },
   ["plugins.disabled.peek"] = { "peek.nvim" },
-  ["plugins.disabled.obsidian"] = { "obsidian.nvim" },
 }
 for name, ids in pairs(modules) do
   local module_name, enabled_ids = name, ids

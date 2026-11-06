@@ -8,11 +8,11 @@ local function check()
     "crates.nvim",
     "peek.nvim",
     "render-markdown.nvim",
-    "obsidian.nvim",
   }
   for _, id in ipairs(disabled) do
     assert(not nodes[id], "Standalone third-party plugin is still active: " .. id)
   end
+  assert(not nodes["obsidian.nvim"], "Obsidian must stay inactive outside a configured vault")
   for _, id in ipairs({ "conform.nvim", "nvim-lint", "vim-wakatime" }) do
     assert(nodes[id], "Enabled third-party plugin disappeared: " .. id)
   end

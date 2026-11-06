@@ -30,8 +30,8 @@ and paths replaced by project overrides. Metadata resolution remains side-effect
 
 Third-party declarations are grouped by their current enabled state:
 
-- `lua/plugins/third_party/`: Conform, nvim-lint, WakaTime, and the nvim-lspconfig
-  provider loaded as a child of lsp-tools.
+- `lua/plugins/third_party/`: Conform, nvim-lint, WakaTime, Obsidian (inside a
+  configured vault), and the nvim-lspconfig provider loaded as a child of lsp-tools.
 - `lua/plugins/disabled/`: disabled third-party plugins and their language-specific
   options. CodeSnap is retained without a manifest entry.
 
@@ -848,5 +848,5 @@ state with keymap-tools; `<leader>th` retains a session-wide inlay-hint preferen
 Animations and smooth scrolling are off by default. `<leader>ta` toggles the
 ui-tools animation engine; `<leader>tS` toggles smooth Ctrl-d/u/f/b/e/y scrolling.
 Enable both for animated scrolling. Existing custom mappings keep ownership.
-Obsidian uses its own built-in native picker (`picker.name = false`). The unused
+Obsidian uses its built-in native picker when no external picker is configured. The unused
 `<leader>sp` plugin-spec picker shortcut has been removed.

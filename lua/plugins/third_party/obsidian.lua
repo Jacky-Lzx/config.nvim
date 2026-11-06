@@ -22,7 +22,7 @@ return {
     end,
     main = "obsidian",
     id = "obsidian.nvim",
-    enabled = false,
+    enabled = true,
     source = "obsidian-nvim/obsidian.nvim",
     version = "*", -- Recommended, use latest release instead of latest commit
     -- These only contribute options; opening a vault does not need image APIs.
@@ -75,8 +75,7 @@ return {
       },
 
       picker = {
-        -- Explicitly use Obsidian's built-in native picker.
-        name = false,
+        -- No external picker is configured; Obsidian uses its native fallback.
         -- Optional, configure key mappings for the picker. These are the defaults.
         -- Not all pickers support all mappings.
         note_mappings = {
