@@ -4,9 +4,6 @@ local function check()
   local manager, nodes = plugins.manager, plugins.nodes()
   local disabled = {
     "nvim-web-devicons",
-    "conform.nvim",
-    "nvim-lint",
-    "vim-wakatime",
     "nvim-dap",
     "nvim-dap-view",
     "crates.nvim",
@@ -18,6 +15,9 @@ local function check()
   }
   for _, id in ipairs(disabled) do
     assert(not nodes[id], "Standalone third-party plugin is still active: " .. id)
+  end
+  for _, id in ipairs({ "conform.nvim", "nvim-lint", "vim-wakatime" }) do
+    assert(nodes[id], "Enabled third-party plugin disappeared: " .. id)
   end
   assert(nodes["nvim-lspconfig"].parents["lsp-tools.nvim"])
   assert(nodes["lsp-tools.nvim"].dependencies["nvim-lspconfig"] == false)
@@ -31,13 +31,17 @@ local function check()
   }) do
     assert(nodes[id], "Owned functionality disappeared: " .. id)
   end
-  for _, command in ipairs({ "MarkdownPreview", "TypstPreview", "Obsidian", "DapContinue", "ConformInfo", "WakaTime" }) do
+  for _, command in ipairs({ "MarkdownPreview", "TypstPreview", "Obsidian", "DapContinue" }) do
     assert(vim.fn.exists(":" .. command) == 0, "Disabled command survived: " .. command)
   end
-  for _, key in ipairs({ "<leader>gf", "<leader>tf", "<leader>tm", "<F5>", "<leader>Du", "<leader>OO" }) do
+  for _, key in ipairs({ "<leader>tm", "<F5>", "<leader>Du", "<leader>OO" }) do
     assert(vim.fn.maparg(key, "n") == "", "Disabled mapping survived: " .. key)
   end
-  assert(not pcall(vim.api.nvim_get_autocmds, { group = "lzx_lint" }))
+  assert(vim.fn.exists(":ConformInfo") == 2)
+  for _, key in ipairs({ "<leader>gf", "<leader>tf" }) do
+    assert(vim.fn.maparg(key, "n") ~= "", "Enabled mapping disappeared: " .. key)
+  end
+  assert(#vim.api.nvim_get_autocmds({ group = "lzx_lint" }) > 0)
   local directory = vim.env.NVIM_TEST_TMP .. "/third-party-policy"
   vim.fn.mkdir(directory, "p")
   local files =
@@ -47,8 +51,7 @@ local function check()
     vim.api.nvim_buf_set_name(0, directory .. "/" .. name)
     vim.bo.filetype = filetype
     vim.api.nvim_buf_set_lines(0, 0, -1, false, { "unchanged text" })
-    vim.cmd.write()
-    assert(not package.loaded.conform and not package.loaded.lint and not package.loaded.dap)
+    assert(package.loaded.conform and package.loaded.lint and not package.loaded.dap)
     assert(not package.loaded.crates and not package.loaded.peek and not package.loaded["render-markdown"])
     assert(not package.loaded["typst-preview"] and not package.loaded.obsidian)
   end
@@ -57,7 +60,7 @@ local function check()
   assert(#require("theme_tools.icons").list() > 2, "Managed theme/icon providers were disabled")
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
   io.stdout:write(
-    "Personal defaults passed: standalone third-party plugins disabled; LSP and managed themes/icons retained\n"
+    "Personal defaults passed: enabled third-party plugins, disabled boundaries and managed providers retained\n"
   )
 end
 

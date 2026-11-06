@@ -8,16 +8,29 @@ local function annotate(spec, origin)
 end
 -- Explicit module lists keep startup deterministic and avoid directory scans.
 local groups = {
-  ui = { "theme-tools", "notification-tools", "input-tools", "nvim-web-devicons", "ui-tools" },
-  navigation = { "keymap-tools", "selection-tools", "file-tools", "motion-tools", "images" },
-  editing = { "pairs", "editing-tools" },
-  coding = { "toolchain", "snippet-tools", "completion", "lsp-tools", "conform", "nvim-lint" },
-  git = { "git-tools" },
-  integrations = { "debug-tools", "wakatime" },
+  ui = { "ui.theme-tools", "ui.notification-tools", "ui.input-tools", "disabled.nvim-web-devicons", "ui.ui-tools" },
+  navigation = {
+    "navigation.keymap-tools",
+    "navigation.selection-tools",
+    "navigation.file-tools",
+    "navigation.motion-tools",
+    "navigation.images",
+  },
+  editing = { "editing.pairs", "editing.editing-tools" },
+  coding = {
+    "coding.toolchain",
+    "coding.snippet-tools",
+    "coding.completion",
+    "coding.lsp-tools",
+    "third_party.conform",
+    "third_party.nvim-lint",
+  },
+  git = { "git.git-tools" },
+  integrations = { "integrations.debug-tools", "third_party.wakatime" },
   ai = {},
-  debugging = { "nvim-dap" },
-  tasks = { "task-tools" },
-  sessions = { "workspace-tools" },
+  debugging = { "disabled.nvim-dap" },
+  tasks = { "tasks.task-tools" },
+  sessions = { "sessions.workspace-tools" },
 }
 function M.project(path)
   local file = vim.fs.find(".nvim-plugins.lua", { path = path or vim.uv.cwd(), upward = true, type = "file" })[1]
@@ -54,7 +67,7 @@ function M.build(selection)
   end
   local function group(name)
     for _, module in ipairs(groups[name]) do
-      local path = "plugins." .. name .. "." .. module
+      local path = "plugins." .. module
       add(require(path), path)
     end
   end

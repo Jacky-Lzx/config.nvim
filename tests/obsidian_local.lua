@@ -4,7 +4,7 @@ vim.opt.rtp:prepend(root)
 vim.opt.rtp:prepend(assert(vim.env.NVIM_PLUGIN_TOOLS_PATH))
 require("config.context").initialize({ profiles = { "writing" }, features = {} })
 local specs = require("config.specs")
-local shared = require("languages.markdown.specs.obsidian")[1]
+local shared = require("plugins.disabled.obsidian")[1]
 assert(shared.opts.workspaces == nil)
 local plain = specs.build()
 for _, node in ipairs(plain) do

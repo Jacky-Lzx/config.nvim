@@ -143,10 +143,10 @@ integration_checks() (
 if [ "$suite" != native ]; then
   NVIM_TEST_ENABLE_THIRD_PARTY=0 nvim --headless -u NONE -i NONE --noplugin \
     -l "$root/tests/per_plugin_flags.lua"
-  printf '\nRunning personal defaults with standalone third-party plugins disabled\n'
+  printf '\nRunning personal defaults with enabled and disabled third-party plugins\n'
   NVIM_TEST_ENABLE_THIRD_PARTY=0 nvim --headless -i NONE \
     --cmd "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')" -u "$root/init.lua" \
-    -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/third_party_disabled.lua')"
+    -c "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/third_party_policy.lua')"
 fi
 
 case "$suite" in

@@ -207,12 +207,13 @@ same context. A later different selection fails explicitly; restart after changi
 Resource paths use `utils.paths.config(...)`, anchored to the checkout containing that
 module instead of an unrelated default `stdpath("config")` when using an explicit init file.
 
-Large plugin collections retain native lazy.nvim imports: completion core, menu, and source
-contributions live in `plugins/coding/completion/`; Markdown integrations live in
-`languages/markdown/specs/`. Mini plugins have individual feature-owned specs. Shared
-completion source cycling/toggling lives in `features/completion/init.lua` and accepts
-provider configuration as data, keeping buffer state separate from global provider defaults.
-`integrations/blink_completion.lua` reads Blink's configuration and displays the selected sources.
+Plugin declarations use explicit module lists. Enabled third-party declarations live in
+`plugins/third_party/`, while disabled declarations and their dedicated language options
+live in `plugins/disabled/`. Language modules reference these declarations to retain profile
+selection, and nvim-lspconfig remains a child of lsp-tools. Local plugins retain their
+workflow directories. Completion configuration lives in `plugins/coding/completion/`;
+shared source cycling/toggling in `features/completion/init.lua` accepts provider configuration
+as data. `integrations/completion.lua` connects these preferences to completion-tools.
 
 A language may declare:
 

@@ -21,7 +21,7 @@ package.loaded.keymap_tools = {
 package.preload.snacks = function()
   error("Formatting must not load Snacks")
 end
-local conform = require("plugins.coding.conform")[1]
+local conform = require("plugins.third_party.conform")[1]
 vim.g.enable_autoformat = false
 conform.config({ opts = vim.deepcopy(conform.opts), dir = conform.dir })
 assert(vim.g.enable_autoformat == false, "preserve explicit autoformat preference")
@@ -80,7 +80,7 @@ vim.lsp.get_clients = function(opts)
   assert(opts.name == "typos_lsp" and opts.bufnr == relevant)
   return typos and { {} } or {}
 end
-local lint = require("plugins.coding.nvim-lint")[1]
+local lint = require("plugins.third_party.nvim-lint")[1]
 lint.config({ opts = lint.opts, dir = lint.dir })
 local function lint_buffer(b)
   calls = {}
@@ -114,7 +114,7 @@ assert(vim.list_contains(definition("toml").parsers, "toml"))
 assert(vim.list_contains(definition("swift").parsers, "swift"))
 assert(vim.deep_equal(definition("swift").formatters.swift, { "swift" }))
 assert(vim.deep_equal(definition("swift").linters.swift, { "swiftlint" }))
-local swift_dap = require("languages.swift.plugins")[1].opts
+local swift_dap = require("plugins.disabled.nvim-dap.swift")[1].opts
 assert(swift_dap.configurations.swift[1].type == "lldb")
 assert(swift_dap.adapters.lldb.command == (vim.fn.has("mac") == 1 and "xcrun" or "lldb-dap"))
 assert(not has_tool("python", "pyright"))

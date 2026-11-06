@@ -10,5 +10,5 @@ return {
   formatters = {
     rust = { "rustfmt", lsp_format = "fallback" },
   },
-  plugins = { "languages.rust.plugins" },
+  plugins = { "plugins.disabled.crates", "plugins.disabled.nvim-dap.rust" },
 }

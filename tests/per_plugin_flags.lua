@@ -3,15 +3,24 @@ vim.opt.rtp:prepend(root)
 vim.opt.rtp:prepend(assert(vim.env.NVIM_PLUGIN_TOOLS_PATH))
 local resolve = require("plugin_tools.graph").resolve
 local build = require("config.specs").build
-local formatter = require("plugins.coding.conform")[1]
-assert(formatter.enabled == false)
-formatter.enabled = true
-local graph = resolve(build(), { dev = { path = require("utils.platform").dev_plugin_root(), fallback = true } })
-assert(graph.nodes["conform.nvim"], "A declaration's enabled flag did not enable that plugin")
-assert(not graph.nodes["nvim-lint"] and not graph.nodes["render-markdown.nvim"])
-assert(graph.nodes["nvim-lspconfig"].parents["lsp-tools.nvim"])
+local function graph()
+  return resolve(build(), { dev = { path = require("utils.platform").dev_plugin_root(), fallback = true } })
+end
+local formatter = require("plugins.third_party.conform")[1]
+assert(formatter.enabled == true and graph().nodes["conform.nvim"])
 formatter.enabled = false
-local disabled = resolve(build(), { dev = { path = require("utils.platform").dev_plugin_root(), fallback = true } })
+local disabled = graph()
 assert(not disabled.nodes["conform.nvim"], "Disabling one plugin kept option-only contributions alive")
+assert(disabled.nodes["nvim-lint"] and disabled.nodes["vim-wakatime"])
 assert(disabled.nodes["lsp-tools.nvim"] and disabled.nodes["theme-tools.nvim"])
-print("Per-plugin enabled flags independently restore and disable one plugin without a global policy")
+formatter.enabled = true
+local icons = require("plugins.disabled.nvim-web-devicons")[1]
+assert(icons.enabled == false)
+icons.enabled = true
+local restored = graph()
+assert(restored.nodes["nvim-web-devicons"], "A declaration's enabled flag did not enable that plugin")
+assert(restored.nodes["conform.nvim"] and not restored.nodes["render-markdown.nvim"])
+assert(restored.nodes["nvim-lspconfig"].parents["lsp-tools.nvim"])
+icons.enabled = false
+assert(not graph().nodes["nvim-web-devicons"])
+print("Per-plugin flags independently disable enabled plugins and restore disabled declarations")

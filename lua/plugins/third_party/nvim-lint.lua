@@ -2,7 +2,7 @@ return {
   {
     main = "lint",
     id = "nvim-lint",
-    -- enabled = false,
+    enabled = true,
     source = "mfussenegger/nvim-lint",
     dependencies = { "toolchain-tools.nvim" },
     opts = {

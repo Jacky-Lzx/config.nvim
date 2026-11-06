@@ -1,7 +1,7 @@
 return {
   {
     id = "vim-wakatime",
-    -- enabled = false,
+    enabled = true,
     source = "wakatime/vim-wakatime",
     -- lazy = false,
   },

@@ -28,13 +28,20 @@ contributions use the `.nvim-plugins.lua` path. `:PluginTools explain {id}` show
 declarations and option assignments in merge order, including disabled contributions
 and paths replaced by project overrides. Metadata resolution remains side-effect free.
 
-Standalone third-party plugins are temporarily disabled with `enabled = false`
-in their individual declarations under `lua/plugins/` and `lua/languages/`.
-To restore one plugin, change its own declaration to `enabled = true` and restart
-Neovim; enable any explicitly required dependencies too. There is no global
-third-party switch. Declarations, installed checkouts and lock entries are retained.
-The nvim-lspconfig child of lsp-tools and theme-tools' managed theme/icon providers
-remain enabled.
+Third-party declarations are grouped by their current enabled state:
+
+- `lua/plugins/third_party/`: Conform, nvim-lint, WakaTime, and the nvim-lspconfig
+  provider loaded as a child of lsp-tools.
+- `lua/plugins/disabled/`: disabled third-party plugins and their language-specific
+  options. Bullets, CodeSnap and SnipRun are retained without a manifest entry.
+
+Local plugins keep their workflow directories. Language and feature selections
+still control which declarations enter the manifest. Each declaration's `enabled`
+field controls activation; the directory itself does not override it. To restore
+one plugin, enable its declaration and required dependencies, move its configuration
+to `third_party/`, and update the manifest or language module referencing it.
+There is no global third-party switch. Installed checkouts and lock entries are retained;
+theme-tools continues to manage its own theme/icon providers.
 
 Managed Git packages live under `stdpath("data")/plugin-tools` (override with
 `NVIM_PLUGIN_ROOT`); development checkouts remain external. To prepare a new

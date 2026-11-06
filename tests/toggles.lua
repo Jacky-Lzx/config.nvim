@@ -33,7 +33,7 @@ assert(row("td").toggle.state)
 diagnostic_mapping()
 assert(row("td").toggle.state == false and row("td").desc == "Enable Diagnostics")
 diagnostic_mapping()
-local conform = require("plugins.coding.conform")[1]
+local conform = require("plugins.third_party.conform")[1]
 -- Isolate configuration-owned mappings/metadata from plugin initialization.
 local mocked = {
   "conform",
@@ -69,7 +69,7 @@ local specs = {
   require("plugins.ui.ui-tools")[1],
   require("plugins.git.git-tools")[1],
   require("plugins.editing.pairs")[1],
-  require("languages.markdown.specs.render")[1],
+  require("plugins.disabled.render-markdown")[1],
 }
 for _, spec in ipairs(specs) do
   configure(spec)

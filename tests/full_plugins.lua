@@ -6,17 +6,14 @@ end
 _G.full_plugins_fixture = true
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 local modules = {
-  ["plugins.ui.nvim-web-devicons"] = { "nvim-web-devicons" },
-  ["plugins.coding.conform"] = { "conform.nvim" },
-  ["plugins.coding.nvim-lint"] = { "nvim-lint" },
-  ["plugins.integrations.wakatime"] = { "vim-wakatime" },
-  ["plugins.debugging.nvim-dap"] = { "nvim-dap", "nvim-dap-view" },
-  ["languages.rust.plugins"] = { "crates.nvim" },
-  ["languages.markdown.specs.render"] = { "render-markdown.nvim" },
-  ["languages.markdown.specs.preview"] = { "peek.nvim" },
-  ["languages.markdown.specs.obsidian"] = { "obsidian.nvim" },
-  ["languages.typst"] = { "typst-preview.nvim" },
-  ["languages.latex.plugins"] = { "texpresso.vim" },
+  ["plugins.disabled.nvim-web-devicons"] = { "nvim-web-devicons" },
+  ["plugins.disabled.nvim-dap"] = { "nvim-dap", "nvim-dap-view" },
+  ["plugins.disabled.crates"] = { "crates.nvim" },
+  ["plugins.disabled.render-markdown"] = { "render-markdown.nvim" },
+  ["plugins.disabled.peek"] = { "peek.nvim" },
+  ["plugins.disabled.obsidian"] = { "obsidian.nvim" },
+  ["plugins.disabled.typst-preview"] = { "typst-preview.nvim" },
+  ["plugins.disabled.texpresso"] = { "texpresso.vim" },
 }
 for name, ids in pairs(modules) do
   local module_name, enabled_ids = name, ids
