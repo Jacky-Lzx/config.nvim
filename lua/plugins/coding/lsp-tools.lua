@@ -238,9 +238,6 @@ return {
       })
       local tools = require("lsp-tools")
       tools.setup(opts)
-      vim.api.nvim_create_user_command("LspToolsInfo", function()
-        tools.inspect()
-      end, { force = true })
       -- Preserve the previous outline commands during migration.
       vim.api.nvim_create_user_command("Outline", tools.toggle_outline, { force = true })
       vim.api.nvim_create_user_command("OutlineOpen", function()

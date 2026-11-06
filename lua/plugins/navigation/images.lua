@@ -122,25 +122,6 @@ return {
       })
       require("image_tools.bootstrap").setup(ctx.opts)
       require("integrations.image_tools").setup()
-      -- Preserve the clipboard-or-reference behavior of the personal shortcut.
-      local function alias()
-        vim.api.nvim_create_user_command("ImageInsert", function(args)
-          local image = require("image_tools.bootstrap").ensure()
-          if args.args == "" then
-            image.paste()
-          else
-            image.insert(args.args, { mode = "reference" })
-          end
-        end, {
-          nargs = "?",
-          bang = true,
-          complete = "file",
-          desc = "Insert a clipboard image or reference an existing file",
-          force = true,
-        })
-      end
-      vim.api.nvim_create_autocmd("User", { pattern = "ImageToolsReady", callback = alias })
-      alias()
     end,
   },
 }

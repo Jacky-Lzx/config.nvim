@@ -7,7 +7,9 @@ vim.fn.mkdir(directory .. "/chapters", "p")
 local old_cwd = vim.fn.getcwd()
 vim.api.nvim_set_current_dir(directory)
 directory = vim.fn.getcwd()
-local original_insert, original_paste, original_pick = image.insert, image.paste, image.pick
+local original_pick = image.pick
+local runtime = image._runtime()
+local original_insert, original_paste = runtime.insert, runtime.paste
 local backend = require("image_tools.workflow.clipboard_backend")
 local detect, read = backend.detect, backend.read
 local select, input = vim.ui.select, vim.ui.input
@@ -15,11 +17,12 @@ local done, failure, paths, reads
 local function complete(err, result)
   failure, paths, done = err, result, true
 end
-image.insert = function(source, opts)
-  return original_insert(source, opts, complete)
+-- Commands and Lua callers share the runtime API; observe completion there.
+runtime.insert = function(self, source, opts, callback)
+  return original_insert(self, source, opts, callback or complete)
 end
-image.paste = function(opts)
-  return original_paste(opts, complete)
+runtime.paste = function(self, opts, callback)
+  return original_paste(self, opts, callback or complete)
 end
 backend.detect = function()
   return { name = "fixture", executable = "fixture" }
@@ -66,7 +69,7 @@ local function cursor(row, col)
 end
 local function check_paste(ft, extension, expected, row, col)
   local buf = document(ft, extension)
-  vim.cmd("ImageInsert")
+  vim.cmd("ImagePaste")
   wait()
   local path = assert(paths[1])
   assert(
@@ -131,7 +134,7 @@ assert(vim.uv.fs_copyfile(fixture, source))
 document("markdown", "md")
 local command_source = directory .. "/source.png"
 assert(vim.uv.fs_copyfile(fixture, command_source))
-vim.cmd.ImageInsert(command_source)
+vim.api.nvim_cmd({ cmd = "ImageInsert", args = { command_source }, bang = true }, {})
 wait()
 assert(paths[1] == command_source, "Explicit :ImageInsert path must reference the source")
 document("markdown", "md")
@@ -192,7 +195,7 @@ wait()
 selection.files = picker_files
 assert(paths[1] == directory .. "/Figures/outside (100%).png", "Import must copy and retain the filename")
 
-image.insert, image.paste, image.pick = original_insert, original_paste, original_pick
+runtime.insert, runtime.paste, image.pick = original_insert, original_paste, original_pick
 backend.detect, backend.read = detect, read
 vim.ui.select, vim.ui.input = select, input
 vim.cmd("stopinsert")

@@ -73,23 +73,38 @@ return {
         if vim.fn.maparg("gX", "n") == "" and (uri.desc or ""):find("URI under cursor", 1, true) then
           keys[#keys + 1] = { "gX", uri.callback or uri.rhs, desc = uri.desc }
         end
-        for _, prefix in ipairs({ "a", "i", "an", "in", "al", "il" }) do
-          keys[#keys + 1] = { prefix, mode = { "o", "x" } }
+        local function plug(lhs, action, mode)
+          keys[#keys + 1] = {
+            lhs,
+            "<Plug>(EditingTools-" .. action .. ")",
+            mode = mode,
+            desc = "[Editing] " .. action,
+          }
         end
-        keys[#keys + 1] = { "g[", desc = "[Editing] Go to object start" }
-        keys[#keys + 1] = { "g]", desc = "[Editing] Go to object end" }
-        keys[#keys + 1] = { "mI", mode = "x", desc = "[Editing] Insert at selected lines" }
-        keys[#keys + 1] = { "mA", mode = "x", desc = "[Editing] Append at selected lines" }
-        for prefix, action in pairs({
-          ["g="] = "Evaluate arithmetic",
-          gx = "Exchange",
-          gm = "Duplicate",
-          cr = "Replace from register",
-          gs = "Sort",
-          ga = "Align with preview",
+        for lhs, action in pairs({
+          i = "inside",
+          a = "around",
+          ["in"] = "inside_next",
+          an = "around_next",
+          il = "inside_prev",
+          al = "around_prev",
         }) do
-          keys[#keys + 1] = { prefix, mode = { "n", "x" }, desc = "[Editing] " .. action }
-          keys[#keys + 1] = { prefix .. prefix:sub(-1), mode = "n", desc = "[Editing] " .. action .. " lines" }
+          plug(lhs, action, { "o", "x" })
+        end
+        plug("g[", "goto_start", "n")
+        plug("g]", "goto_end", "n")
+        plug("mI", "insert_visual", "x")
+        plug("mA", "append_visual", "x")
+        for lhs, action in pairs({
+          ["g="] = "evaluate",
+          gx = "exchange",
+          gm = "multiply",
+          cr = "replace",
+          gs = "sort",
+          ga = "align",
+        }) do
+          plug(lhs, action, { "n", "x" })
+          plug(lhs .. lhs:sub(-1), action .. "-line", "n")
         end
         return keys
       end)

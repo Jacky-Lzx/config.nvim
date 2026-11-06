@@ -272,7 +272,7 @@ local function check()
     local tex_options = require("tex-tools.config").options
     assert(tex_options.conceal.enabled and not tex_options.conceal.math_symbols)
     assert(tex_options.lsp == "texquill")
-    assert(tex_options.mappings and not tex_options.smart_enter)
+    assert(not tex_options.mappings and not tex_options.smart_enter)
     local server = vim.lsp.config.texquill
     assert(server.init_options.build.executable == "latexmk" and server.init_options.build.onSave)
     assert(server.init_options.diagnostics.chktex.enabled)

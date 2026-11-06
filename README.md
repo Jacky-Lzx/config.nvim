@@ -770,8 +770,9 @@ these behaviors from the former `image-insert.nvim` configuration:
   The menu only offers formats supported by the document.
 - `<leader>pc`: select one or more existing images and insert references on the next line;
   the source files are not copied. `<leader>pf` explicitly imports a copy instead.
-- `:ImageInsert` pastes the clipboard; `:ImageInsert path` references an existing file.
-  `:ImagePaste` also pastes the clipboard. `:ImagePick` selects existing image references.
+- `:ImagePaste` pastes the clipboard; `:ImageInsert! path` references an existing file.
+  `:ImageInsert [path]` imports a file using the plugin's configured insertion mode.
+  `:ImagePick` selects existing image references.
 
 Pasted images go into `Figures/` under the current working directory, with names such as
 `2026-04-28_16-21-17.avif`. References and previews resolve relative to the current document,
@@ -961,7 +962,8 @@ writes JSON under `stdpath('state')/debug-tools`. `PROF=1 nvim` captures startup
 until after `ConfigReady` and saves automatically. Profiling is opt-in, temporarily
 disables JIT, and includes hook overhead; it measures the main Lua thread.
 
-`:StartupTime [runs]` (default 10) and `:DebugTools startup` use debug-tools' native
+`:StartupTime [runs]` is a personal alias for `:DebugToolsStartup [runs]`
+(default 10); this command and `:DebugTools startup` use debug-tools' native
 `--startuptime` collector, replacing vim-startuptime. Each child has an attached
 UI and runs the actual configuration. The report shows mean self/inclusive event
 times and total mean/median/min/max; Enter opens source and q closes the report.
@@ -998,3 +1000,24 @@ Obsidian uses its built-in native picker when no external picker is configured. 
 including `:Obsidian`, use `vim.ui.select` through selection-tools; previews, multi-selection
 and picker-specific mappings retain Obsidian's native UI. The unused
 `<leader>sp` plugin-spec picker shortcut has been removed.
+
+## Shortcut and command ownership
+
+Plugins publish Lua actions, namespaced commands and optional `<Plug>` endpoints.
+Global entry keys and ordinary filetype/LSP buffer keys belong to this config.
+Use `config.bindings.set(owner, entries)` for declarative mappings; keep language
+keys beside their language configuration. Plugin-owned windows retain their local
+interaction keys. Completion, pairing and snippet input adapters stay explicitly
+configured with their feature because they compose confirmation and fallback.
+
+editing-tools and tex-tools no longer assign user keys by default. This config
+binds their public endpoints; explicit plugin mapping presets remain opt-in.
+ui-tools also leaves scroll and mouse entry keys to configuration. Scroll bindings
+follow `<leader>tS`, preserving custom mappings when enabled or disabled.
+
+Formal commands remain implemented by their owning plugins, including argument
+validation and completion. Registration reports same-name conflicts, repeated
+setup refreshes plugin-owned definitions, and cleanup preserves user replacements.
+Configuration may define separate aliases such as `StartupTime`, `VenvSelect` and
+`Outline`; it must not redefine plugin commands such as `ImageInsert`. Existing
+plugin command names are retained in this migration.

@@ -151,6 +151,38 @@ return {
       end
       require("config.bindings").set("ui-tools.nvim", {
         {
+          "<RightMouse>",
+          function()
+            require("ui_tools").menu({ mouse = true })
+          end,
+          mode = { "n", "x", "i" },
+          desc = "[UI] Open context menu",
+        },
+        {
+          "<2-RightMouse>",
+          function()
+            require("ui_tools").menu({ mouse = true })
+          end,
+          mode = { "n", "x", "i" },
+          desc = "[UI] Open context menu",
+        },
+        {
+          "<3-RightMouse>",
+          function()
+            require("ui_tools").menu({ mouse = true })
+          end,
+          mode = { "n", "x", "i" },
+          desc = "[UI] Open context menu",
+        },
+        {
+          "<4-RightMouse>",
+          function()
+            require("ui_tools").menu({ mouse = true })
+          end,
+          mode = { "n", "x", "i" },
+          desc = "[UI] Open context menu",
+        },
+        {
           "<A-S-,>",
           function()
             require("ui_tools.bufferline").move(-1)
@@ -325,6 +357,7 @@ return {
       })
       local opts = ctx.opts
       require("ui_tools").setup(opts)
+      require("features.toggles").scroll_bindings()
       require("features.bars").setup()
       require("ui_tools.integrations.git_tools").setup()
       require("ui_tools.integrations.context_lsp").setup({

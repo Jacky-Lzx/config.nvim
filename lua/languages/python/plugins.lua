@@ -20,12 +20,6 @@ return {
           )
           local opts = ctx.opts
           require("integrations.python_environment").setup(opts.python)
-          vim.api.nvim_create_user_command("VenvSelect", function(args)
-            vim.api.nvim_cmd(
-              { cmd = "WorkspacePython", args = args.args ~= "" and { args.args } or {}, bang = args.bang },
-              {}
-            )
-          end, { nargs = "?", bang = true, complete = "file", desc = "Select project Python environment" })
         end,
       },
     },

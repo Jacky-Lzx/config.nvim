@@ -36,6 +36,32 @@ function M.map(owner, lhs, opts)
   return registration
 end
 
+-- Scroll entry keys are personal policy; the UI module owns only the behavior.
+function M.scroll_bindings()
+  local bindings = require("config.bindings")
+  bindings.set("config.scroll", {})
+  local scroll = package.loaded["ui_tools.scroll"]
+  if not scroll or not scroll.enabled then
+    return
+  end
+  local existing, entries = {}, {}
+  for _, mapping in ipairs(vim.api.nvim_get_keymap("n")) do
+    existing[vim.keycode(mapping.lhs)] = true
+  end
+  for _, key in ipairs({ "<C-d>", "<C-u>", "<C-f>", "<C-b>", "<C-e>", "<C-y>" }) do
+    if not existing[vim.keycode(key)] then
+      entries[#entries + 1] = {
+        key,
+        function()
+          require("ui_tools.scroll").scroll(key, vim.v.count)
+        end,
+        desc = "Smooth native scroll",
+      }
+    end
+  end
+  bindings.set("config.scroll", entries)
+end
+
 function M.setup()
   local function option(name, lhs, label, on, off)
     if on == nil then
@@ -109,6 +135,9 @@ function M.setup()
       end,
       set = function()
         require("ui_tools").toggle(spec[1])
+        if spec[1] == "scroll" then
+          M.scroll_bindings()
+        end
       end,
     }, spec[2])
   end

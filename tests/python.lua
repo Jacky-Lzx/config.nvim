@@ -55,10 +55,12 @@ package.loaded["workspace_tools.environments.python"] = {
   end,
 }
 require("config.context").initialize({ profiles = { "data" }, features = {} })
+require("core.commands").setup()
+local alias = vim.api.nvim_get_commands({}).VenvSelect
 local spec = require("languages.python.plugins")[1].children[1]
 spec.config({ opts = spec.opts, dir = spec.dir })
 assert(configured, "Plugin setup must connect the interpreter provider")
-assert(vim.fn.exists(":VenvSelect") == 2)
+assert(vim.deep_equal(alias, vim.api.nvim_get_commands({}).VenvSelect), "Python setup must preserve the config alias")
 assert(not package.loaded.workspace_tools, "Python-only setup must leave session management unloaded")
 check(selected)
 selected = "/missing/python"

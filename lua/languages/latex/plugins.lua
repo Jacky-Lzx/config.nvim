@@ -42,8 +42,7 @@ return {
         executable = "/Applications/Pagewing.app/Contents/MacOS/pagewing",
         focus = false,
       },
-      -- mappings = false, -- languages.latex.buffer owns the existing key layout.
-      mappings = true,
+      mappings = false, -- languages.latex.buffer owns the key layout.
       smart_enter = false, -- completion-tools and pairs.nvim own Insert-mode Enter.
       conceal = { math_symbols = false, spacing = false },
       build = {

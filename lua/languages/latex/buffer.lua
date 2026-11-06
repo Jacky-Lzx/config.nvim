@@ -15,6 +15,48 @@ function M.setup(bufnr)
   })
 
   map("<localleader>lv", "<Cmd>TexToolsForwardSearch<CR>", "PDF forward search")
+  -- The plugin publishes Plug endpoints; this configuration owns physical keys.
+  for key, action in pairs({
+    ["<localleader>lt"] = "Outline",
+    ["<localleader>lc"] = "Clean",
+    ["<localleader>lC"] = "CleanFull",
+    ["<localleader>lo"] = "BuildOutput",
+    ["<localleader>lq"] = "Log",
+    ["<localleader>le"] = "Errors",
+    ["<localleader>lk"] = "CancelBuild",
+    ["<localleader>lK"] = "CancelAllBuilds",
+    ["<localleader>lg"] = "BuildStatus",
+    ["<localleader>ldm"] = "JumpMathDelimiter",
+    ["<localleader>ldc"] = "ChangeMathDelimiters",
+    ["<localleader>ldd"] = "UnwrapMathDelimiters",
+    ["<localleader>ldt"] = "ToggleMathDelimiterSize",
+    ["<localleader>lcr"] = "RenameCommand",
+    ["<localleader>lcd"] = "UnwrapCommand",
+    ["<localleader>lEd"] = "UnwrapEnvironment",
+    ["<localleader>lf"] = "ToggleMathDelimiters",
+    ["<localleader>lEr"] = "RenameEnvironment",
+    ["<localleader>lEt"] = "ToggleEnvironmentStar",
+    ["<localleader>lm"] = "JumpEnvironment",
+    ["<localleader>ll"] = "Build",
+    ["]t"] = "NextCell",
+    ["[t"] = "PreviousCell",
+    ["]]"] = "NextSection",
+    ["[["] = "PreviousSection",
+    ["]i"] = "NextItem",
+    ["[i"] = "PreviousItem",
+    ["]e"] = "NextEnvironment",
+    ["[e"] = "PreviousEnvironment",
+    ["]m"] = "NextMath",
+    ["[m"] = "PreviousMath",
+  }) do
+    -- Preserve the selected motion/layout owner, as the old opt-in preset did.
+    if vim.fn.maparg(key, "n") == "" then
+      plug(key, action, action)
+    end
+  end
+  plug("]]", "CloseDelimiter", "Close LaTeX delimiter", "i")
+  plug("<localleader>lcs", "SurroundCommand", "Surround command", { "n", "x" })
+  plug("<localleader>lEs", "SurroundEnvironment", "Surround environment", { "n", "x" })
   for _, object in ipairs({
     { "e", "Environment" },
     { "c", "Command" },
