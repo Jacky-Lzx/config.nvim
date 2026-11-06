@@ -69,8 +69,9 @@ and paths replaced by project overrides. Metadata resolution remains side-effect
 
 Third-party declarations are grouped by their current enabled state:
 
-- `lua/plugins/third_party/`: Conform, nvim-lint, WakaTime, Obsidian (inside a
-  configured vault), and the nvim-lspconfig provider loaded as a child of lsp-tools.
+- `lua/plugins/third_party/`: Conform, nvim-lint, WakaTime, and the nvim-lspconfig
+  provider loaded as a child of lsp-tools.
+- `lua/languages/markdown/plugins.lua`: Obsidian, enabled inside a configured vault.
 - `lua/plugins/disabled/`: disabled third-party plugins and their language-specific
   options. CodeSnap is retained without a manifest entry.
 
@@ -78,7 +79,7 @@ Local plugins keep their workflow directories. Language and feature selections
 still control which declarations enter the manifest. Each declaration's `enabled`
 field controls activation; the directory itself does not override it. To restore
 one plugin, enable its declaration and required dependencies, move its configuration
-to `third_party/`, and update the manifest or language module referencing it.
+to `third_party/` or its language module, and update the module referencing it.
 There is no global third-party switch. Installed checkouts and lock entries are retained;
 theme-tools continues to manage its own theme/icon providers.
 
@@ -667,9 +668,10 @@ checks provided by `:checkhealth tex-tools`. Missing Delta or Kitty disables the
 corresponding optional integration.
 
 Obsidian workspaces belong to the vault's `.nvim-plugins.lua`, in the Obsidian spec's
-`opts.workspaces`. The shared spec keeps plugin behavior and mappings, and only enables
-Obsidian when the merged options contain a workspace. Start Neovim inside the vault or one
-of its subdirectories so the configuration can securely read that local spec.
+`opts.workspaces`. The shared spec in `lua/languages/markdown/plugins.lua` keeps plugin
+behavior and mappings, and only enables Obsidian when the merged options contain a workspace.
+Start Neovim inside the vault or one of its subdirectories so the configuration can
+securely read that local spec.
 
 Pairing uses [Jacky-Lzx/pairs.nvim](https://github.com/Jacky-Lzx/pairs.nvim) with plugin-tools'
 `dev = true` and `dev.fallback = true`. It prefers `NVIM_DEV_PLUGIN_ROOT/pairs.nvim`
