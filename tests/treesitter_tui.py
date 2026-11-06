@@ -16,7 +16,7 @@ import time
 root = Path(__file__).resolve().parents[1]
 actions = {
     "lua": b"ilocal value = 1\x1b",
-    "markdown": b" tm",
+    "markdown": b" tmr",
     "markdown_edit": b"ggA edited\x1b",
     "tex": b"0f1r2",
 }

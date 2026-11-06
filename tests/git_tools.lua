@@ -46,23 +46,19 @@ assert(vim.wait(5000, function()
 end, 5))
 assert(vim.fn.maparg("]h", "n") ~= "" and vim.fn.maparg("<leader>ggu", "n") ~= "")
 vim.api.nvim_buf_set_lines(buf, 0, 1, false, { "changed" })
-local overlay
-for _, key in ipairs(require("config.bindings").entries[spec.id]) do
-  if key[1] == "<leader>to" then
-    overlay = key[2]
-  end
-end
+local overlay = vim.fn.maparg("<leader>tgo", "n", false, true).callback
 overlay()
 assert(vim.wait(5000, function()
   local s = require("git_tools.buffer").states[buf]
   return s.overlay and #s.hunks > 0
 end, 5))
-assert(toggle_state("to", buf) == true and toggle_state("ggP", buf) == true)
+assert(toggle_state("tgo", buf) == true)
+assert(vim.fn.maparg("<leader>ggP", "n") == "", "Duplicate Git overlay binding remains")
 local hidden = vim.api.nvim_create_buf(false, true)
-assert(toggle_state("to", hidden) == nil, "Overlay status must use the requested buffer")
+assert(toggle_state("tgo", hidden) == nil, "Overlay status must use the requested buffer")
 require("git_tools").toggle_overlay(buf)
 assert(vim.wait(5000, function()
-  return toggle_state("to", buf) == false
+  return toggle_state("tgo", buf) == false
 end, 5))
 assert(not package.loaded.gitsigns and not package.loaded["mini.diff"] and not package.loaded.diffview)
 local ui_spec = dofile(root .. "/lua/plugins/ui/ui-tools.lua")[1]

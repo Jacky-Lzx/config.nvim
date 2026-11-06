@@ -9,7 +9,7 @@ local before = vim.deepcopy(vim.diagnostic.config())
 local diagnostics = require("features.lsp.diagnostics")
 local integration = require("integrations.diagnostic_toggles")
 assert(vim.deep_equal(vim.diagnostic.config(), before), "Requiring diagnostics must not apply settings")
-assert(vim.fn.maparg("<leader>td", "n") == "")
+assert(vim.fn.maparg("<leader>tld", "n") == "")
 diagnostics.setup()
 local defaults = vim.diagnostic.config()
 assert(not defaults.underline and not defaults.update_in_insert and defaults.severity_sort)
@@ -25,17 +25,17 @@ assert(defaults.virtual_text.prefix({ severity = 99, message = "fallback" }) == 
 local function toggle(key)
   vim.fn.maparg(key, "n", false, true).callback()
 end
-toggle("<leader>td")
+toggle("<leader>tld")
 assert(not vim.diagnostic.is_enabled())
-toggle("<leader>td")
+toggle("<leader>tld")
 assert(vim.diagnostic.is_enabled())
-toggle("<leader>tV")
+toggle("<leader>tll")
 assert(vim.diagnostic.config().virtual_lines.current_line)
-toggle("<leader>tV")
+toggle("<leader>tll")
 assert(vim.diagnostic.config().virtual_lines == false)
-toggle("<leader>tv")
+toggle("<leader>tlv")
 assert(vim.diagnostic.config().virtual_text.format({ message = "hidden" }) == "")
-toggle("<leader>tv")
+toggle("<leader>tlv")
 assert(vim.diagnostic.config().virtual_text.format == nil)
 assert(vim.diagnostic.config().virtual_text.spacing == 4)
 assert(not package.loaded.snacks)
@@ -48,11 +48,11 @@ package.loaded.keymap_tools = {
     registered = spec.toggles
   end,
 }
-local owner = vim.fn.maparg("<leader>td", "n", false, true).callback
-toggle("<leader>tV")
-toggle("<leader>tv")
+local owner = vim.fn.maparg("<leader>tld", "n", false, true).callback
+toggle("<leader>tll")
+toggle("<leader>tlv")
 integration.setup()
-assert(vim.fn.maparg("<leader>td", "n", false, true).callback == owner)
+assert(vim.fn.maparg("<leader>tld", "n", false, true).callback == owner)
 assert(#registered == 3)
 assert(registered[1].get == diagnostics.enabled and registered[1].get())
 assert(registered[2].get == diagnostics.virtual_lines_enabled and registered[2].get())
@@ -60,9 +60,9 @@ assert(registered[3].get == diagnostics.virtual_text_enabled and not registered[
 for _, entry in ipairs(registered) do
   assert(entry.set == nil, "Registration must not own a setter")
 end
-toggle("<leader>td")
+toggle("<leader>tld")
 assert(not registered[1].get())
-toggle("<leader>td")
+toggle("<leader>tld")
 assert(registered[1].get())
 assert(not package.loaded.snacks, "Diagnostic registration must not load Snacks")
 

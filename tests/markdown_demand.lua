@@ -70,7 +70,7 @@ local function check()
   end
 
   vim.api.nvim_win_set_cursor(0, { 3, 0 })
-  vim.api.nvim_feedkeys(vim.keycode("<Space>tm"), "xt", false)
+  vim.api.nvim_feedkeys(vim.keycode("<Space>tmr"), "xt", false)
   assert(state.enabled and state.get(first).enabled)
   assert(
     vim.wait(2000, function()
@@ -80,7 +80,7 @@ local function check()
   )
   vim.cmd.redraw()
   assert(vim.deep_equal(vim.api.nvim_buf_get_lines(first, 0, -1, false), source))
-  vim.api.nvim_feedkeys(vim.keycode("<Space>tm"), "xt", false)
+  vim.api.nvim_feedkeys(vim.keycode("<Space>tmr"), "xt", false)
   assert(not state.enabled)
 
   -- Exercise the real command/controller without launching an external viewer.

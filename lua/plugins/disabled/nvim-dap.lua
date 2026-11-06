@@ -3,7 +3,8 @@ return {
     config = function(ctx)
       require("config.bindings").set("nvim-dap-view", {
         {
-          "<leader>Du",
+          require("config.toggle_keys").get("dap.view").lhs,
+          id = "dap.view",
           function()
             require("dap-view").toggle()
           end,

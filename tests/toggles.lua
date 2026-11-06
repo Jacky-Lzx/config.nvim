@@ -1,6 +1,21 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.runtimepath:prepend(root)
 vim.g.mapleader = " "
+local layout = require("config.toggle_keys")
+local leaves, prefixes = {}, {}
+for _, group in ipairs(layout.groups()) do
+  prefixes[group.prefix] = true
+end
+for id, entry in pairs(layout.list()) do
+  assert(entry.lhs:match("^<leader>t%l%l$"), "Ungrouped toggle: " .. id)
+  assert(not leaves[entry.lhs], "Duplicate toggle key: " .. entry.lhs)
+  assert(prefixes[entry.lhs:sub(1, -2)], "Missing toggle group: " .. id)
+  assert(not prefixes[entry.lhs], "Group prefix is executable: " .. id)
+  leaves[entry.lhs] = true
+end
+local copy = layout.list()
+copy.wrap.lhs = "changed"
+assert(layout.get("wrap").lhs == "<leader>tew", "Layout snapshots must be independent")
 local api = vim.api
 local actions = dofile(root .. "/tests/actions.lua")
 local dev = require("utils.platform").dev_plugin_root()
@@ -47,17 +62,17 @@ local function row(key, opts)
 end
 local diagnostics = require("features.lsp.diagnostics")
 diagnostics.setup()
-local diagnostic_mapping = vim.fn.maparg("<leader>td", "n", false, true).callback
+local diagnostic_mapping = vim.fn.maparg("<leader>tld", "n", false, true).callback
 require("integrations.diagnostic_toggles").setup()
-assert(vim.fn.maparg("<leader>td", "n", false, true).callback == diagnostic_mapping)
-assert(row("td").toggle.state)
-toggle("<leader>td", "Diagnostics", false)
-assert(row("td").toggle.state == false and row("td").desc == "Enable Diagnostics")
-toggle("<leader>td", "Diagnostics", true)
-toggle("<leader>tV", "Diagnostic virtual lines", true)
-toggle("<leader>tV", "Diagnostic virtual lines", false)
-toggle("<leader>tv", "Diagnostic text", false)
-toggle("<leader>tv", "Diagnostic text", true)
+assert(vim.fn.maparg("<leader>tld", "n", false, true).callback == diagnostic_mapping)
+assert(row("tld").toggle.state)
+toggle("<leader>tld", "Diagnostics", false)
+assert(row("tld").toggle.state == false and row("tld").desc == "Enable Diagnostics")
+toggle("<leader>tld", "Diagnostics", true)
+toggle("<leader>tll", "Diagnostic virtual lines", true)
+toggle("<leader>tll", "Diagnostic virtual lines", false)
+toggle("<leader>tlv", "Diagnostic text", false)
+toggle("<leader>tlv", "Diagnostic text", true)
 local formatter = require("plugins.coding.format-tools")[1]
 -- Isolate configuration-owned mappings/metadata from plugin initialization.
 local mocked = {
@@ -85,11 +100,11 @@ local function configure(spec)
   assert(ok, err)
 end
 configure(formatter)
-local format_mapping = vim.fn.maparg("<leader>tf", "n", false, true).callback
-assert(row("tf").toggle.state)
-toggle("<leader>tf", "Auto format", false)
-assert(row("tf").toggle.state == false)
-toggle("<leader>tf", "Auto format", true)
+local format_mapping = vim.fn.maparg("<leader>tfa", "n", false, true).callback
+assert(row("tfa").toggle.state)
+toggle("<leader>tfa", "Auto format", false)
+assert(row("tfa").toggle.state == false)
+toggle("<leader>tfa", "Auto format", true)
 
 local specs = {
   require("plugins.ui.ui-tools")[1],
@@ -101,7 +116,7 @@ for _, spec in ipairs(specs) do
   configure(spec)
 end
 local before_inspection = #notices
-for _, key in ipairs({ "tp", "tgb", "tgw", "tgs", "to", "Dt", "tm", "Z", "z", "tG", "tD" }) do
+for _, key in ipairs({ "tpe", "tgb", "tgw", "tgs", "tgo", "tgd", "tmr", "tuz", "tum", "tui", "tud" }) do
   local item = row(key)
   assert(item.toggle and item.toggle.state == nil, "Cold state must remain unknown: " .. key)
   -- Ordinary configured callbacks are executable; inspection remains side-effect free.
@@ -113,8 +128,8 @@ end
 
 local adapter = require("features.toggles")
 adapter.setup()
-assert(vim.fn.maparg("<leader>td", "n", false, true).callback == diagnostic_mapping)
-assert(vim.fn.maparg("<leader>tf", "n", false, true).callback == format_mapping)
+assert(vim.fn.maparg("<leader>tld", "n", false, true).callback == diagnostic_mapping)
+assert(vim.fn.maparg("<leader>tfa", "n", false, true).callback == format_mapping)
 local first = api.nvim_get_current_win()
 vim.wo.wrap = true
 vim.cmd("vnew")
@@ -128,8 +143,8 @@ assert(vim.wo.wrap and row(actions.binding("toggle.wrap").lhs).desc == "Disable 
 local hidden = api.nvim_create_buf(false, true)
 assert(row(actions.binding("toggle.wrap").lhs, { buf = hidden }).toggle.state == nil)
 vim.lsp.inlay_hint.enable(true)
-toggle("<leader>th", "Inlay Hints", false)
-assert(row("th").toggle.state == false)
+toggle("<leader>tlh", "Inlay Hints", false)
+assert(row("tlh").toggle.state == false)
 local new = api.nvim_create_buf(false, true)
 assert(not vim.lsp.inlay_hint.is_enabled({ bufnr = new }), "New buffers must inherit the session toggle")
 
@@ -160,6 +175,28 @@ assert(calls == 2, "Registering a second buffer removed the first buffer's toggl
 for _, buf in ipairs(scoped) do
   api.nvim_buf_delete(buf, { force = true })
 end
+
+-- An explicit action may initialize a cold owner; reading its metadata cannot.
+local initialized, invoked = false, 0
+local action = adapter.map({
+  id = "cold_action",
+  name = "Cold action",
+  scope = "buffer",
+  get = function(ctx)
+    assert(ctx.buf == api.nvim_get_current_buf())
+    if initialized then
+      return false
+    end
+  end,
+  action = function(ctx)
+    assert(ctx.buf == api.nvim_get_current_buf())
+    initialized, invoked = true, invoked + 1
+  end,
+}, "<leader>qa")
+assert(row("qa").toggle.state == nil and invoked == 0)
+local returned = vim.fn.maparg("<leader>qa", "n", false, true).callback()
+assert(returned == false and row("qa").toggle.state == false and invoked == 1)
+action:dispose()
 
 -- Same descriptions cannot confuse explicit owner registration.
 for i, enabled in ipairs({ true, false }) do
@@ -211,10 +248,10 @@ unchanged:dispose()
 
 local pairs = require("pairs")
 pairs.setup({})
-assert(row("tp").toggle.state)
-toggle("<leader>tp", "Pairing", false)
-assert(row("tp").toggle.state == false)
-toggle("<leader>tp", "Pairing", true)
+assert(row("tpe").toggle.state)
+toggle("<leader>tpe", "Pairing", false)
+assert(row("tpe").toggle.state == false)
+toggle("<leader>tpe", "Pairing", true)
 local git = require("git_tools")
 for _, setting in ipairs({ { "tgb", "line_blame" }, { "tgw", "word_diff" }, { "tgs", "signs" } }) do
   git.toggle(setting[2], true)
@@ -223,39 +260,39 @@ for _, setting in ipairs({ { "tgb", "line_blame" }, { "tgw", "word_diff" }, { "t
   toggle("<leader>" .. setting[1], label, false)
   assert(row(setting[1]).toggle.state == false)
 end
-assert(row("Dt", { buf = hidden }).toggle.state == nil, "Hidden buffers have no Git comparison tab scope")
+assert(row("tgd", { buf = hidden }).toggle.state == nil, "Hidden buffers have no Git comparison tab scope")
 local ui = require("ui_tools")
 ui.setup({ indent = {}, focus = {} })
-assert(row("tG").toggle.state and not row("tD").toggle.state)
-toggle("<leader>tG", "Indent guides", false)
-assert(row("tG").toggle.state == false)
-toggle("<leader>tD", "Scope dimming", true)
-assert(row("tD").toggle.state)
-toggle("<leader>tD", "Scope dimming", false)
-toggle("<leader>Z", "Zen Mode", true)
-assert(row("Z").toggle.state and not row("z").toggle.state)
-toggle("<leader>Z", "Zen Mode", false)
-assert(not row("Z").toggle.state)
-toggle("<leader>z", "Zoom", true)
-assert(row("z").toggle.state and not row("Z").toggle.state)
-toggle("<leader>z", "Zoom", false)
+assert(row("tui").toggle.state and not row("tud").toggle.state)
+toggle("<leader>tui", "Indent guides", false)
+assert(row("tui").toggle.state == false)
+toggle("<leader>tud", "Scope dimming", true)
+assert(row("tud").toggle.state)
+toggle("<leader>tud", "Scope dimming", false)
+toggle("<leader>tuz", "Zen Mode", true)
+assert(row("tuz").toggle.state and not row("tum").toggle.state)
+toggle("<leader>tuz", "Zen Mode", false)
+assert(not row("tuz").toggle.state)
+toggle("<leader>tum", "Zoom", true)
+assert(row("tum").toggle.state and not row("tuz").toggle.state)
+toggle("<leader>tum", "Zoom", false)
 local custom_scroll = function() end
 vim.keymap.set("n", "<C-u>", custom_scroll)
-toggle("<leader>tS", "Scroll animation", true)
+toggle("<leader>tus", "Scroll animation", true)
 assert(vim.fn.maparg("<C-d>", "n", false, true).callback)
 assert(vim.fn.maparg("<C-u>", "n", false, true).callback == custom_scroll)
-toggle("<leader>tS", "Scroll animation", false)
+toggle("<leader>tus", "Scroll animation", false)
 assert(vim.fn.maparg("<C-d>", "n") == "")
 assert(vim.fn.maparg("<C-u>", "n", false, true).callback == custom_scroll)
 vim.keymap.del("n", "<C-u>")
 ui.disable()
 local render = specs[4]
 render.config({ opts = render.opts, dir = render.dir })
-assert(row("tm").toggle.state == false)
-toggle("<leader>tm", "Render Markdown", true)
-assert(row("tm").toggle.state == true)
-toggle("<leader>tm", "Render Markdown", false)
-assert(row("tm").toggle.state == false)
+assert(row("tmr").toggle.state == false)
+toggle("<leader>tmr", "Render Markdown", true)
+assert(row("tmr").toggle.state == true)
+toggle("<leader>tmr", "Render Markdown", false)
+assert(row("tmr").toggle.state == false)
 vim.notify = notify
 print(
   "PASS configured toggle owners, cold loading, native mappings, cross-window state, session hints, explicit native owner identity, failures, UI/Git/pairs/Markdown"

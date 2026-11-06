@@ -44,12 +44,8 @@ for _, width in ipairs({ 2, 4 }) do
   assert(vim.api.nvim_get_current_line() == string.rep(" ", width) .. "x")
 end
 
--- Toggling wrap is local to the current window.
-local origin = vim.api.nvim_get_current_win()
-vim.cmd.vnew()
-feed("<A-z>")
-assert(vim.wo.wrap and not vim.wo[origin].wrap)
-vim.cmd.close()
+-- Wrap's persistent toggle belongs to the grouped feature owner.
+assert(vim.fn.maparg("<A-z>", "n") == "")
 
 -- FileType must change the event buffer even when another buffer is current.
 local current = vim.api.nvim_get_current_buf()

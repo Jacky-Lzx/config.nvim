@@ -66,7 +66,7 @@ local function check()
   vim.v.errmsg = ""
   if case == "boundaries" or case == "boundaries_files" then
     -- First-save opt-out must preserve whitespace.
-    feed(" tf")
+    feed(" tfa")
     assert(vim.g.enable_autoformat == false)
     registered("format-tools.nvim")
     vim.cmd.edit(temp .. "/lazy-save.txt")
@@ -74,7 +74,7 @@ local function check()
     vim.cmd.write()
     loaded("format-tools.nvim")
     assert(vim.api.nvim_get_current_line() == "keep spaces   ", "First save ignored the formatting opt-out")
-    feed(" tf")
+    feed(" tfa")
     vim.cmd.write()
     assert(vim.api.nvim_get_current_line() == "keep spaces", "Second toggle did not restore formatting")
 

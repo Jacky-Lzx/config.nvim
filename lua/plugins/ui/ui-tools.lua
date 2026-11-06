@@ -115,36 +115,35 @@ return {
       todo = true,
     },
     config = function(ctx)
-      do
-        require("keymap_tools").register("ui-tools.toggles", {
-          toggles = {
-            {
-              keys = "<leader>Z",
-              name = "Zen Mode",
-              get = function()
-                return focus_mode("zen")
-              end,
-            },
-            {
-              keys = "<leader>z",
-              name = "Zoom",
-              get = function()
-                return focus_mode("zoom")
-              end,
-            },
-            {
-              keys = "<leader>tG",
-              name = "Indent guides",
-              get = indent_enabled,
-            },
-            {
-              keys = "<leader>tD",
-              name = "Scope dimming",
-              get = dim_enabled,
-            },
-          },
+      local toggles = require("features.toggles")
+      for _, entry in ipairs({ { "zen", "zen" }, { "zoom", "zoom" } }) do
+        toggles.map({
+          id = entry[1],
+          scope = "session",
+          get = function()
+            return focus_mode(entry[2])
+          end,
+          action = function()
+            return require("ui_tools")[entry[2]]()
+          end,
         })
       end
+      toggles.map({
+        id = "indent",
+        scope = "session",
+        get = indent_enabled,
+        action = function()
+          return require("ui_tools").toggle("indent")
+        end,
+      })
+      toggles.map({
+        id = "dim",
+        scope = "session",
+        get = dim_enabled,
+        action = function()
+          return require("ui_tools").dim()
+        end,
+      })
       require("config.bindings").set("ui-tools.nvim", {
         {
           "<RightMouse>",
@@ -317,38 +316,6 @@ return {
             require("ui_tools").pulse()
           end,
           desc = "[UI] Pulse current line",
-        },
-        {
-          "<leader>Z",
-          function()
-            require("ui_tools").zen()
-            require("features.toggles").notify("Zen Mode", focus_mode("zen"))
-          end,
-          desc = "[UI] Toggle Zen Mode",
-        },
-        {
-          "<leader>z",
-          function()
-            require("ui_tools").zoom()
-            require("features.toggles").notify("Zoom", focus_mode("zoom"))
-          end,
-          desc = "[UI] Toggle Zoom",
-        },
-        {
-          "<leader>tG",
-          function()
-            require("ui_tools").toggle("indent")
-            require("features.toggles").notify("Indent guides", indent_enabled())
-          end,
-          desc = "[UI] Toggle indent guides",
-        },
-        {
-          "<leader>tD",
-          function()
-            require("ui_tools").dim()
-            require("features.toggles").notify("Scope dimming", dim_enabled())
-          end,
-          desc = "[UI] Toggle scope dimming",
         },
       })
       local opts = ctx.opts

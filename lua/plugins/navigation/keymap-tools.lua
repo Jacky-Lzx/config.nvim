@@ -77,25 +77,11 @@ return {
       require("integrations.diagnostic_toggles").setup()
       keymaps.register("config", {
         modes = { "n", "x", "o" },
-        toggles = {
-          {
-            keys = "<A-z>",
-            modes = { "n" },
-            name = "Wrap",
-            get = function(ctx)
-              if ctx.win then
-                return vim.api.nvim_get_option_value("wrap", { win = ctx.win })
-              end
-            end,
-          },
-        },
         groups = {
-          { prefix = "<leader>tg", label = "[Git] Toggle" },
           { prefix = "<leader>gg", label = "[Git]" },
           { prefix = "<leader>D", label = "[Dap]" },
           { prefix = "<leader>w", label = "[Workspace]" },
           { prefix = "<leader>s", label = "[Selection]" },
-          { prefix = "<leader>t", label = "[Toggle]" },
           { prefix = "<leader>g", label = "[LSP] / [Git]" },
         },
       })

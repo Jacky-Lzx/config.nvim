@@ -35,7 +35,6 @@ local function on_attach(buf)
   map("n", "<leader>ggU", git.unstage_buffer, "Unstage buffer")
   map("n", "<leader>ggR", git.reset_buffer, "Reset buffer")
   map("n", "<leader>ggp", git.preview_hunk, "Preview hunk")
-  map("n", "<leader>ggP", git.toggle_overlay, "Toggle inline preview")
   map("n", "<leader>ggd", git.diffthis, "Diff buffer against index")
   map("n", "<leader>ggD", function()
     git.diffthis("HEAD~1")
@@ -49,31 +48,44 @@ end
 return {
   {
     config = function(ctx)
-      do
-        local function state(name)
-          return function(ctx)
-            if name == "compare" and not ctx.win then
-              return nil
-            end
-            local git = package.loaded.git_tools
-            if git then
-              return git.get_state(ctx)[name]
-            end
+      local function state(name)
+        return function(ctx)
+          if name == "compare" and not ctx.win then
+            return nil
+          end
+          local git = package.loaded.git_tools
+          if git then
+            return git.get_state(ctx)[name]
           end
         end
-        require("keymap_tools").register("git-tools.toggles", {
-          toggles = {
-            {
-              keys = "<leader>Dt",
-              name = "Git diff view",
-              get = state("compare"),
-            },
-            { keys = "<leader>to", name = "Git diff overlay", get = state("overlay") },
-            { keys = "<leader>ggP", name = "Git inline preview", get = state("overlay") },
-            { keys = "<leader>tgb", name = "Git line blame", get = state("line_blame") },
-            { keys = "<leader>tgw", name = "Git word diff", get = state("word_diff") },
-            { keys = "<leader>tgs", name = "Git signs", get = state("signs") },
-          },
+      end
+      local toggles = require("features.toggles")
+      toggles.map({
+        id = "git_compare",
+        scope = "tab",
+        get = state("compare"),
+        action = function()
+          return require("git_tools").toggle_compare()
+        end,
+        notify = false,
+      })
+      toggles.map({
+        id = "git_overlay",
+        scope = "buffer",
+        get = state("overlay"),
+        action = function(ctx)
+          return require("git_tools").toggle_overlay(ctx.buf)
+        end,
+        notify = false,
+      })
+      for id, option in pairs({ git_blame = "line_blame", git_word_diff = "word_diff", git_signs = "signs" }) do
+        toggles.map({
+          id = id,
+          scope = "session",
+          get = state(option),
+          action = function()
+            return require("git_tools").toggle(option)
+          end,
         })
       end
       require("config.bindings").set("git-tools.nvim", {
@@ -190,41 +202,6 @@ return {
             require("git_tools").merge()
           end,
           desc = "[Git] Merge conflicts",
-        },
-        {
-          "<leader>Dt",
-          function()
-            require("git_tools").toggle_compare()
-          end,
-          desc = "[Git] Toggle diff view",
-        },
-        {
-          "<leader>to",
-          function()
-            require("git_tools").toggle_overlay()
-          end,
-          desc = "[Git] Toggle diff overlay",
-        },
-        {
-          "<leader>tgb",
-          function()
-            require("features.toggles").notify("Git line blame", require("git_tools").toggle("line_blame"))
-          end,
-          desc = "[Git] Toggle line blame",
-        },
-        {
-          "<leader>tgw",
-          function()
-            require("features.toggles").notify("Git word diff", require("git_tools").toggle("word_diff"))
-          end,
-          desc = "[Git] Toggle word diff",
-        },
-        {
-          "<leader>tgs",
-          function()
-            require("features.toggles").notify("Git signs", require("git_tools").toggle("signs"))
-          end,
-          desc = "[Git] Toggle signs",
         },
       })
       require("git_tools").setup(ctx.opts)

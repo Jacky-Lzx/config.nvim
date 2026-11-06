@@ -186,3 +186,19 @@ personal interactive shell, and never owns processes. `<leader>oO` opens the las
 finished accepted task's existing output; `<leader>oo` keeps its latest-task meaning.
 Detaching the adapter releases its subscription and display handles without
 cancelling jobs; disposing task-tools detaches it before stopping owned jobs.
+
+## Grouped toggle layout
+
+`config.toggle_keys` owns the personal `Space t <group> <leaf>` layout and group
+labels. `features.toggles.map()` binds a feature owner's `get/set` or `get/action`
+declaration and its read-only metadata together, preserving buffer/window/session
+scope and keeping unknown cold state neutral. Explicit actions may initialize
+providers; metadata reads may not. The helper returns the metadata registration
+handle and delegates actual mapping ownership to `config.bindings`.
+
+Diagnostics bind through the pure entry helper before plugin bootstrap, then
+register metadata from the same owner declarations after keymap-tools is ready.
+Panel bindings share the layout and keep their existing stable action IDs.
+The persistent shell toggle is Normal-mode only so ordinary terminal spaces do
+not wait for leader sequences. Text edits and local picker/menu keys keep their
+own interaction contracts.

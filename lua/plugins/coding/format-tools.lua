@@ -40,7 +40,7 @@ return {
           set = function(state)
             vim.g.enable_autoformat = state
           end,
-        }, "<leader>tf", { desc = "Toggle auto format" })
+        }, nil, { desc = "Toggle auto format" })
       end
       require("config.bindings").set("format-tools.nvim", {
         {

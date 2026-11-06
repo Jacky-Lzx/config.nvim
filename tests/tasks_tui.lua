@@ -21,8 +21,8 @@ local stage_file = vim.env.NVIM_TEST_TMP .. "/tasks-stage"
 local function await(name, predicate)
   local lines = { name }
   if action_ids[name] then
-    local mode = vim.api.nvim_get_mode().mode == "t" and "t" or "n"
-    lines[2] = vim.json.encode(actions.input(action_ids[name], mode))
+    local leave_terminal = vim.api.nvim_get_mode().mode == "t" and "\28\14" or ""
+    lines[2] = vim.json.encode(leave_terminal .. actions.input(action_ids[name], "n"))
   end
   vim.fn.writefile(lines, stage_file)
   local start = vim.uv.hrtime()

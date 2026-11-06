@@ -1,12 +1,12 @@
 -- nvim --clean --headless -n -i NONE -l tests/latex_forward_search.lua
 local root = vim.fs.dirname(vim.fs.dirname(vim.fs.abspath(debug.getinfo(1, "S").source:sub(2))))
 vim.opt.runtimepath:prepend(root)
-vim.g.maplocalleader = " "
+vim.g.maplocalleader, vim.g.mapleader = " ", " "
 package.loaded["utils.platform"] = { executable = function() end }
 local registration
 package.loaded["keymap_tools"] = {
   register = function(source, spec)
-    if source == "latex.build-on-save" then
+    if source:find("config.toggle.tex_build_on_save:", 1, true) == 1 then
       registration = spec
     end
   end,
@@ -36,7 +36,8 @@ local before = vim.fn.maparg(" ll", "n", false, true)
 require("languages.latex.lsp").attach({}, bufnr)
 assert(vim.deep_equal(before, vim.fn.maparg(" ll", "n", false, true)), "LSP attachment replaced the build mapping")
 assert(vim.fn.maparg("<leader>lb", "n") == "<Cmd>TexToolsBuild<CR>")
-assert(vim.fn.maparg(" la", "n") == "<Cmd>TexToolsBuildOnSave toggle<CR>")
+assert(type(vim.fn.maparg(" txa", "n", false, true).callback) == "function")
+assert(vim.fn.maparg(" la", "n") == "")
 assert(registration.buf == bufnr)
 local get = registration.toggles[1].get
 assert(get({ buf = bufnr }) == nil, "Cold state inspection must not load tex-tools")

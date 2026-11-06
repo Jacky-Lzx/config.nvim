@@ -16,7 +16,6 @@ function M.setup_actions(bufnr)
     { "<localleader>lo", "BuildOutput", "Compiler output" },
     { "<localleader>lq", "Log", "Compiler log" },
     { "<localleader>le", "Errors", "Errors and warnings" },
-    { "<localleader>la", "BuildOnSave toggle", "Toggle build on save" },
     { "<localleader>lV", "View", "Open PDF" },
     { "<localleader>lv", "ForwardSearch", "PDF forward search" },
   }) do
@@ -30,7 +29,6 @@ function M.setup_actions(bufnr)
         BuildOutput = "build_output",
         Log = "build_log",
         Errors = "build_errors",
-        ["BuildOnSave toggle"] = "build_on_save",
         View = "view",
         ForwardSearch = "forward_search",
       }
@@ -43,19 +41,18 @@ function M.setup_actions(bufnr)
     end
     vim.keymap.set("n", entry[1], action, { buffer = bufnr, desc = entry[3] })
   end
-  require("keymap_tools").register("latex.build-on-save", {
-    buf = bufnr,
-    toggles = {
-      {
-        keys = "<localleader>la",
-        name = "Build on save",
-        get = function(ctx)
-          local tex = package.loaded["tex-tools"]
-          return tex and tex.build_on_save_enabled(ctx.buf)
-        end,
-      },
-    },
-  })
+  require("features.toggles").map({
+    id = "tex_build_on_save",
+    scope = "buffer",
+    notify = false,
+    get = function(ctx)
+      local tex = package.loaded["tex-tools"]
+      return tex and tex.build_on_save_enabled(ctx.buf)
+    end,
+    action = function()
+      return require("tex-tools").build_on_save()
+    end,
+  }, nil, { buffer = bufnr })
 end
 
 function M.setup(bufnr)

@@ -14,7 +14,7 @@ package.loaded.format_tools = {
 local format_registration
 package.loaded.keymap_tools = {
   register_toggle = function(source, spec)
-    assert(source == "config.toggle.autoformat")
+    assert(source == "config.toggle.autoformat:0")
     format_registration = {
       get = function()
         return spec.get({ win = vim.api.nvim_get_current_win() })
@@ -34,11 +34,14 @@ formatter.config({ opts = vim.deepcopy(formatter.opts), dir = formatter.dir })
 assert(vim.g.enable_autoformat == false, "preserve explicit autoformat preference")
 vim.g.enable_autoformat = nil
 formatter.config({ opts = vim.deepcopy(formatter.opts), dir = formatter.dir })
-local toggle_format = vim.fn.maparg("<leader>tf", "n", false, true).callback
+local toggle_format = vim.fn.maparg("<leader>tfa", "n", false, true).callback
 toggle_format()
 assert(vim.g.enable_autoformat == false, "Allow disabling formatting before the first save")
 assert(not format_registration.get())
-assert(vim.fn.maparg("<leader>tf", "n", false, true).callback == toggle_format, "Inspection replaced the owner mapping")
+assert(
+  vim.fn.maparg("<leader>tfa", "n", false, true).callback == toggle_format,
+  "Inspection replaced the owner mapping"
+)
 assert(not package.loaded.snacks)
 toggle_format()
 assert(vim.g.enable_autoformat == true)

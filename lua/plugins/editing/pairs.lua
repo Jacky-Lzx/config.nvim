@@ -14,22 +14,19 @@ local comment_rules = {
 return {
   {
     config = function(ctx)
-      do
-        require("keymap_tools").register("pairs.toggle", {
-          toggles = {
-            {
-              keys = "<leader>tp",
-              name = "Pairing",
-              get = function()
-                local pairs = package.loaded.pairs
-                if pairs then
-                  return pairs.status().enabled
-                end
-              end,
-            },
-          },
-        })
-      end
+      require("features.toggles").map({
+        id = "pairing",
+        scope = "session",
+        get = function()
+          local pairs = package.loaded.pairs
+          if pairs then
+            return pairs.status().enabled
+          end
+        end,
+        action = function()
+          return require("pairs").toggle()
+        end,
+      })
       require("config.bindings").set("pairs.nvim", {
         -- Preserve the existing surround prefix and load on the first Normal/Visual action.
         { "s", "<NOP>", mode = { "n", "x", "o" } },
@@ -40,15 +37,6 @@ return {
         { "sF", mode = { "n", "x", "o" }, desc = "Find surrounding left" },
         { "sh", desc = "Highlight surrounding" },
         { "sn", desc = "Update surrounding search range" },
-        {
-          "<leader>tp",
-          function()
-            local pairs = require("pairs")
-            pairs.toggle()
-            require("features.toggles").notify("Pairing", pairs.status().enabled)
-          end,
-          desc = "[Pairs] Toggle pairing",
-        },
       })
       require("pairs").setup(ctx.opts)
     end,

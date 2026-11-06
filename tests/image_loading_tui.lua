@@ -130,7 +130,7 @@ local function check()
     )
   elseif case == "image_disabled" then
     document("tex")
-    feed(" ui")
+    feed(" tia")
     assert(not require("tex-tools").formula_info().enabled)
     cold()
     api.nvim_buf_set_lines(0, 0, -1, false, { "\\includegraphics{missing.png}" })

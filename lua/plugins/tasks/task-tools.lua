@@ -52,7 +52,7 @@ return {
         },
         { "<F17>", "<cmd>TaskRun<cr>", desc = "[Tasks] Run" },
         { "<leader>or", "<cmd>TaskRun<cr>", id = "tasks.select", desc = "[Tasks] Run" },
-        { "<leader>ot", "<cmd>TaskToggle<cr>", id = "tasks.list", desc = "[Tasks] Toggle list" },
+        require("features.toggles").binding("tasks.list", "<cmd>TaskToggle<cr>"),
         {
           "<leader>oa",
           function()
@@ -76,13 +76,13 @@ return {
         },
         { "<leader>oq", "<cmd>TaskQuickfix<cr>", desc = "[Tasks] Export latest quickfix" },
         {
-          "<A-i>",
+          require("config.toggle_keys").get("tasks.terminal").lhs,
           function()
             require("task_tools").terminal()
           end,
           id = "tasks.terminal",
           desc = "[Tasks] Toggle terminal",
-          mode = { "n", "t" },
+          mode = "n",
         },
       })
       require("task_tools").setup(ctx.opts)

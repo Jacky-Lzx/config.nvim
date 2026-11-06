@@ -168,10 +168,10 @@ vim.diagnostic.reset(diagnostic_ns, source_buf)
 feed("<leader>d")
 assert(vim.deep_equal(layout, vim.fn.winlayout()), "Space d without diagnostics must preserve the layout")
 for _, binding in ipairs({
-  { "<leader>gd", "diagnostics" },
-  { "<leader>gl", "locations" },
-  { "<leader>gL", "loclist" },
-  { "<leader>gq", "quickfix" },
+  { "<leader>twd", "diagnostics" },
+  { "<leader>twl", "locations" },
+  { "<leader>twc", "loclist" },
+  { "<leader>twq", "quickfix" },
   { "<leader>gH", "hover" },
   { "<leader>g?", "inspect" },
   { "<leader>gT", "type_hierarchy" },

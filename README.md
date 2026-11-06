@@ -91,7 +91,7 @@ Third-party declarations are grouped by their current enabled state:
   options. CodeSnap is retained without a manifest entry.
 
 render-markdown and Peek mount and initialize only on the first Markdown buffer.
-Rendering remains off until `<leader>tm`; `:MarkdownPreview` opens Peek after
+Rendering remains off until `<leader>tmr`; `:MarkdownPreview` opens Peek after
 initialization. Peek requires Deno and its configured build task.
 
 `markdown-tools.nvim` provides structural editing and loads with the first Markdown
@@ -107,7 +107,7 @@ and `]t`/`[t` navigate headings and cells. Enter and Tab keep their current owne
 Export uses the existing Pandoc/XeLaTeX task with `Heiti SC` on macOS and
 `Noto Sans CJK SC` elsewhere; set `NVIM_MARKDOWN_PDF_FONT` to override the font.
 Save the file first and enable the tasks feature. Rendering remains under
-`<leader>tm`; Obsidian remains vault-local.
+`<leader>tmr`; Obsidian remains vault-local.
 
 Local plugins keep their workflow directories. Language and feature selections
 still control which declarations enter the manifest. Each declaration's `enabled`
@@ -202,12 +202,36 @@ runtime-path handling.
 See [the architecture guide](docs/architecture.md) for ownership and lifecycle rules.
 
 `<leader>gf` uses format-tools.nvim's configured formatters with LSP fallback in all buffers.
-`<leader>tf` toggles save-time formatting (500ms total budget). Use `:FormatToolsInfo`
+`<leader>tfa` toggles save-time formatting (500ms total budget). Use `:FormatToolsInfo`
 to inspect selection and the last result; executables are managed by toolchain-tools.nvim.
 LSP attachment adds navigation/refactoring mappings without replacing the shared format key.
 Debugging loads on debugger keys; merely opening C/C++ or Swift does not
 initialize DAP. Pairing/snippets load on Insert mode, and optional completion providers
 load when used. tex-tools and the selected PDF viewer own inverse search.
+
+## Toggle shortcuts
+
+Persistent toggles use `Space t`, then a group and a leaf. The prefixes themselves
+have no feature action. `lua/config/toggle_keys.lua` is the single layout source;
+feature owners still own behavior and state. Old toggle aliases are removed.
+
+| Prefix | Group | Leaves |
+| --- | --- | --- |
+| `Space t e` | Editor | `w` wrap, `s` spelling, `n` line numbers, `r` relative numbers, `c` conceal, `t` Tree-sitter |
+| `Space t u` | UI | `i` indent guides, `d` dimming, `z` Zen, `m` Zoom, `a` animation, `s` smooth scroll, `b` dark background |
+| `Space t g` | Git | `b` blame, `w` word diff, `s` signs, `o` inline diff, `d` diff view |
+| `Space t l` | LSP / diagnostics | `d` diagnostics, `v` virtual text, `l` virtual lines, `h` inlay hints |
+| `Space t f` | Formatting | `a` autoformat on save |
+| `Space t p` | Pairs | `e` automatic pairing |
+| `Space t m` | Markdown | `r` rendering |
+| `Space t i` | Images | `a` automatic image/formula preview |
+| `Space t x` | TeX | `a` automatic build on save; available in TeX/BibTeX buffers |
+| `Space t d` | Debug / performance | `p` profiler, `h` profiler highlights |
+| `Space t w` | Windows / panels | `f` file tree, `t` tasks, `s` shell, `d` diagnostics, `l` locations, `c` loclist, `q` quickfix, `o` outline, `a` optional DAP view |
+
+These are Normal-mode feature controls. Editing actions such as comment/checkbox
+changes and LaTeX environment stars keep their editing keys. Completion-menu keys
+remain local interactions, including Insert-mode `Alt-i` for Copilot.
 
 Toggle descriptions and state are registered with keymap-tools alongside their feature
 owners. Hints and the mapping picker share `Enable` / `Disable` descriptions, and
@@ -302,14 +326,14 @@ configuration-side linked-editing adapter are no longer needed.
 - `gci` / `gco`: persistent incoming/outgoing call trees; `<leader>gT`: type tree.
   Tab/`l` expands, `h` collapses, `d` switches direction, `p` previews source,
   Enter jumps to the symbol and `g` jumps to a call site.
-- `<leader>go`: outline. Both `gi` and `<leader>gr` use the same lsp-tools references picker.
-- `<leader>gd`: live diagnostic overview of all received diagnostics, grouped by
+- `<leader>two`: outline. Both `gi` and `<leader>gr` use the same lsp-tools references picker.
+- `<leader>twd`: live diagnostic overview of all received diagnostics, grouped by
   directory/file. `<LocalLeader>S` cycles all/project/original-buffer scopes;
   `<LocalLeader>d` opens details, `<LocalLeader>a` previews a fix, and
   `<LocalLeader>A` fixes then continues after confirmed diagnostics.
-- `<leader>gl`: persistent definitions/references/implementations/type definitions/
+- `<leader>twl`: persistent definitions/references/implementations/type definitions/
   declarations on the right. `<LocalLeader>r` queries the source window's current symbol.
-- `<leader>gq` / `<leader>gL`: quickfix / original window's location list. Native
+- `<leader>twq` / `<leader>twc`: quickfix / original window's location list. Native
   ordering, current index, visual columns and list history remain canonical.
 - `<C-t>` opens the selected picker item in a tab; `<C-q>` and `<C-l>` export
   marked items, or the filtered results, to quickfix and the location list.
@@ -334,16 +358,17 @@ With `features.tasks = true`, `task-tools.nvim` (preferring the checkout at
 `NVIM_DEV_PLUGIN_ROOT/task-tools.nvim`, with GitHub as the managed fallback)
 owns builds, project task discovery, save watchers and interactive terminals.
 It replaces compile.nvim, Overseer and Snacks terminal. With the tasks feature
-disabled, task commands and the normal/terminal `<A-i>` mapping are not registered.
+disabled, task commands and the `<leader>tws` shell mapping are not registered.
 
 - `<leader>mc`: enter a manual build command (initially `make`).
 - `<leader>mr/ms/mo`: rerun/stop/show that manual build, even after other tasks or terminals run.
 - `<leader>mq`: export the manual build's current output into quickfix.
 - `<F17>` / `<leader>or` / `:TaskRun`: select a discovered task.
-- `<leader>ot`: toggle the task list; Enter opens output, r reruns, s stops, c exports quickfix.
+- `<leader>twt`: toggle the task list; Enter opens output, r reruns, s stops, c exports quickfix.
 - `<leader>oa`: run the current Python/C/C++ file with arguments; C/C++ also prompts for an executable.
 - `<leader>os/oo/oq`: stop/show/export the latest task, including non-build tasks.
-- `<A-i>` (normal and terminal modes): toggle a persistent shell for the current directory.
+- `<leader>tws` (Normal mode): toggle a persistent shell for the current directory.
+  From a running terminal, use `Ctrl-\ Ctrl-n` first; terminal typing has no Space prefix mapping.
 
 Manual build output streams below the editor without taking focus. Enter jumps
 to a compiler location. Quickfix is an explicit snapshot (`:TaskQuickfix [id]`,
@@ -447,7 +472,7 @@ The default compiler is **latexmk**, with `build.onSave = true`. The server hono
 the project `.latexmkrc` output directory, falling back to `build/texquill/` beside
 the main document. `<localleader>ll` and `<leader>lb` save
 and build without queuing a duplicate save build; `<localleader>lk/lK` cancels the
-current/all builds, `<localleader>lg` shows status, and `<localleader>la` toggles
+current/all builds, `<localleader>lg` shows status, and `<leader>txa` toggles
 build on save. `<localleader>lq` opens the compiler log, `lo` shows the latest output
 summary, and `le` opens native diagnostics. Compiler errors refresh automatically
 and disappear after correction. The diagnostic refresh handler also updates open
@@ -532,9 +557,9 @@ syntax-aware badges, description colors and gutter signs. Configure `colors` and
 todo-comments.nvim renderers are no longer loaded. Project TODO searches remain
 on `<leader>st` and `<leader>sT` through selection-tools.
 
-Existing keys are retained: `<leader><leader>` pulses the current line,
-`<leader>Z` toggles Zen, `<leader>z` toggles Zoom, `<leader>tG` toggles indent
-guides and `<leader>tD` toggles scope dimming. The column guide uses temporary,
+`<leader><leader>` pulses the current line,
+`<leader>tuz` toggles Zen, `<leader>tum` toggles Zoom, `<leader>tui` toggles indent
+guides and `<leader>tud` toggles scope dimming. The column guide uses temporary,
 per-window decorations, handles tabs/wide characters and avoids covering text.
 Change its `columns` and `char` in the plugin spec.
 
@@ -554,7 +579,7 @@ Core yank handling retains clipboard copying, with feedback owned by ui-tools.
 
 `lua/plugins/navigation/file-tools.lua` loads the local `file-tools.nvim` checkout
 from `NVIM_DEV_PLUGIN_ROOT` and uses `theme-tools.nvim` for shared tree colors.
-`<leader>e` toggles the tree, `<leader>E` reveals the current file, and `<leader>cw`
+`<leader>twf` toggles the tree, `<leader>E` reveals the current file, and `<leader>cw`
 opens the working directory. The tree's `a/r/d` create, move/rename and confirm
 permanent deletion; `y/x/p` copy, cut and paste. `h/l` fold or open directories.
 `:FileTools` exposes the same tree and file-operation APIs. The LSP configuration

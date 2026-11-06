@@ -7,31 +7,95 @@ function M.notify(name, enabled)
   end
 end
 
+-- Pure entry construction also works before plugin runtime paths are mounted.
+function M.binding(id, action, opts)
+  local definition = require("config.toggle_keys").get(id)
+  return vim.tbl_extend("force", { definition.lhs, action, id = id, desc = "Toggle " .. definition.name }, opts or {})
+end
+
+function M.metadata(id, get)
+  local definition = require("config.toggle_keys").get(id)
+  return { keys = definition.lhs, name = definition.name, get = get }
+end
+
 function M.map(owner, lhs, opts)
   opts = vim.deepcopy(opts or {})
+  local definition = (not lhs or not owner.name) and require("config.toggle_keys").get(owner.id)
+  lhs = lhs or definition.lhs
+  local name = owner.name or definition.name
   local mode = opts.mode or "n"
   opts.mode = nil
-  opts.desc = opts.desc or ("Toggle " .. owner.name)
+  opts.desc = opts.desc or ("Toggle " .. name)
   local buf = opts.buffer
   if buf == 0 or buf == true then
     buf = vim.api.nvim_get_current_buf()
   elseif buf == false then
     buf = nil
   end
-  local callback, registration = require("keymap_tools").register_toggle("config.toggle." .. owner.id, {
-    buf = buf,
-    modes = type(mode) == "table" and mode or { mode },
-    keys = lhs,
-    name = owner.name,
-    get = function(ctx)
+  local function get(ctx)
+    if owner.scope == nil or owner.scope == "window" then
       if ctx.win then
-        return vim.api.nvim_win_call(ctx.win, owner.get)
+        return vim.api.nvim_win_call(ctx.win, function()
+          return owner.get(ctx)
+        end)
       end
-    end,
-    set = owner.set,
-  })
-  require("config.bindings").set("config.toggle." .. owner.id .. ":" .. (buf or 0), {
-    vim.tbl_extend("force", opts, { lhs, callback, id = "toggle." .. owner.id, mode = mode, buffer = buf }),
+    else
+      return owner.get(ctx)
+    end
+  end
+  local keymaps = require("keymap_tools")
+  local source = "config.toggle." .. owner.id .. ":" .. (buf or 0)
+  local modes = type(mode) == "table" and mode or { mode }
+  local callback, registration
+  if owner.action then
+    assert(not owner.set, "A toggle needs either set or action")
+    registration = keymaps.register(source, {
+      buf = buf,
+      modes = modes,
+      toggles = { { keys = lhs, name = name, get = get } },
+    })
+    callback = function()
+      local ok, state = pcall(function()
+        local target = buf or vim.api.nvim_get_current_buf()
+        local win = vim.api.nvim_get_current_win()
+        local ctx = { buf = target, mode = vim.api.nvim_get_mode().mode }
+        if vim.api.nvim_win_get_buf(win) == target then
+          ctx.win = win
+        end
+        local accepted, err = owner.action(ctx)
+        if accepted == false and type(err) == "string" then
+          error(err)
+        end
+        local value = get(ctx)
+        assert(value == nil or type(value) == "boolean", "Toggle state must be boolean or nil")
+        return value
+      end)
+      if not ok then
+        vim.notify(tostring(state), vim.log.levels.ERROR, { title = name })
+      elseif owner.notify ~= false then
+        M.notify(name, state)
+      end
+      if ok then
+        return state
+      end
+    end
+  else
+    callback, registration = keymaps.register_toggle(source, {
+      buf = buf,
+      modes = modes,
+      keys = lhs,
+      name = name,
+      get = get,
+      set = owner.set,
+      notify = owner.notify,
+    })
+  end
+  require("config.bindings").set(source, {
+    vim.tbl_extend(
+      "force",
+      opts,
+      { lhs, callback, id = owner.action_id or "toggle." .. owner.id, mode = mode, buffer = buf }
+    ),
   })
   return registration
 end
@@ -64,7 +128,7 @@ function M.scroll_bindings()
 end
 
 function M.setup()
-  local function option(name, lhs, label, on, off)
+  local function option(name, label, on, off)
     if on == nil then
       on = true
     end
@@ -80,13 +144,13 @@ function M.setup()
       set = function(state)
         vim.opt_local[name] = state and on or off
       end,
-    }, lhs)
+    })
   end
-  option("spell", "<leader>ts", "Spelling")
-  option("wrap", "<leader>tw", "Wrap")
-  option("relativenumber", "<leader>tL", "Relative Number")
-  option("conceallevel", "<leader>tc", "Conceal", vim.o.conceallevel > 0 and vim.o.conceallevel or 2, 0)
-  option("background", "<leader>tb", "Dark Background", "dark", "light")
+  option("spell", "Spelling")
+  option("wrap", "Wrap")
+  option("relativenumber", "Relative Number")
+  option("conceallevel", "Conceal", vim.o.conceallevel > 0 and vim.o.conceallevel or 2, 0)
+  option("background", "Dark Background", "dark", "light")
   local saved = {}
   M.map({
     id = "line_number",
@@ -104,7 +168,7 @@ function M.setup()
         vim.wo.number, vim.wo.relativenumber = false, false
       end
     end,
-  }, "<leader>tl")
+  })
   M.map({
     id = "treesitter",
     name = "Treesitter Highlight",
@@ -115,7 +179,7 @@ function M.setup()
       vim.b.config_treesitter_disabled = not state
       vim.treesitter[state and "start" or "stop"]()
     end,
-  }, "<leader>tT")
+  })
   M.map({
     id = "inlay_hints",
     name = "Inlay Hints",
@@ -125,11 +189,11 @@ function M.setup()
     set = function(state)
       vim.lsp.inlay_hint.enable(state)
     end,
-  }, "<leader>th")
-  for _, spec in ipairs({ { "animate", "<leader>ta", "Animation" }, { "scroll", "<leader>tS", "Scroll animation" } }) do
+  })
+  for _, spec in ipairs({ { "animate", "Animation" }, { "scroll", "Scroll animation" } }) do
     M.map({
       id = spec[1],
-      name = spec[3],
+      name = spec[2],
       get = function()
         local ui = package.loaded.ui_tools
         local state = ui and ui.get_state(spec[1])
@@ -141,28 +205,25 @@ function M.setup()
           M.scroll_bindings()
         end
       end,
-    }, spec[2])
+    })
   end
   for _, spec in ipairs({
-    { "running", "<leader>tPp", "Profiler", "toggle" },
-    { "highlighted", "<leader>tPh", "Profiler Highlights", "highlights" },
+    { "running", "Profiler", "toggle" },
+    { "highlighted", "Profiler Highlights", "highlights" },
   }) do
     M.map({
       id = spec[1],
-      name = spec[3],
+      name = spec[2],
       get = function()
         local debug = package.loaded.debug_tools
         local state = debug and debug.get_state().profiler
         return state ~= nil and state[spec[1]] == true
       end,
       set = function()
-        require("debug_tools").profiler[spec[4]]()
+        require("debug_tools").profiler[spec[3]]()
       end,
-    }, spec[2])
+    })
   end
-  require("keymap_tools").register(
-    "debug-tools.profiler",
-    { groups = { { prefix = "<leader>tP", label = "[profiler]" } } }
-  )
+  require("keymap_tools").register("config.toggle.groups", { groups = require("config.toggle_keys").groups() })
 end
 return M

@@ -44,31 +44,18 @@ return {
       },
     },
     config = function(ctx)
-      do
-        require("keymap_tools").register("render-markdown", {
-          toggles = {
-            {
-              keys = "<leader>tm",
-              name = "Render Markdown",
-              get = function()
-                local state = package.loaded["render-markdown.state"]
-                if state then
-                  return state.enabled
-                end
-              end,
-            },
-          },
-        })
-      end
-      require("config.bindings").set("render-markdown.nvim", {
-        {
-          "<leader>tm",
-          function()
-            require("render-markdown").toggle()
-            require("features.toggles").notify("Render Markdown", require("render-markdown.state").enabled)
-          end,
-          desc = "Toggle render markdown",
-        },
+      require("features.toggles").map({
+        id = "markdown_render",
+        scope = "session",
+        get = function()
+          local state = package.loaded["render-markdown.state"]
+          if state then
+            return state.enabled
+          end
+        end,
+        action = function()
+          return require("render-markdown").toggle()
+        end,
       })
       local opts = ctx.opts
       require("render-markdown").setup(opts)

@@ -13,6 +13,7 @@ end
 local origin, picker, visual_picker, previous_wrap, dashboard_buf, dashboard_picker
 local latest_picker
 local insert_hits = 0
+local previous_spell
 local function mark(value, input)
   local lines = { value }
   if input then
@@ -63,7 +64,7 @@ local function check_owners()
   assert(require("config.plugins").initialized("pairs.nvim"), "Status reads loaded pairing")
   local image_loaded = package.loaded.image_tools
   local image
-  for _, item in ipairs(tools.list({ mode = "n", prefix = "<leader>ui" })) do
+  for _, item in ipairs(tools.list({ mode = "n", prefix = "<leader>tia" })) do
     image = item
   end
   assert(image and image.toggle.name == "Automatic image preview" and image.toggle.state == true)
@@ -134,6 +135,29 @@ timer:start(
         api.nvim_buf_set_lines(0, 0, -1, false, { "first line", "second line" })
         origin = api.nvim_get_current_win()
         previous_wrap = vim.wo.wrap
+        previous_spell = vim.wo.spell
+        mark("toggle_root", " t")
+        stage = "toggle_root_hint"
+      elseif stage == "toggle_root_hint" and view and view.win then
+        local text = table.concat(api.nvim_buf_get_lines(view.buf, 0, -1, false), "\n")
+        if not text:find("[Editor]", 1, true) then
+          return
+        end
+        assert(text:find("[Git]", 1, true) and text:find("[Windows / Panels]", 1, true), "Missing toggle groups")
+        assert(api.nvim_get_current_win() == origin and api.nvim_get_mode().mode == "n")
+        mark("toggle_editor", "e")
+        stage = "toggle_editor_hint"
+      elseif stage == "toggle_editor_hint" and view and view.win then
+        local text = table.concat(api.nvim_buf_get_lines(view.buf, 0, -1, false), "\n")
+        if not text:find("Spelling", 1, true) then
+          return
+        end
+        assert(text:find("Line Numbers", 1, true), "Editor toggle leaves did not render")
+        mark("toggle_spell", "s")
+        stage = "toggle_executed"
+      elseif stage == "toggle_executed" and not view.win and vim.wo.spell ~= previous_spell then
+        assert(api.nvim_get_current_win() == origin and api.nvim_get_mode().mode == "n")
+        vim.wo.spell = previous_spell
         vim.cmd("KeymapTools showkeys enable")
         assert(require("keymap_tools").showkeys.is_enabled())
         mark("prefix")
@@ -308,7 +332,7 @@ timer:start(
         timer:stop()
         timer:close()
         vim.fn.writefile({
-          "PASS configured keymap TUI: dashboard leader hints and burst Space+? with focus restoration, legacy Space+? in Normal/Visual, Ctrl+/ in Normal/Visual/Insert, legacy Ctrl+_ Insert execution and cursor restoration, Wrap, screencast, operator and register hints",
+          "PASS configured keymap TUI: grouped Space+t root/editor hints and execution, dashboard leader hints and burst Space+? with focus restoration, legacy Space+? in Normal/Visual, Ctrl+/ in Normal/Visual/Insert, legacy Ctrl+_ Insert execution and cursor restoration, Wrap, screencast, operator and register hints",
         }, result)
         vim.cmd("qa!")
       end

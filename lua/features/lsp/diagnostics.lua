@@ -84,6 +84,14 @@ function M.set_virtual_text(state)
   vim.diagnostic.config({ virtual_text = state and text or compact })
 end
 
+function M.toggles()
+  return {
+    { id = "diagnostics", get = M.enabled, set = M.set_enabled },
+    { id = "diagnostic_lines", get = M.virtual_lines_enabled, set = M.set_virtual_lines },
+    { id = "diagnostic_text", get = M.virtual_text_enabled, set = M.set_virtual_text },
+  }
+end
+
 function M.setup()
   vim.diagnostic.config({
     underline = false,
@@ -109,18 +117,15 @@ function M.setup()
     jump(-1)
   end, { desc = "Go to previous diagnostic" })
 
-  vim.keymap.set("n", "<leader>td", function()
-    M.set_enabled(not M.enabled())
-    require("features.toggles").notify("Diagnostics", M.enabled())
-  end, { desc = "Toggle diagnostics" })
-  vim.keymap.set("n", "<leader>tV", function()
-    M.set_virtual_lines(not M.virtual_lines_enabled())
-    require("features.toggles").notify("Diagnostic virtual lines", M.virtual_lines_enabled())
-  end, { desc = "Toggle Diagnostic virtual lines" })
-  vim.keymap.set("n", "<leader>tv", function()
-    M.set_virtual_text(not M.virtual_text_enabled())
-    require("features.toggles").notify("Diagnostic text", M.virtual_text_enabled())
-  end, { desc = "Toggle Diagnostic text" })
+  local toggles = require("features.toggles")
+  local entries = {}
+  for _, owner in ipairs(M.toggles()) do
+    entries[#entries + 1] = toggles.binding(owner.id, function()
+      owner.set(not owner.get())
+      toggles.notify(require("config.toggle_keys").get(owner.id).name, owner.get())
+    end, { id = "toggle." .. owner.id })
+  end
+  require("config.bindings").set("config.diagnostics", entries)
 end
 
 return M
