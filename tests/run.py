@@ -147,6 +147,7 @@ def suites():
         lua(name)
         for name in [
             "mapping_contracts",
+            "keymap_panels",
             "lifecycle",
             "lint_runtime",
             "format_runtime",

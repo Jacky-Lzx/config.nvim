@@ -1,3 +1,23 @@
+local hint_panels = {
+  ui_tools_dashboard = true,
+  ["file-tools"] = true,
+  tasktools = true,
+  tasktoolsoutput = true,
+  toolchain = true,
+  ["toolchain-versions"] = true,
+  ["plugin-tools"] = true,
+}
+
+local function hint_filter(ctx)
+  if ctx.buftype == "" then
+    return true
+  end
+  return ctx.buftype == "nofile"
+    and hint_panels[ctx.filetype] == true
+    and ctx.mode == "n"
+    and vim.keycode(ctx.prefix) == vim.keycode(vim.g.mapleader or "\\")
+end
+
 return {
   {
     id = "keymap-tools.nvim",
@@ -7,7 +27,7 @@ return {
     main = "keymap_tools",
     opts = {
       defer = true,
-      hints = { delay = 200 },
+      hints = { delay = 200, filter = hint_filter },
       showkeys = { enabled = false, maxkeys = 5 },
       window = { width = 80, height = 16, border = "rounded" },
     },

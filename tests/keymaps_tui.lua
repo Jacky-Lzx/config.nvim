@@ -10,7 +10,7 @@ if vim.v.vim_did_enter == 0 then
     assert(not package.loaded[name], name .. " loaded before VimEnter")
   end
 end
-local origin, picker, visual_picker, previous_wrap
+local origin, picker, visual_picker, previous_wrap, dashboard_buf, dashboard_picker
 local latest_picker
 local insert_hits = 0
 local function mark(value, input)
@@ -84,16 +84,46 @@ timer:start(
       local view = package.loaded["keymap_tools.view"]
       if stage == "startup" and vim.g.config_ready then
         check_owners()
-        vim.cmd("enew!")
-        api.nvim_buf_set_lines(0, 0, -1, false, { "first line", "second line" })
-        origin = api.nvim_get_current_win()
-        previous_wrap = vim.wo.wrap
         local selection = require("selection_tools")
         local select_items = selection.select
         selection.select = function(...)
           latest_picker = select_items(...)
           return latest_picker
         end
+        require("ui_tools.dashboard").open()
+        dashboard_buf = api.nvim_get_current_buf()
+        require("keymap_tools").refresh()
+        mark("dashboard_prefix", " ")
+        stage = "dashboard_hint"
+      elseif stage == "dashboard_hint" and view and view.win then
+        assert(api.nvim_get_current_buf() == dashboard_buf, "Dashboard hint stole focus")
+        assert(require("keymap_tools.hints").session.prefix == "<Space>")
+        vim.cmd.redraw()
+        local text = table.concat(api.nvim_buf_get_lines(view.buf, 0, -1, false), "\n")
+        assert(text:find("Selection", 1, true), "Dashboard hint did not render leader actions")
+        mark("dashboard_search", actions.input("keymaps.pick"):sub(#vim.g.mapleader + 1))
+        stage = "dashboard_picker"
+      elseif stage == "dashboard_picker" and latest_picker and api.nvim_get_mode().mode == "i" then
+        dashboard_picker = latest_picker
+        assert(dashboard_picker.opts.prompt:match("n$"), "Dashboard picker used the wrong mode")
+        mark("dashboard_cancel", "\27")
+        stage = "dashboard_burst"
+      elseif stage == "dashboard_burst" and dashboard_picker.closed then
+        assert(api.nvim_get_current_buf() == dashboard_buf, "Picker cancellation lost dashboard")
+        assert(api.nvim_get_mode().mode == "n", "Dashboard mode was not restored")
+        mark("dashboard_fast_search", actions.input("keymaps.pick"))
+        stage = "dashboard_fast_picker"
+      elseif stage == "dashboard_fast_picker" and latest_picker ~= dashboard_picker then
+        dashboard_picker = latest_picker
+        mark("dashboard_fast_cancel", "\27")
+        stage = "editor_setup"
+      elseif stage == "editor_setup" and dashboard_picker.closed then
+        assert(api.nvim_get_current_buf() == dashboard_buf)
+        require("ui_tools.dashboard").close()
+        vim.cmd("enew!")
+        api.nvim_buf_set_lines(0, 0, -1, false, { "first line", "second line" })
+        origin = api.nvim_get_current_win()
+        previous_wrap = vim.wo.wrap
         vim.cmd("KeymapTools showkeys enable")
         assert(require("keymap_tools").showkeys.is_enabled())
         mark("prefix")
@@ -268,7 +298,7 @@ timer:start(
         timer:stop()
         timer:close()
         vim.fn.writefile({
-          "PASS configured keymap TUI: legacy Space+? in Normal/Visual, Ctrl+/ in Normal/Visual/Insert, legacy Ctrl+_ Insert execution and cursor restoration, Wrap, screencast, operator and register hints",
+          "PASS configured keymap TUI: dashboard leader hints and burst Space+? with focus restoration, legacy Space+? in Normal/Visual, Ctrl+/ in Normal/Visual/Insert, legacy Ctrl+_ Insert execution and cursor restoration, Wrap, screencast, operator and register hints",
         }, result)
         vim.cmd("qa!")
       end
