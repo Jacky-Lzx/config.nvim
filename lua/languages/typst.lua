@@ -16,6 +16,7 @@ return {
   plugins = {
     {
       id = "typst-preview.nvim",
+      enabled = false,
       source = "chomosuke/typst-preview.nvim",
       main = "typst-preview",
       -- Configure without setup()'s eager binary downloader. Native plugin

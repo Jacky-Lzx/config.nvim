@@ -1,5 +1,6 @@
 -- UI providers can capture Neovim's default error display; keep failures visible in CI.
 local ok, err = xpcall(function()
+  dofile(assert(vim.env.NVIM_CONFIG_ROOT) .. "/tests/full_plugins.lua")
   dofile(assert(arg[1], "Expected a test script"))
 end, debug.traceback)
 if not ok then

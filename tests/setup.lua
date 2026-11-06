@@ -1,5 +1,6 @@
 -- Keep smoke runs offline and avoid starting external servers. The startup pass still
 -- resolves native server configs and verifies which servers the configuration enables.
+dofile(assert(vim.env.NVIM_CONFIG_ROOT) .. "/tests/full_plugins.lua")
 vim.g.loaded_wakatime = true
 -- Startup/input tests must not overwrite the host's real clipboard.
 vim.g.clipboard = {

@@ -19,7 +19,7 @@ function M.snapshot()
     languages = {},
     tools = {},
     lsp = { enabled_servers = {} },
-    plugins = { initialized = false, third_party = require("config.third_party").enabled, entries = {} },
+    plugins = { initialized = false, entries = {} },
   }
   for _, field in ipairs({ "names", "servers", "parsers", "formatters", "linters" }) do
     result.languages[field] = vim.deepcopy(context.languages[field])

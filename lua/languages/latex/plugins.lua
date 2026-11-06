@@ -1,5 +1,3 @@
-local platform = require("utils.platform")
-
 return {
   {
     id = "toolchain-tools.nvim",
@@ -61,6 +59,6 @@ return {
   {
     id = "texpresso.vim",
     source = "let-def/texpresso.vim",
-    enabled = platform.executable("texpresso") ~= nil,
+    enabled = false, -- Requires texpresso when enabled.
   },
 }

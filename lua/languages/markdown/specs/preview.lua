@@ -3,7 +3,7 @@ return {
     main = "peek",
     id = "peek.nvim",
     source = "toppair/peek.nvim",
-    enabled = require("utils.platform").executable("deno") ~= nil,
+    enabled = false, -- Requires deno when enabled.
     build = { "deno", "task", "--quiet", "build:fast" },
     opts = {},
     config = function(ctx)

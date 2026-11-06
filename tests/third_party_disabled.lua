@@ -1,6 +1,5 @@
--- Run through actual startup with the full personal selection and policy off.
+-- Run through actual startup with the full personal selection.
 local function check()
-  assert(not require("config.third_party").enabled)
   local plugins = require("config.plugins")
   local manager, nodes = plugins.manager, plugins.nodes()
   local disabled = {
@@ -58,8 +57,6 @@ local function check()
   assert(vim.lsp.config.lua_ls and vim.lsp.config.basedpyright, "Preserved provider no longer supplies configs")
   assert(require("theme_tools").current())
   assert(#require("theme_tools.icons").list() > 2, "Managed theme/icon providers were disabled")
-  local snapshot = require("config").info()
-  assert(snapshot.plugins.third_party == false)
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
   io.stdout:write(
     "Personal defaults passed: standalone third-party plugins disabled; LSP and managed themes/icons retained\n"

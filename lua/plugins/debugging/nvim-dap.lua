@@ -14,6 +14,7 @@ return {
     end,
     main = "dap-view",
     id = "nvim-dap-view",
+    enabled = false,
     source = "igorlfs/nvim-dap-view",
     -- stylua: ignore
     opts = {
@@ -50,6 +51,7 @@ return {
   {
     main = "dap",
     id = "nvim-dap",
+    enabled = false,
     source = "mfussenegger/nvim-dap",
     dependencies = { "nvim-dap-view" },
     opts = {

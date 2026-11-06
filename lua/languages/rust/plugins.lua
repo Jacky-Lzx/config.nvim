@@ -2,6 +2,7 @@ return {
   {
     main = "crates",
     id = "crates.nvim",
+    enabled = false,
     source = "Saecki/crates.nvim",
     opts = {
       completion = {

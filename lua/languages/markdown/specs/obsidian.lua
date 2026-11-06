@@ -22,6 +22,7 @@ return {
     end,
     main = "obsidian",
     id = "obsidian.nvim",
+    enabled = false,
     source = "obsidian-nvim/obsidian.nvim",
     version = "*", -- Recommended, use latest release instead of latest commit
     -- These only contribute options; opening a vault does not need image APIs.

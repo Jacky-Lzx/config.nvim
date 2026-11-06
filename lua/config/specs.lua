@@ -88,6 +88,6 @@ function M.build(selection)
     selected[#selected + 1] =
       { id = "image-tools.nvim", origin = "config.specs:obsidian", opts = { insert = { directory = "assets/imgs" } } }
   end
-  return require("config.third_party").apply(selected)
+  return selected
 end
 return M
