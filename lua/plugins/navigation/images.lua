@@ -1,6 +1,7 @@
 return {
   {
     id = "image-tools.nvim",
+    dependencies = { "selection-tools.nvim", { id = "git-tools.nvim", optional = true } },
     source = "Jacky-Lzx/image-tools.nvim",
     version = "main",
     dev = true,

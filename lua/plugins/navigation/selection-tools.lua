@@ -138,13 +138,6 @@ return {
           desc = "[Selection] Autocmds",
         },
         {
-          "<leader>sk",
-          function()
-            require("keymap_tools").pick()
-          end,
-          desc = "[Selection] Keymaps",
-        },
-        {
           "<leader>sH",
           function()
             require("selection_tools").help()
@@ -187,6 +180,7 @@ return {
     version = "main",
     dev = true,
     main = "selection_tools",
+    dependencies = { { id = "image-tools.nvim", optional = true } },
     opts = {
       ui_select = true,
       matcher = { backend = "auto", threshold = 50000 },

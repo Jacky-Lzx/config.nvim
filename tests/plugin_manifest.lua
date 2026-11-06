@@ -20,6 +20,12 @@ assert(provider.package.source == "https://github.com/neovim/nvim-lspconfig.git"
 assert(provider.declarations[1].origin == "plugins.third_party.nvim-lspconfig")
 assert(provider.start == false and not provider.main and not provider.config)
 assert(provider.mount == "on-demand")
+assert(local_graph.nodes["keymap-tools.nvim"].dependencies["selection-tools.nvim"] == false)
+assert(local_graph.nodes["lsp-tools.nvim"].dependencies["git-tools.nvim"] == false)
+assert(local_graph.nodes["lsp-tools.nvim"].dependencies["selection-tools.nvim"] == false)
+assert(local_graph.nodes["completion-tools.nvim"].dependencies["snippet-tools.nvim"] == false)
+assert(local_graph.nodes["image-tools.nvim"].dependencies["git-tools.nvim"] == true)
+assert(local_graph.nodes["selection-tools.nvim"].dependencies["image-tools.nvim"] == true)
 assert(local_graph.nodes["lsp-tools.nvim"].dependencies[provider.id] == false)
 assert(not local_graph.nodes["nvim-dap"] and not local_graph.nodes["task-tools.nvim"])
 local remote = resolve(

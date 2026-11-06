@@ -1,6 +1,7 @@
 return {
   {
     id = "completion-tools.nvim",
+    dependencies = { "snippet-tools.nvim", "pairs.nvim" },
     source = "Jacky-Lzx/completion-tools.nvim",
     version = "main",
     dev = true,

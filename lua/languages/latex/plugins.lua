@@ -26,6 +26,7 @@ return {
       require("tex-tools").setup(ctx.opts)
     end,
     id = "tex-tools.nvim",
+    dependencies = { "image-tools.nvim" },
     source = "Jacky-Lzx/tex-tools.nvim",
     version = "main",
     dev = true,

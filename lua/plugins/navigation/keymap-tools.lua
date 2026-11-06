@@ -25,6 +25,7 @@ return {
     version = "main",
     dev = true,
     main = "keymap_tools",
+    dependencies = { "selection-tools.nvim" },
     opts = {
       defer = true,
       hints = { delay = 200, filter = hint_filter },
@@ -33,6 +34,14 @@ return {
     },
     config = function(ctx)
       require("config.bindings").set("keymap-tools.nvim", {
+        {
+          "<leader>sk",
+          function()
+            require("keymap_tools").pick()
+          end,
+          desc = "[Selection] Keymaps",
+        },
+
         {
           "<C-/>",
           function()

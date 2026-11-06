@@ -172,3 +172,10 @@ Use interleaved real PTYs for visible behavior; verify cursor/mode/focus, burst 
 theme changes and asynchronous completion boundaries. Headless or isolated component
 timings do not establish a visible startup improvement. `PROF=1 nvim` records through
 `ConfigReady` using debug-tools; startup profiling itself must not run in normal use.
+
+Configured picker actions declare selection-tools availability; LSP edit previews
+also declare git-tools. Completion declares its snippet and paired-newline providers.
+Image review declares git-tools as an optional enhancement and keeps a plain diff
+fallback. These declarations express availability, not initialization order.
+`:checkhealth keymap_tools`, `:checkhealth lsp-tools` and `:checkhealth image_tools`
+explain missing providers without starting their user interfaces.

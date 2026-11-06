@@ -16,6 +16,9 @@ return {
     -- Register servers before attachment; keep empty-editor startup lightweight.
     dependencies = {
       "nvim-lspconfig",
+      "selection-tools.nvim",
+      "git-tools.nvim",
+      "completion-tools.nvim",
       -- Completion's capability API is available without initializing its UI.
       "file-tools.nvim",
       "toolchain-tools.nvim",
