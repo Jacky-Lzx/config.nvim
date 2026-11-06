@@ -47,7 +47,7 @@ local function check_owners()
     end
   end
   assert(wrap and wrap.toggle and wrap.toggle.state == vim.wo.wrap, "Missing configured Wrap state")
-  wrap_query = require("keymap_tools.keys").label(wrap_keys) .. " Wrap"
+  wrap_query = require("keymap_tools.keys").display(wrap_keys) .. " Wrap"
   assert(require("config.plugins").initialized("format-tools.nvim"), "Status reads loaded the formatter")
   assert(require("config.plugins").initialized("pairs.nvim"), "Status reads loaded pairing")
   local image_loaded = package.loaded.image_tools
@@ -124,8 +124,8 @@ timer:start(
         picker = latest_picker
         mark("filter", wrap_query)
         stage = "confirm"
-      elseif stage == "confirm" and picker.query == wrap_query then
-        assert(#picker.matches == 1)
+      elseif stage == "confirm" and picker.query == wrap_query and not picker.matching then
+        assert(#picker.matches == 1, vim.inspect({ query = picker.query, matches = picker.matches }))
         assert(picker:current().keys == wrap_keys, "wrong real mapping selected")
         mark("confirm")
         stage = "executed"

@@ -95,7 +95,7 @@ local specs = {
   require("plugins.ui.ui-tools")[1],
   require("plugins.git.git-tools")[1],
   require("plugins.editing.pairs")[1],
-  require("plugins.disabled.render-markdown")[1],
+  require("plugins.third_party.render-markdown")[1],
 }
 for _, spec in ipairs(specs) do
   configure(spec)
