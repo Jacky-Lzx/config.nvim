@@ -63,6 +63,17 @@ return {
         },
         { "<leader>os", "<cmd>TaskStop<cr>", desc = "[Tasks] Stop latest" },
         { "<leader>oo", "<cmd>TaskOutput<cr>", desc = "[Tasks] Latest output" },
+        {
+          "<leader>oO",
+          function()
+            local ok, err = require("task_tools.integrations.notification_tools").open_last_output()
+            if not ok and err then
+              vim.notify(err, vim.log.levels.WARN, { title = "Tasks" })
+            end
+          end,
+          id = "tasks.finished_output",
+          desc = "[Tasks] Last finished output",
+        },
         { "<leader>oq", "<cmd>TaskQuickfix<cr>", desc = "[Tasks] Export latest quickfix" },
         {
           "<A-i>",
@@ -75,8 +86,14 @@ return {
         },
       })
       require("task_tools").setup(ctx.opts)
+      require("task_tools.integrations.notification_tools").setup({
+        filter = function(task)
+          return task.name ~= "Terminal"
+        end,
+      })
     end,
     id = "task-tools.nvim",
+    dependencies = { { id = "notification-tools.nvim", optional = true } },
     source = "Jacky-Lzx/task-tools.nvim",
     version = "main",
     dev = true,

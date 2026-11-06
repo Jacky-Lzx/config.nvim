@@ -15,6 +15,7 @@ local action_ids = {
   list = "tasks.list",
   select_task = "tasks.select",
   run_args = "tasks.run_file",
+  finished_output = "tasks.finished_output",
 }
 local stage_file = vim.env.NVIM_TEST_TMP .. "/tasks-stage"
 local function await(name, predicate)
@@ -159,6 +160,51 @@ local function check()
     table.concat(tasks.output(tasks.list()[1].id), "\n"):find("ARGS:[]", 1, true),
     "TaskRun uses the configured live interpreter"
   )
+  local notices = require("notification-tools")
+  local function notice(id)
+    for _, row in ipairs(notices.tasks()) do
+      if row.id == "task-tools:" .. id then
+        return row
+      end
+    end
+  end
+  assert(not notice(shell.id), "Personal shell must not create a task progress row")
+  local gate = root .. "/notification-gate"
+  local current_win, cursor = vim.api.nvim_get_current_win(), vim.api.nvim_win_get_cursor(0)
+  local progress = assert(tasks.run({
+    name = "Notification gate",
+    cmd = {
+      python,
+      "-u",
+      "-c",
+      "import pathlib,sys,time; print('ready',flush=True); gate=pathlib.Path(sys.argv[1]); deadline=time.monotonic()+10\nwhile not gate.exists() and time.monotonic()<deadline: time.sleep(.01)\nprint('TASK_PROGRESS_FINISHED',flush=True)",
+      gate,
+    },
+  }, { open = false }))
+  await("progress_visible", function()
+    return notice(progress) and not notice(progress).done and screen():find("Notification gate", 1, true)
+  end)
+  assert(vim.api.nvim_get_current_win() == current_win and vim.deep_equal(vim.api.nvim_win_get_cursor(0), cursor))
+  local failure = assert(
+    tasks.run(
+      { name = "Notification failure", cmd = { "sh", "-c", "printf 'TASK_FAILURE_SUMMARY\\n'; exit 9" } },
+      { open = false }
+    )
+  )
+  await("progress_failure", function()
+    return notice(failure) and notice(failure).status == "error"
+  end)
+  assert(notice(failure).message:find("Exit 9: TASK_FAILURE_SUMMARY", 1, true))
+  assert(vim.iter(notices.history({ source = "task-tools" })):any(function(row)
+    return row.message:find("TASK_FAILURE_SUMMARY", 1, true)
+  end))
+  vim.fn.writefile({}, gate)
+  await("progress_success", function()
+    return notice(progress) and notice(progress).status == "success"
+  end)
+  await("finished_output", function()
+    return vim.bo.filetype == "tasktoolsoutput" and screen():find("TASK_PROGRESS_FINISHED", 1, true)
+  end)
   tasks.stop(shell.id)
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
@@ -171,7 +217,7 @@ vim.api.nvim_create_autocmd("User", {
       local ok, delay = coroutine.resume(worker)
       if not ok or coroutine.status(worker) == "dead" then
         local message = ok
-            and "tasks TUI: lazy loading, manual commands, quickfix jumps, terminal PTY, Python arguments and task discovery passed"
+            and "tasks TUI: lazy loading, manual commands, quickfix jumps, terminal PTY, Python arguments, task discovery and rendered progress/output handoff passed"
           or debug.traceback(worker, tostring(delay))
         vim.fn.writefile(vim.split(message, "\n", { plain = true }), vim.env.NVIM_STARTUP_RESULT)
         vim.cmd(ok and "qa!" or "cquit 1")

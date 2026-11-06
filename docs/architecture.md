@@ -179,3 +179,10 @@ Image review declares git-tools as an optional enhancement and keeps a plain dif
 fallback. These declarations express availability, not initialization order.
 `:checkhealth keymap_tools`, `:checkhealth lsp-tools` and `:checkhealth image_tools`
 explain missing providers without starting their user interfaces.
+
+The task-tools notification adapter subscribes to public task snapshots and uses
+notification-tools progress handles. It retains error summaries, excludes the
+personal interactive shell, and never owns processes. `<leader>oO` opens the last
+finished accepted task's existing output; `<leader>oo` keeps its latest-task meaning.
+Detaching the adapter releases its subscription and display handles without
+cancelling jobs; disposing task-tools detaches it before stopping owned jobs.
