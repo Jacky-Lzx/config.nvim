@@ -209,8 +209,10 @@ uses the source buffer's effective mappings for that mode and restores the Visua
 selection or Insert position on cancellation. `Ctrl+_` also opens it for terminals
 that encode `Ctrl+/` using the legacy control code.
 Inside a selection-tools input, it opens a temporary child: search and execute
-the parent's buffer-local mappings, or cancel to resume the original query and
-selection. Unrelated global editing/completion mappings are omitted there.
+the parent's mappings, or cancel to resume the original query and selection.
+Both buffer and global mappings are shown by default, with buffer mappings
+first. `Alt+b` toggles buffer mappings and `Alt+g` toggles global mappings while
+preserving the query; the title shows the current filters.
 Pressing `Ctrl+/` again inside the keymap search returns to the parent.
 
 ## LSP tools
