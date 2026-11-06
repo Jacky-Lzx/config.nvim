@@ -12,6 +12,7 @@ if vim.v.vim_did_enter == 0 then
 end
 local origin, picker, visual_picker, previous_wrap
 local latest_picker
+local insert_hits = 0
 local function mark(value, input)
   local lines = { value }
   if input then
@@ -63,6 +64,10 @@ local function check_owners()
     for _, entry in ipairs(api.nvim_buf_get_keymap(0, mode)) do
       assert(not (entry.desc or ""):find("which-key-trigger", 1, true), "which-key installed a competing trigger")
     end
+  end
+  for _, mode in ipairs({ "n", "x", "i" }) do
+    actions.binding("keymaps.pick.universal", mode)
+    actions.binding("keymaps.pick.legacy", mode)
   end
 end
 local timer = vim.uv.new_timer()
@@ -149,6 +154,73 @@ timer:start(
       elseif stage == "visual_restored" and visual_picker.closed and require("keymap_tools.keys").mode() == "x" then
         assert(vim.fn.line("v") == 1 and vim.fn.line(".") == 2, "Visual cancellation lost range")
         mark("visual_escape")
+        stage = "universal_normal"
+      elseif stage == "universal_normal" and api.nvim_get_mode().mode == "n" then
+        mark("universal_normal_open", "\27[47;5u")
+        stage = "universal_normal_cancel"
+      elseif stage == "universal_normal_cancel" and latest_picker ~= visual_picker and not latest_picker.closed then
+        picker = latest_picker
+        assert(picker.opts.prompt:match("n$"))
+        mark("universal_normal_close", "\27")
+        stage = "universal_visual"
+      elseif stage == "universal_visual" and picker.closed and api.nvim_get_mode().mode == "n" then
+        api.nvim_win_set_cursor(origin, { 1, 0 })
+        mark("universal_visual_open", "vj\27[47;5u")
+        stage = "universal_visual_cancel"
+      elseif stage == "universal_visual_cancel" and latest_picker ~= picker and not latest_picker.closed then
+        visual_picker = latest_picker
+        assert(visual_picker.opts.prompt:match("x$"))
+        mark("universal_visual_close", "\27")
+        stage = "universal_visual_restored"
+      elseif
+        stage == "universal_visual_restored"
+        and visual_picker.closed
+        and require("keymap_tools.keys").mode() == "x"
+      then
+        assert(vim.fn.line("v") == 1 and vim.fn.line(".") == 2)
+        mark("universal_visual_escape", "\27")
+        stage = "universal_insert"
+      elseif stage == "universal_insert" and api.nvim_get_mode().mode == "n" then
+        api.nvim_buf_set_lines(0, 0, -1, false, { "abcd" })
+        api.nvim_win_set_cursor(origin, { 1, 2 })
+        vim.keymap.set("i", "<F6>", function()
+          assert(api.nvim_get_current_win() == origin and api.nvim_get_mode().mode == "i")
+          insert_hits = insert_hits + 1
+        end, { buffer = true, desc = "Configured Insert picker action" })
+        mark("universal_insert_open", "i\27[47;5u")
+        stage = "universal_insert_cancel"
+      elseif stage == "universal_insert_cancel" and latest_picker ~= visual_picker and not latest_picker.closed then
+        picker = latest_picker
+        assert(picker.opts.prompt:match("i$"), "Insert picker used wrong mode")
+        mark("universal_insert_close", "\27")
+        stage = "universal_insert_restored"
+      elseif stage == "universal_insert_restored" and picker.closed and api.nvim_get_mode().mode == "i" then
+        assert(api.nvim_get_current_win() == origin and api.nvim_win_get_cursor(origin)[2] == 2)
+        mark("legacy_insert_open", "\31")
+        stage = "legacy_insert_filter"
+      elseif stage == "legacy_insert_filter" and latest_picker ~= picker and not latest_picker.closed then
+        picker = latest_picker
+        assert(picker.opts.prompt:match("i$"))
+        mark("legacy_insert_query", "Configured Insert picker action")
+        stage = "legacy_insert_confirm"
+      elseif
+        stage == "legacy_insert_confirm"
+        and picker.query == "Configured Insert picker action"
+        and not picker.matching
+      then
+        assert(#picker.matches == 1)
+        mark("legacy_insert_execute", "\r")
+        stage = "legacy_insert_executed"
+      elseif
+        stage == "legacy_insert_executed"
+        and picker.closed
+        and insert_hits == 1
+        and api.nvim_get_mode().mode == "i"
+      then
+        mark("insert_continue", "z")
+        stage = "insert_continued"
+      elseif stage == "insert_continued" and api.nvim_get_current_line() == "abzcd" then
+        mark("insert_picker_leave", "\27")
         stage = "operator"
       elseif stage == "operator" and api.nvim_get_mode().mode == "n" then
         -- editing-tools.nvim still handles selection; keymap-tools owns the waiting hints.
@@ -196,7 +268,7 @@ timer:start(
         timer:stop()
         timer:close()
         vim.fn.writefile({
-          "PASS configured startup without which-key/showkeys, opt-in screencast rendering and cleanup, bottom-right hints, executable picker, dynamic Wrap descriptions, Visual cancellation, cold editing-tools.nvim operator hints, and Insert/command-line register hints with the existing input UI",
+          "PASS configured keymap TUI: legacy Space+? in Normal/Visual, Ctrl+/ in Normal/Visual/Insert, legacy Ctrl+_ Insert execution and cursor restoration, Wrap, screencast, operator and register hints",
         }, result)
         vim.cmd("qa!")
       end

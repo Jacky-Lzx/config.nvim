@@ -14,6 +14,24 @@ return {
     config = function(ctx)
       require("config.bindings").set("keymap-tools.nvim", {
         {
+          "<C-/>",
+          function()
+            require("keymap_tools").pick()
+          end,
+          mode = { "n", "x", "i" },
+          id = "keymaps.pick.universal",
+          desc = "Choose and execute buffer keymap",
+        },
+        {
+          "<C-_>",
+          function()
+            require("keymap_tools").pick()
+          end,
+          mode = { "n", "x", "i" },
+          id = "keymaps.pick.legacy",
+          desc = "Choose and execute buffer keymap",
+        },
+        {
           "<leader>?",
           function()
             require("keymap_tools").pick()
