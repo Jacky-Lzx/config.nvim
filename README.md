@@ -433,6 +433,29 @@ opens the choice picker. Visual backtick captures text for the next snippet.
 The 154 migrated definitions are checked against a frozen pre-migration baseline;
 LuaSnip and its engine-switch commands have been removed.
 
+Project snippet directories can be declared in the trusted `.nvim-plugins.lua`:
+
+```lua
+return {
+  { id = "snippet-tools.nvim", opts = { project = { paths = { ".nvim/snippets" } } } },
+}
+```
+
+The configuration supplies the root from that project file, so paths resolve the
+same way when starting in a subdirectory or changing cwd. Put native definition
+lists in `.nvim/snippets/<filetype>.lua` and `all.lua`. Global collections remain
+available; project entries win equal-priority conflicts and apply only to named
+buffers inside that project. Filetype inheritance still applies.
+
+Project Lua snippet files use Neovim's content-based file trust. When prompted,
+view and inspect the file, run `:trust`, return to the project buffer and run
+`:SnippetToolsReload`. Modified files require trust again; changing definitions
+does not require restarting Neovim. Reload discovers new files, removes deleted
+definitions, retains the previous valid collection on errors, and preserves active
+snippet fields. `:SnippetToolsInspect` includes source paths, scope, trust, errors,
+and the currently matching definition. No project code is executed merely because
+a snippet directory exists; the trusted project declaration must enable it.
+
 VimTeX-only selected-region compilation, structural `%`, environment/math/section
 end motions, frame/comment motions, `ds$`, Visual fraction/size toggles, `tsb`,
 `tsD`, Insert `<F7>`, package-documentation `K`, cache/reload and input-map menus

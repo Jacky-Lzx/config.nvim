@@ -5,7 +5,7 @@ return {
     version = "main",
     dev = true,
     main = "snippet_tools",
-    config = function()
+    config = function(ctx)
       require("integrations.snippets").setup()
       require("config.bindings").set("snippet-tools.nvim", {
         {
@@ -49,7 +49,7 @@ return {
           desc = "Snippet choice selection",
         },
       })
-      require("integrations.snippets").setup_native()
+      require("integrations.snippets").setup_native(ctx.opts, require("config.specs").project_root())
     end,
   },
 }

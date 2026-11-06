@@ -45,17 +45,7 @@ function M.source()
   end
   return {
     complete = function(ctx, callback)
-      return provider().complete(ctx, function(result)
-        local seen = {}
-        result.items = vim.tbl_filter(function(item)
-          if seen[item.label] then
-            return false
-          end
-          seen[item.label] = true
-          return true
-        end, result.items)
-        callback(result)
-      end)
+      return provider().complete(ctx, callback)
     end,
     resolve = function(entry, callback)
       return provider().resolve(entry, callback)
@@ -65,14 +55,14 @@ function M.source()
     end,
   }
 end
-function M.setup_native()
+function M.setup_native(options, project_root)
   local function decoration(icon, group)
     return {
       active = { virt_text = { { icon, group } }, sign_text = icon, sign_hl_group = group },
       passive = { virt_text = { { icon, "Comment" } }, sign_text = icon, sign_hl_group = "Comment" },
     }
   end
-  require("snippet_tools.bootstrap").setup({
+  local opts = vim.tbl_deep_extend("force", {
     extends = { markdown = { "tex" }, markdown_inline = { "markdown" }, systemverilog = { "verilog" } },
     keymap = false,
     paths = { require("utils.paths").config("lua", "snippet_collections") },
@@ -81,7 +71,12 @@ function M.setup_native()
       exit = decoration("", "Identifier"),
       choice = decoration("", "Type"),
     },
-  })
+  }, vim.deepcopy(options or {}))
+  if type(opts.project) == "table" and opts.project.root == nil then
+    assert(project_root, "Project snippets need a trusted project file or an explicit project.root")
+    opts.project.root = project_root
+  end
+  require("snippet_tools.bootstrap").setup(opts)
   M.setup()
 end
 function M.setup()

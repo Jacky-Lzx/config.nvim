@@ -89,7 +89,7 @@
       "source": "https://github.com/Jacky-Lzx/selection-tools.nvim.git"
     },
     "snippet-tools.nvim": {
-      "commit": "69ac1443a135432cd2b108ac70936d489d37c9be",
+      "commit": "4054fcf225097569faeda34ba139ec81600a8b41",
       "source": "https://github.com/Jacky-Lzx/snippet-tools.nvim.git"
     },
     "task-tools.nvim": {
