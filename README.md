@@ -945,6 +945,18 @@ changes, then `compatibility` for changes involving optional owners or their
 integration. `acceptance` needs the installed language servers. Remote network
 installation and real TeX compilation remain separate explicit commands.
 
+For reusable plugin changes, first run `sh tests/run.sh` in the owning checkout,
+then its `integration` suite when changing a shared interface or UI consumer.
+Each sibling plugin has `tests/cases.json` as its executable registration list,
+`--filter`/`--list`/`--check` for focused work, isolated per-case state, bounded
+process lifetimes and retained failure evidence. Its CI executes the same entry
+point. `python3 tests/run.py fixtures` is a separate, explicit network operation
+for absent pinned sibling checkouts; `--locked` requires those exact clean
+revisions. Publish dependency commits before consumer workflows that fetch
+them. The shared runner copies are maintained from plugin-tools with
+`python3 scripts/sync-test-runner.py --check` or `--write`; each plugin keeps
+ownership of its case list and behavior assertions.
+
 The actual personal-startup check uses `lua/config/selection.lua` and current
 per-plugin enable flags. It does not restore disabled third-party plugins.
 Fixed scenarios live in `tests/scenarios.lua`; only the compatibility suite opts

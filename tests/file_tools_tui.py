@@ -2,17 +2,25 @@
 
 import json
 import os
-from pathlib import Path
 import runpy
 import subprocess
 import sys
+from pathlib import Path
 
 root = Path(os.environ["NVIM_CONFIG_ROOT"])
 directory = Path(os.environ["NVIM_TEST_TMP"])
 subprocess.run(
     [
-        "nvim", "--headless", "-u", "NONE", "-i", "NONE", "--noplugin",
-        "-l", str(root / "tests/checked.lua"), str(root / "tests/environment.lua"),
+        "nvim",
+        "--headless",
+        "-u",
+        "NONE",
+        "-i",
+        "NONE",
+        "--noplugin",
+        "-l",
+        str(root / "tests/checked.lua"),
+        str(root / "tests/environment.lua"),
     ],
     cwd=root,
     check=True,
