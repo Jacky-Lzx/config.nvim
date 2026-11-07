@@ -5,7 +5,9 @@ function M.code_sources()
 end
 for _, method in ipairs({ "sources", "active_sources", "cycle", "toggle_source" }) do
   M[method] = function(config, ...)
-    return require("completion_tools.source_selection")[method](config, ...)
+    return require("config.plugin_bootstrap")
+      .library("completion-tools.nvim", "completion_tools.source_selection")
+      [method](config, ...)
   end
 end
 return M

@@ -243,3 +243,9 @@ folding implementation and lifecycle remain in ui-tools.
 Current Markdown guides live in `docs/`, historical migration notes in
 `docs/migrations/`, and reproducible measurement records in `docs/performance/`.
 Personal snippet source documentation remains beside `lua/snippet_collections/`.
+
+The optional `keymap_tools.bindings` library owns native mapping registration and
+conditional cleanup. `config.bindings` creates the personal instance; pure library
+imports before manager startup read development/managed files without mounting
+runtime scripts or initializing UI. Completion source selection uses the same
+pure-library path for cold configuration inspection.

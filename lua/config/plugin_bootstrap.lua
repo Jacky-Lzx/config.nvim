@@ -26,6 +26,27 @@ function M.mount()
   return directory
 end
 
+-- Read a dependency-free library before feature packages are mounted. This does
+-- not add runtime paths, source plugin scripts, or initialize the plugin manager.
+local libraries = {}
+function M.library(id, module)
+  if libraries[module] then
+    return libraries[module]
+  end
+  if package.loaded[module] or package.preload[module] then
+    return require(module)
+  end
+  local relative = "/lua/" .. module:gsub("%.", "/") .. ".lua"
+  local managed = vim.env.NVIM_PLUGIN_ROOT or (vim.fn.stdpath("data") .. "/plugin-tools")
+  for _, directory in ipairs({ require("utils.platform").dev_plugin_root() .. "/" .. id, managed .. "/" .. id }) do
+    if vim.uv.fs_stat(directory .. relative) then
+      libraries[module] = assert(loadfile(directory .. relative))()
+      return libraries[module]
+    end
+  end
+  error("Missing " .. id .. " library; run scripts/install-plugins.lua")
+end
+
 -- Explicit installation only. Startup never calls Git or downloads a manager.
 function M.ensure(url_format)
   local directory = M.directory()

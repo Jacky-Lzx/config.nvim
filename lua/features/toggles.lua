@@ -46,50 +46,16 @@ function M.map(owner, lhs, opts)
   local keymaps = require("keymap_tools")
   local source = "config.toggle." .. owner.id .. ":" .. (buf or 0)
   local modes = type(mode) == "table" and mode or { mode }
-  local callback, registration
-  if owner.action then
-    assert(not owner.set, "A toggle needs either set or action")
-    registration = keymaps.register(source, {
-      buf = buf,
-      modes = modes,
-      toggles = { { keys = lhs, name = name, get = get } },
-    })
-    callback = function()
-      local ok, state = pcall(function()
-        local target = buf or vim.api.nvim_get_current_buf()
-        local win = vim.api.nvim_get_current_win()
-        local ctx = { buf = target, mode = vim.api.nvim_get_mode().mode }
-        if vim.api.nvim_win_get_buf(win) == target then
-          ctx.win = win
-        end
-        local accepted, err = owner.action(ctx)
-        if accepted == false and type(err) == "string" then
-          error(err)
-        end
-        local value = get(ctx)
-        assert(value == nil or type(value) == "boolean", "Toggle state must be boolean or nil")
-        return value
-      end)
-      if not ok then
-        vim.notify(tostring(state), vim.log.levels.ERROR, { title = name })
-      elseif owner.notify ~= false then
-        M.notify(name, state)
-      end
-      if ok then
-        return state
-      end
-    end
-  else
-    callback, registration = keymaps.register_toggle(source, {
-      buf = buf,
-      modes = modes,
-      keys = lhs,
-      name = name,
-      get = get,
-      set = owner.set,
-      notify = owner.notify,
-    })
-  end
+  local callback, registration = keymaps.register_toggle(source, {
+    buf = buf,
+    modes = modes,
+    keys = lhs,
+    name = name,
+    get = get,
+    set = owner.set,
+    action = owner.action,
+    notify = owner.notify,
+  })
   require("config.bindings").set(source, {
     vim.tbl_extend(
       "force",

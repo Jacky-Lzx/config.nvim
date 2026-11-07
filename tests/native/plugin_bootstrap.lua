@@ -45,6 +45,16 @@ vim.fn.writefile({ "return {}" }, temporary .. "/dev/plugin-tools.nvim/lua/plugi
 assert(bootstrap.directory() == temporary .. "/dev/plugin-tools.nvim")
 vim.env.NVIM_PLUGIN_TOOLS_PATH = repository
 assert(bootstrap.directory() == repository)
+local old_root = vim.env.NVIM_PLUGIN_ROOT
+vim.env.NVIM_PLUGIN_ROOT = temporary .. "/managed"
+vim.fn.mkdir(temporary .. "/managed/library/lua/fixture", "p")
+vim.fn.writefile({ "return { value = 'managed' }" }, temporary .. "/managed/library/lua/fixture/pure.lua")
+local runtime = vim.o.runtimepath
+assert(bootstrap.library("library", "fixture.pure").value == "managed")
+vim.fn.delete(temporary .. "/managed/library", "rf")
+assert(bootstrap.library("library", "fixture.pure").value == "managed", "Pure library must be cached")
+assert(vim.o.runtimepath == runtime, "Pure library import mounted unrelated runtime scripts")
+vim.env.NVIM_PLUGIN_ROOT = old_root
 vim.system = system
 vim.env.NVIM_DEV_PLUGIN_ROOT, vim.env.NVIM_PLUGIN_TOOLS_PATH = old_dev, old_path
 print("Pinned manager bootstrap: explicit install, offline startup, development preference and override passed")

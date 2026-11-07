@@ -4,8 +4,12 @@ require("config.context").initialize({ profiles = { "writing" }, features = {} }
 vim.g.mapleader = " "
 local registration, automatic, formula_enabled, hovers, previews, loads = nil, true, true, 0, 0, 0
 package.loaded.keymap_tools = {
-  register = function(_, spec)
-    registration = spec.toggles[1]
+  register_toggle = function(_, spec)
+    registration = spec
+    return function()
+      spec.action({})
+      return spec.get({})
+    end
   end,
 }
 package.loaded["image_tools.bootstrap"] = {
@@ -73,8 +77,8 @@ vim.notify = function(message)
 end
 local mapping = vim.fn.maparg("<leader>tia", "n", false, true).callback
 mapping()
-assert(not registration.get({}) and notices[1] == "Automatic image preview: Disabled")
+assert(not registration.get({}))
 mapping()
-assert(registration.get({}) and notices[2] == "Automatic image preview: Enabled" and #notices == 2)
+assert(registration.get({}) and #notices == 0, "Notifications are delegated to keymap-tools")
 vim.notify = notify
 print("Personal TeX/generic preview dispatch and plugin-owned automatic state passed")

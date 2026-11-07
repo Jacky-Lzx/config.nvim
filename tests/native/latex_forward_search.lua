@@ -5,9 +5,13 @@ vim.g.maplocalleader, vim.g.mapleader = " ", " "
 package.loaded["utils.platform"] = { executable = function() end }
 local registration
 package.loaded["keymap_tools"] = {
-  register = function(source, spec)
+  register = function() end,
+  register_toggle = function(source, spec)
     if source:find("config.toggle.tex_build_on_save:", 1, true) == 1 then
-      registration = spec
+      registration = { buf = spec.buf, toggles = { { get = spec.get } } }
+    end
+    return function()
+      return spec.action({ buf = spec.buf })
     end
   end,
 }
