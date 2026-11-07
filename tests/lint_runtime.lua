@@ -1,7 +1,7 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.runtimepath:prepend(root)
 local spec = require("plugins.coding.lint-tools")[1]
-vim.opt.runtimepath:prepend(spec.dir)
+vim.opt.runtimepath:prepend(require("utils.platform").dev_plugin_root() .. "/" .. spec.id)
 local lint = require("lint_tools")
 spec.config({ opts = spec.opts })
 assert(vim.fn.exists(":LintToolsInfo") == 2)

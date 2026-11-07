@@ -68,7 +68,8 @@ development directories.
 
 `python3 tests/remote_install.py` performs an explicit network acceptance check:
 it installs into isolated data/package directories, hides development checkouts,
-and verifies minimal/default startup and completion/image/snippet first-use APIs.
+and verifies minimal/default startup, ordinary Markdown, a selected Obsidian vault,
+and completion/image/snippet first-use APIs.
 Use `--directory /tmp/nvim-remote-check` to retain the installation for inspection.
 
 Each plugin's `config(ctx)` applies its options and binds personal shortcuts with
@@ -98,7 +99,7 @@ initialization. Peek requires Deno and its configured build task.
 
 `markdown-tools.nvim` provides structural editing and loads with the first Markdown
 buffer from `~/Documents/Github/nvim_plugins/markdown-tools.nvim` (or
-`NVIM_DEV_PLUGIN_ROOT`). It is currently a local package. Its implementation owns
+`NVIM_DEV_PLUGIN_ROOT`), with a locked GitHub fallback. Its implementation owns
 commands and edits; `lua/languages/markdown/tools.lua` owns personal buffer mappings.
 The `<localleader>M` group provides `x` checkboxes (also Visual), `i` list item,
 `n` renumbering, `o` outline, `t` TOC, `h`/`l` heading promotion/demotion,
@@ -124,8 +125,8 @@ External lint checks are owned by `lint-tools.nvim`, configured in
 the plugin owns save triggers, process cancellation, parsers and diagnostic
 namespaces. Codespell runs when available unless `typos_lsp` is attached.
 `:LintToolsInfo` and `:checkhealth lint_tools` explain tool selection and failures.
-The new plugin currently uses a local checkout at `dev_plugin_root()/lint-tools.nvim`;
-create that checkout on another machine before enabling the configuration.
+It prefers the development checkout and otherwise installs its locked GitHub revision,
+as do format-tools, markdown-tools and the optional obsidian-tools.
 
 Managed Git packages live under `stdpath("data")/plugin-tools` (override with
 `NVIM_PLUGIN_ROOT`); development checkouts remain external. To prepare a new

@@ -26,15 +26,29 @@ env.pop("NVIM_PLUGIN_TOOLS_PATH", None)
 for name in ("PROF", "NVIM_TEST_SCENARIO", "NVIM_TEST_LINK_FIRST"):
     env.pop(name, None)
 try:
-    subprocess.run(["nvim", "--headless", "-u", "NONE", "-i", "NONE", "-n", "-l",
-                    str(root / "scripts/install-plugins.lua")], cwd=root, env=env, check=True, timeout=360)
-    for scenario in ("minimal", "default"):
-        subprocess.run(["nvim", "--headless", "-i", "NONE", "-n", "--cmd",
-                        "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
-                        "-u", str(root / "init.lua"), "-c",
-                        "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/remote_startup.lua')"],
-                       cwd=root, env=dict(env, NVIM_TEST_SCENARIO=scenario), check=True, timeout=45)
-    print("PASS: pinned GitHub installation, minimal/default startup and first-use APIs without development checkouts")
+    vault = directory / "vault"
+    vault.mkdir(exist_ok=True)
+    manifest = vault / ".nvim-plugins.lua"
+    manifest.write_text('return {{id="obsidian-tools.nvim", opts={workspaces={{path=vim.env.NVIM_REMOTE_VAULT}}}}}\n')
+    env["NVIM_REMOTE_VAULT"] = str(vault)
+    # Trust only this generated fixture, using the isolated state directory.
+    trust = "lua vim.fn.mkdir(vim.fn.stdpath('state'), 'p'); assert(vim.secure.trust({action='allow',path=vim.env.NVIM_REMOTE_VAULT..'/.nvim-plugins.lua'}))"
+    subprocess.run(["nvim", "--headless", "-u", "NONE", "-i", "NONE", "--cmd", trust, "-n", "-l",
+                    str(root / "scripts/install-plugins.lua")], cwd=vault, env=env, check=True, timeout=360)
+    for scenario, filename in (("minimal", None), ("default", None), ("default", "sample.md"), ("writing", "note.md")):
+        selected_vault = filename == "note.md"
+        project = vault if selected_vault else directory
+        if filename:
+            (project / filename).write_text("# Remote installation\n\n[[sample]]\n")
+        command = ["nvim", "--headless", "-i", "NONE", "-n", "--cmd",
+                   "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
+                   "-u", str(root / "init.lua")]
+        if filename:
+            command.append(str(project / filename))
+        command += ["-c", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/remote_startup.lua')"]
+        subprocess.run(command, cwd=project, env=dict(env, NVIM_TEST_SCENARIO=scenario,
+                       NVIM_REMOTE_SELECTED_VAULT="1" if selected_vault else "0"), check=True, timeout=45)
+    print("PASS: pinned GitHub installation, default/Markdown/vault startup and first-use APIs without development checkouts")
 finally:
     if not args.directory:
         shutil.rmtree(directory)

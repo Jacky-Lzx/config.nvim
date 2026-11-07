@@ -3,14 +3,18 @@ vim.opt.rtp:prepend(root)
 vim.opt.rtp:prepend(assert(vim.env.NVIM_PLUGIN_TOOLS_PATH))
 require("config.context").initialize({
   profiles = { "base", "data", "writing" },
-  features = { tasks = true, sessions = true },
+  features = { tasks = true, sessions = true, debugging = true },
 })
 local resolve = require("plugin_tools.graph").resolve
 local published = {
   "completion-tools.nvim",
   "debug-tools.nvim",
+  "dap-tools.nvim",
   "editing-tools.nvim",
   "file-tools.nvim",
+  "format-tools.nvim",
+  "lint-tools.nvim",
+  "markdown-tools.nvim",
   "git-tools.nvim",
   "image-tools.nvim",
   "input-tools.nvim",

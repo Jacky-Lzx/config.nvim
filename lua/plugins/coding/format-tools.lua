@@ -3,8 +3,9 @@ return {
     main = "format_tools",
     id = "format-tools.nvim",
     enabled = true,
-    -- Local checkout until this new plugin has a published source.
-    dir = vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "format-tools.nvim"),
+    source = "Jacky-Lzx/format-tools.nvim",
+    version = "main",
+    dev = true,
     after = { "toolchain-tools.nvim" },
     dependencies = { "toolchain-tools.nvim" },
     opts = {

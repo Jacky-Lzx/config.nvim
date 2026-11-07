@@ -23,6 +23,17 @@ vim.api.nvim_create_autocmd("User", {
           not package.loaded.completion_tools and not package.loaded["completion_tools.ui"],
           "Remote capability lookup imported the input engine"
         )
+        if vim.bo.filetype == "markdown" then
+          assert(manager.states["markdown-tools.nvim"].phase == "ready")
+          assert(vim.fn.exists(":MarkdownToolsInfo") == 2)
+        end
+        local vault = vim.env.NVIM_REMOTE_SELECTED_VAULT == "1"
+        assert((manager.graph.nodes["obsidian-tools.nvim"] ~= nil) == vault)
+        if vault then
+          assert(manager.states["obsidian-tools.nvim"].phase == "ready")
+          assert(require("obsidian_tools").workspace().path == vim.env.NVIM_REMOTE_VAULT)
+          assert(vim.fn.exists(":ObsidianTools") == 2)
+        end
         for _, name in ipairs({ "completion_tools.bootstrap", "image_tools.bootstrap", "snippet_tools.bootstrap" }) do
           local frontend = require(name)
           assert(type(frontend.ensure) == "function", "Missing published API: " .. name)

@@ -1,8 +1,9 @@
 return {
   {
     id = "markdown-tools.nvim",
-    -- Local package until the new plugin is published.
-    dir = require("utils.platform").dev_plugin_root() .. "/markdown-tools.nvim",
+    source = "Jacky-Lzx/markdown-tools.nvim",
+    version = "main",
+    dev = true,
     main = "markdown_tools",
     mount = "on-demand",
     ft = { "markdown" },
@@ -40,7 +41,9 @@ return {
   },
   {
     id = "obsidian-tools.nvim",
-    dir = require("utils.platform").dev_plugin_root() .. "/obsidian-tools.nvim",
+    source = "Jacky-Lzx/obsidian-tools.nvim",
+    version = "main",
+    dev = true,
     main = "obsidian_tools",
     enabled = true,
     optional = true,
