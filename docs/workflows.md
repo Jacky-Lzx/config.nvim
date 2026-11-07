@@ -18,11 +18,9 @@ available before LSP startup; its
 interactive setup waits for `InsertEnter`, `CmdlineEnter`, or an explicit completion command.
 Requiring the capability API does not initialize completion sources or timers.
 
-Automatic completion uses LSP, paths, buffers and snippets in code. Markdown,
-plain text, Typst and TeX prose also enable dictionary/spelling sources. Parsed
-TeX math excludes dictionary, spell and Copilot by default. Explicit source
-switches and the word/snippet/code source cycle override that automatic policy.
-Copilot's score offset is below LSP; matching still determines the final order.
+See [completion](completion.md) for automatic prose/math source selection, manual
+source switches, command-line completion and Copilot, and [native snippets](snippets.md)
+for field navigation and personal collections.
 
 nvim-lspconfig is declared as a child of lsp-tools and an explicit dependency.
 It keeps its own checkout and lockfile entry, supplies maintained configs, and
@@ -42,14 +40,14 @@ the previous policy while leaving those project files untouched.
 [lsp-tools.nvim](https://github.com/Jacky-Lzx/lsp-tools.nvim) supplies the code action
 picker and previews, replacing code-actions.nvim. `<leader>a` works in Normal and
 Visual mode; `<A-a>` works in Insert mode. Enter applies the action, Escape cancels.
-Delta renders previews with project-relative hunk headers, with native diff fallback.
+The configured backend renders native diff previews with project-relative file headers.
 
 `<leader>rn` in LSP-attached buffers prepares the rename, prefills the old name
 through the general input-tools API, called automatically by lsp-tools, beside
 the source cursor with a left-aligned upper-border title,
 and previews the complete workspace edit by file. The title reports affected-file
 and edit counts. Enter applies all changes; Escape cancels. Rename uses the same
-delta style as code actions. Changes to affected buffers, document versions, or
+native diff backend as code actions. Changes to affected buffers, document versions, or
 disk files invalidate the preview and block application; text edits are left unsaved.
 The name input starts in Insert mode; Escape enters Normal for Vim motions and
 undo/redo. Enter confirms the name before review; Ctrl-C or Normal-mode Escape
@@ -191,8 +189,10 @@ See `:help workspace-tools` for the API, save guards and storage behavior.
 
 ## Folding
 
-`lua/features/folding.lua` selects native Tree-sitter folding when a parser and folds
-query are available, otherwise indentation folding. Diff and special windows retain
+`ui-tools.nvim` selects native Tree-sitter folding when a parser and folds
+query are available, otherwise indentation folding. Personal options live in
+`lua/plugins/ui/ui-tools.lua`. `lua/features/folding.lua` preserves the old module
+path for fold expressions stored in existing sessions. Diff and special windows retain
 their own folding settings. LaTeX uses the same native folding source.
 
 Files initially open all folds; native `zM`, `zR`, `zm`, `zr`, `za`, `zo`, `zc`, `zx`,
@@ -346,8 +346,9 @@ file, grep and recent-file actions use selection-tools. Session restore appears
 when the `sessions` feature enables workspace-tools. Open it manually with `:lua require("ui_tools").dashboard()`.
 
 Snacks is no longer loaded. ui-tools owns visual helpers, editing-tools owns
-indentation textobjects, and motion-tools owns indentation jumps. Native folding remains in
-`lua/features/folding.lua`. motion-tools provides the match lens and search keys;
+indentation textobjects, and motion-tools owns indentation jumps. Folding behavior
+and lifecycle belong to ui-tools; `lua/features/folding.lua` preserves old session
+expressions. motion-tools provides the match lens and search keys;
 search markers and the optional GitTools hunk adapter are provided by ui-tools.
 Core yank handling retains clipboard copying, with feedback owned by ui-tools.
 

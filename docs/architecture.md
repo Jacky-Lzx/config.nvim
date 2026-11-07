@@ -5,7 +5,7 @@
 - `init.lua` delegates to `config.setup()`. `config/` composes startup, profiles,
   platform settings, plugin declarations and the pinned manager bootstrap.
 - `core/` owns editor options, generic commands, mappings and autocmds.
-- `features/` owns native file policy, folding integration, LSP/diagnostic behavior,
+- `features/` owns native file policy, LSP/diagnostic behavior,
   bars data and personal task workflows. Large/minified files are classified
   before filetype consumers start expensive work.
 - `plugins/` declares packages and applies personal options and mappings.
@@ -213,7 +213,7 @@ own interaction contracts.
 - `lua/core/`: editor options, general mappings, commands, and autocmds.
 - `lua/features/`: file protection, LSP/diagnostic behavior, bars data, toggles and personal task workflows.
 - `lua/plugins/`: native plugin-tools specs, dependencies, ordinary mappings, and plugin-specific configuration.
-- `lua/integrations/`: adapters connecting native completion, snippets, images and project-specific plugin policies.
+- `lua/integrations/`: adapters connecting completion, snippets, images, themes and project-specific plugin policies.
 - `lua/languages/`: language metadata and dedicated plugin specs.
 - `lua/utils/`: shared helpers for resource paths, platform discovery, and system commands.
 - `ftplugin/`: settings needed before runtime ftplugins, such as style and mapping switches.
@@ -237,3 +237,9 @@ preferences. `plugins/coding/completion.lua` declares the package directly.
 `config/workflow_flags.lua` validates selection flags; it does not initialize features.
 Complex filetype hooks delegate to `languages/<language>/buffer.lua`, while simple
 buffer options can stay directly in the native runtime entry points.
+`features/folding.lua` retains the module path referenced by older saved sessions;
+folding implementation and lifecycle remain in ui-tools.
+
+Current Markdown guides live in `docs/`, historical migration notes in
+`docs/migrations/`, and reproducible measurement records in `docs/performance/`.
+Personal snippet source documentation remains beside `lua/snippet_collections/`.

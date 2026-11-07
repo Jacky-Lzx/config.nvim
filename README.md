@@ -50,13 +50,15 @@ project settings. Restart Neovim when switching project selection.
 - [Installation, dependencies and deployment](docs/installation.md).
 - [Profiles, languages and platform settings](docs/configuration.md).
 - [Editing, language and project workflows](docs/workflows.md).
+- [Completion](docs/completion.md) and [native snippets](docs/snippets.md).
 - [Keymaps, toggles and command ownership](docs/keymaps.md).
 - [Architecture and lifecycle](docs/architecture.md).
 - [Local validation and performance measurements](docs/testing.md).
 
 Each plugin owns its complete `:help` reference. Configuration owns personal keys,
 feature selection and integration policy. See [the documentation style](docs/documentation-style.md)
-for this repository and the plugin collection.
+for this repository and the plugin collection. Historical design decisions live in
+[migration notes](docs/migrations/completion.md); current behavior belongs in the guides above.
 
 ## Development
 

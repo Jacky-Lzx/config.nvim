@@ -42,7 +42,12 @@ TMPDIR=/private/tmp python3 tests/benchmarks/benchmark_workflows.py \
 interaction benchmark. For the recorded comparison, extract
 `lua/integrations/completion.lua` and `lua/features/completion/init.lua` from
 `a7da446`, then map `integrations.completion` and `features.completion` to those
-files. The harness copies the provided snapshots into each retained trial.
+files. Those names describe the recorded checkout. The source policy now lives
+at `integrations.completion.sources`; to run the old integration snapshot against
+the grouped layout, also map `integrations.completion.sources` to the historical
+`features.completion` source. Keep the historical `features.completion` mapping
+because the old integration still imports that name. The harness copies the
+provided snapshots into each retained trial.
 
 Each run retains `report.json`, the config diff and lock, benchmark source
 snapshots, project copies, per-process terminal logs and final Neovim state.

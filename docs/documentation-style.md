@@ -12,8 +12,11 @@ plugin collection. Preserve public API names and existing help tags when editing
 
 A workflow guide may show a particular configuration. Complete defaults and API
 contracts belong in the help reference; do not maintain a second parameter manual.
-The configuration uses `docs/` for its guides. Plugins keep existing `doc/` guides
-and assets so installed help and established links remain easy to find.
+The configuration uses `docs/` for current guides and `docs/migrations/` for
+historical migration notes. Archived notes identify their applicable revision or
+period and link to the current guide. Performance records retain their original
+measurements and revision identifiers in `docs/performance/`. Plugins keep existing
+`doc/` guides and assets so installed help and established links remain easy to find.
 
 ## README
 

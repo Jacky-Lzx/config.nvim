@@ -28,5 +28,5 @@ Choice and dynamic branches retain edits when switched or regenerated.
 Visual backtick captures text for the next snippet. `:SnippetToolsReload`
 re-executes collection files, including TeX children, without duplicate entries.
 
-See [the workflow guide](../../doc/snippet-engines.md) for completion behavior and
+See [the workflow guide](../../docs/snippets.md) for completion behavior and
 [the smoke runner](../../tests/smoke.sh) for configured attached-UI and PTY checks.
