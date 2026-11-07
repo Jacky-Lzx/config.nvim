@@ -29,7 +29,9 @@ custom `lsp/texquill.lua` config retain native merge
 semantics. Tool installation stays with toolchain-tools. `:checkhealth lsp-tools`
 and `:LspToolsInfo` show selected server configuration and attachment state.
 
-The Lua profile enables `lua-tools.nvim`. In this Neovim configuration it indexes
+The Lua profile declares `lua-tools.nvim` with `ft = { "lua" }` and on-demand
+mounting. Its setup and `:LuaTools` command become available on the first Lua
+buffer, including an existing Lua buffer when the manager starts. It indexes
 selected plugins' `lua/` directories, including local checkouts, on-demand plugins
 and the manually mounted manager. LuaDoc types are available without `require()`
 or module annotations; annotate standalone option tables with their intended type.

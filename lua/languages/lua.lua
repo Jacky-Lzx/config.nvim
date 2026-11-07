@@ -15,6 +15,9 @@ return {
       version = "main",
       dev = true,
       main = "lua_tools",
+      start = false,
+      ft = { "lua" },
+      mount = "on-demand",
       opts = {
         -- Explicitly retain library discovery in projects with their own .luarc.
         enabled = true,

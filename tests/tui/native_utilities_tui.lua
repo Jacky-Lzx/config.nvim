@@ -7,7 +7,11 @@ local function check()
     assert(not plugins[name], "Replaced utility is still configured: " .. name)
   end
   assert(not package.loaded["debug_tools.startuptime"] and not package.loaded["file_tools.privileged"])
+  assert(not package.loaded.lua_tools and not package.loaded["lua_tools.workspace"])
   assert(not package.loaded["lua_tools.resolve"])
+  assert(not require("config.plugins").initialized("lua-tools.nvim"), "Lua tools initialized before a Lua buffer")
+  assert(not require("config.plugins").manager.states["lua-tools.nvim"].mounted)
+  assert(vim.fn.exists(":LuaTools") == 0, "Lua tools registered commands before a Lua buffer")
   assert(require("config.plugins").initialized("file-tools.nvim"), "File command registration is missing")
   for _, command in ipairs({ "StartupTime", "SudaRead", "SudaWrite", "FileToolsRead", "FileToolsWrite" }) do
     assert(vim.fn.exists(":" .. command) == 2, command)
@@ -75,7 +79,13 @@ local function check()
     "local uv = vim.uv",
     "print(uv)",
   }, project .. "/main.lua")
+  assert(not package.loaded.lua_tools, "Non-Lua workflows activated Lua tools")
   vim.cmd.edit(project .. "/main.lua")
+  local lua_state = require("config.plugins").manager.states["lua-tools.nvim"]
+  assert(lua_state.phase == "ready" and lua_state.count == 1 and lua_state.mounted)
+  assert(lua_state.trigger.kind == "filetype" and lua_state.trigger.filetype == "lua")
+  assert(vim.fn.exists(":LuaTools") == 2, "First Lua FileType did not register Lua tools")
+  local lua_handlers = #api.nvim_get_autocmds({ group = "LuaTools" })
   local buf = api.nvim_get_current_buf()
   local client
   local plugin_root = assert(vim.uv.fs_realpath(require("utils.platform").dev_plugin_root()))
@@ -150,6 +160,8 @@ local function check()
   )
   assert(require("lua_tools").info().enabled and vim.fn.exists(":LuaTools") == 2)
   assert(vim.fn.exists(":LspToolsLua") == 0, "Retired LuaLS owner is still active")
+  assert(lua_state.count == 1, "A second Lua buffer initialized Lua tools twice")
+  assert(#api.nvim_get_autocmds({ group = "LuaTools" }) == lua_handlers, "Lua buffers duplicated library listeners")
   api.nvim_buf_delete(probe, { force = true })
   assert(not package.loaded.lazydev)
 end
@@ -165,7 +177,7 @@ vim.api.nvim_create_autocmd("User", {
       end
       vim.fn.writefile({
         ok
-            and "Configured PTY: cold commands, ten native startup runs, sudo aliases and automatic config LuaLS completion passed"
+            and "Configured PTY: cold commands, ten native startup runs, sudo aliases, first-Lua loading and automatic config LuaLS completion passed"
           or err,
       }, vim.env.NVIM_STARTUP_RESULT)
       vim.cmd(ok and "qa!" or "cquit 1")

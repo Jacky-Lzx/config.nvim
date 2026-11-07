@@ -18,6 +18,9 @@ local lua_graph = resolve(require("languages.lua").plugins, {
   dev = { path = require("utils.platform").dev_plugin_root(), fallback = true },
 })
 assert(lua_graph.nodes["lua-tools.nvim"].main == "lua_tools")
+assert(lua_graph.nodes["lua-tools.nvim"].start == false)
+assert(lua_graph.nodes["lua-tools.nvim"].mount == "on-demand")
+assert(vim.deep_equal(lua_graph.nodes["lua-tools.nvim"].ft, { "lua" }))
 assert(not lua_graph.nodes["lua-tools.nvim"].package.managed)
 assert(lua_graph.nodes["lua-tools.nvim"].opts.nvim == true)
 assert(local_graph.nodes["lsp-tools.nvim"].opts.lua == nil, "Lua libraries have one owner")
