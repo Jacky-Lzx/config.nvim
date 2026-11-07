@@ -123,7 +123,7 @@ External lint checks are owned by `lint-tools.nvim`, configured in
 `lua/plugins/coding/lint-tools.lua`. Language definitions supply filetype bindings;
 the plugin owns save triggers, process cancellation, parsers and diagnostic
 namespaces. Codespell runs when available unless `typos_lsp` is attached.
-`:LintToolsInfo` and `:checkhealth lint-tools` explain tool selection and failures.
+`:LintToolsInfo` and `:checkhealth lint_tools` explain tool selection and failures.
 The new plugin currently uses a local checkout at `dev_plugin_root()/lint-tools.nvim`;
 create that checkout on another machine before enabling the configuration.
 
@@ -532,7 +532,7 @@ All filetypes use snippet-tools. Native collections include Lua,
 Python, Rust, Typst, Verilog/SystemVerilog, Markdown, TeX and global date/time/TODO
 snippets. `<A-l>`/`<A-h>` navigate fields, `<A-j>`/`<A-k>` cycle choices and `<A-c>`
 opens the choice picker. Visual backtick captures text for the next snippet.
-`:SnippetToolsReload` reloads definitions; `:SnippetToolsInspect` shows the active session.
+`:SnippetToolsReload` reloads definitions; `:SnippetToolsInfo` shows the active session.
 The 154 migrated definitions are checked against a frozen pre-migration baseline;
 LuaSnip and its engine-switch commands have been removed.
 
@@ -555,7 +555,7 @@ view and inspect the file, run `:trust`, return to the project buffer and run
 `:SnippetToolsReload`. Modified files require trust again; changing definitions
 does not require restarting Neovim. Reload discovers new files, removes deleted
 definitions, retains the previous valid collection on errors, and preserves active
-snippet fields. `:SnippetToolsInspect` includes source paths, scope, trust, errors,
+snippet fields. `:SnippetToolsInfo` includes source paths, scope, trust, errors,
 and the currently matching definition. No project code is executed merely because
 a snippet directory exists; the trusted project declaration must enable it.
 
@@ -913,12 +913,20 @@ Fish and `html_beautify` are optional: absence appears as `unavailable` instead 
 
 ## Health and testing
 
-Run `:checkhealth config` to inspect platform capabilities, optional integrations, and tools for
-the enabled language profiles.
+Run `:checkhealth config` to validate the selected profiles and language declarations.
+Health output is compact: applicable checks produce one success result, while failures
+explain their impact and suggest a repair. Functional dependencies are checked by their
+owning plugins; inactive optional features do not produce warnings.
 `:ConfigInfo` shows the active profiles/workflows, selected language capabilities, currently
 enabled LSP servers, live tool paths, and resolved plugin directories/sources/loading states.
 `paths.checkout` identifies the actual configuration checkout, including explicit `-u` starts;
 `paths.config` remains Neovim's standard config directory. Inspection does not load plugins.
+
+Detailed inspection commands use `Info`, including `:CompletionToolsInfo`,
+`:SnippetToolsInfo`, `:LspToolsInfo`, `:ImageInfo`, `:DapToolsInfo`, `:InputToolsInfo`,
+`:PairsInfo`, `:NotificationToolsInfo`, `:TaskInfo` and `:WorkspaceInfo`. Specialized commands such as
+`:ToolchainPlan` and `:PairsInspect` retain their specific purpose. Internal `status()`
+APIs keep their existing names. Health and Info never start services or install tools.
 
 Run the smoke runner with:
 

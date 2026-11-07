@@ -47,6 +47,9 @@ def main():
     test_file = {"markdown_tools": "markdown_tools_tui.lua", "markdown_direct": "markdown_demand.lua", "markdown_demand": "markdown_demand.lua", "demand": "demand_startup.lua", "python_environment": "python_environment_tui.lua", "native_utilities": "native_utilities_tui.lua", "editing_input": "editing_tui.lua", "tasks": "tasks_tui.lua", "motion": "motion_tui.lua", "notifications": "notifications_tui.lua", "notification_picker": "notification_picker_tui.lua", "ui_tools": "ui_tools_tui.lua", "annotations": "annotations_tui.lua", "bars": "bars_tui.lua", "folding": "folding_tui.lua", "completion_input": "completion_tui.lua", "copilot": "copilot_tui.lua", "keymaps": "keymaps_tui.lua", "toolchain": "toolchain_tui.lua"}.get(case, "image_loading_tui.lua" if case.startswith("image_") else "lifecycle_startup.lua")
     if case == "nested_keymaps":
         test_file = "nested_keymaps_tui.lua"
+    if case == "health":
+        test_file = "health_tui.lua"
+        env["NVIM_TEST_SCENARIO"] = "minimal"
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
@@ -83,7 +86,15 @@ def main():
                     output.extend(chunk)
                 except OSError:
                     break
-            if case == "python_environment":
+            if case == "health":
+                stage_file = Path(env["NVIM_TEST_TMP"], "health-stage")
+                lines = stage_file.read_text().splitlines() if stage_file.exists() else []
+                if len(lines) == 2 and lines[0] not in handled:
+                    # Lua notation is converted only here; input goes through the PTY.
+                    keys = json.loads(lines[1]).replace("<CR>", "\r")
+                    os.write(master, keys.encode())
+                    handled.add(lines[0])
+            elif case == "python_environment":
                 stage_file = Path(env["NVIM_TEST_TMP"], "python-stage")
                 stage = stage_file.read_text().strip() if stage_file.exists() else ""
                 actions = {"open": b" cv", "choose": b"chosen\r", "open_other": b" cv", "cancel": b"\x1b"}
