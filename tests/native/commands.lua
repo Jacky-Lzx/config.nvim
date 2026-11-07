@@ -1,5 +1,8 @@
 local root = vim.fn.getcwd()
 vim.opt.runtimepath:prepend(root)
+for _, name in ipairs({ "editing-tools.nvim", "motion-tools.nvim" }) do
+  vim.opt.rtp:prepend(assert(vim.env.NVIM_TEST_PLUGIN_FIXTURES) .. "/" .. name)
+end
 require("core.commands").setup()
 assert(vim.fn.exists(":Titlecase") == 2)
 
