@@ -29,8 +29,8 @@ independent completion-tools providers. Copilot moved from copilot.lua to a dire
 connection with the official language server. Command-line completion used native
 command/argument completion and buffer words for searches.
 
-LazyDev's Blink adapter was removed. LuaLS library discovery moved into lsp-tools'
-Lua support. input-tools retained explicit native completion in its Vim-mode input
+LazyDev's Blink adapter was removed. LuaLS library discovery now belongs to the independent lua-tools.nvim
+plugin; it also indexes selected plugin types when editing Neovim configuration. input-tools retained explicit native completion in its Vim-mode input
 windows instead of its old Blink source. BibTeX documentation compression remained
 an adapter owned by this configuration.
 

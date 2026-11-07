@@ -29,13 +29,14 @@ custom `lsp/texquill.lua` config retain native merge
 semantics. Tool installation stays with toolchain-tools. `:checkhealth lsp-tools`
 and `:LspToolsInfo` show selected server configuration and attachment state.
 
-The Lua profile enables lsp-tools' native LuaLS library discovery, replacing
-lazydev.nvim. Literal `require` calls and module annotations load only the needed
-plugin libraries. `vim.uv` and `debug_tools` retain their conditional type rules;
-local and installed plugin directories supply source paths without executing
-plugins. `:LspToolsLua` lists libraries and `:LspToolsLua refresh` rescans paths.
-This configuration explicitly supplements projects with `.luarc.json`, preserving
-the previous policy while leaving those project files untouched.
+The Lua profile enables `lua-tools.nvim`. In this Neovim configuration it indexes
+selected plugins' `lua/` directories, including local checkouts, on-demand plugins
+and the manually mounted manager. LuaDoc types are available without `require()`
+or module annotations; annotate standalone option tables with their intended type.
+Other Lua projects retain literal `require` and module-based library discovery.
+`vim.uv` and `debug_tools` keep their conditional type rules. `:LuaTools` lists
+libraries; `:LuaTools refresh` rescans paths. This configuration explicitly
+supplements projects with `.luarc.json` while leaving project files untouched.
 
 [lsp-tools.nvim](https://github.com/Jacky-Lzx/lsp-tools.nvim) supplies the code action
 picker and previews, replacing code-actions.nvim. `<leader>a` works in Normal and

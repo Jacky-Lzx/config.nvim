@@ -13,6 +13,14 @@ assert(vim.deep_equal(local_graph.nodes["workspace-tools.python"].ft, { "python"
 assert(local_graph.nodes["workspace-tools.nvim"].mount == "on-demand")
 assert(local_graph.nodes["workspace-tools.python"].declarations[1].origin == "languages.python.plugins")
 assert(local_graph.nodes["notification-tools.nvim"].declarations[1].origin == "plugins.ui.notification-tools")
+assert(not local_graph.nodes["lua-tools.nvim"], "Python-only selection must not activate Lua development")
+local lua_graph = resolve(require("languages.lua").plugins, {
+  dev = { path = require("utils.platform").dev_plugin_root(), fallback = true },
+})
+assert(lua_graph.nodes["lua-tools.nvim"].main == "lua_tools")
+assert(not lua_graph.nodes["lua-tools.nvim"].package.managed)
+assert(lua_graph.nodes["lua-tools.nvim"].opts.nvim == true)
+assert(local_graph.nodes["lsp-tools.nvim"].opts.lua == nil, "Lua libraries have one owner")
 local provider = local_graph.nodes["nvim-lspconfig"]
 assert(provider.parents["lsp-tools.nvim"] and not provider.roots)
 assert(provider.owner == provider.id and local_graph.packages[provider.id].managed)

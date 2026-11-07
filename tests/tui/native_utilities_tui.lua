@@ -7,7 +7,7 @@ local function check()
     assert(not plugins[name], "Replaced utility is still configured: " .. name)
   end
   assert(not package.loaded["debug_tools.startuptime"] and not package.loaded["file_tools.privileged"])
-  assert(not package.loaded["lsp-tools.languages.lua.resolve"])
+  assert(not package.loaded["lua_tools.resolve"])
   assert(require("config.plugins").initialized("file-tools.nvim"), "File command registration is missing")
   for _, command in ipairs({ "StartupTime", "SudaRead", "SudaWrite", "FileToolsRead", "FileToolsWrite" }) do
     assert(vim.fn.exists(":" .. command) == 2, command)
@@ -104,6 +104,53 @@ local function check()
     end, 50),
     "Configured LuaLS could not resolve debug-tools source"
   )
+  -- An unsaved config file has only a type annotation, without require/@module.
+  -- It must still discover the manually mounted manager's public options.
+  local probe = api.nvim_create_buf(true, false)
+  api.nvim_buf_set_name(probe, require("utils.paths").config("lua/__lua_tools_probe_" .. vim.uv.os_getpid() .. ".lua"))
+  api.nvim_buf_set_lines(probe, 0, -1, false, {
+    "---@type plugin_tools.BootstrapOptions",
+    "local opts = {}",
+    "print(opts.auto_install)",
+  })
+  api.nvim_set_current_buf(probe)
+  vim.bo[probe].filetype = "lua"
+  local config_client
+  local manager_library = assert(vim.uv.fs_realpath(require("config.plugin_bootstrap").directory())) .. "/lua"
+  assert(
+    vim.wait(15000, function()
+      config_client = vim.lsp.get_clients({ bufnr = probe, name = "lua_ls" })[1]
+      return config_client
+        and config_client.initialized
+        and vim.tbl_contains(vim.tbl_get(config_client.settings, "Lua", "workspace", "library") or {}, manager_library)
+    end, 20),
+    "Neovim config did not automatically index the manually mounted manager: "
+      .. vim.inspect({
+        client = config_client and config_client.root_dir,
+        libraries = require("lua_tools").info(),
+        root = require("utils.paths").root,
+      })
+  )
+  assert(
+    vim.wait(15000, function()
+      local response = config_client:request_sync("textDocument/completion", {
+        textDocument = { uri = vim.uri_from_bufnr(probe) },
+        position = { line = 2, character = 11 },
+        context = { triggerKind = 1 },
+      }, 3000, probe)
+      local result = response and response.result
+      for _, item in ipairs(result and (result.items or result) or {}) do
+        if item.label == "auto_install" then
+          return true
+        end
+      end
+      return false
+    end, 50),
+    "Configured LuaLS cannot complete manager options without a module hint"
+  )
+  assert(require("lua_tools").info().enabled and vim.fn.exists(":LuaTools") == 2)
+  assert(vim.fn.exists(":LspToolsLua") == 0, "Retired LuaLS owner is still active")
+  api.nvim_buf_delete(probe, { force = true })
   assert(not package.loaded.lazydev)
 end
 
@@ -117,7 +164,8 @@ vim.api.nvim_create_autocmd("User", {
         client:stop(true)
       end
       vim.fn.writefile({
-        ok and "Configured PTY: cold commands, ten native startup runs, sudo aliases and actual LuaLS libraries passed"
+        ok
+            and "Configured PTY: cold commands, ten native startup runs, sudo aliases and automatic config LuaLS completion passed"
           or err,
       }, vim.env.NVIM_STARTUP_RESULT)
       vim.cmd(ok and "qa!" or "cquit 1")
