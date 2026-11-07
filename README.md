@@ -160,7 +160,12 @@ and merges its workspace options with the shared defaults. Unselected optional
 plugins and their children do not enter the resolved graph or `runtimepath`, run
 setup or native runtime scripts, or participate in installation. Dependencies do
 not select them. `start = false` only skips setup and still mounts the runtime.
-Project selection is resolved at startup; restart Neovim when changing projects.
+Project selection is resolved at startup: the first local file/directory argument
+is checked before the starting directory. This also covers a new file inside a
+vault. Remote URIs and stdin fall back to the starting directory. Trust still uses
+`vim.secure.read`. When opening another project, a one-time notice explains that
+the original selection remains active; restart Neovim to apply the target project.
+`:ConfigInfo` includes the active project file and root.
 
 In a writable checkout, `:PluginTools update` writes `plugin-tools-lock.json` directly. Review,
 test and commit that file with any configuration changes. `NVIM_PLUGIN_LOCKFILE`

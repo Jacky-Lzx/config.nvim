@@ -12,6 +12,7 @@ end
 function M.setup()
   require("config.plugin_bootstrap").mount()
   M.manager = require("plugin_tools").setup(M.settings())
+  require("config.project").setup(require("config.specs").project_file())
   vim.keymap.set("n", "<leader>L", "<cmd>PluginTools<cr>", { desc = "[Plugins] Open plugin status" })
   vim.api.nvim_create_user_command("ConfigToolsInstall", function()
     require("integrations.toolchain").install()

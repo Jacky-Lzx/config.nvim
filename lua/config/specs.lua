@@ -1,5 +1,6 @@
 local M = {}
 local project_root
+local project_file
 local function annotate(spec, origin)
   spec.origin = spec.origin or origin
   for _, child in ipairs(spec.children or {}) do
@@ -34,8 +35,9 @@ local groups = {
   sessions = { "sessions.workspace-tools" },
 }
 function M.project(path)
-  project_root = nil
-  local file = vim.fs.find(".nvim-plugins.lua", { path = path or vim.uv.cwd(), upward = true, type = "file" })[1]
+  project_root, project_file = nil, nil
+  local project = require("config.project")
+  local file = path and project.find(path) or project.startup_file()
   if not file then
     return {}
   end
@@ -48,6 +50,7 @@ function M.project(path)
   local specs = chunk()
   assert(type(specs) == "table" and vim.islist(specs), file .. " must return a list of native plugin specs")
   project_root = vim.uv.fs_realpath(vim.fs.dirname(file)) or vim.fs.dirname(file)
+  project_file = file
   for _, spec in ipairs(specs) do
     annotate(spec, file)
   end
@@ -55,6 +58,9 @@ function M.project(path)
 end
 function M.project_root()
   return project_root
+end
+function M.project_file()
+  return project_file
 end
 function M.build(selection)
   local context = selection and require("config.context").initialize(selection) or require("config.context").current()

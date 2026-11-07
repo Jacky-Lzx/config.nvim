@@ -104,6 +104,7 @@ def suites():
             "lockfile",
             "schema",
             "selection",
+            "project",
             "info",
             "config",
             "platform",

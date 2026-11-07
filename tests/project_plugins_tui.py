@@ -118,12 +118,12 @@ vim.api.nvim_create_autocmd('User', {pattern='ConfigReady', once=true, callback=
   end, 50)
 end})
 """)
-    for selected in (False, True):
+    for selected, outside in ((False, False), (True, False), (True, True)):
         manifest.write_text("""
 return {{id='obsidian-tools.nvim', opts={workspaces={{name='Fixture', path=vim.env.PROJECT_PLUGIN_VAULT}}}}}
 """ if selected else "return {}")
-        result = temp / f"result-{selected}"
-        stage_file = temp / f"stage-{selected}"
+        result = temp / f"result-{selected}-{outside}"
+        stage_file = temp / f"stage-{selected}-{outside}"
         env = dict(os.environ, TERM="xterm-256color", NVIM_CONFIG_ROOT=str(ROOT),
                    NVIM_TEST_TMP=str(temp), NVIM_TEST_SCENARIO="writing", NVIM_SMOKE_TEST="1",
                    NVIM_TEST_ENABLE_THIRD_PARTY="0", XDG_CACHE_HOME=str(temp / "cache"),
@@ -140,7 +140,7 @@ return {{id='obsidian-tools.nvim', opts={workspaces={{name='Fixture', path=vim.e
             "vim.secure.read=function(path) assert(path==vim.env.PROJECT_PLUGIN_FILE); "
             "return table.concat(vim.fn.readfile(path), string.char(10)) end; dofile(vim.env.PROJECT_PLUGIN_PROBE)",
             "-u", str(ROOT / "init.lua"), str(sample),
-        ], cwd=project / "nested", env=env, stdin=slave, stdout=slave, stderr=slave)
+        ], cwd=temp if outside else project / "nested", env=env, stdin=slave, stdout=slave, stderr=slave)
         os.close(slave)
         output = bytearray()
         handled = set()

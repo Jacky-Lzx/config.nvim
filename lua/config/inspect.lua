@@ -16,6 +16,7 @@ function M.snapshot()
       dev_plugins = platform.dev_plugin_root(),
     },
     selection = vim.deepcopy(context.selection),
+    project = require("config.project").info(),
     languages = {},
     tools = {},
     lsp = { enabled_servers = {} },
