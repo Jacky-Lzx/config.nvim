@@ -2,6 +2,7 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT)
 vim.opt.rtp:prepend(root)
 vim.opt.rtp:prepend(vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "snippet-tools.nvim"))
+vim.opt.rtp:prepend(vim.fs.joinpath(require("utils.platform").dev_plugin_root(), "tex-tools.nvim"))
 vim.bo.filetype = "tex"
 local native = dofile(root .. "/lua/snippet_collections/tex.lua")
 local render = require("snippet_tools.render").render
