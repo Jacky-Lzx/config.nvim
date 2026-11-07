@@ -73,6 +73,7 @@ TOOLCHAIN_ACTIONS = {
 SCENARIOS = {
     name: Scenario(file)
     for name, file in {
+        "bigfile": "bigfile_tui.lua",
         "markdown_tools": "markdown_tools_tui.lua",
         "markdown_direct": "markdown_demand.lua",
         "markdown_demand": "markdown_demand.lua",
@@ -183,5 +184,8 @@ configure(
     document="first.md",
     text="# Demand Markdown\n\nplain source\n\n- first\n- second\n",
 )
+
+configure("bigfile", env={"NVIM_TEST_SCENARIO": "minimal"},
+          document="large.lua", text='local BIGFILE_VISIBLE = "' + 'x' * 2000 + '"\n')
 
 FILES = {name: scenario.file for name, scenario in SCENARIOS.items()}

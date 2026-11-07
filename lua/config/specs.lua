@@ -12,6 +12,7 @@ end
 local groups = {
   ui = { "ui.theme-tools", "ui.notification-tools", "ui.input-tools", "ui.ui-tools" },
   navigation = {
+    "navigation.bigfile-tools",
     "navigation.keymap-tools",
     "navigation.selection-tools",
     "navigation.file-tools",

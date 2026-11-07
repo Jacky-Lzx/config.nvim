@@ -4,10 +4,12 @@ local ok, err = xpcall(function()
   if vim.env.NVIM_TEST_ISOLATE_PLUGINS == "1" then
     for _, lib in ipairs({
       { "keymap-tools.nvim", "keymap_tools.bindings" },
+      { "bigfile-tools.nvim", "bigfile_tools.init" },
       { "completion-tools.nvim", "completion_tools.source_selection" },
     }) do
       local id, module = lib[1], lib[2]
-      package.preload[module] = function()
+      local key = module == "bigfile_tools.init" and "bigfile_tools" or module
+      package.preload[key] = function()
         return assert(
           loadfile(
             assert(vim.env.NVIM_TEST_PLUGIN_FIXTURES) .. "/" .. id .. "/lua/" .. module:gsub("%.", "/") .. ".lua"

@@ -187,6 +187,7 @@ def suites():
             {"NVIM_TEST_SCENARIO": "python", "NVIM_DEMAND_COMMANDS": "1"},
         ),
         tui("demand"),
+        tui("bigfile"),
         startup("markdown_demand"),
         startup("markdown_demand", {"NVIM_TEST_MARKDOWN_WORKSPACE": "1"}),
         tui("markdown_demand"),

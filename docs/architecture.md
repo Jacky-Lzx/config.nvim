@@ -5,7 +5,7 @@
 - `init.lua` delegates to `config.setup()`. `config/` composes startup, profiles,
   platform settings, plugin declarations and the pinned manager bootstrap.
 - `core/` owns editor options, generic commands, mappings and autocmds.
-- `features/` owns native file policy, LSP/diagnostic behavior,
+- `features/` owns personal file policy, LSP/diagnostic behavior,
   bars data and personal task workflows. Large/minified files are classified
   before filetype consumers start expensive work.
 - `plugins/` declares packages and applies personal options and mappings.
@@ -249,3 +249,8 @@ conditional cleanup. `config.bindings` creates the personal instance; pure libra
 imports before manager startup read development/managed files without mounting
 runtime scripts or initializing UI. Completion source selection uses the same
 pure-library path for cold configuration inspection.
+
+`bigfile-tools.nvim` owns early large/minified classification, protection and
+conditional restoration. Personal thresholds and completion/UI/Tree-sitter flags
+are supplied by `features.files`; its quickfile startup redraw remains config-owned.
+The dependency-free module is read before the manager and reused when mounted.

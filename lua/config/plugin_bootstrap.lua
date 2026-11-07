@@ -39,8 +39,13 @@ function M.library(id, module)
   local relative = "/lua/" .. module:gsub("%.", "/") .. ".lua"
   local managed = vim.env.NVIM_PLUGIN_ROOT or (vim.fn.stdpath("data") .. "/plugin-tools")
   for _, directory in ipairs({ require("utils.platform").dev_plugin_root() .. "/" .. id, managed .. "/" .. id }) do
-    if vim.uv.fs_stat(directory .. relative) then
-      libraries[module] = assert(loadfile(directory .. relative))()
+    local file = directory .. relative
+    if not vim.uv.fs_stat(file) then
+      file = directory .. relative:gsub("%.lua$", "/init.lua")
+    end
+    if vim.uv.fs_stat(file) then
+      libraries[module] = assert(loadfile(file))()
+      package.loaded[module] = libraries[module]
       return libraries[module]
     end
   end
