@@ -1,0 +1,32 @@
+{
+  "support": {
+    "tests/support/native_plugins.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/actions.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/tui_cases.py": "Shared test fixture or driver used by registered cases",
+    "tests/support/paths.py": "Shared test fixture or driver used by registered cases",
+    "tests/support/registry.py": "Shared test fixture or driver used by registered cases",
+    "tests/support/write_snapshot.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/checked.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/toolchain_sessions.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/remapped_actions.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/scenarios.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/file_tools.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/setup.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/await_state.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/full_plugins.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/terminal_input.lua": "Shared test fixture or driver used by registered cases",
+    "tests/smoke.sh": "Stable shell entry point for tests/run.py",
+    "tests/integration/remote_startup.lua": "Loaded by the explicit remote installation driver",
+    "tests/integration/image_insertion.lua": "Loaded by the configured image-preview check"
+  },
+  "manual": {
+    "tests/benchmarks/benchmark_interaction.lua": "Explicit performance measurement; excluded from correctness suites",
+    "tests/benchmarks/benchmark_workflows.py": "Explicit performance measurement; excluded from correctness suites",
+    "tests/benchmarks/benchmark_interaction.py": "Explicit performance measurement; excluded from correctness suites",
+    "tests/benchmarks/benchmark_workflows.lua": "Explicit performance measurement; excluded from correctness suites",
+    "tests/benchmarks/benchmark_startup.py": "Explicit performance measurement; excluded from correctness suites",
+    "tests/integration/latex_build.lua": "Explicit real TeX compilation acceptance check",
+    "tests/integration/latex_linked_editing.lua": "Explicit real TeXquill linked-editing acceptance check",
+    "tests/integration/remote_install.py": "Explicit network installation acceptance driver"
+  }
+}

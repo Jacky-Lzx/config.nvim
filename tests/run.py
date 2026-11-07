@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from support.paths import ROOT, test_path
+from support.tui_cases import FILES as TUI_FILES
+from support.registry import validate_registry
 
 FULL = {"NVIM_TEST_SCENARIO": "full", "NVIM_TEST_ENABLE_THIRD_PARTY": "1"}
 
@@ -26,6 +28,7 @@ class Case:
     env: dict[str, str] = field(default_factory=dict)
     timeout: float = 90
     skip: str = ""
+    files: tuple[str, ...] = ()
 
     def label(self):
         variants = []
@@ -41,6 +44,15 @@ class Case:
                 "NVIM_WORKSPACE_ENABLED",
             ):
                 variants.append(key.lower() + "=" + value)
+            elif key not in (
+                "NVIM_TEST_ENABLE_THIRD_PARTY",
+                "NVIM_TEST_ISOLATE_PLUGINS",
+            ):
+                variants.append(
+                    key.removeprefix("NVIM_TEST_").removeprefix("NVIM_").lower()
+                    + "="
+                    + value
+                )
         return self.name + ("[" + ",".join(variants) + "]" if variants else "")
 
 
@@ -60,6 +72,7 @@ def lua(name, env=None):
             str(test_path(name + ".lua")),
         ],
         env or {},
+        files=(test_path(name + ".lua").relative_to(ROOT).as_posix(),),
     )
 
 
@@ -81,6 +94,7 @@ def startup(name, env=None):
             + "')",
         ],
         env or {},
+        files=(test_path(name + ".lua").relative_to(ROOT).as_posix(),),
     )
 
 
@@ -90,11 +104,21 @@ def python(name, *args, env=None):
         [sys.executable, str(test_path(name + ".py")), *args],
         env or {},
         timeout=150,
+        files=tuple(
+            path.relative_to(ROOT).as_posix()
+            for path in (
+                test_path(name + ".py"),
+                test_path(name + ".py").with_suffix(".lua"),
+            )
+            if path.is_file()
+        ),
     )
 
 
 def tui(name, env=None):
-    return python("tui", name, env=env)
+    case = python("tui", name, env=env)
+    case.files += (test_path(TUI_FILES[name]).relative_to(ROOT).as_posix(),)
+    return case
 
 
 def suites():
@@ -139,7 +163,10 @@ def suites():
         lua("per_plugin_flags"),
         startup("personal_startup"),
         startup("demand_startup"),
-        startup("demand_startup", {"NVIM_TEST_SCENARIO": "python", "NVIM_DEMAND_COMMANDS": "1"}),
+        startup(
+            "demand_startup",
+            {"NVIM_TEST_SCENARIO": "python", "NVIM_DEMAND_COMMANDS": "1"},
+        ),
         tui("demand"),
         startup("markdown_demand"),
         startup("markdown_demand", {"NVIM_TEST_MARKDOWN_WORKSPACE": "1"}),
@@ -179,10 +206,19 @@ def suites():
         python("file_tools_tui", variant)
         for variant in ("tree", "dashboard-picker", "dashboard-tree")
     ]
-    integration.append(python("file_tools_tui", "tree", env={"NVIM_TEST_REMAP_ACTIONS": "1"}))
+    integration.append(
+        python("file_tools_tui", "tree", env={"NVIM_TEST_REMAP_ACTIONS": "1"})
+    )
     integration += [
         tui(name)
-        for name in ("notifications", "completion_input", "annotations", "keymaps", "nested_keymaps", "health")
+        for name in (
+            "notifications",
+            "completion_input",
+            "annotations",
+            "keymaps",
+            "nested_keymaps",
+            "health",
+        )
     ]
     integration += [tui("tasks", {"NVIM_TEST_SCENARIO": "tasks"})]
     integration += [tui("completion_policy")]
@@ -272,6 +308,10 @@ def suites():
     compatibility += [
         python(name)
         for name in ("latex_snippets_tui", "snippets_tui", "treesitter_tui")
+    ]
+    compatibility += [
+        tui("copilot"),
+        tui("copilot", {"NVIM_TEST_COPILOT_MODE": "staged"}),
     ]
     compatibility += [tui("motion"), tui("motion", {"NVIM_TEST_SCENARIO": "minimal"})]
     compatibility += [
@@ -451,7 +491,21 @@ def main():
         default="",
         help="Run only cases whose qualified name contains this text",
     )
+    parser.add_argument(
+        "--list",
+        action="store_true",
+        help="List selected cases without starting Neovim",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Validate case identities and script registration",
+    )
     args = parser.parse_args()
+    if args.check:
+        validate_registry(ROOT, available)
+        print("Test registration passed")
+        return False
     selected = (
         ["native", "integration", "compatibility", "acceptance"]
         if args.suite == "all"
@@ -465,6 +519,13 @@ def main():
     ]
     if not cases:
         parser.error("No matching checks")
+    labels = [group + "/" + case.label() for group, case in cases]
+    if len(labels) != len(set(labels)):
+        parser.error("Duplicate qualified case labels")
+    if args.list:
+        for label in labels:
+            print(label)
+        return False
     directory = Path(tempfile.mkdtemp(prefix="nvim-smoke-"))
     version = subprocess.run(
         ["nvim", "--version"], check=False, capture_output=True, text=True, timeout=10

@@ -61,6 +61,7 @@ local function menu_footer()
   return ""
 end
 local function footer_screen()
+  vim.cmd.redraw()
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     if vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "completion-tools-menu" then
       local pos = vim.fn.screenpos(win, 1, 1)
@@ -103,6 +104,10 @@ vim.api.nvim_create_autocmd("User", {
         opts.copilot.command =
           { "python3", plugins["completion-tools.nvim"].dir .. "/tests/fixtures/copilot_server.py", log, "0.35" }
         opts.copilot.debounce_ms = 0
+        local staged = vim.env.NVIM_TEST_COPILOT_MODE == "staged"
+        if staged then
+          opts.copilot.request_mode = "staged"
+        end
         cmp.setup(opts)
         require("integrations.completion").setup()
         vim.cmd("edit " .. vim.fn.fnameescape(vim.env.NVIM_TEST_TMP .. "/native-copilot.lua"))
@@ -124,7 +129,7 @@ vim.api.nvim_create_autocmd("User", {
           return #cmp.get_items() == 3 and vim.trim(menu_footer()) == ""
         end, function()
           assert(
-            vim.tbl_count(visible_frames) >= 2,
+            not staged or vim.tbl_count(visible_frames) >= 2,
             "Animated spinner was not painted in the terminal: " .. vim.inspect(visible_frames)
           )
           assert(cmp.get_selected_item().label == "print(1)")
@@ -135,7 +140,7 @@ vim.api.nvim_create_autocmd("User", {
           end, function()
             input("<A-i>")
             await(function()
-              return cmp.get_selected_item() and cmp.get_selected_item().label == "print(1)"
+              return #cmp.get_items() == 3 and cmp.get_selected_item() and cmp.get_selected_item().label == "print(1)"
             end, function()
               input("<A-j>")
               await(function()
@@ -158,10 +163,19 @@ vim.api.nvim_create_autocmd("User", {
                     end
                     return false
                   end, function()
+                    local methods = {}
+                    for _, line in ipairs(vim.fn.readfile(log)) do
+                      local method = vim.json.decode(line).method
+                      if method then
+                        methods[method] = true
+                      end
+                    end
+                    assert(methods.getCompletionsCycling, "Missing real cycling request")
+                    assert(not not methods.getCompletions == staged, "Request mode did not match selected policy")
                     assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
                     finish(
                       true,
-                      "Configured native Copilot: cold status, Alt-i off/on, animated menu icons, three candidates, Alt-j, multiline Tab and following input passed"
+                      "Configured native Copilot: cold status, Alt-i off/on, selected request mode, menu status, three candidates, Alt-j, multiline Tab and following input passed"
                     )
                   end)
                 end)

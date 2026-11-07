@@ -29,6 +29,8 @@ Run the smoke runner with:
 ./tests/smoke.sh migration      # Explicit historical snippet parity audit
 ./tests/smoke.sh all            # All current checks; excludes historical migration parity
 ./tests/smoke.sh integration --filter tui:tasks --keep
+./tests/smoke.sh --check        # Validate script roles and unique case identities
+./tests/smoke.sh integration --list
 ```
 
 Test scripts are grouped by responsibility:
@@ -42,7 +44,11 @@ Test scripts are grouped by responsibility:
 
 `tests/run.py` remains the executable suite registry behind `tests/smoke.sh`.
 Suite membership describes execution requirements independently of script location;
-case labels and `--filter` values remain stable. The runner and shared PTY driver
+case labels include selection variants so each qualified name is unique. `--filter`
+matches those names. Executable cases declare their script files; `tests/roles.json`
+records support and explicitly manual scripts. `--check` rejects missing files,
+unclassified scripts, conflicting roles and duplicate case names.
+The runner and shared PTY driver
 resolve unique script names through `tests/support/paths.py`, rejecting missing or
 ambiguous names. Direct script invocations use their grouped paths below.
 The configured file-tools driver supplies its init file, optional setup script and

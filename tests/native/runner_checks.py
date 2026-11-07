@@ -13,9 +13,52 @@ from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from run import Case, environment, execute, main
+from support.registry import validate_registry
 
 
 class RunnerChecks(unittest.TestCase):
+    def test_variant_labels_are_unique_and_listing_does_not_execute(self):
+        from run import suites
+
+        cases = suites()
+        labels = [
+            group + "/" + case.label()
+            for group, entries in cases.items()
+            for case in entries
+        ]
+        self.assertEqual(len(labels), len(set(labels)))
+        with (
+            patch.object(
+                sys,
+                "argv",
+                ["run.py", "integration", "--filter", "markdown_demand", "--list"],
+            ),
+            patch("run.execute", side_effect=AssertionError("Listing executed a test")),
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertFalse(main())
+        self.assertIn("markdown_workspace=1", output.getvalue())
+
+    def test_registry_rejects_omissions_duplicates_and_missing_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "tests").mkdir()
+            (root / "tests/roles.json").write_text('{"support": {}, "manual": {}}')
+            script = root / "tests/example.lua"
+            script.touch()
+            case = Case("example", [], files=("tests/example.lua",))
+            validate_registry(root, {"native": [case]})
+            with self.assertRaisesRegex(ValueError, "Duplicate case"):
+                validate_registry(root, {"native": [case, case]})
+            orphan = root / "tests/forgotten.lua"
+            orphan.touch()
+            with self.assertRaisesRegex(ValueError, "Unregistered test scripts"):
+                validate_registry(root, {"native": [case]})
+            orphan.unlink()
+            script.unlink()
+            with self.assertRaisesRegex(ValueError, "Missing registered script"):
+                validate_registry(root, {"native": [case]})
+
     def test_main_reports_all_failures_and_keeps_evidence(self):
         with tempfile.TemporaryDirectory() as tmp:
             directory = Path(tmp) / "run"
