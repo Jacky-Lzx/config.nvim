@@ -12,8 +12,8 @@ package.loaded["image_tools.bootstrap"] = {
   enabled = function()
     return automatic
   end,
-  toggle = function()
-    automatic = not automatic
+  set_auto_preview = function(value)
+    automatic = value
     return automatic
   end,
   ensure = function()
@@ -33,8 +33,8 @@ package.loaded["tex-tools"] = {
   formula_info = function()
     return { enabled = formula_enabled }
   end,
-  toggle_formula_preview = function()
-    formula_enabled = not formula_enabled
+  set_auto_preview = function(value)
+    formula_enabled = value
   end,
 }
 local integration = require("integrations.image_tools")
@@ -57,7 +57,15 @@ assert(previews == 3, "Non-TeX files must use the generic image provider")
 automatic = false
 assert(not registration.get({}), "Status ignored plugin-owned state")
 assert(integration.toggle() == true)
-assert(formula_enabled and loads == 1, "Non-TeX toggles must not load providers or change formula state")
+assert(
+  formula_enabled and loads == 1,
+  "Non-TeX toggles must synchronize already-loaded controllers without activating providers"
+)
+integration.set_enabled(false)
+assert(not automatic and not formula_enabled)
+integration.set_enabled(false)
+assert(not automatic and not formula_enabled, "Repeated set toggled state")
+integration.set_enabled(true)
 local notices, notify = {}, vim.notify
 vim.notify = function(message)
   notices[#notices + 1] = message

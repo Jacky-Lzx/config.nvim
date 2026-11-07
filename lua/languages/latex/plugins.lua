@@ -23,7 +23,9 @@ return {
   },
   {
     config = function(ctx)
-      require("tex-tools").setup(ctx.opts)
+      local opts = vim.deepcopy(ctx.opts)
+      opts.auto_preview = require("image_tools.bootstrap").enabled() ~= false
+      require("tex-tools").setup(opts)
     end,
     id = "tex-tools.nvim",
     dependencies = { "image-tools.nvim" },

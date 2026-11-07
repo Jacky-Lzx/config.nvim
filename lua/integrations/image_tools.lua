@@ -4,7 +4,6 @@ local function tex()
     return require("tex-tools")
   end
 end
-
 function M.preview()
   local tools = tex()
   if tools then
@@ -12,20 +11,20 @@ function M.preview()
   end
   return require("image_tools.bootstrap").ensure().hover()
 end
-
 function M.enabled()
   return require("image_tools.bootstrap").enabled()
 end
-
-function M.toggle()
-  local enabled = require("image_tools.bootstrap").toggle()
-  local tools = tex()
-  if tools and tools.formula_info().enabled ~= enabled then
-    tools.toggle_formula_preview()
+function M.set_enabled(state)
+  require("image_tools.bootstrap").set_auto_preview(state)
+  local tools = package.loaded["tex-tools"]
+  if tools then
+    tools.set_auto_preview(state)
   end
-  return enabled
+  return state
 end
-
+function M.toggle()
+  return M.set_enabled(not M.enabled())
+end
 function M.setup()
   vim.keymap.set("n", "<leader>si", M.preview, { desc = "[Image] Preview image or formula on current line" })
   require("features.toggles").map({ id = "image_preview", scope = "session", get = M.enabled, action = M.toggle })

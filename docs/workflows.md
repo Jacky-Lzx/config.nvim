@@ -414,6 +414,12 @@ explicitly with `nix flake archive` from the project directory. Use `:LspInfo`,
 
 ## Image insertion
 
+The automatic image/formula switch is a session preference. Disabling it in any
+filetype also updates an already-loaded TeX controller; a later first TeX buffer
+inherits the same preference. Explicit setters are idempotent and preserve cold
+rendering/compiler backends. Per-type TeX preview options remain separate from
+the master automatic-preview gate.
+
 Image tools load on image commands, image mappings and picker preview/API calls.
 For automatic preview, image-tools' lightweight bootstrap watches document
 references and literal local image paths in filetypes without an adapter,

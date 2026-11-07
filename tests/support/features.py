@@ -66,6 +66,7 @@ FEATURES = {
         "project_plugins_tui",
     ),
     "images": (
+        "preview_policy",
         "image_activation",
         "image_preview",
         "image_plain",
