@@ -5,7 +5,7 @@ local function tex()
 end
 function M.fn.math_mode()
   if tex() then
-    return require("tex-tools").in_math()
+    return require("tex-tools").in_math({ fallback = true })
   end
   if vim.bo.filetype == "markdown" or vim.bo.filetype == "markdown_inline" then
     return require("markdown_tools").in_math()
@@ -25,7 +25,7 @@ function M.fn.in_beamer()
 end
 local function environment(names)
   return function()
-    return tex() and require("tex-tools").in_environment(names) or false
+    return tex() and require("tex-tools").in_environment(names, { fallback = true }) or false
   end
 end
 M.fn.in_align = environment({ "align", "align*", "aligned" })
