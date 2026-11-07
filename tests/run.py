@@ -172,6 +172,11 @@ def suites():
         )
     ]
     integration += [
+        python("file_tools_tui", variant)
+        for variant in ("tree", "dashboard-picker", "dashboard-tree")
+    ]
+    integration.append(python("file_tools_tui", "tree", env={"NVIM_TEST_REMAP_ACTIONS": "1"}))
+    integration += [
         tui(name)
         for name in ("notifications", "completion_input", "annotations", "keymaps", "nested_keymaps", "health")
     ]

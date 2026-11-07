@@ -12,6 +12,10 @@ local remaps = {
   ["tasks.run_file"] = "<leader>xa",
   ["toggle.wrap"] = "<leader>xw",
   ["keymaps.pick"] = "<leader>x?",
+  ["files.tree"] = "<leader>xf",
+  ["files.reveal"] = "<leader>xe",
+  ["files.cwd"] = "<leader>xd",
+  ["selection.files"] = "<leader>xsF",
 }
 -- Native toggle registration consumes its declaration before bindings.set().
 local toggles = require("features.toggles")

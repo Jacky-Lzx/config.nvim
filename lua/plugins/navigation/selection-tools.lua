@@ -18,6 +18,7 @@ return {
         },
         {
           "<leader>sf",
+          id = "selection.files",
           function()
             require("selection_tools").files()
           end,

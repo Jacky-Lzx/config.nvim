@@ -45,9 +45,10 @@ return {
       end
       require("config.bindings").set("file-tools.nvim", {
         require("features.toggles").binding("files.tree", "<Cmd>FileTools toggle<CR>"),
-        { "<leader>E", "<Cmd>FileTools find<CR>", desc = "[Files] Reveal current file" },
+        { "<leader>E", "<Cmd>FileTools find<CR>", id = "files.reveal", desc = "[Files] Reveal current file" },
         {
           "<leader>cw",
+          id = "files.cwd",
           function()
             require("file_tools").open({ root = vim.fn.getcwd() })
           end,
