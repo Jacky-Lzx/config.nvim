@@ -45,7 +45,7 @@ return {
       end
       require("config.bindings").set("file-tools.nvim", {
         require("features.toggles").binding("files.tree", "<Cmd>FileTools toggle<CR>"),
-        { "<leader>E", "<Cmd>FileTools find<CR>", id = "files.reveal", desc = "[Files] Reveal current file" },
+        { "<leader>e", "<Cmd>FileTools toggle<CR>", id = "files.reveal", desc = "[Files] Reveal current file" },
         {
           "<leader>cw",
           id = "files.cwd",
