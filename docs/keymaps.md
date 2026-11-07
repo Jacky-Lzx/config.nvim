@@ -56,6 +56,12 @@ keys beside their language configuration. Plugin-owned windows retain their loca
 interaction keys. Completion, pairing and snippet input adapters stay explicitly
 configured with their feature because they compose confirmation and fallback.
 
+LSP and LaTeX buffer mappings use `config.bindings.set_buffer(owner, buffer, entries)`.
+It scopes entries to that buffer, removes declarations on wipeout and preserves
+later manual replacements during cleanup. Their stable action IDs also let tests
+resolve the configured key instead of copying the physical shortcut. Repeated LSP
+attachment keeps the buffer's existing mappings.
+
 editing-tools and tex-tools no longer assign user keys by default. This config
 binds their public endpoints; explicit plugin mapping presets remain opt-in.
 ui-tools also leaves scroll and mouse entry keys to configuration. Scroll bindings

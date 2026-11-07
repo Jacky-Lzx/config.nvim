@@ -157,10 +157,21 @@ vim.api.nvim_buf_call(attached, function()
   package.loaded["lsp-tools"] = previous
 end)
 assert(formatted == attached)
+local actions = dofile(root .. "/tests/support/actions.lua")
+vim.api.nvim_buf_call(attached, function()
+  assert(actions.binding("lsp.rename").entry.buffer == attached)
+  vim.keymap.set("n", "<leader>rn", "temporary", { buffer = attached })
+end)
+vim.api.nvim_exec_autocmds("LspAttach", { buffer = attached, data = { client_id = 2 } })
+vim.api.nvim_buf_call(attached, function()
+  assert(vim.fn.maparg("<leader>rn", "n") == "temporary", "Second client replaced a temporary mapping")
+end)
 vim.api.nvim_buf_call(unrelated, function()
   assert(vim.fn.maparg("<leader>gf", "n", false, true).callback == format)
   assert(vim.fn.maparg("<leader>rn", "n") == "")
 end)
+vim.api.nvim_buf_delete(attached, { force = true })
+assert(require("config.bindings").entries["config.lsp." .. attached] == nil)
 vim.lsp.config, vim.lsp.enable = original_config, original_enable
 package.loaded["completion-tools"] = original_completion
 package.loaded["completion_tools.capabilities"] = original_capabilities

@@ -99,4 +99,28 @@ function M.set(id, entries)
     end
   end
 end
+
+-- One owner per buffer, with the same conditional cleanup as global mappings.
+function M.set_buffer(id, buffer, entries)
+  local owner = id .. "." .. buffer
+  local scoped = vim.deepcopy(entries)
+  for _, entry in ipairs(scoped) do
+    entry.buffer = buffer
+  end
+  M.set(owner, scoped)
+  if #scoped > 0 then
+    local state = states[owner]
+    state.group = state.group or vim.api.nvim_create_augroup("ConfigBindings_" .. owner, { clear = true })
+    vim.api.nvim_create_autocmd("BufWipeout", {
+      group = state.group,
+      buffer = buffer,
+      once = true,
+      callback = function()
+        clear(owner)
+        states[owner], M.entries[owner] = nil, nil
+      end,
+    })
+  end
+  return owner
+end
 return M

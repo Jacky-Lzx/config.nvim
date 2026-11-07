@@ -7,6 +7,7 @@ function M.setup_actions(bufnr)
     groups = { { prefix = "<localleader>l", label = "LaTeX" } },
   })
 
+  local entries = {}
   for _, entry in ipairs({
     { "<leader>lb", "Build", "Build LaTeX document" },
     { "<localleader>ll", "Build", "Build LaTeX document" },
@@ -39,8 +40,14 @@ function M.setup_actions(bufnr)
         end
       end
     end
-    vim.keymap.set("n", entry[1], action, { buffer = bufnr, desc = entry[3] })
+    entries[#entries + 1] = {
+      entry[1],
+      action,
+      desc = entry[3],
+      id = "latex." .. entry[2] .. (entry[1] == "<leader>lb" and "_alias" or ""),
+    }
   end
+  require("config.bindings").set_buffer("latex.actions", bufnr, entries)
   require("features.toggles").map({
     id = "tex_build_on_save",
     scope = "buffer",
@@ -56,14 +63,26 @@ function M.setup_actions(bufnr)
 end
 
 function M.setup(bufnr)
-  local function map(key, action, description, modes)
-    vim.keymap.set(modes or "n", key, action, { buffer = bufnr, remap = true, desc = description })
+  M.setup_actions(bufnr)
+  local bindings = require("config.bindings")
+  if bindings.entries["latex.structure." .. bufnr] then
+    return
+  end
+  local entries = {}
+  local function map(key, action, description, modes, id)
+    entries[#entries + 1] = {
+      key,
+      action,
+      mode = modes or "n",
+      remap = true,
+      desc = description,
+      id = "latex." .. id,
+    }
   end
   local function plug(key, action, description, modes)
-    map(key, "<Plug>(TexTools" .. action .. ")", description, modes)
+    map(key, "<Plug>(TexTools" .. action .. ")", description, modes, action)
   end
 
-  M.setup_actions(bufnr)
   -- The plugin publishes Plug endpoints; this configuration owns physical keys.
   for key, action in pairs({
     ["<localleader>lt"] = "Outline",
@@ -117,12 +136,13 @@ function M.setup(bufnr)
     { "<localleader>ls", "Main select", "Select main document" },
     { "<localleader>lB", "Compiler toggle", "Switch compiler" },
   }) do
-    map(entry[1], "<Cmd>TexTools" .. entry[2] .. "<CR>", entry[3])
+    map(entry[1], "<Cmd>TexTools" .. entry[2] .. "<CR>", entry[3], nil, entry[2]:gsub(" ", "_"))
   end
   map("<localleader>lr", function()
     local viewer = require("tex-tools.viewer").detect().method
     vim.cmd("TexToolsInverseSearch " .. viewer)
-  end, "Show inverse-search setup")
+  end, "Show inverse-search setup", nil, "InverseSearch")
+  bindings.set_buffer("latex.structure", bufnr, entries)
 end
 
 return M
