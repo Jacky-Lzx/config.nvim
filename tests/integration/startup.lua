@@ -179,7 +179,7 @@ local function check()
   end
   assert((plugins["tex-tools.nvim"] ~= nil) == require("languages").is_enabled("latex"))
   assert(not plugins["lazydev.nvim"] and not plugins["vim-startuptime"] and not plugins["vim-suda"])
-  assert((opts("lsp-tools.nvim").lua ~= nil) == require("languages").is_enabled("lua"))
+  assert((plugins["lua-tools.nvim"] ~= nil) == require("languages").is_enabled("lua"))
   assert(not plugins.LuaSnip and not package.loaded.luasnip)
   assert(vim.fn.exists(":LuaSnipEdit") == 0 and vim.fn.exists(":SnippetEngine") == 0)
   assert(not plugins["mason.nvim"] and not package.loaded.mason)
