@@ -239,10 +239,17 @@ with workspace(prefix="latex-snippets-") as temporary:
         print(f"Configured LaTeX PTY: {len(states)} intermediate states passed")
     finally:
         if child.poll() is None:
-            child.terminate()
-            try:
-                child.wait(timeout=3)
-            except subprocess.TimeoutExpired:
+            # Neovim can query DA1 while stopping the TUI. Keep servicing the
+            # terminal until it exits instead of blocking in wait().
+            send(b"\x1c\x0e:qa!\r")
+            deadline = time.monotonic() + 3
+            while child.poll() is None and time.monotonic() < deadline:
+                if select.select([primary], [], [], 0.01)[0]:
+                    try:
+                        drain()
+                    except OSError:
+                        break
+            if child.poll() is None:
                 stop(child)
-                child.wait()
+            child.wait(timeout=3)
         os.close(primary)
