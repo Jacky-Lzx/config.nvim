@@ -296,7 +296,8 @@ local function check()
     assert(vim.bo.filetype == "vue")
     assert(vim.list_contains(vim.lsp.config.vtsls.filetypes, "vue"))
     assert(vim.lsp.is_enabled("vue_ls"))
-    assert(type(tools["tool:vue-language-server"].post_install_async) == "function")
+    assert(tools["tool:vue-language-server"].post_install_async == nil)
+    assert(require("toolchain.tools").definition("vue-language-server", true).overrides.typescript == "6.0.3")
   end
 
   -- Reapplying the theme must preserve user highlights.
