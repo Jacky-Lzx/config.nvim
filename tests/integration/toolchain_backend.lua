@@ -4,6 +4,16 @@ local root = assert(vim.env.NVIM_CONFIG_ROOT)
 local temp = assert(vim.env.NVIM_TEST_TMP) .. "/toolchain-backend"
 vim.opt.rtp:prepend(root)
 vim.opt.rtp:append(require("utils.platform").dev_plugin_root() .. "/toolchain-tools.nvim")
+local tools = require("toolchain.tools")
+tools.setup()
+local bundled = tools.definition("ltex-ls-plus", true)
+local lock = vim.json.decode(table.concat(vim.fn.readfile(root .. "/toolchain-lock.json"), "\n"))
+local target = require("toolchain.tool_installers").target()
+local locked = lock.targets[target] and lock.targets[target].packages["ltex-ls-plus"]
+assert(bundled.version == "18.7.0" and bundled.bin["ltex-ls-plus"])
+if locked then
+  assert(vim.deep_equal(bundled, locked.recipe), "Registry migration changed the locked LTeX+ recipe")
+end
 vim.fn.mkdir(temp .. "/bin", "p")
 local status_file = temp .. "/exit-code"
 vim.env.CONFIG_TEST_NPM_STATUS = status_file

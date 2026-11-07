@@ -10,7 +10,6 @@ return {
       tools = {
         path = "append",
         lockfile = require("utils.paths").root .. "/toolchain-lock.json",
-        sources = require("config.tool_sources"),
       },
       requirements = function()
         return require("integrations.toolchain").requirements()

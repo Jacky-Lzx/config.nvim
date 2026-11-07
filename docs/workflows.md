@@ -216,7 +216,7 @@ Use `<leader>a` on a diagnostic for replacement suggestions.
 `after/lsp/ltex_plus.lua` owns language and grammar settings. The default is
 `en-US`; document language overrides can use LTeX+ magic comments, for example
 `<!-- LTeX: language=zh-CN -->` in Markdown or `% LTeX: language=zh-CN` in TeX.
-`lua/config/tool_sources.lua` supplies official, checksum-pinned LTeX+ releases
+toolchain-tools' registry supplies official, checksum-pinned LTeX+ releases
 with a bundled Java runtime. `:ConfigToolsInstall` installs the managed version
 recorded in `toolchain-lock.json`.
 

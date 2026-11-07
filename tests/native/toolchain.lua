@@ -48,6 +48,7 @@ end
 integration.install()
 assert(vim.deep_equal(installed, integration.requirements()))
 assert(spec.opts.tools.path == "append")
+assert(spec.opts.tools.sources == nil, "Shared package recipes belong in the toolchain registry")
 assert(spec.opts.tools.lockfile == root .. "/toolchain-lock.json")
 assert(not spec.dependencies, "Toolchain must not depend on the legacy runtimes")
 
