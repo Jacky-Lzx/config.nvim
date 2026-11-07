@@ -1,5 +1,19 @@
 local M = {}
 local ai = require("config.context").current().selection.features.ai
+-- Optional exclusions by filetype, then LSP client name, then CompletionItemKind.
+-- Retain Text and Snippet by default: servers can use them for valid edits.
+M.lsp_kind_filters = {}
+function M.filter_lsp_items(ctx, items)
+  local clients = M.lsp_kind_filters[vim.bo[ctx.bufnr].filetype]
+  if not clients then
+    return items
+  end
+  return vim.tbl_filter(function(item)
+    local client = item._client_id and vim.lsp.get_client_by_id(item._client_id)
+    local kinds = client and clients[client.name]
+    return not (kinds and kinds[item.kind])
+  end, items)
+end
 M.source_config = {
   default = { "lsp", "path", "buffer", "snippets" },
   providers = { lsp = {}, path = {}, buffer = {}, snippets = {}, dictionary = {}, spell = {} },
@@ -85,11 +99,7 @@ function M.options()
       copilot = ai and { score_offset = 40, timeout_ms = 10000 } or nil,
       lsp = {
         score_offset = 60,
-        transform_items = function(_, items)
-          return vim.tbl_filter(function(item)
-            return item.kind ~= 1 and item.kind ~= 15
-          end, items)
-        end,
+        transform_items = M.filter_lsp_items,
       },
       path = { score_offset = 95 },
       buffer = { score_offset = 20 },

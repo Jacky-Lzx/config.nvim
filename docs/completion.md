@@ -25,6 +25,11 @@ the current buffer and other loaded buffers of the same filetype, bounded to
 characters and returns at most ten fuzzy matches. Spelling follows native window
 spell settings. Obsidian contributes candidates only inside a configured vault.
 
+LSP Text and Snippet candidates are retained, including their insertion edits.
+Optional exclusions live in `integrations.completion.lsp_kind_filters`, indexed
+by filetype, client name and numeric CompletionItemKind; for example,
+`python = { noisy_server = { [1] = true } }` excludes that client's Text items only.
+
 `Alt-n` / `Alt-p` cycle the current buffer through automatic defaults, words
 (`buffer`, `dictionary`, `spell`), snippets, and code (`lsp`, `path`). The selected
 group persists during subsequent typing. With `ai` enabled, `Alt-i` toggles

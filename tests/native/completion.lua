@@ -81,6 +81,25 @@ package.loaded.completion_tools = nil
 local policy_buf = vim.api.nvim_create_buf(true, false)
 vim.bo[policy_buf].filetype = "python"
 local ctx = { bufnr = policy_buf, row = 0, col = 0 }
+local candidates = {
+  { label = "text edit", kind = 1, _client_id = 11 },
+  { label = "snippet edit", kind = 15, _client_id = 11, insertText = "${1:value}" },
+  { label = "other server", kind = 1, _client_id = 12 },
+  { label = "unknown server", kind = 1 },
+}
+local lookup = vim.lsp.get_client_by_id
+vim.lsp.get_client_by_id = function(id)
+  return { name = id == 11 and "noisy" or "other" }
+end
+assert(opts.providers.lsp.transform_items(ctx, candidates) == candidates)
+integration.lsp_kind_filters.python = { noisy = { [1] = true } }
+local filtered = opts.providers.lsp.transform_items(ctx, candidates)
+assert(#filtered == 3 and filtered[1] == candidates[2] and filtered[1].insertText == "${1:value}")
+vim.bo[policy_buf].filetype = "lua"
+assert(opts.providers.lsp.transform_items(ctx, candidates) == candidates, "Filter leaked into another language")
+integration.lsp_kind_filters.python = nil
+vim.lsp.get_client_by_id = lookup
+vim.bo[policy_buf].filetype = "python"
 local code = opts.sources(ctx)
 assert(
   vim.list_contains(code, "lsp") and not vim.list_contains(code, "dictionary") and not vim.list_contains(code, "spell")
