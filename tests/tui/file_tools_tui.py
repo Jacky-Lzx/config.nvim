@@ -7,27 +7,12 @@ import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from support.plugins import resolved_plugins
+
 root = Path(os.environ["NVIM_CONFIG_ROOT"])
 directory = Path(os.environ["NVIM_TEST_TMP"])
-subprocess.run(
-    [
-        "nvim",
-        "--headless",
-        "-u",
-        "NONE",
-        "-i",
-        "NONE",
-        "--noplugin",
-        "-l",
-        str(root / "tests/support/checked.lua"),
-        str(root / "tests/integration/environment.lua"),
-    ],
-    cwd=root,
-    check=True,
-    timeout=15,
-)
-entries = json.loads((directory / "environment.json").read_text())
-plugin = next(entry for entry in entries if entry["id"] == "file-tools.nvim")
+plugin = resolved_plugins(root, directory)["file-tools.nvim"]
 for name in list(os.environ):
     if name.startswith("FILE_TOOLS_"):
         os.environ.pop(name)

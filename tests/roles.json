@@ -19,7 +19,8 @@
     "tests/integration/remote_startup.lua": "Loaded by the explicit remote installation driver",
     "tests/integration/image_insertion.lua": "Loaded by the configured image-preview check",
     "tests/support/processes.py": "Owned process-group tracking and cleanup",
-    "tests/support/artifacts.py": "Nested fixture retention, terminal transcripts and progress snapshots"
+    "tests/support/artifacts.py": "Nested fixture retention, terminal transcripts and progress snapshots",
+    "tests/support/plugins.py": "Resolve actual configured plugin paths for cross-plugin drivers"
   },
   "manual": {
     "tests/benchmarks/benchmark_interaction.lua": "Explicit performance measurement; excluded from correctness suites",

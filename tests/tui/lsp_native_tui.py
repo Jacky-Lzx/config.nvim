@@ -17,15 +17,12 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.plugins import resolved_plugins
 from support.artifacts import workspace, Transcript, record_stage
 
 
 root = Path(__file__).resolve().parents[2]
-plugins = Path(
-    os.environ.get(
-        "NVIM_DEV_PLUGIN_ROOT", str(Path.home() / "Documents/Github/nvim_plugins")
-    )
-)
+plugins = resolved_plugins(root, Path(os.environ["NVIM_TEST_TMP"]))
 for case in ("rename", "actions"):
     with workspace(prefix="nvim-native-" + case + "-") as directory:
         temp = Path(directory)
@@ -37,11 +34,10 @@ for case in ("rename", "actions"):
             NVIM_PLUGIN_LOCKFILE=str(temp / "lock.json"),
             LSP_NATIVE_CASE=case,
             LSP_TOOLS_TEST_TMP=directory,
-            LSP_TOOLS_ROOT=str(plugins / "lsp-tools.nvim"),
+            LSP_TOOLS_ROOT=plugins["lsp-tools.nvim"]["directory"],
             LSP_TOOLS_TUI="1",
-            SELECTION_TOOLS_DIR=str(plugins / "selection-tools.nvim"),
-            GIT_TOOLS_DIR=str(plugins / "git-tools.nvim"),
-            SNACKS_DIR=str(Path.home() / ".local/share/nvim/plugin-tools/snacks.nvim"),
+            SELECTION_TOOLS_DIR=plugins["selection-tools.nvim"]["directory"],
+            GIT_TOOLS_DIR=plugins["git-tools.nvim"]["directory"],
             XDG_CACHE_HOME=directory + "/cache",
             XDG_STATE_HOME=directory + "/state",
             NVIM_LOG_FILE=directory + "/nvim.log",

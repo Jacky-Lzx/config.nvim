@@ -80,6 +80,11 @@ Fixed scenarios live in `tests/support/scenarios.lua`; only the compatibility su
 into the optional declarations through `tests/support/full_plugins.lua`. Shared plugin
 algorithms belong in the owning plugin's suite; config checks concentrate on
 options, activation, mapping ownership and selected cross-plugin workflows.
+Generic folding edge cases live in ui-tools' `tests/fold.lua`; configuration checks
+retain declared suffix/options, physical keys, saved-session expressions and real
+startup/PTY workflows across selected languages. Configured LSP and file-tools
+drivers resolve dependency paths through `tests/support/plugins.py`, using the
+actual package graph instead of assuming home-directory development checkouts.
 
 `tests/integration/mapping_contracts.lua` audits current `config.bindings` declarations against
 effective mode/filetype mappings, including callback/target, expression and prefix
