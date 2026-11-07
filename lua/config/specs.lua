@@ -28,7 +28,7 @@ local groups = {
     "coding.lint-tools",
   },
   git = { "git.git-tools" },
-  integrations = { "integrations.debug-tools", "third_party.wakatime" },
+  integrations = { "debugging.debug-tools", "tracking.wakatime" },
   ai = {},
   debugging = { "debugging.dap-tools" },
   tasks = { "tasks.task-tools" },

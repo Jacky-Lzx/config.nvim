@@ -76,14 +76,14 @@ contributions use the `.nvim-plugins.lua` path. `:PluginTools explain {id}` show
 declarations and option assignments in merge order, including disabled contributions
 and paths replaced by project overrides. Metadata resolution remains side-effect free.
 
-Third-party declarations are grouped by their current enabled state:
+Plugin declarations are grouped by function, independently of source and enabled state:
 
-- `lua/plugins/third_party/`: WakaTime, render-markdown, Peek and the nvim-lspconfig
-  provider loaded as a child of lsp-tools.
-- `lua/languages/markdown/plugins.lua`: selects Markdown rendering/preview declarations
-  and Obsidian, which is enabled inside a configured vault.
-- `lua/plugins/disabled/`: disabled third-party plugins and their language-specific
-  options. CodeSnap is retained without a manifest entry.
+- `lua/plugins/`: shared coding, editing, navigation, UI, debugging and tracking plugins.
+- `lua/languages/<language>/`: language-specific plugin declarations and options,
+  including Crates for Rust and Peek/render-markdown for Markdown.
+- Each declaration's `enabled` field controls activation. Disabled declarations stay
+  beside their functional peers. CodeSnap is retained in `plugins/ui/` without a
+  manifest entry.
 
 render-markdown and Peek are children of `markdown-tools.nvim` in the plugin graph,
 with their own packages, options and enabled flags. Disabling the parent excludes
@@ -109,8 +109,8 @@ Save the file first and enable the tasks feature. Rendering remains under
 Local plugins keep their workflow directories. Language and feature selections
 still control which declarations enter the manifest. Each declaration's `enabled`
 field and project selection control activation; the directory itself does not override
-them. To restore one plugin, enable its declaration and required dependencies, move its configuration
-to `third_party/` or its language module, and update the module referencing it.
+them. To restore one plugin, enable its declaration and required dependencies. A declaration
+that is not currently referenced must also be added to its functional group or language module.
 There is no global third-party switch. Installed checkouts and lock entries are retained;
 theme-tools continues to manage its own theme/icon providers.
 

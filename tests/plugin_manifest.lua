@@ -17,7 +17,7 @@ local provider = local_graph.nodes["nvim-lspconfig"]
 assert(provider.parents["lsp-tools.nvim"] and not provider.roots)
 assert(provider.owner == provider.id and local_graph.packages[provider.id].managed)
 assert(provider.package.source == "https://github.com/neovim/nvim-lspconfig.git")
-assert(provider.declarations[1].origin == "plugins.third_party.nvim-lspconfig")
+assert(provider.declarations[1].origin == "plugins.coding.nvim-lspconfig")
 assert(provider.start == false and not provider.main and not provider.config)
 assert(provider.mount == "on-demand")
 assert(local_graph.nodes["keymap-tools.nvim"].dependencies["selection-tools.nvim"] == false)

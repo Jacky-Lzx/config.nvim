@@ -19,9 +19,9 @@ end
 local baseline = graph()
 for _, module in ipairs({
   "plugins.coding.format-tools",
-  "plugins.disabled.crates",
-  "plugins.third_party.peek",
-  "plugins.third_party.render-markdown",
+  "languages.rust.crates",
+  "languages.markdown.peek",
+  "languages.markdown.render-markdown",
 }) do
   local spec = require(module)[1]
   local original = spec.enabled

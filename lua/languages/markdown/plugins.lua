@@ -8,8 +8,8 @@ return {
     mount = "on-demand",
     ft = { "markdown" },
     children = {
-      require("plugins.third_party.peek")[1],
-      require("plugins.third_party.render-markdown")[1],
+      require("languages.markdown.peek")[1],
+      require("languages.markdown.render-markdown")[1],
     },
     config = function(ctx)
       require("languages.markdown.tools").setup(ctx.opts)

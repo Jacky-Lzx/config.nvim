@@ -23,7 +23,7 @@ return {
       "file-tools.nvim",
       "toolchain-tools.nvim",
     },
-    children = require("plugins.third_party.nvim-lspconfig"),
+    children = require("plugins.coding.nvim-lspconfig"),
     opts = {
       server_activation = "filetype",
       server_filetypes = filetypes,
