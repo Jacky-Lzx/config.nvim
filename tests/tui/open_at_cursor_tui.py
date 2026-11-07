@@ -16,10 +16,11 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.artifacts import workspace, Transcript, record_stage
 
 
 root = Path(__file__).resolve().parents[2]
-with tempfile.TemporaryDirectory(prefix="nvim-open-", dir="/tmp") as temporary:
+with workspace(prefix="nvim-open-", dir="/tmp") as temporary:
     temp = Path(temporary).resolve()
     backend = temp / "opener.py"
     backend.write_text(
@@ -63,7 +64,7 @@ with tempfile.TemporaryDirectory(prefix="nvim-open-", dir="/tmp") as temporary:
         start_new_session=True,
     )
     os.close(slave)
-    output, handled = bytearray(), set()
+    output, handled = Transcript(), set()
     deadline = time.monotonic() + 25
     try:
         while process.poll() is None and time.monotonic() < deadline:
@@ -78,6 +79,7 @@ with tempfile.TemporaryDirectory(prefix="nvim-open-", dir="/tmp") as temporary:
                 lines = stage.read_text().splitlines()
                 if len(lines) == 2 and lines[0] not in handled:
                     os.write(master, json.loads(lines[1]).encode())
+                    record_stage(lines[0])
                     handled.add(lines[0])
         process.wait(timeout=max(0.1, deadline - time.monotonic()))
     except subprocess.TimeoutExpired:

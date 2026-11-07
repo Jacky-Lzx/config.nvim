@@ -2,6 +2,25 @@
 -- resolves native server configs and verifies which servers the configuration enables.
 dofile(assert(vim.env.NVIM_CONFIG_ROOT) .. "/tests/support/full_plugins.lua")
 vim.g.loaded_wakatime = true
+vim.api.nvim_create_autocmd("VimLeavePre", {
+  callback = function()
+    if #vim.api.nvim_list_uis() == 0 then
+      return
+    end
+    pcall(function()
+      vim.cmd.redraw()
+      local lines = {}
+      for row = 1, vim.o.lines do
+        local cells = {}
+        for col = 1, vim.o.columns do
+          cells[#cells + 1] = vim.fn.screenstring(row, col)
+        end
+        lines[#lines + 1] = table.concat(cells)
+      end
+      vim.fn.writefile(lines, (vim.env.NVIM_TEST_ARTIFACT_DIR or vim.env.NVIM_TEST_TMP) .. "/screen.txt")
+    end)
+  end,
+})
 -- Startup/input tests must not overwrite the host's real clipboard.
 vim.g.clipboard = {
   name = "smoke-test",

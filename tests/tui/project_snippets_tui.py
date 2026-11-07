@@ -16,10 +16,11 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.artifacts import workspace, Transcript, record_stage
 
 
 ROOT = Path(__file__).resolve().parents[2]
-with tempfile.TemporaryDirectory(prefix="nvim-project-snippets-") as temporary:
+with workspace(prefix="nvim-project-snippets-") as temporary:
     temp = Path(temporary).resolve()
     project = temp / "project"
     (project / "nested").mkdir(parents=True)
@@ -146,7 +147,7 @@ end))
         "finish": b"\x1bl!",
         "outside": b"\x1b:lua project_snippet_outside()\r",
     }
-    handled, output = set(), bytearray()
+    handled, output = set(), Transcript()
     try:
         deadline = time.monotonic() + 20
         while process.poll() is None and time.monotonic() < deadline:
@@ -160,6 +161,7 @@ end))
             stage = stage_file.read_text().strip() if stage_file.exists() else ""
             if stage in actions and stage not in handled:
                 os.write(master, actions[stage])
+                record_stage(stage)
                 handled.add(stage)
         message = (
             result.read_text() if result.exists() else "Timed out: " + repr(handled)

@@ -108,6 +108,12 @@ An interrupted run retains its partial summary and exits with status 130.
 The runner continues after independent failures and reports passed, failed and
 skipped checks separately. Failures automatically retain `output.log`, Neovim
 logs and state plus `summary.json`; `--keep` also retains successful runs.
+Nested PTY workspaces live inside their case directory. `terminal.bin` retains
+the raw terminal stream, `terminal.txt` its readable tail, `stage.json` the latest
+dispatched/awaited step, and `screen.txt` the final screen on normal/error exit.
+Hard-killed editors still leave the terminal stream and stage record. Individual
+state snapshots and `result.json` remain beside the case logs. Direct standalone
+drivers retain their workspace on failure and print its location.
 Environment checks record resolved plugin paths, Git revisions and dirty state.
 The runner does not download missing dependencies: install required plugins,
 tools and selected parsers explicitly. Selected requirements are checked instead

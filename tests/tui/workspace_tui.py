@@ -15,6 +15,7 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.artifacts import workspace, Transcript, record_stage
 
 
 def main():
@@ -59,7 +60,7 @@ def main():
         "delete_confirm": b"\r",
         "dashboard": b"s",
     }
-    handled, output = set(), bytearray()
+    handled, output = set(), Transcript()
     deadline = time.monotonic() + 35
     try:
         while process.poll() is None and time.monotonic() < deadline:
@@ -73,6 +74,7 @@ def main():
             stage = file.read_text().strip() if file.exists() else ""
             if stage in actions and stage not in handled:
                 os.write(master, actions[stage])
+                record_stage(stage)
                 handled.add(stage)
         assert process.poll() is not None, "TUI timeout: " + repr(handled)
         result = (

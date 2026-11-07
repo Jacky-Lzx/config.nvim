@@ -16,10 +16,11 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.artifacts import workspace, Transcript, record_stage
 
 
 root = Path(__file__).resolve().parents[2]
-with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
+with workspace(prefix="configured-snippets-") as temporary:
     task = Path(temporary)
     shutil.copy2(root / "plugin-tools-lock.json", task / "plugin-tools-lock.json")
     env = dict(
@@ -58,12 +59,13 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
         start_new_session=True,
     )
     os.close(secondary)
-    output, states = bytearray(), []
+    output, states = Transcript(), []
 
     def send(keys):
         os.write(primary, keys)
 
     def wait(predicate, label):
+        record_stage(label)
         deadline, latest = time.monotonic() + 5, None
         while time.monotonic() < deadline:
             if select.select([primary], [], [], 0.01)[0]:

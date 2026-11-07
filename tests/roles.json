@@ -18,7 +18,8 @@
     "tests/smoke.sh": "Stable shell entry point for tests/run.py",
     "tests/integration/remote_startup.lua": "Loaded by the explicit remote installation driver",
     "tests/integration/image_insertion.lua": "Loaded by the configured image-preview check",
-    "tests/support/processes.py": "Owned process-group tracking and cleanup"
+    "tests/support/processes.py": "Owned process-group tracking and cleanup",
+    "tests/support/artifacts.py": "Nested fixture retention, terminal transcripts and progress snapshots"
   },
   "manual": {
     "tests/benchmarks/benchmark_interaction.lua": "Explicit performance measurement; excluded from correctness suites",

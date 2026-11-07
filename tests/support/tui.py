@@ -16,6 +16,7 @@ import termios
 import time
 
 from processes import spawn, stop
+from artifacts import workspace, Transcript, record_stage
 from paths import test_path
 from tui_cases import FILES
 
@@ -125,7 +126,7 @@ def main():
         "task_choice": b"Python: run file\r",
         "args": b"'hello world' \"\"\r",
     }
-    output = bytearray()
+    output = Transcript()
     handled = set()
     toolchain_actions = {
         "plan": b"q",
@@ -155,6 +156,7 @@ def main():
                     # Lua notation is converted only here; input goes through the PTY.
                     keys = json.loads(lines[1]).replace("<CR>", "\r")
                     os.write(master, keys.encode())
+                    record_stage(lines[0])
                     handled.add(lines[0])
             elif case == "python_environment":
                 stage_file = Path(env["NVIM_TEST_TMP"], "python-stage")
@@ -167,6 +169,7 @@ def main():
                 }
                 if stage in actions and stage not in handled:
                     os.write(master, actions[stage])
+                    record_stage(stage)
                     handled.add(stage)
             elif case == "tasks":
                 stage_file = Path(env["NVIM_TEST_TMP"], "tasks-stage")
@@ -182,6 +185,7 @@ def main():
                     )
                     if data is not None:
                         os.write(master, data)
+                        record_stage(stage)
                         handled.add(stage)
             elif case in ("motion", "editing_input", "markdown_tools"):
                 stage_file = Path(
@@ -198,6 +202,7 @@ def main():
                 if len(stage) == 2 and stage[0] not in handled:
                     # Lua observes typed-key consumption and waits for the result.
                     os.write(master, json.loads(stage[1]).encode())
+                    record_stage(stage[0])
                     handled.add(stage[0])
             elif case == "nested_keymaps":
                 directory = Path(env["NVIM_TEST_TMP"])
@@ -216,6 +221,7 @@ def main():
                         os.kill(process.pid, signal.SIGWINCH)
                     os.write(master, (directory / "input").read_bytes())
                     (directory / "ack").write_text(stage)
+                    record_stage(stage)
                     handled.add(stage)
             elif case == "keymaps":
                 stage_file = Path(env["NVIM_TEST_TMP"], "keymap-stage")
@@ -231,18 +237,21 @@ def main():
                     )
                     if data is not None:
                         os.write(master, data)
+                        record_stage(stage)
                         handled.add(stage)
             elif case == "annotations":
                 stage_file = Path(env["NVIM_TEST_TMP"], "annotations-stage")
                 stage = stage_file.read_text().strip() if stage_file.exists() else ""
                 if stage in annotation_actions and stage not in handled:
                     os.write(master, annotation_actions[stage])
+                    record_stage(stage)
                     handled.add(stage)
             elif case == "toolchain":
                 stage_file = Path(env["NVIM_TEST_TMP"], "toolchain-stage")
                 stage = stage_file.read_text().strip() if stage_file.exists() else ""
                 if stage in toolchain_actions and stage not in handled:
                     os.write(master, toolchain_actions[stage])
+                    record_stage(stage)
                     handled.add(stage)
         try:
             # PTYs can report EOF just before the child exit becomes observable.

@@ -366,6 +366,7 @@ def environment(case, directory):
     env.update(
         NVIM_CONFIG_ROOT=str(ROOT),
         NVIM_TEST_TMP=str(directory),
+        NVIM_TEST_ARTIFACT_DIR=str(directory),
         NVIM_SMOKE_TEST="1",
         NVIM_TEST_ENABLE_THIRD_PARTY="0",
         XDG_CACHE_HOME=str(directory / "cache"),
@@ -607,6 +608,8 @@ def main():
                 end="",
                 flush=True,
             )
+        case_directory.mkdir(parents=True, exist_ok=True)
+        (case_directory / "result.json").write_text(json.dumps(result, indent=2) + "\n")
         summary["interrupted"] = interrupted
         (directory / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         if interrupted:

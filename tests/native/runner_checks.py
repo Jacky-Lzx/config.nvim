@@ -20,6 +20,33 @@ from support.processes import spawn, stop
 
 
 class RunnerChecks(unittest.TestCase):
+    def test_nested_failure_keeps_terminal_state_and_progress(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            code = (
+                "import sys; from pathlib import Path; "
+                f"sys.path.insert(0, {str(Path(__file__).resolve().parents[1])!r}); "
+                "from support.artifacts import workspace, Transcript, record_stage; "
+                "\nwith workspace(prefix='nested-') as directory:\n"
+                " output=Transcript(); output.extend(b'\\x1b[31mVISIBLE FAILURE\\x1b[0m'); "
+                "record_stage('confirm'); Path(directory, 'snapshot.json').write_text('{}'); "
+                "raise AssertionError('injected failure')"
+            )
+            result = execute(
+                Case("evidence", [sys.executable, "-c", code]), root / "case"
+            )
+            self.assertEqual(result["status"], "fail")
+            nested = next((root / "case").glob("nested-*"))
+            self.assertEqual(
+                (nested / "terminal.bin").read_bytes(),
+                b"\x1b[31mVISIBLE FAILURE\x1b[0m",
+            )
+            self.assertIn("VISIBLE FAILURE", (nested / "terminal.txt").read_text())
+            self.assertEqual(
+                json.loads((nested / "stage.json").read_text())["stage"], "confirm"
+            )
+            self.assertTrue((nested / "snapshot.json").exists())
+
     def test_timeout_cleans_child_in_a_new_session_without_ps(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -16,10 +16,11 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.artifacts import workspace, Transcript, record_stage
 
 
 ROOT = Path(__file__).resolve().parents[2]
-with tempfile.TemporaryDirectory(prefix="nvim-project-plugins-") as temporary:
+with workspace(prefix="nvim-project-plugins-") as temporary:
     temp = Path(temporary).resolve()
     project = temp / "vault"
     (project / ".obsidian").mkdir(parents=True)
@@ -176,7 +177,7 @@ return {{id='obsidian-tools.nvim', opts={workspaces={{name='Fixture', path=vim.e
             stderr=slave,
         )
         os.close(slave)
-        output = bytearray()
+        output = Transcript()
         handled = set()
         try:
             deadline = time.monotonic() + 15
@@ -191,6 +192,7 @@ return {{id='obsidian-tools.nvim', opts={workspaces={{name='Fixture', path=vim.e
                 stage = stage_file.read_text().strip() if stage_file.exists() else ""
                 if stage and stage not in handled:
                     os.write(master, {"cancel": b"\x1b", "choose": b"refresh\r"}[stage])
+                    record_stage(stage)
                     handled.add(stage)
             if process.poll() is None:
                 raise AssertionError(

@@ -16,10 +16,11 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.artifacts import workspace, Transcript, record_stage
 
 
 root = Path(__file__).resolve().parents[2]
-with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
+with workspace(prefix="latex-snippets-") as temporary:
     task = Path(temporary)
     (task / "state/nvim").mkdir(parents=True)
     shutil.copy2(root / "plugin-tools-lock.json", task / "plugin-tools-lock.json")
@@ -60,7 +61,7 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
         start_new_session=True,
     )
     os.close(secondary)
-    output, states, tail = bytearray(), [], b""
+    output, states, tail = Transcript(), [], b""
 
     def send(keys):
         os.write(primary, keys)
@@ -91,6 +92,7 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
         tail = stream[-32:]
 
     def wait(predicate, label):
+        record_stage(label)
         deadline, latest = time.monotonic() + 7, None
         while time.monotonic() < deadline:
             if select.select([primary], [], [], 0.01)[0]:

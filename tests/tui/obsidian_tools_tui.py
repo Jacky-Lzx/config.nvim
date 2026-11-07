@@ -17,10 +17,11 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.artifacts import workspace, Transcript, record_stage
 
 
 ROOT = Path(__file__).resolve().parents[2]
-with tempfile.TemporaryDirectory(prefix="obsidian-tools-tui-") as temporary:
+with workspace(prefix="obsidian-tools-tui-") as temporary:
     temp = Path(temporary).resolve()
     vault = temp / "vault"
     for folder in (".obsidian", "notes", "templates"):
@@ -82,7 +83,7 @@ with tempfile.TemporaryDirectory(prefix="obsidian-tools-tui-") as temporary:
         stderr=slave,
     )
     os.close(slave)
-    output, handled = bytearray(), set()
+    output, handled = Transcript(), set()
     deadline = time.monotonic() + 60
     try:
         while process.poll() is None and time.monotonic() < deadline:
@@ -95,6 +96,7 @@ with tempfile.TemporaryDirectory(prefix="obsidian-tools-tui-") as temporary:
             stage = stage_file.read_text().splitlines() if stage_file.exists() else []
             if len(stage) == 2 and stage[0] not in handled:
                 os.write(master, json.loads(stage[1]).encode())
+                record_stage(stage[0])
                 handled.add(stage[0])
         if process.poll() is None:
             stop(process)

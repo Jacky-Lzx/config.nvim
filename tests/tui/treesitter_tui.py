@@ -17,6 +17,7 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.artifacts import workspace, Transcript, record_stage
 
 
 root = Path(__file__).resolve().parents[2]
@@ -26,7 +27,7 @@ actions = {
     "markdown_edit": b"ggA edited\x1b",
     "tex": b"0f1r2",
 }
-with tempfile.TemporaryDirectory(prefix="treesitter-runtime-") as directory:
+with workspace(prefix="treesitter-runtime-") as directory:
     temp = Path(directory)
     shutil.copyfile(root / "plugin-tools-lock.json", temp / "plugin-tools-lock.json")
     env = dict(
@@ -65,7 +66,7 @@ with tempfile.TemporaryDirectory(prefix="treesitter-runtime-") as directory:
         stderr=slave,
     )
     os.close(slave)
-    output, handled = bytearray(), set()
+    output, handled = Transcript(), set()
     deadline = time.monotonic() + 30
     try:
         while process.poll() is None and time.monotonic() < deadline:
@@ -79,6 +80,7 @@ with tempfile.TemporaryDirectory(prefix="treesitter-runtime-") as directory:
             stage = stage_file.read_text().strip() if stage_file.exists() else ""
             if stage in actions and stage not in handled:
                 os.write(master, actions[stage])
+                record_stage(stage)
                 handled.add(stage)
         if process.poll() is None:
             stop(process)

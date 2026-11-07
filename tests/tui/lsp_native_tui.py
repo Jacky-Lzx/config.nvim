@@ -17,6 +17,7 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from support.processes import spawn, stop
+from support.artifacts import workspace, Transcript, record_stage
 
 
 root = Path(__file__).resolve().parents[2]
@@ -26,7 +27,7 @@ plugins = Path(
     )
 )
 for case in ("rename", "actions"):
-    with tempfile.TemporaryDirectory(prefix="nvim-native-" + case + "-") as directory:
+    with workspace(prefix="nvim-native-" + case + "-") as directory:
         temp = Path(directory)
         shutil.copyfile(root / "plugin-tools-lock.json", temp / "lock.json")
         env = dict(
@@ -65,7 +66,7 @@ for case in ("rename", "actions"):
             stderr=slave,
         )
         os.close(slave)
-        output = bytearray()
+        output = Transcript()
         deadline = time.monotonic() + 90
         try:
             while process.poll() is None and time.monotonic() < deadline:
