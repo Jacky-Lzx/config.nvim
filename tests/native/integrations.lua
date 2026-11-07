@@ -1,19 +1,14 @@
 local root = vim.fn.getcwd()
 vim.opt.runtimepath:prepend(root)
 
-local exepath, resolve, stat = vim.fn.exepath, vim.fn.resolve, vim.uv.fs_stat
-vim.fn.exepath = function()
-  return "/npm/vue-language-server/bin/vue-language-server"
-end
-vim.fn.resolve = function(path)
-  return path
-end
-local expected = "/npm/vue-language-server/node_modules/@vue/language-server"
-vim.uv.fs_stat = function(path)
-  return path == expected and {} or nil
-end
-assert(require("languages.vue.compatibility").server_path() == expected)
-vim.fn.exepath, vim.fn.resolve, vim.uv.fs_stat = exepath, resolve, stat
+package.loaded["toolchain.resources"] = {
+  resolve = function(name, resource)
+    assert(name == "vue-language-server" and resource == "server")
+    return "/fixture/vue-server"
+  end,
+}
+assert(require("languages.vue.compatibility").server_path() == "/fixture/vue-server")
+package.loaded["toolchain.resources"] = nil
 
 local pdf = require("features.tasks").definitions({ filetype = "markdown", file = root .. "/a file.md" })[1]
 local pdf_font = vim.env.NVIM_MARKDOWN_PDF_FONT

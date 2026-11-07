@@ -4,9 +4,6 @@ return {
     {
       package = "vue-language-server",
       executable = "vue-language-server",
-      post_install_async = function(package, done, log)
-        require("languages.vue.compatibility").ensure_typescript5(package.path, done, log)
-      end,
     },
     { package = "vtsls", executable = "vtsls" },
     { executable = "npm" },

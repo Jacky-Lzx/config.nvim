@@ -13,7 +13,7 @@ assert(by_id["parser:regex"] and by_id["tool:codespell"])
 assert(by_id["parser:latex"] and by_id["parser:bibtex"])
 assert(by_id["system:html_beautify"].optional and by_id["system:fish"].optional)
 assert(type(by_id["tool:debugpy"].resolve) == "function")
-assert(type(by_id["tool:vue-language-server"].post_install_async) == "function")
+assert(by_id["tool:vue-language-server"].post_install_async == nil)
 assert(by_id["tool:vue-language-server"].post_install == nil)
 for _, requirement in ipairs(integration.requirements("tool")) do
   assert(requirement.provider == "tool")
@@ -52,57 +52,5 @@ assert(spec.opts.tools.sources == nil, "Shared package recipes belong in the too
 assert(spec.opts.tools.lockfile == root .. "/toolchain-lock.json")
 assert(not spec.dependencies, "Toolchain must not depend on the legacy runtimes")
 
--- The actual Vue repair helper must complete every no-op path immediately,
--- and report child-process completion through the queue callback.
-local repair = require("languages.vue.compatibility").ensure_typescript5
-local directory = assert(vim.env.NVIM_TEST_TMP) .. "/vue-hook"
-local typescript = directory .. "/node_modules/@vue/language-server/node_modules/typescript"
-local calls, completed, failure = 0, false, nil
-local function done(err)
-  calls, completed, failure = calls + 1, true, err
-end
-repair(directory, done, function() end)
-assert(completed and failure == nil and calls == 1)
-vim.fn.mkdir(typescript, "p")
-vim.fn.writefile({ '{"version":"5.9.1"}' }, typescript .. "/package.json")
-repair(directory, done, function() end)
-assert(calls == 2 and failure == nil)
-vim.fn.writefile({ '{"version":"7.0.0"}' }, typescript .. "/package.json")
-local system, notify = vim.system, vim.notify
-local pending, logs = nil, {}
-vim.notify = function() end
-vim.system = function(command, opts, callback)
-  assert(vim.deep_equal(command, {
-    "npm",
-    "install",
-    "--prefix",
-    assert(vim.uv.fs_realpath(directory .. "/node_modules/@vue/language-server")),
-    "--global=false",
-    "typescript@5",
-    "--no-save",
-    "--no-audit",
-    "--no-fund",
-  }))
-  assert(opts.cwd == directory .. "/node_modules/@vue/language-server" and opts.text)
-  pending = callback
-end
-for _, exit_code in ipairs({ 1, 0 }) do
-  completed, failure = false, nil
-  repair(directory, done, function(chunk)
-    logs[#logs + 1] = chunk
-  end)
-  assert(not completed and pending, "Vue repair must wait for npm")
-  pending({ code = exit_code, stdout = "npm output", stderr = "npm stderr" })
-  assert(vim.wait(500, function()
-    return completed
-  end))
-  if exit_code == 0 then
-    assert(failure == nil)
-  else
-    assert(failure:find("exit 1", 1, true))
-  end
-end
-vim.system, vim.notify = system, notify
-assert(vim.list_contains(logs, "npm output") and vim.list_contains(logs, "npm stderr"))
-assert(not package.loaded.mason and not package.loaded["nvim-treesitter"])
-print("Toolchain language projection, legacy routes and asynchronous Vue repair checks passed")
+assert(not package.loaded["toolchain.tool_installers"])
+print("Toolchain language projection and legacy routes stay cold; npm compatibility belongs to recipes")

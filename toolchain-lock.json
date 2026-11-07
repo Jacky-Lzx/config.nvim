@@ -14603,11 +14603,20 @@
                 "path": "node_modules/.bin/vue-language-server"
               }
             },
+            "external_resources": {
+              "server": {
+                "executable": "vue-language-server",
+                "package": "@vue/language-server"
+              }
+            },
             "extras": [
               "typescript@6.0.3",
               "@vue/typescript-plugin@3.3.14"
             ],
             "kind": "npm",
+            "overrides": {
+              "typescript": "6.0.3"
+            },
             "package": "@vue/language-server",
             "resources": {
               "server": "node_modules/@vue/language-server"
