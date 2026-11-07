@@ -59,10 +59,35 @@ with workspace(prefix="configured-snippets-") as temporary:
         start_new_session=True,
     )
     os.close(secondary)
-    output, states = Transcript(), []
+    output, states, tail = Transcript(), [], b""
 
     def send(keys):
         os.write(primary, keys)
+
+    def drain():
+        global tail
+        data = os.read(primary, 65536)
+        output.extend(data)
+        stream = tail + data
+        replies = {
+            b"\x1b[5n": b"\x1b[0n",
+            b"\x1b[6n": b"\x1b[1;1R",
+            b"\x1b[c": b"\x1b[?1;2c",
+            b"\x1b[>c": b"\x1b[>0;1;0c",
+            b"\x1b[?u": b"\x1b[?0u",
+        }
+        for which, color in ((b"10", b"dddd/dddd/dddd"), (b"11", b"0000/0000/0000")):
+            for end in (b"\x07", b"\x1b\\"):
+                replies[b"\x1b]" + which + b";?" + end] = (
+                    b"\x1b]" + which + b";rgb:" + color + end
+                )
+        for query, reply in replies.items():
+            at = stream.find(query)
+            while at >= 0:
+                if at + len(query) > len(tail):
+                    send(reply)
+                at = stream.find(query, at + 1)
+        tail = stream[-32:]
 
     def wait(predicate, label):
         record_stage(label)
@@ -70,7 +95,7 @@ with workspace(prefix="configured-snippets-") as temporary:
         while time.monotonic() < deadline:
             if select.select([primary], [], [], 0.01)[0]:
                 try:
-                    output.extend(os.read(primary, 65536))
+                    drain()
                 except OSError:
                     break
             try:
@@ -214,10 +239,17 @@ with workspace(prefix="configured-snippets-") as temporary:
         print(f"Configured snippet PTY: {len(states)} intermediate states passed")
     finally:
         if child.poll() is None:
-            child.terminate()
-            try:
-                child.wait(timeout=3)
-            except subprocess.TimeoutExpired:
+            # Neovim can query DA1 while stopping the TUI. Keep servicing the
+            # terminal until it exits instead of blocking in wait().
+            send(b"\x1c\x0e:qa!\r")
+            deadline = time.monotonic() + 3
+            while child.poll() is None and time.monotonic() < deadline:
+                if select.select([primary], [], [], 0.01)[0]:
+                    try:
+                        drain()
+                    except OSError:
+                        break
+            if child.poll() is None:
                 stop(child)
-                child.wait()
+            child.wait(timeout=3)
         os.close(primary)
