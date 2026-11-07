@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from support.paths import ROOT, test_path
-from support.tui_cases import FILES as TUI_FILES
+from support.tui_cases import FILES as TUI_FILES, SCENARIOS
 from support.registry import validate_registry
 from support.processes import spawn, stop, LEDGER
 
@@ -117,7 +117,9 @@ def python(name, *args, env=None):
 
 
 def tui(name, env=None):
-    case = python("tui", name, env=env)
+    effective = dict(env or {})
+    effective.update(SCENARIOS[name].env)
+    case = python("tui", name, env=effective)
     case.files += (test_path(TUI_FILES[name]).relative_to(ROOT).as_posix(),)
     return case
 

@@ -110,6 +110,12 @@ runtime directories are isolated per case. PTY drivers register process groups
 in the case's ledger; timeout and interruption cleanup combines those records
 with a descendant snapshot, including children that create new sessions.
 An interrupted run retains its partial summary and exits with status 130.
+PTY scenario files, environment choices, geometry and input stages are declared in
+`tests/support/tui_cases.py`. `tui_protocol.py` reads complete input/resize stages;
+the shared terminal driver only starts the editor, dispatches bytes, drains output
+and manages its lifetime. Feature assertions remain in each Lua scenario. Folding
+UI workflows await editor/window states and an event barrier rather than fixed
+delays; negative observation windows in lifecycle checks retain their purpose.
 The runner continues after independent failures and reports passed, failed and
 skipped checks separately. Failures automatically retain `output.log`, Neovim
 logs and state plus `summary.json`; `--keep` also retains successful runs.

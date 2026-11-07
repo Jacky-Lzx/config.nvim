@@ -64,6 +64,9 @@ local scenarios = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/support/scenarios.l
 assert(not scenario or scenario == "default" or scenarios[scenario], "Unknown test scenario: " .. tostring(scenario))
 local selection = scenarios[scenario]
 vim.opt.runtimepath:prepend(vim.env.NVIM_CONFIG_ROOT)
+-- Explicit -u starts with an isolated XDG_CONFIG_HOME still need this checkout's
+-- native after/ hooks, just as a normal installed configuration would receive.
+vim.opt.runtimepath:append(vim.env.NVIM_CONFIG_ROOT .. "/after")
 if vim.env.NVIM_TEST_REMAP_ACTIONS == "1" then
   dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/support/remapped_actions.lua")
 end

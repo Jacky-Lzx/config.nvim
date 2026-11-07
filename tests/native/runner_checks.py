@@ -17,9 +17,30 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from run import Case, environment, execute, main
 from support.registry import validate_registry
 from support.processes import spawn, stop
+from support.tui_cases import Stage
+from support.tui_protocol import event
 
 
 class RunnerChecks(unittest.TestCase):
+    def test_stage_protocol_waits_for_complete_input_and_dispatches_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stage = Stage("stage", input_file="input", resize_file="resize")
+            (root / "stage").write_text("resize")
+            self.assertIsNone(event(stage, root, set()))
+            (root / "input").write_bytes(b"\x1b[A")
+            (root / "resize").write_text("160")
+            self.assertEqual(event(stage, root, set()), ("resize", b"\x1b[A", 160))
+            self.assertIsNone(event(stage, root, {"resize"}))
+            self.assertFalse((root / "resize").exists())
+            (root / "stage").write_text('confirm\n"unfinished')
+            self.assertIsNone(event(Stage("stage"), root, set()))
+            (root / "stage").write_text('confirm\n"<CR>"')
+            self.assertEqual(
+                event(Stage("stage", vim_keys=True), root, set()),
+                ("confirm", b"\r", None),
+            )
+
     def test_nested_failure_keeps_terminal_state_and_progress(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
