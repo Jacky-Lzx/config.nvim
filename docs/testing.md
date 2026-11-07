@@ -45,8 +45,11 @@ Suite membership describes execution requirements independently of script locati
 case labels and `--filter` values remain stable. The runner and shared PTY driver
 resolve unique script names through `tests/support/paths.py`, rejecting missing or
 ambiguous names. Direct script invocations use their grouped paths below.
-The small root `tests/setup.lua` and `tests/actions.lua` entry points remain for
-file-tools.nvim's external configured-PTY harness; implementation lives in `support/`.
+The configured file-tools driver supplies its init file, optional setup script and
+`tests/support/file_tools.lua` adapter explicitly. The adapter owns assertions about
+this configuration and resolves its declared actions; the external harness owns
+filesystem and rendered workflow assertions. It has no dependency on this checkout's
+internal test paths or plugin manager.
 
 No argument runs `all`. Use `native` and `integration` during daily configuration
 changes, then `compatibility` for changes involving optional owners or their
