@@ -99,7 +99,7 @@ function M.validate(name, definition)
     check(tool.executable or tool.package, tool_path, "resolver-only tools need a managed package name")
     if tool.feature then
       check(
-        vim.list_contains(require("config.features").names, tool.feature),
+        vim.list_contains(require("config.workflow_flags").names, tool.feature),
         tool_path .. ".feature",
         "unknown feature"
       )

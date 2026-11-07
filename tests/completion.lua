@@ -1,6 +1,6 @@
 local root = assert(vim.env.NVIM_CONFIG_ROOT, "NVIM_CONFIG_ROOT is required")
 vim.opt.runtimepath:prepend(root)
-local completion = require("features.completion")
+local completion = require("integrations.completion.sources")
 local integration = require("integrations.completion")
 assert(not package.loaded["completion-tools"] and not package.loaded["blink.cmp"])
 assert(vim.b.completion_tools_sources == nil)

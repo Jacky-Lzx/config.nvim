@@ -13,7 +13,7 @@ function M.normalize(selection)
   end
   return {
     profiles = vim.deepcopy(selection.profiles),
-    features = require("config.features").normalize(selection.features),
+    features = require("config.workflow_flags").normalize(selection.features),
   }
 end
 

@@ -86,7 +86,7 @@ function M.build(selection)
   for _, name in ipairs({ "ui", "navigation", "editing", "coding", "git", "integrations" }) do
     group(name)
   end
-  for _, name in ipairs(require("config.features").names) do
+  for _, name in ipairs(require("config.workflow_flags").names) do
     if context.selection.features[name] then
       group(name)
     end

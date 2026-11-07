@@ -6,7 +6,7 @@
   platform settings, plugin declarations and the pinned manager bootstrap.
 - `core/` owns editor options, generic commands, mappings and autocmds.
 - `features/` owns native file policy, folding integration, LSP/diagnostic behavior,
-  bars data and completion source preferences. Large/minified files are classified
+  bars data and personal task workflows. Large/minified files are classified
   before filetype consumers start expensive work.
 - `plugins/` declares packages and applies personal options and mappings.
   `integrations/` connects plugin APIs and project-specific policies; the generic
@@ -209,9 +209,9 @@ own interaction contracts.
 ## Configuration modules
 
 - `init.lua`: delegates startup to `config.setup()`.
-- `lua/config/`: startup composition, platform settings, selection, and plugin-tools bootstrap.
+- `lua/config/`: startup composition, platform settings, selection/workflow flags, and plugin-tools bootstrap.
 - `lua/core/`: editor options, general mappings, commands, and autocmds.
-- `lua/features/`: native folding, column guide, LSP/diagnostic behavior, and completion source state.
+- `lua/features/`: file protection, LSP/diagnostic behavior, bars data, toggles and personal task workflows.
 - `lua/plugins/`: native plugin-tools specs, dependencies, ordinary mappings, and plugin-specific configuration.
 - `lua/integrations/`: adapters connecting native completion, snippets, images and project-specific plugin policies.
 - `lua/languages/`: language metadata and dedicated plugin specs.
@@ -229,3 +229,11 @@ LSP attachment adds navigation/refactoring mappings without replacing the shared
 Debugging loads on debugger keys; merely opening C/C++ or Swift does not
 initialize DAP. Pairing/snippets load on Insert mode, and optional completion providers
 load when used. tex-tools and the selected PDF viewer own inverse search.
+
+Personal completion configuration lives together in `integrations/completion/`:
+`init.lua` adapts provider APIs and options; `sources.lua` owns buffer-local source
+preferences. `plugins/coding/completion.lua` declares the package directly.
+`integrations/theme.lua` adapts personal highlights across theme providers.
+`config/workflow_flags.lua` validates selection flags; it does not initialize features.
+Complex filetype hooks delegate to `languages/<language>/buffer.lua`, while simple
+buffer options can stay directly in the native runtime entry points.

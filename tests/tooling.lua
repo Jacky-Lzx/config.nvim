@@ -68,7 +68,7 @@ local huge = buffer("lua", string.rep("x", 1024 * 1024 + 1))
 local special = buffer("lua", nil, true)
 local unloaded = buffer("lua")
 vim.api.nvim_buf_delete(unloaded, { unload = true, force = true })
-local selected = require("plugins.coding.completion.core")[1].opts.buffer.get_bufnrs()
+local selected = require("plugins.coding.completion")[1].opts.buffer.get_bufnrs()
 assert(vim.list_contains(selected, buf) and vim.list_contains(selected, relevant))
 for _, b in ipairs({ unrelated, huge, special, unloaded }) do
   assert(not vim.list_contains(selected, b), "exclude irrelevant, huge, special, and unloaded buffers")

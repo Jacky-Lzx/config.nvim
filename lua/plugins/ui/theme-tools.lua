@@ -68,7 +68,7 @@ return {
         backend = "selection_tools",
         preview_after = function(theme)
           if theme.colorscheme:match("^catppuccin") then
-            require("config.highlights").apply()
+            require("integrations.theme").apply()
           end
         end,
       },
@@ -90,7 +90,7 @@ return {
         group = vim.api.nvim_create_augroup("lzx_highlights", { clear = true }),
         pattern = "catppuccin*",
         callback = function()
-          require("config.highlights").apply()
+          require("integrations.theme").apply()
         end,
       })
       require("theme_tools").setup(opts)

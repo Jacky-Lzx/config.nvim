@@ -18,7 +18,7 @@ for _, name in ipairs(selected) do
   assert(lsp.opts.servers[name] == true, "Profile server missing from lsp-tools: " .. name)
   assert(lsp.opts.server_filetypes[name] ~= nil, "Profile server has no activation hint: " .. name)
 end
-local completion_spec = require("plugins.coding.completion.core")[1]
+local completion_spec = require("plugins.coding.completion")[1]
 assert(completion_spec.main == "completion-tools" and not completion_spec.event and not completion_spec.module)
 local original_completion = package.loaded["completion-tools"]
 local original_capabilities = package.loaded["completion_tools.capabilities"]

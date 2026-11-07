@@ -77,7 +77,7 @@ local function check()
   assert(require("pairs.rainbow").status().enabled)
 
   local completion = require("integrations.completion")
-  local behavior = require("features.completion")
+  local behavior = require("integrations.completion.sources")
   local config = require("integrations.completion").source_config
   local defaults = vim.deepcopy(config.default)
   local shown

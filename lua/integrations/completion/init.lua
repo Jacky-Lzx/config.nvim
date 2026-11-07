@@ -35,13 +35,13 @@ end
 M.source_config.defaults = M.default_sources
 
 function M.cycle(cmp, direction)
-  local sources = require("features.completion").cycle(M.source_config, direction)
+  local sources = require("integrations.completion.sources").cycle(M.source_config, direction)
   cmp.hide()
   return cmp.show({ sources = sources })
 end
 
 function M.toggle_source(cmp, name)
-  local sources = require("features.completion").toggle_source(M.source_config, name)
+  local sources = require("integrations.completion.sources").toggle_source(M.source_config, name)
   cmp.hide()
   return cmp.show({ sources = sources })
 end
@@ -57,7 +57,7 @@ function M.options()
       return vim.b.completion ~= false and vim.bo.filetype ~= "input-tools-input"
     end,
     sources = function(ctx)
-      local sources = require("features.completion").active_sources(M.source_config, ctx)
+      local sources = require("integrations.completion.sources").active_sources(M.source_config, ctx)
       local obsidian = package.loaded.obsidian_tools
       if obsidian and obsidian.workspace(vim.api.nvim_buf_get_name(ctx and ctx.bufnr or 0)) then
         sources = vim.list_extend(vim.deepcopy(sources), { "obsidian" })

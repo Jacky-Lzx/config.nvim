@@ -325,7 +325,7 @@ row/column editing and section promotion/demotion are available as TexTools comm
 `utils.platform.dev_plugin_root()`. It owns indentation/chunk guides, the status
 column, the column-121 `` guide, transient line/yank highlighting, Zen/Zoom,
 scope dimming, the scrollbar, inline color previews, TODO annotations and the startup
-dashboard. Theme colors live in `lua/config/highlights.lua`.
+dashboard. Theme colors live in `lua/integrations/theme.lua`.
 
 Color literals use inline `■` swatches. TODO/FIX/NOTE and related tags use
 syntax-aware badges, description colors and gutter signs. Configure `colors` and
