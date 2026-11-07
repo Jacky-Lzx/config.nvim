@@ -205,3 +205,27 @@ Panel bindings share the layout and keep their existing stable action IDs.
 The persistent shell toggle is Normal-mode only so ordinary terminal spaces do
 not wait for leader sequences. Text edits and local picker/menu keys keep their
 own interaction contracts.
+
+## Configuration modules
+
+- `init.lua`: delegates startup to `config.setup()`.
+- `lua/config/`: startup composition, platform settings, selection, and plugin-tools bootstrap.
+- `lua/core/`: editor options, general mappings, commands, and autocmds.
+- `lua/features/`: native folding, column guide, LSP/diagnostic behavior, and completion source state.
+- `lua/plugins/`: native plugin-tools specs, dependencies, ordinary mappings, and plugin-specific configuration.
+- `lua/integrations/`: adapters connecting native completion, snippets, images and project-specific plugin policies.
+- `lua/languages/`: language metadata and dedicated plugin specs.
+- `lua/utils/`: shared helpers for resource paths, platform discovery, and system commands.
+- `ftplugin/`: settings needed before runtime ftplugins, such as style and mapping switches.
+- `after/ftplugin/`: buffer-local settings; `after/lsp/`: native server overrides.
+- `lua/snippet_collections/`: native snippet definitions and their shared context helpers;
+  `queries/`: Tree-sitter queries; `lua/features/tasks.lua`: personal task workflows.
+
+
+`<leader>gf` uses format-tools.nvim's configured formatters with LSP fallback in all buffers.
+`<leader>tfa` toggles save-time formatting (500ms total budget). Use `:FormatToolsInfo`
+to inspect selection and the last result; executables are managed by toolchain-tools.nvim.
+LSP attachment adds navigation/refactoring mappings without replacing the shared format key.
+Debugging loads on debugger keys; merely opening C/C++ or Swift does not
+initialize DAP. Pairing/snippets load on Insert mode, and optional completion providers
+load when used. tex-tools and the selected PDF viewer own inverse search.
