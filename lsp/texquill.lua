@@ -38,5 +38,4 @@ return {
       end
     end,
   },
-  on_attach = integration.attach,
 }

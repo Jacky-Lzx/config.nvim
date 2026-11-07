@@ -23,8 +23,4 @@ function M.refresh(err, result, ctx, config)
   return response
 end
 
-function M.attach()
-  require("integrations.bibtex_preview").setup()
-end
-
 return M

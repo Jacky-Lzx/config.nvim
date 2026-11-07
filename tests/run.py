@@ -195,6 +195,7 @@ def suites():
         tui("markdown_tools"),
     ]
     integration.append(lua("preview_policy", {"NVIM_TEST_SCENARIO": "writing"}))
+    integration.append(lua("document_render", {"NVIM_TEST_SCENARIO": "writing"}))
     integration += [
         lua(name)
         for name in [

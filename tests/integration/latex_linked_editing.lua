@@ -112,7 +112,7 @@ local function check()
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
     _G.client_id = assert(vim.lsp.start({ name='texquill', cmd={executable, '--stdio'}, root_dir=directory,
-      capabilities=capabilities, init_options={distribution={enabled=false}}, on_attach=integration.attach }))
+      capabilities=capabilities, init_options={distribution={enabled=false}} }))
   ]=],
     root,
     candidate

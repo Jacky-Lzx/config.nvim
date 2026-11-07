@@ -33,7 +33,13 @@ return {
       diagnostics = true,
       pickers = true,
       results = true,
-      hover = true,
+      hover = {
+        float = {
+          on_render = function(ctx)
+            require("integrations.bibtex_preview").render(ctx)
+          end,
+        },
+      },
       inspect = true,
       hierarchy = true,
       links = {

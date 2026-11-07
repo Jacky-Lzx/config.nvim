@@ -50,6 +50,9 @@ still determines the final order.
 Snippet field and choice keys are described in [native snippets](snippets.md).
 The menu shows kind icons, labels, kinds and source names. Documentation opens
 automatically; provider rendering and lifecycle belong to completion-tools.
+BibTeX padding is compacted through the documentation renderer's `on_render`
+callback. Native hover uses `lsp-tools`' `hover.float.on_render` callback; neither
+integration scans unrelated floating windows.
 
 ## Command line and Copilot
 

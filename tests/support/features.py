@@ -2,6 +2,7 @@
 
 FEATURES = {
     "completion": (
+        "document_render",
         "completion",
         "completion_input",
         "completion_policy",
@@ -34,6 +35,7 @@ FEATURES = {
         "lsp_config",
     ),
     "lsp": (
+        "document_render",
         "lsp_tools",
         "lsp_config",
         "lsp_native_tui",

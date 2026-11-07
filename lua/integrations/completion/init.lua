@@ -147,7 +147,16 @@ function M.options()
       label_details = true,
       highlight = { enabled = true, treesitter = true },
     },
-    documentation = { auto_show = true, delay_ms = 200, max_width = 120, max_height = 20, border = "rounded" },
+    documentation = {
+      auto_show = true,
+      delay_ms = 200,
+      max_width = 120,
+      max_height = 20,
+      border = "rounded",
+      on_render = function(ctx)
+        require("integrations.bibtex_preview").render(ctx)
+      end,
+    },
     cmdline = {
       enabled = true,
       get_anchor = function()

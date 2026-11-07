@@ -11,7 +11,6 @@ package.loaded["keymap_tools"] = {
     end
   end,
 }
-package.loaded["integrations.bibtex_preview"] = { setup = function() end }
 package.loaded["languages.latex.linked_editing"] = { attach = function() end }
 local spec = require("languages.latex.plugins")
 assert(spec[2].source == "Jacky-Lzx/tex-tools.nvim")
@@ -33,7 +32,7 @@ end
 require("languages.latex.buffer").setup(bufnr)
 verify()
 local before = vim.fn.maparg(" ll", "n", false, true)
-require("languages.latex.lsp").attach({}, bufnr)
+require("languages.latex.lsp")
 assert(vim.deep_equal(before, vim.fn.maparg(" ll", "n", false, true)), "LSP attachment replaced the build mapping")
 assert(vim.fn.maparg("<leader>lb", "n") == "<Cmd>TexToolsBuild<CR>")
 assert(type(vim.fn.maparg(" txa", "n", false, true).callback) == "function")
