@@ -1,5 +1,15 @@
 local M = {}
 local handles = {}
+local attached, generation = {}, 0
+
+local function detach(buf)
+  if not attached[buf] then
+    return
+  end
+  require("config.bindings").set("obsidian-tools.nvim." .. buf, {})
+  handles[buf]:dispose()
+  handles[buf], attached[buf] = nil, nil
+end
 
 -- Providers remain cold outside a selected vault; completion UI belongs to completion-tools.
 function M.source()
@@ -28,21 +38,22 @@ end
 
 function M.setup(opts)
   local tools = require("obsidian_tools").setup(opts)
+  generation = generation + 1
   local group = vim.api.nvim_create_augroup("ConfigObsidianTools", { clear = true })
   local function attach(buf)
-    local id = "obsidian-tools.nvim." .. buf
-    require("config.bindings").set(id, {})
-    if handles[buf] then
-      handles[buf]:dispose()
-      handles[buf] = nil
-    end
-    if
-      vim.bo[buf].buftype ~= ""
-      or vim.bo[buf].filetype ~= "markdown"
-      or not tools.workspace(vim.api.nvim_buf_get_name(buf))
-    then
+    local workspace = vim.bo[buf].buftype == ""
+      and vim.bo[buf].filetype == "markdown"
+      and tools.workspace(vim.api.nvim_buf_get_name(buf))
+    local previous = attached[buf]
+    if workspace and previous and previous.path == workspace.path and previous.generation == generation then
       return
     end
+    detach(buf)
+    if not workspace then
+      return
+    end
+    local id = "obsidian-tools.nvim." .. buf
+    attached[buf] = { path = workspace.path, generation = generation }
     handles[buf] = require("keymap_tools").register(id, {
       buf = buf,
       groups = { { prefix = "<leader>O", label = "Obsidian" } },
@@ -81,7 +92,7 @@ function M.setup(opts)
     }
     require("config.bindings").set(id, entries)
   end
-  vim.api.nvim_create_autocmd({ "FileType", "BufEnter" }, {
+  vim.api.nvim_create_autocmd({ "FileType", "BufEnter", "BufFilePost" }, {
     group = group,
     callback = function(event)
       attach(event.buf)
@@ -90,11 +101,7 @@ function M.setup(opts)
   vim.api.nvim_create_autocmd("BufWipeout", {
     group = group,
     callback = function(event)
-      require("config.bindings").set("obsidian-tools.nvim." .. event.buf, {})
-      if handles[event.buf] then
-        handles[event.buf]:dispose()
-        handles[event.buf] = nil
-      end
+      detach(event.buf)
     end,
   })
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do

@@ -414,6 +414,10 @@ explicitly with `nix flake archive` from the project directory. Use `:LspInfo`,
 
 ## Image insertion
 
+Obsidian vault mappings attach once per buffer and workspace. Re-entering a note
+preserves temporary mapping overrides; renaming across vault boundaries or
+reconfiguring the integration updates the owned mappings.
+
 The automatic image/formula switch is a session preference. Disabling it in any
 filetype also updates an already-loaded TeX controller; a later first TeX buffer
 inherits the same preference. Explicit setters are idempotent and preserve cold

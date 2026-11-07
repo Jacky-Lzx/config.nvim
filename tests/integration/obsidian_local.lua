@@ -88,8 +88,21 @@ assert(vim.wait(1000, function()
 end))
 tools.refresh, vim.ui.select = original_refresh, original_select
 local callback = vim.fn.maparg("<Space>OO", "n", false, true).rhs
+local buf = vim.api.nvim_get_current_buf()
+vim.keymap.set("n", "<leader>OO", "<Cmd>echo 'temporary'<CR>", { buffer = buf })
+for _ = 1, 3 do
+  vim.api.nvim_exec_autocmds("BufEnter", { buffer = buf })
+end
+assert(vim.fn.maparg("<Space>OO", "n", false, true).rhs == "<Cmd>echo 'temporary'<CR>")
+vim.api.nvim_buf_set_name(buf, temp .. "/renamed-outside.md")
+assert(vim.fn.maparg("<Space>OO", "n", false, true).rhs == "<Cmd>echo 'temporary'<CR>")
+assert(vim.fn.maparg("<Space>Of", "n") == "", "Renaming out of a vault retained owned mappings")
+vim.api.nvim_buf_set_name(buf, file)
+assert(vim.fn.maparg("<Space>OO", "n", false, true).rhs == callback)
 integration.setup(obsidian.opts)
 assert(vim.fn.maparg("<Space>OO", "n", false, true).rhs == callback)
+vim.api.nvim_buf_delete(buf, { force = true })
+assert(next(require("config.bindings").entries["obsidian-tools.nvim." .. buf]) == nil)
 vim.cmd("enew!")
 vim.api.nvim_buf_set_name(0, temp .. "/outside.md")
 vim.bo.filetype = "markdown"
