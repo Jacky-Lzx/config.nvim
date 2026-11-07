@@ -15,11 +15,12 @@ function M.enabled()
   return require("image_tools.bootstrap").enabled()
 end
 function M.set_enabled(state)
-  require("image_tools.bootstrap").set_auto_preview(state)
   local tools = package.loaded["tex-tools"]
   if tools then
     tools.set_auto_preview(state)
   end
+  -- TeX must claim its buffers before a loaded generic renderer refreshes.
+  require("image_tools.bootstrap").set_auto_preview(state)
   return state
 end
 function M.toggle()

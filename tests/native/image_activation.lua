@@ -13,6 +13,7 @@ package.loaded["image_tools.bootstrap"] = {
     return automatic
   end,
   set_auto_preview = function(value)
+    assert(formula_enabled == value, "Generic refresh ran before TeX synchronized document ownership")
     automatic = value
     return automatic
   end,
