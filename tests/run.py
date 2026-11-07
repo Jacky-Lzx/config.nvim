@@ -182,6 +182,7 @@ def suites():
         for name in ("notifications", "completion_input", "annotations", "keymaps", "nested_keymaps", "health")
     ]
     integration += [tui("tasks", {"NVIM_TEST_SCENARIO": "tasks"})]
+    integration += [tui("completion_policy")]
     integration += [
         tui("keymaps", {"NVIM_TEST_REMAP_ACTIONS": "1"}),
         tui("tasks", {"NVIM_TEST_SCENARIO": "tasks", "NVIM_TEST_REMAP_ACTIONS": "1"}),

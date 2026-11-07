@@ -1,19 +1,22 @@
 local M = {}
 
-function M.sources(config)
-  if not vim.b.completion_tools_sources then
-    vim.b.completion_tools_sources = vim.deepcopy(config.default)
+function M.sources(config, ctx)
+  local buf = ctx and ctx.bufnr or vim.api.nvim_get_current_buf()
+  local explicit = vim.b[buf].completion_tools_sources
+  if explicit then
+    return explicit
   end
-  return vim.b.completion_tools_sources
+  return config.defaults and config.defaults(ctx) or vim.deepcopy(config.default)
 end
 
 function M.code_sources()
   return { "lsp", "path" }
 end
 
-function M.active_sources(config)
-  local choices = { M.sources(config), { "buffer", "dictionary", "spell" }, { "snippets" }, M.code_sources() }
-  return choices[vim.b.completion_tools_source_index or 1]
+function M.active_sources(config, ctx)
+  local choices = { M.sources(config, ctx), { "buffer", "dictionary", "spell" }, { "snippets" }, M.code_sources() }
+  local buf = ctx and ctx.bufnr or vim.api.nvim_get_current_buf()
+  return choices[vim.b[buf].completion_tools_source_index or 1]
 end
 
 function M.cycle(config, direction)

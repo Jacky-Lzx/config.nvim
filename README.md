@@ -277,6 +277,13 @@ before the first matching server is enabled. Completion's pure capability API is
 available before LSP startup; its
 interactive setup waits for `InsertEnter`, `CmdlineEnter`, or an explicit completion command.
 Requiring the capability API does not initialize completion sources or timers.
+
+Automatic completion uses LSP, paths, buffers and snippets in code. Markdown,
+plain text, Typst and TeX prose also enable dictionary/spelling sources. Parsed
+TeX math excludes dictionary, spell and Copilot by default. Explicit source
+switches and the word/snippet/code source cycle override that automatic policy.
+Copilot's score offset is below LSP; matching still determines the final order.
+
 nvim-lspconfig is declared as a child of lsp-tools and an explicit dependency.
 It keeps its own checkout and lockfile entry, supplies maintained configs, and
 has no separate setup or activation hook. Existing `after/lsp/` settings and the

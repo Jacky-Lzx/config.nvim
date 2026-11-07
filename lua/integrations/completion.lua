@@ -1,14 +1,38 @@
 local M = {}
 local ai = require("config.context").current().selection.features.ai
 M.source_config = {
-  default = { "lsp", "path", "buffer", "snippets", "dictionary", "spell" },
+  default = { "lsp", "path", "buffer", "snippets" },
   providers = { lsp = {}, path = {}, buffer = {}, snippets = {}, dictionary = {}, spell = {} },
 }
 
 if ai then
-  table.insert(M.source_config.default, 1, "copilot")
+  table.insert(M.source_config.default, "copilot")
   M.source_config.providers.copilot = {}
 end
+
+-- Personal source policy follows the request's buffer and TeX context. Explicit
+-- source toggles take precedence, including when the cursor enters/leaves math.
+function M.default_sources(ctx)
+  local buf = ctx and ctx.bufnr or vim.api.nvim_get_current_buf()
+  local ft = vim.bo[buf].filetype
+  local prose = ft == "markdown" or ft == "text" or ft == "typst" or ft == "tex" or ft == "plaintex"
+  if ft == "tex" or ft == "plaintex" then
+    local tex = package.loaded["tex-tools"]
+    local pos = ctx and { ctx.row, ctx.col } or nil
+    if tex and tex.in_math({ bufnr = buf, pos = pos }) then
+      return { "lsp", "path", "snippets", "buffer" }
+    end
+  end
+  if prose then
+    local sources = { "lsp", "path", "snippets", "buffer", "dictionary", "spell" }
+    if ai then
+      sources[#sources + 1] = "copilot"
+    end
+    return sources
+  end
+  return vim.deepcopy(M.source_config.default)
+end
+M.source_config.defaults = M.default_sources
 
 function M.cycle(cmp, direction)
   local sources = require("features.completion").cycle(M.source_config, direction)
@@ -33,7 +57,7 @@ function M.options()
       return vim.b.completion ~= false and vim.bo.filetype ~= "input-tools-input"
     end,
     sources = function(ctx)
-      local sources = require("features.completion").active_sources(M.source_config)
+      local sources = require("features.completion").active_sources(M.source_config, ctx)
       local obsidian = package.loaded.obsidian_tools
       if obsidian and obsidian.workspace(vim.api.nvim_buf_get_name(ctx and ctx.bufnr or 0)) then
         sources = vim.list_extend(vim.deepcopy(sources), { "obsidian" })
@@ -58,7 +82,7 @@ function M.options()
         require("integrations.obsidian").source(),
         { score_offset = 100, timeout_ms = 10000 }
       ),
-      copilot = ai and { score_offset = 100, timeout_ms = 10000 } or nil,
+      copilot = ai and { score_offset = 40, timeout_ms = 10000 } or nil,
       lsp = {
         score_offset = 60,
         transform_items = function(_, items)

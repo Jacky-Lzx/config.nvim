@@ -20,6 +20,8 @@ def main():
     root = Path(os.environ["NVIM_CONFIG_ROOT"])
     case = sys.argv[1]
     env = dict(os.environ, NVIM_STARTUP_CASE=case)
+    if case == "completion_policy":
+        env["NVIM_TEST_SCENARIO"] = "writing"
     if case == "python_environment":
         env["NVIM_TEST_SCENARIO"] = "python_environment"
     if case == "native_utilities":
@@ -50,6 +52,8 @@ def main():
     if case == "health":
         test_file = "health_tui.lua"
         env["NVIM_TEST_SCENARIO"] = "minimal"
+    if case == "completion_policy":
+        test_file = "completion_policy_tui.lua"
     command = [
         "nvim", "-i", "NONE",
         "--cmd", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",

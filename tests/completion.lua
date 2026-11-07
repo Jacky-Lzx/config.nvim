@@ -34,7 +34,7 @@ local cmp = {
   end,
 }
 assert(integration.toggle_source(cmp, "buffer"))
-assert(vim.deep_equal(shown, { "buffer", "copilot", "lsp", "path", "snippets", "dictionary", "spell" }))
+assert(vim.deep_equal(shown, { "buffer", "copilot", "lsp", "path", "snippets" }))
 assert(integration.cycle(cmp, 1))
 assert(vim.deep_equal(shown, { "buffer", "dictionary", "spell" }))
 local opts = integration.options()
@@ -42,7 +42,7 @@ assert(opts.cmdline.enabled == true and opts.snippets.preset == "default")
 assert(type(opts.providers.snippets.complete) == "function")
 assert(type(opts.snippets.expand) == "function" and type(opts.snippets.jump) == "function")
 assert(vim.deep_equal(opts.keymap["<Tab>"], { "accept", "snippet_forward", "fallback" }))
-assert(not opts.providers.lazydev and opts.providers.copilot.score_offset == 100)
+assert(not opts.providers.lazydev and opts.providers.copilot.score_offset < opts.providers.lsp.score_offset)
 assert(type(opts.keymap["<A-i>"][1]) == "function")
 assert(vim.deep_equal(opts.copilot.command, { "copilot-language-server", "--stdio" }))
 assert(opts.copilot.max_items == 3 and opts.copilot.debounce_ms == 150)
@@ -78,6 +78,37 @@ package.loaded.completion_tools = {
 vim.api.nvim_exec_autocmds("User", { pattern = "SnippetToolsReady" })
 assert(refreshed == 1, "A loaded engine must refresh when snippet bindings become available")
 package.loaded.completion_tools = nil
+local policy_buf = vim.api.nvim_create_buf(true, false)
+vim.bo[policy_buf].filetype = "python"
+local ctx = { bufnr = policy_buf, row = 0, col = 0 }
+local code = opts.sources(ctx)
+assert(
+  vim.list_contains(code, "lsp") and not vim.list_contains(code, "dictionary") and not vim.list_contains(code, "spell")
+)
+vim.bo[policy_buf].filetype = "markdown"
+local prose = opts.sources(ctx)
+assert(vim.list_contains(prose, "dictionary") and vim.list_contains(prose, "spell"))
+assert(vim.b[policy_buf].completion_tools_sources == nil, "Automatic policy must not freeze buffer defaults")
+vim.bo[policy_buf].filetype = "tex"
+local math, previous_tex = false, package.loaded["tex-tools"]
+package.loaded["tex-tools"] = {
+  in_math = function(options)
+    assert(options.bufnr == policy_buf and vim.deep_equal(options.pos, { 0, 0 }))
+    return math
+  end,
+}
+assert(vim.list_contains(opts.sources(ctx), "dictionary"))
+math = true
+local formula = opts.sources(ctx)
+assert(
+  not vim.list_contains(formula, "dictionary")
+    and not vim.list_contains(formula, "spell")
+    and not vim.list_contains(formula, "copilot")
+)
+assert(vim.list_contains(formula, "lsp") and vim.list_contains(formula, "snippets"))
+vim.b[policy_buf].completion_tools_sources = { "copilot", "dictionary" }
+assert(vim.deep_equal(opts.sources(ctx), { "copilot", "dictionary" }), "Manual choices must survive context changes")
+package.loaded["tex-tools"] = previous_tex
 vim.api.nvim_del_augroup_by_name("ConfigCompletion")
 vim.api.nvim_del_augroup_by_name("ConfigCompletionLayout")
 print("Completion policy, persistent buffer-local sources and adapter checks passed")
