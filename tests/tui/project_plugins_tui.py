@@ -1,7 +1,9 @@
 """Verify trusted project selection against actual configured Obsidian startup."""
+
 import errno
 import fcntl
 import os
+import sys
 from pathlib import Path
 import pty
 import select
@@ -11,6 +13,10 @@ import subprocess
 import tempfile
 import termios
 import time
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from support.processes import spawn, stop
+
 
 ROOT = Path(__file__).resolve().parents[2]
 with tempfile.TemporaryDirectory(prefix="nvim-project-plugins-") as temporary:
@@ -119,28 +125,56 @@ vim.api.nvim_create_autocmd('User', {pattern='ConfigReady', once=true, callback=
 end})
 """)
     for selected, outside in ((False, False), (True, False), (True, True)):
-        manifest.write_text("""
+        manifest.write_text(
+            """
 return {{id='obsidian-tools.nvim', opts={workspaces={{name='Fixture', path=vim.env.PROJECT_PLUGIN_VAULT}}}}}
-""" if selected else "return {}")
+"""
+            if selected
+            else "return {}"
+        )
         result = temp / f"result-{selected}-{outside}"
         stage_file = temp / f"stage-{selected}-{outside}"
-        env = dict(os.environ, TERM="xterm-256color", NVIM_CONFIG_ROOT=str(ROOT),
-                   NVIM_TEST_TMP=str(temp), NVIM_TEST_SCENARIO="writing", NVIM_SMOKE_TEST="1",
-                   NVIM_TEST_ENABLE_THIRD_PARTY="0", XDG_CACHE_HOME=str(temp / "cache"),
-                   XDG_STATE_HOME=str(temp / "state"), NVIM_LOG_FILE=str(temp / "nvim.log"),
-                   NVIM_PLUGIN_LOCKFILE=str(lockfile), PROJECT_PLUGIN_SELECTED="1" if selected else "0",
-                   PROJECT_PLUGIN_VAULT=str(project), PROJECT_PLUGIN_FILE=str(manifest),
-                   PROJECT_PLUGIN_RESULT=str(result), PROJECT_PLUGIN_PROBE=str(probe),
-                   PROJECT_PLUGIN_STAGE=str(stage_file))
+        env = dict(
+            os.environ,
+            TERM="xterm-256color",
+            NVIM_CONFIG_ROOT=str(ROOT),
+            NVIM_TEST_TMP=str(temp),
+            NVIM_TEST_SCENARIO="writing",
+            NVIM_SMOKE_TEST="1",
+            NVIM_TEST_ENABLE_THIRD_PARTY="0",
+            XDG_CACHE_HOME=str(temp / "cache"),
+            XDG_STATE_HOME=str(temp / "state"),
+            NVIM_LOG_FILE=str(temp / "nvim.log"),
+            NVIM_PLUGIN_LOCKFILE=str(lockfile),
+            PROJECT_PLUGIN_SELECTED="1" if selected else "0",
+            PROJECT_PLUGIN_VAULT=str(project),
+            PROJECT_PLUGIN_FILE=str(manifest),
+            PROJECT_PLUGIN_RESULT=str(result),
+            PROJECT_PLUGIN_PROBE=str(probe),
+            PROJECT_PLUGIN_STAGE=str(stage_file),
+        )
         master, slave = pty.openpty()
         fcntl.ioctl(slave, termios.TIOCSWINSZ, struct.pack("HHHH", 30, 110, 0, 0))
-        process = subprocess.Popen([
-            "nvim", "-n", "-i", "NONE", "--cmd",
-            "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/support/setup.lua'); "
-            "vim.secure.read=function(path) assert(path==vim.env.PROJECT_PLUGIN_FILE); "
-            "return table.concat(vim.fn.readfile(path), string.char(10)) end; dofile(vim.env.PROJECT_PLUGIN_PROBE)",
-            "-u", str(ROOT / "init.lua"), str(sample),
-        ], cwd=temp if outside else project / "nested", env=env, stdin=slave, stdout=slave, stderr=slave)
+        process = spawn(
+            [
+                "nvim",
+                "-n",
+                "-i",
+                "NONE",
+                "--cmd",
+                "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/support/setup.lua'); "
+                "vim.secure.read=function(path) assert(path==vim.env.PROJECT_PLUGIN_FILE); "
+                "return table.concat(vim.fn.readfile(path), string.char(10)) end; dofile(vim.env.PROJECT_PLUGIN_PROBE)",
+                "-u",
+                str(ROOT / "init.lua"),
+                str(sample),
+            ],
+            cwd=temp if outside else project / "nested",
+            env=env,
+            stdin=slave,
+            stdout=slave,
+            stderr=slave,
+        )
         os.close(slave)
         output = bytearray()
         handled = set()
@@ -159,12 +193,18 @@ return {{id='obsidian-tools.nvim', opts={workspaces={{name='Fixture', path=vim.e
                     os.write(master, {"cancel": b"\x1b", "choose": b"refresh\r"}[stage])
                     handled.add(stage)
             if process.poll() is None:
-                raise AssertionError("Startup timed out\n" + output.decode(errors="replace")[-4000:])
+                raise AssertionError(
+                    "Startup timed out\n" + output.decode(errors="replace")[-4000:]
+                )
             message = result.read_text() if result.exists() else "No startup result"
-            assert process.returncode == 0 and message.startswith("PASS"), message + "\n" + output.decode(errors="replace")[-4000:]
+            assert process.returncode == 0 and message.startswith("PASS"), (
+                message + "\n" + output.decode(errors="replace")[-4000:]
+            )
         finally:
             if process.poll() is None:
-                process.kill()
+                stop(process)
                 process.wait()
             os.close(master)
-    print("PASS project PTY: Obsidian runtime, setup, commands, mappings and image defaults follow project selection")
+    print(
+        "PASS project PTY: Obsidian runtime, setup, commands, mappings and image defaults follow project selection"
+    )

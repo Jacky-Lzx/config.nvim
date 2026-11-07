@@ -100,6 +100,11 @@ reviewable expectations; changing behavior still requires updating those cases.
 
 Each check gets its own cache, state, log, temporary fixtures and copy of the
 plugin lockfile. Native checks also isolate data and development-plugin paths.
+Inherited Neovim RPC/config/init variables are cleared. Config, temporary and
+runtime directories are isolated per case. PTY drivers register process groups
+in the case's ledger; timeout and interruption cleanup combines those records
+with a descendant snapshot, including children that create new sessions.
+An interrupted run retains its partial summary and exits with status 130.
 The runner continues after independent failures and reports passed, failed and
 skipped checks separately. Failures automatically retain `output.log`, Neovim
 logs and state plus `summary.json`; `--keep` also retains successful runs.

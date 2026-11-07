@@ -1,7 +1,9 @@
 """Real configured PTY input, including rendered fields and native collection reload."""
+
 import fcntl
 import json
 import os
+import sys
 from pathlib import Path
 import pty
 import select
@@ -12,22 +14,51 @@ import tempfile
 import termios
 import time
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from support.processes import spawn, stop
+
+
 root = Path(__file__).resolve().parents[2]
 with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
     task = Path(temporary)
     (task / "state/nvim").mkdir(parents=True)
     shutil.copy2(root / "plugin-tools-lock.json", task / "plugin-tools-lock.json")
-    env = dict(os.environ, TERM="xterm-256color", NVIM_CONFIG_ROOT=str(root), NVIM_SMOKE_TEST="1",
-               NVIM_TEST_SCENARIO="writing", NVIM_SNIPPET_STATE=str(task / "snapshot.json"),
-               NVIM_PLUGIN_LOCKFILE=str(task / "plugin-tools-lock.json"), NVIM_LOG_FILE=str(task / "nvim.log"),
-               XDG_CACHE_HOME=str(task / "cache"), XDG_STATE_HOME=str(task / "state"), SSH_CONNECTION="")
+    env = dict(
+        os.environ,
+        TERM="xterm-256color",
+        NVIM_CONFIG_ROOT=str(root),
+        NVIM_SMOKE_TEST="1",
+        NVIM_TEST_SCENARIO="writing",
+        NVIM_SNIPPET_STATE=str(task / "snapshot.json"),
+        NVIM_PLUGIN_LOCKFILE=str(task / "plugin-tools-lock.json"),
+        NVIM_LOG_FILE=str(task / "nvim.log"),
+        XDG_CACHE_HOME=str(task / "cache"),
+        XDG_STATE_HOME=str(task / "state"),
+        SSH_CONNECTION="",
+    )
     (task / "trial.tex").write_text("")
     primary, secondary = pty.openpty()
     fcntl.ioctl(secondary, termios.TIOCSWINSZ, struct.pack("HHHH", 36, 120, 0, 0))
-    child = subprocess.Popen([os.environ.get("NVIM", "nvim"), "-i", "NONE", "--cmd",
-        "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/support/setup.lua')", "-u", str(root / "init.lua"),
-        "-c", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/tui/latex_snippets_tui.lua')", str(task / "trial.tex")],
-        cwd=root, env=env, stdin=secondary, stdout=secondary, stderr=secondary, start_new_session=True)
+    child = spawn(
+        [
+            os.environ.get("NVIM", "nvim"),
+            "-i",
+            "NONE",
+            "--cmd",
+            "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/support/setup.lua')",
+            "-u",
+            str(root / "init.lua"),
+            "-c",
+            "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/tui/latex_snippets_tui.lua')",
+            str(task / "trial.tex"),
+        ],
+        cwd=root,
+        env=env,
+        stdin=secondary,
+        stdout=secondary,
+        stderr=secondary,
+        start_new_session=True,
+    )
     os.close(secondary)
     output, states, tail = bytearray(), [], b""
 
@@ -39,26 +70,38 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
         data = os.read(primary, 65536)
         output.extend(data)
         stream = tail + data
-        replies = {b"\x1b[5n": b"\x1b[0n", b"\x1b[6n": b"\x1b[1;1R", b"\x1b[c": b"\x1b[?1;2c",
-                   b"\x1b[>c": b"\x1b[>0;1;0c", b"\x1b[?u": b"\x1b[?0u"}
+        replies = {
+            b"\x1b[5n": b"\x1b[0n",
+            b"\x1b[6n": b"\x1b[1;1R",
+            b"\x1b[c": b"\x1b[?1;2c",
+            b"\x1b[>c": b"\x1b[>0;1;0c",
+            b"\x1b[?u": b"\x1b[?0u",
+        }
         for which, color in ((b"10", b"dddd/dddd/dddd"), (b"11", b"0000/0000/0000")):
             for end in (b"\x07", b"\x1b\\"):
-                replies[b"\x1b]" + which + b";?" + end] = b"\x1b]" + which + b";rgb:" + color + end
+                replies[b"\x1b]" + which + b";?" + end] = (
+                    b"\x1b]" + which + b";rgb:" + color + end
+                )
         for query, reply in replies.items():
             at = stream.find(query)
             while at >= 0:
-                if at + len(query) > len(tail): send(reply)
+                if at + len(query) > len(tail):
+                    send(reply)
                 at = stream.find(query, at + 1)
         tail = stream[-32:]
 
     def wait(predicate, label):
         deadline, latest = time.monotonic() + 7, None
         while time.monotonic() < deadline:
-            if select.select([primary], [], [], .01)[0]:
-                try: drain()
-                except OSError: break
-            try: latest = json.loads((task / "snapshot.json").read_text())
-            except (FileNotFoundError, json.JSONDecodeError): continue
+            if select.select([primary], [], [], 0.01)[0]:
+                try:
+                    drain()
+                except OSError:
+                    break
+            try:
+                latest = json.loads((task / "snapshot.json").read_text())
+            except (FileNotFoundError, json.JSONDecodeError):
+                continue
             assert not latest["errors"], latest
             if predicate(latest):
                 states.append(label)
@@ -69,8 +112,23 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
         send(b"\x1c\x0e")  # Ctrl-\ Ctrl-N also exits Insert mode unambiguously.
         wait(lambda s: s["mode"] == "n", "normal")
         send(b":lua latex_snippet_reset(" + (b"true" if beamer else b"false") + b")\r")
-        wait(lambda s: s["mode"] == "n" and s["lines"] == (
-            ["\\documentclass{beamer}", "\\begin{document}", "", "\\end{document}"] if beamer else [""]), "fresh TeX")
+        wait(
+            lambda s: (
+                s["mode"] == "n"
+                and s["lines"]
+                == (
+                    [
+                        "\\documentclass{beamer}",
+                        "\\begin{document}",
+                        "",
+                        "\\end{document}",
+                    ]
+                    if beamer
+                    else [""]
+                )
+            ),
+            "fresh TeX",
+        )
 
     def expand(trigger):
         send(b"i" + trigger.encode())
@@ -78,12 +136,28 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
         send(b"\t")
 
     try:
-        initial = wait(lambda s: s["mode"] == "n" and s["engine"] == "snippet-tools", "cold TeX startup")
+        initial = wait(
+            lambda s: s["mode"] == "n" and s["engine"] == "snippet-tools",
+            "cold TeX startup",
+        )
         assert not initial["loaded"], "TeX opening eagerly loaded snippet runtime"
         expand("bf")
-        wait(lambda s: s["lines"] == ["\\textbf{}"] and s["mode"] == "i" and "" in s["screen"] and "" in s["screen"], "native field and distinct final-stop markers")
+        wait(
+            lambda s: (
+                s["lines"] == ["\\textbf{}"]
+                and s["mode"] == "i"
+                and "" in s["screen"]
+                and "" in s["screen"]
+            ),
+            "native field and distinct final-stop markers",
+        )
         send(b"text\x1bl!")
-        wait(lambda s: s["lines"] == ["\\textbf{text}!"] and "\\textbf{text}!" in s["screen"], "rendered TeX wrapper")
+        wait(
+            lambda s: (
+                s["lines"] == ["\\textbf{text}!"] and "\\textbf{text}!" in s["screen"]
+            ),
+            "rendered TeX wrapper",
+        )
 
         reset()
         send(b"imkx\x1bl!")
@@ -97,36 +171,76 @@ with tempfile.TemporaryDirectory(prefix="latex-snippets-") as temporary:
 
         reset()
         expand("equation")
-        wait(lambda s: any("\\label{eq:}" in line for line in s["lines"]), "equation label")
+        wait(
+            lambda s: any("\\label{eq:}" in line for line in s["lines"]),
+            "equation label",
+        )
         send(b"\x1blx\x1bh\x1bj")
-        wait(lambda s: s["lines"] == ["\\begin{equation*}", "  x", "\\end{equation*}"], "star removes label, preserves body")
+        wait(
+            lambda s: s["lines"] == ["\\begin{equation*}", "  x", "\\end{equation*}"],
+            "star removes label, preserves body",
+        )
         send(b"\x1bk")
-        wait(lambda s: any("\\label{eq:}" in line for line in s["lines"]) and s["lines"][1] == "  x", "reverse choice restores label")
+        wait(
+            lambda s: (
+                any("\\label{eq:}" in line for line in s["lines"])
+                and s["lines"][1] == "  x"
+            ),
+            "reverse choice restores label",
+        )
 
         reset()
         expand("figure")
-        wait(lambda s: s["mode"] == "s" and s["selection"] == "H" and "" in s["screen"], "figure placement selection and choice marker")
+        wait(
+            lambda s: s["mode"] == "s" and s["selection"] == "H" and "" in s["screen"],
+            "figure placement selection and choice marker",
+        )
         send(b"\x1bj\x1bl7\x1blmy_figure.pdf\x1blCaption\x1bl!")
-        wait(lambda s: "  \\label{fig:my-figure}" in s["lines"] and s["lines"][-1] == "\\end{figure}!", "filename label linkage")
+        wait(
+            lambda s: (
+                "  \\label{fig:my-figure}" in s["lines"]
+                and s["lines"][-1] == "\\end{figure}!"
+            ),
+            "filename label linkage",
+        )
 
         reset(True)
         expand("columns")
-        wait(lambda s: s["mode"] == "s" and s["selection"] == "49" and "0.49" in s["screen"], "rendered column width selection")
+        wait(
+            lambda s: (
+                s["mode"] == "s" and s["selection"] == "49" and "0.49" in s["screen"]
+            ),
+            "rendered column width selection",
+        )
         send(b"30\x1blLeft\x1blRight")
-        wait(lambda s: "  \\begin{column}{0.68\\linewidth}" in s["lines"] and "    Right" in s["lines"], "linked Beamer widths")
+        wait(
+            lambda s: (
+                "  \\begin{column}{0.68\\linewidth}" in s["lines"]
+                and "    Right" in s["lines"]
+            ),
+            "linked Beamer widths",
+        )
 
         reset()
         send(b":SnippetToolsReload\r")
         wait(lambda s: s["mode"] == "n", "native TeX reload")
         expand("bf")
-        wait(lambda s: s["lines"] == ["\\textbf{}"] and s["mode"] == "i", "native query after reload")
+        wait(
+            lambda s: s["lines"] == ["\\textbf{}"] and s["mode"] == "i",
+            "native query after reload",
+        )
         send(b"native\x1bl!")
-        wait(lambda s: s["lines"] == ["\\textbf{native}!"], "native field navigation after reload")
+        wait(
+            lambda s: s["lines"] == ["\\textbf{native}!"],
+            "native field navigation after reload",
+        )
         print(f"Configured LaTeX PTY: {len(states)} intermediate states passed")
     finally:
         if child.poll() is None:
             child.terminate()
-            try: child.wait(timeout=3)
+            try:
+                child.wait(timeout=3)
             except subprocess.TimeoutExpired:
-                child.kill(); child.wait()
+                stop(child)
+                child.wait()
         os.close(primary)

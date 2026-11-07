@@ -1,7 +1,9 @@
 """Exercise native collections through the configured terminal without a legacy engine."""
+
 import fcntl
 import json
 import os
+import sys
 from pathlib import Path
 import pty
 import select
@@ -12,21 +14,49 @@ import tempfile
 import termios
 import time
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from support.processes import spawn, stop
+
+
 root = Path(__file__).resolve().parents[2]
 with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
     task = Path(temporary)
     shutil.copy2(root / "plugin-tools-lock.json", task / "plugin-tools-lock.json")
-    env = dict(os.environ, TERM="xterm-256color", NVIM_CONFIG_ROOT=str(root), NVIM_SMOKE_TEST="1",
-               NVIM_TEST_SCENARIO="writing", NVIM_SNIPPET_STATE=str(task / "state.json"),
-               NVIM_PLUGIN_LOCKFILE=str(task / "plugin-tools-lock.json"), NVIM_LOG_FILE=str(task / "nvim.log"),
-               XDG_CACHE_HOME=str(task / "cache"), XDG_STATE_HOME=str(task / "state"))
+    env = dict(
+        os.environ,
+        TERM="xterm-256color",
+        NVIM_CONFIG_ROOT=str(root),
+        NVIM_SMOKE_TEST="1",
+        NVIM_TEST_SCENARIO="writing",
+        NVIM_SNIPPET_STATE=str(task / "state.json"),
+        NVIM_PLUGIN_LOCKFILE=str(task / "plugin-tools-lock.json"),
+        NVIM_LOG_FILE=str(task / "nvim.log"),
+        XDG_CACHE_HOME=str(task / "cache"),
+        XDG_STATE_HOME=str(task / "state"),
+    )
     (task / "trial.md").write_text("")
     primary, secondary = pty.openpty()
     fcntl.ioctl(secondary, termios.TIOCSWINSZ, struct.pack("HHHH", 36, 120, 0, 0))
-    child = subprocess.Popen(["nvim", "-i", "NONE", "--cmd",
-        "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/support/setup.lua')", "-u", str(root / "init.lua"),
-        "-c", "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/tui/snippets_tui.lua')", str(task / "trial.md")],
-        cwd=root,env=env,stdin=secondary,stdout=secondary,stderr=secondary,start_new_session=True)
+    child = spawn(
+        [
+            "nvim",
+            "-i",
+            "NONE",
+            "--cmd",
+            "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/support/setup.lua')",
+            "-u",
+            str(root / "init.lua"),
+            "-c",
+            "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/tui/snippets_tui.lua')",
+            str(task / "trial.md"),
+        ],
+        cwd=root,
+        env=env,
+        stdin=secondary,
+        stdout=secondary,
+        stderr=secondary,
+        start_new_session=True,
+    )
     os.close(secondary)
     output, states = bytearray(), []
 
@@ -36,7 +66,7 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
     def wait(predicate, label):
         deadline, latest = time.monotonic() + 5, None
         while time.monotonic() < deadline:
-            if select.select([primary], [], [], .01)[0]:
+            if select.select([primary], [], [], 0.01)[0]:
                 try:
                     output.extend(os.read(primary, 65536))
                 except OSError:
@@ -55,7 +85,12 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
         send(b"\x1b")
         wait(lambda s: s["mode"] == "n", "normal")
         send((":lua snippet_config_reset('" + filetype + "')\r").encode())
-        wait(lambda s: s["lines"] == [""] and s["mode"] == "n" and s["filetype"] == filetype, "fresh " + filetype)
+        wait(
+            lambda s: (
+                s["lines"] == [""] and s["mode"] == "n" and s["filetype"] == filetype
+            ),
+            "fresh " + filetype,
+        )
 
     def expand(trigger):
         send(b"i" + trigger.encode())
@@ -63,20 +98,37 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
         send(b"\t")
 
     try:
-        initial = wait(lambda s: s["mode"] == "n" and s["engine"] == "snippet-tools", "startup")
+        initial = wait(
+            lambda s: s["mode"] == "n" and s["engine"] == "snippet-tools", "startup"
+        )
         assert not initial["loaded"], "Opening Markdown eagerly loaded snippet runtime"
         send(b"ibold")
-        wait(lambda s: s["menu"] and s.get("selected") == "bold", "native completion menu")
+        wait(
+            lambda s: s["menu"] and s.get("selected") == "bold",
+            "native completion menu",
+        )
         send(b"\t")
-        wait(lambda s: s["mode"] == "s" and "**BOLD**" in s["screen"], "rendered native field")
+        wait(
+            lambda s: s["mode"] == "s" and "**BOLD**" in s["screen"],
+            "rendered native field",
+        )
         send(b"text\x1bl!")
         wait(lambda s: s["lines"] == ["**text**!"], "native Alt-l")
 
         reset()
         send(b"itable2x2 ")
-        wait(lambda s: s["mode"] == "s" and s["lines"][:3] == ["| 1 | 2 |", "| - | - |", "| 3 | 4 |"], "generated table selection")
+        wait(
+            lambda s: (
+                s["mode"] == "s"
+                and s["lines"][:3] == ["| 1 | 2 |", "| - | - |", "| 3 | 4 |"]
+            ),
+            "generated table selection",
+        )
         send(b"A\x1blB\x1blC\x1blD\x1bl!")
-        wait(lambda s: s["lines"] == ["| A | B |", "| - | - |", "| C | D |", "!"], "table input burst")
+        wait(
+            lambda s: s["lines"] == ["| A | B |", "| - | - |", "| C | D |", "!"],
+            "table input burst",
+        )
 
         reset()
         send(b"imkx\x1bl!")
@@ -85,29 +137,62 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
         reset("lua")
         expand("req")
         send(b"pkg.module\x1bl")
-        wait(lambda s: s["lines"] == ['local module = require("pkg.module")'] and s["mode"] == "s", "Lua dynamic local name")
+        wait(
+            lambda s: (
+                s["lines"] == ['local module = require("pkg.module")']
+                and s["mode"] == "s"
+            ),
+            "Lua dynamic local name",
+        )
         send(b"Alias\x1bl!")
-        wait(lambda s: s["lines"] == ['local Alias = require("pkg.module")!'], "editable Lua dynamic field")
+        wait(
+            lambda s: s["lines"] == ['local Alias = require("pkg.module")!'],
+            "editable Lua dynamic field",
+        )
 
         reset("python")
         expand("fras")
         send(b"pathlib\x1blPath\x1blP\x1bl!")
-        wait(lambda s: s["lines"] == ["from pathlib import Path as P!"], "Python import field burst")
+        wait(
+            lambda s: s["lines"] == ["from pathlib import Path as P!"],
+            "Python import field burst",
+        )
 
         reset("rust")
         expand("hello")
         send(b"!")
-        wait(lambda s: s["lines"] == ['println!("Hello world");!'], "Rust native expansion")
+        wait(
+            lambda s: s["lines"] == ['println!("Hello world");!'],
+            "Rust native expansion",
+        )
 
         reset("typst")
         expand("figure")
         send(b"my_plot.png\x1blCaption\x1bl!")
-        wait(lambda s: s["lines"] == ['#figure(image("./Figures/my_plot.png", width: 80%), caption: [Caption]) <fig:my_plot>!'], "Typst computed figure label")
+        wait(
+            lambda s: (
+                s["lines"]
+                == [
+                    '#figure(image("./Figures/my_plot.png", width: 80%), caption: [Caption]) <fig:my_plot>!'
+                ]
+            ),
+            "Typst computed figure label",
+        )
 
         reset("systemverilog")
         expand("for")
         send(b"index\x1bl10\x1blbody\x1bl!")
-        state = wait(lambda s: s["lines"] == ["for (index= 0; index < 10; index = index + 1) begin", "  body!", "end"], "Verilog mirror burst")
+        state = wait(
+            lambda s: (
+                s["lines"]
+                == [
+                    "for (index= 0; index < 10; index = index + 1) begin",
+                    "  body!",
+                    "end",
+                ]
+            ),
+            "Verilog mirror burst",
+        )
         assert not state["legacy_loaded"], "Native language snippets loaded LuaSnip"
 
         reset()
@@ -116,7 +201,9 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
         expand("bold")
         wait(lambda s: s["mode"] == "s", "native field after reload")
         send(b"native\x1bl!")
-        state = wait(lambda s: s["lines"] == ["**native**!"], "native field input after reload")
+        state = wait(
+            lambda s: s["lines"] == ["**native**!"], "native field input after reload"
+        )
         assert not state["legacy_loaded"]
 
         reset()
@@ -129,5 +216,6 @@ with tempfile.TemporaryDirectory(prefix="configured-snippets-") as temporary:
             try:
                 child.wait(timeout=3)
             except subprocess.TimeoutExpired:
-                child.kill(); child.wait()
+                stop(child)
+                child.wait()
         os.close(primary)

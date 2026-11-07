@@ -17,6 +17,7 @@ from pathlib import Path
 from support.paths import ROOT, test_path
 from support.tui_cases import FILES as TUI_FILES
 from support.registry import validate_registry
+from support.processes import spawn, stop, LEDGER
 
 FULL = {"NVIM_TEST_SCENARIO": "full", "NVIM_TEST_ENABLE_THIRD_PARTY": "1"}
 
@@ -358,6 +359,10 @@ def environment(case, directory):
             "NVIM_PLUGIN_ROOT",
         ):
             env.pop(name)
+    for name in ("NVIM", "NVIM_LISTEN_ADDRESS", "NVIM_APPNAME", "VIMINIT", "EXINIT"):
+        env.pop(name, None)
+    for name in ("tmp", "runtime", "config"):
+        (directory / name).mkdir(parents=True, exist_ok=True)
     env.update(
         NVIM_CONFIG_ROOT=str(ROOT),
         NVIM_TEST_TMP=str(directory),
@@ -366,6 +371,10 @@ def environment(case, directory):
         XDG_CACHE_HOME=str(directory / "cache"),
         XDG_STATE_HOME=str(directory / "state"),
         NVIM_LOG_FILE=str(directory / "nvim.log"),
+        XDG_CONFIG_HOME=str(directory / "config"),
+        XDG_RUNTIME_DIR=str(directory / "runtime"),
+        TMPDIR=str((directory / "tmp").resolve()),
+        PYTHONDONTWRITEBYTECODE="1",
         SSH_CONNECTION="",
         NVIM_PLUGIN_LOCKFILE=str(directory / "plugin-tools-lock.json"),
     )
@@ -374,6 +383,7 @@ def environment(case, directory):
         str(Path.home() / "Documents/Github/nvim_plugins/plugin-tools.nvim"),
     )
     env.update(case.env)
+    env[LEDGER] = str(directory / "process-groups.jsonl")
     if env.get("NVIM_TEST_ISOLATE_PLUGINS") == "1":
         env.update(
             XDG_DATA_HOME=str(directory / "data"),
@@ -443,7 +453,7 @@ def execute(case, directory):
     started = time.monotonic()
     try:
         with (directory / "output.log").open("wb") as log:
-            process = subprocess.Popen(
+            process = spawn(
                 case.command,
                 cwd=ROOT,
                 env=env,
@@ -457,9 +467,11 @@ def execute(case, directory):
                 if code:
                     record["reason"] = f"exit {code}"
             except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
-                process.wait()
+                stop(process, env[LEDGER])
                 record.update(status="fail", reason=f"timeout after {case.timeout}s")
+            except BaseException:
+                stop(process, env[LEDGER])
+                raise
     except OSError as error:
         record.update(status="fail", reason=str(error))
     record["seconds"] = round(time.monotonic() - started, 3)
@@ -541,6 +553,7 @@ def main():
         f"Testing {summary['nvim']}; config {summary['config_commit']}; artifacts {directory}",
         flush=True,
     )
+    interrupted = False
     for index, (group, case) in enumerate(cases, 1):
         print(f"[{index}/{len(cases)}] {group}/{case.label()}", flush=True)
         case_directory = (
@@ -548,6 +561,16 @@ def main():
         )
         try:
             result = execute(case, case_directory)
+        except KeyboardInterrupt:
+            interrupted = True
+            result = {
+                "name": case.label(),
+                "directory": str(case_directory),
+                "status": "fail",
+                "reason": "interrupted",
+                "seconds": 0,
+                "command": case.command,
+            }
         except (OSError, subprocess.SubprocessError, ValueError) as error:
             result = {
                 "name": case.name,
@@ -584,11 +607,14 @@ def main():
                 end="",
                 flush=True,
             )
+        summary["interrupted"] = interrupted
         (directory / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+        if interrupted:
+            break
     failed = [r for r in summary["results"] if r["status"] == "fail"]
     skipped = [r for r in summary["results"] if r["status"] == "skip"]
     print(
-        f"\nChecks: {len(cases) - len(failed) - len(skipped)} passed, {len(failed)} failed, {len(skipped)} skipped."
+        f"\nChecks: {len(summary['results']) - len(failed) - len(skipped)} passed, {len(failed)} failed, {len(skipped)} skipped."
     )
     for result in failed + skipped:
         print(
@@ -599,8 +625,13 @@ def main():
         print(f"Logs and summary retained: {directory}")
     else:
         shutil.rmtree(directory)
-    return bool(failed)
+    return 130 if interrupted else bool(failed)
 
 
 if __name__ == "__main__":
+
+    def terminate(signum, frame):
+        raise KeyboardInterrupt
+
+    signal.signal(signal.SIGTERM, terminate)
     sys.exit(main())
