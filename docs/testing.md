@@ -31,6 +31,8 @@ Run the smoke runner with:
 ./tests/smoke.sh integration --filter tui:tasks --keep
 ./tests/smoke.sh --check        # Validate script roles and unique case identities
 ./tests/smoke.sh integration --list
+./tests/smoke.sh all --feature completion --list
+./tests/smoke.sh native --jobs 2 --durations 10
 ```
 
 Test scripts are grouped by responsibility:
@@ -61,6 +63,15 @@ No argument runs `all`. Use `native` and `integration` during daily configuratio
 changes, then `compatibility` for changes involving optional owners or their
 integration. `acceptance` needs the installed language servers. Remote network
 installation and real TeX compilation remain separate explicit commands.
+`--feature` selects an explicit coverage group from `tests/support/features.py`;
+repeat it to include several groups, and combine it with `--filter` or `--list`.
+`--durations N` reports the slowest cases; summaries record total wall time.
+`--jobs N` only overlaps native checks explicitly marked safe, with separate
+data/config/cache/state/tmp directories. All non-native cases stay serial and
+wait for earlier native checks. The default remains one job. Interruption cancels
+queued work and stops active process groups before executor shutdown.
+Successful logs stay in case files and are printed with `--verbose`; failures
+print their log tail automatically. Use `--keep` to retain a successful run.
 
 For reusable plugin changes, first run `sh tests/run.sh` in the owning checkout,
 then its `integration` suite when changing a shared interface or UI consumer.

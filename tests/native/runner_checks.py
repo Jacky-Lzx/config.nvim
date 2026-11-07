@@ -5,7 +5,6 @@ import io
 import json
 import os
 import sys
-import subprocess
 import time
 import tempfile
 import unittest
@@ -16,12 +15,131 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from run import Case, environment, execute, main
 from support.registry import validate_registry
-from support.processes import spawn, stop
+from support.processes import spawn
 from support.tui_cases import Stage
 from support.tui_protocol import event
 
 
 class RunnerChecks(unittest.TestCase):
+    def test_parallel_interrupt_cancels_queued_work_and_stops_active_groups(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            directory = root / "run"
+            directory.mkdir()
+            code = "import os,sys,time; from pathlib import Path; Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(60)"
+            cases = [
+                Case(
+                    str(i),
+                    [sys.executable, "-c", code, str(root / f"pid-{i}")],
+                    parallel=True,
+                )
+                for i in range(3)
+            ]
+
+            def interrupt_when_running(*args, **kwargs):
+                deadline = time.monotonic() + 5
+                while len(list(root.glob("pid-*"))) < 2 and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                raise KeyboardInterrupt
+
+            with (
+                patch("run.suites", return_value={"native": cases}),
+                patch("run.tempfile.mkdtemp", return_value=str(directory)),
+                patch(
+                    "concurrent.futures.Future.result",
+                    side_effect=interrupt_when_running,
+                ),
+                patch.object(sys, "argv", ["run.py", "native", "--jobs", "2"]),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                self.assertEqual(main(), 130)
+            self.assertEqual(
+                len(list(root.glob("pid-*"))),
+                2,
+                "Queued case started after interruption",
+            )
+            for marker in root.glob("pid-*"):
+                with self.assertRaises(ProcessLookupError):
+                    os.kill(int(marker.read_text()), 0)
+
+    def test_parallel_native_checks_overlap_and_serial_case_waits(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            directory = root / "run"
+            directory.mkdir()
+            code = (
+                "import sys,time; from pathlib import Path; "
+                "root=Path(sys.argv[1]); name=sys.argv[2]; (root/name).touch(); "
+                "deadline=time.monotonic()+5; "
+                "\nwhile len(list(root.glob('ready-*')))<2 and time.monotonic()<deadline: time.sleep(.01)\n"
+                "assert len(list(root.glob('ready-*')))==2; (root/(name+'-done')).touch()"
+            )
+            cases = [
+                Case(name, [sys.executable, "-c", code, str(root), name], parallel=True)
+                for name in ("ready-a", "ready-b")
+            ]
+            # Count only ready files when waiting: completion markers have a distinct suffix.
+            code = code.replace(
+                "root.glob('ready-*')",
+                "(p for p in root.glob('ready-*') if not p.name.endswith('-done'))",
+            )
+            for case in cases:
+                case.command[2] = code
+            serial = (
+                "from pathlib import Path; p=Path("
+                + repr(str(root))
+                + "); assert len(list(p.glob('*-done')))==2"
+            )
+            cases.append(
+                Case(
+                    "serial-pty",
+                    [sys.executable, "-c", serial + "; (p/'serial-done').touch()"],
+                )
+            )
+            cases.append(
+                Case(
+                    "after-serial",
+                    [
+                        sys.executable,
+                        "-c",
+                        "from pathlib import Path; assert Path("
+                        + repr(str(root / "serial-done"))
+                        + ").exists()",
+                    ],
+                    parallel=True,
+                )
+            )
+            with (
+                patch("run.suites", return_value={"native": cases}),
+                patch("run.tempfile.mkdtemp", return_value=str(directory)),
+                patch.object(
+                    sys, "argv", ["run.py", "native", "--jobs", "2", "--keep"]
+                ),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                self.assertFalse(main())
+            results = json.loads((directory / "summary.json").read_text())["results"]
+            self.assertEqual([r["name"] for r in results], [c.name for c in cases])
+            self.assertTrue(all(r["status"] == "pass" for r in results))
+
+    def test_feature_selection_includes_configured_and_optional_variants(self):
+        with (
+            patch.object(
+                sys, "argv", ["run.py", "all", "--feature", "completion", "--list"]
+            ),
+            patch(
+                "run.execute",
+                side_effect=AssertionError("Feature listing executed a case"),
+            ),
+            contextlib.redirect_stdout(io.StringIO()) as output,
+        ):
+            self.assertFalse(main())
+        text = output.getvalue()
+        self.assertIn("native/completion", text)
+        self.assertIn("integration/tui:completion_policy[writing]", text)
+        self.assertIn("copilot_mode=staged", text)
+        self.assertNotIn("file_tools_tui", text)
+
     def test_stage_protocol_waits_for_complete_input_and_dispatches_once(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

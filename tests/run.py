@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 import argparse
 import json
 import os
@@ -17,7 +18,15 @@ from pathlib import Path
 from support.paths import ROOT, test_path
 from support.tui_cases import FILES as TUI_FILES, SCENARIOS
 from support.registry import validate_registry
-from support.processes import spawn, stop, LEDGER
+from support.processes import (
+    spawn,
+    stop,
+    release,
+    cancel_all,
+    reset_cancellation,
+    LEDGER,
+)
+from support.features import FEATURES, tags
 
 FULL = {"NVIM_TEST_SCENARIO": "full", "NVIM_TEST_ENABLE_THIRD_PARTY": "1"}
 
@@ -30,6 +39,8 @@ class Case:
     timeout: float = 90
     skip: str = ""
     files: tuple[str, ...] = ()
+    features: tuple[str, ...] = ()
+    parallel: bool = False
 
     def label(self):
         variants = []
@@ -74,6 +85,7 @@ def lua(name, env=None):
         ],
         env or {},
         files=(test_path(name + ".lua").relative_to(ROOT).as_posix(),),
+        features=tags(name),
     )
 
 
@@ -96,6 +108,7 @@ def startup(name, env=None):
         ],
         env or {},
         files=(test_path(name + ".lua").relative_to(ROOT).as_posix(),),
+        features=tags(name),
     )
 
 
@@ -105,6 +118,7 @@ def python(name, *args, env=None):
         [sys.executable, str(test_path(name + ".py")), *args],
         env or {},
         timeout=150,
+        features=tags(name),
         files=tuple(
             path.relative_to(ROOT).as_posix()
             for path in (
@@ -121,6 +135,7 @@ def tui(name, env=None):
     effective.update(SCENARIOS[name].env)
     case = python("tui", name, env=effective)
     case.files += (test_path(TUI_FILES[name]).relative_to(ROOT).as_posix(),)
+    case.features = tags(name)
     return case
 
 
@@ -159,6 +174,7 @@ def suites():
     ]
     for case in native:
         case.env["NVIM_TEST_ISOLATE_PLUGINS"] = "1"
+        case.parallel = True
 
     # Real personal defaults, without re-enabling disabled declarations.
     integration = [
@@ -475,6 +491,8 @@ def execute(case, directory):
             except BaseException:
                 stop(process, env[LEDGER])
                 raise
+            finally:
+                release(process)
     except OSError as error:
         record.update(status="fail", reason=str(error))
     record["seconds"] = round(time.monotonic() - started, 3)
@@ -516,7 +534,30 @@ def main():
         action="store_true",
         help="Validate case identities and script registration",
     )
+    parser.add_argument(
+        "--feature",
+        action="append",
+        choices=sorted(FEATURES),
+        default=[],
+        help="Select cases covering a feature; repeat to select several",
+    )
+    parser.add_argument(
+        "--jobs",
+        type=int,
+        default=1,
+        help="Maximum parallel isolated native checks; PTY/integration cases stay serial",
+    )
+    parser.add_argument(
+        "--durations", type=int, default=0, help="Report this many slowest cases"
+    )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Print successful case logs as well as results",
+    )
     args = parser.parse_args()
+    if args.jobs < 1 or args.durations < 0:
+        parser.error("jobs must be positive and durations nonnegative")
     if args.check:
         validate_registry(ROOT, available)
         print("Test registration passed")
@@ -531,6 +572,7 @@ def main():
         for group in selected
         for case in available[group]
         if args.filter in group + "/" + case.label()
+        and (not args.feature or set(args.feature).intersection(case.features))
     ]
     if not cases:
         parser.error("No matching checks")
@@ -551,21 +593,47 @@ def main():
         "config_changes": git(ROOT, "status", "--short"),
         "nvim": (version.stdout.splitlines() or [version.stderr])[0],
         "results": [],
+        "jobs": args.jobs,
+        "features": args.feature,
     }
     print(
         f"Testing {summary['nvim']}; config {summary['config_commit']}; artifacts {directory}",
         flush=True,
     )
     interrupted = False
+    started = time.monotonic()
+    reset_cancellation()
+    pool = ThreadPoolExecutor(max_workers=args.jobs) if args.jobs > 1 else None
+    futures = {}
     for index, (group, case) in enumerate(cases, 1):
         print(f"[{index}/{len(cases)}] {group}/{case.label()}", flush=True)
         case_directory = (
             directory / f"{index:03d}-{group}-{case.name.replace(':', '-')}"
         )
         try:
-            result = execute(case, case_directory)
+            if pool and group == "native" and case.parallel and index not in futures:
+                # Submit only this contiguous native batch. A serial declaration
+                # is a barrier for both earlier and later parallel work.
+                for offset in range(index - 1, len(cases)):
+                    pending_group, pending = cases[offset]
+                    if pending_group != "native" or not pending.parallel:
+                        break
+                    number = offset + 1
+                    target = (
+                        directory
+                        / f"{number:03d}-{pending_group}-{pending.name.replace(':', '-')}"
+                    )
+                    futures[number] = pool.submit(execute, pending, target)
+            result = (
+                futures[index].result()
+                if index in futures
+                else execute(case, case_directory)
+            )
         except KeyboardInterrupt:
             interrupted = True
+            for future in futures.values():
+                future.cancel()
+            cancel_all()
             result = {
                 "name": case.label(),
                 "directory": str(case_directory),
@@ -603,7 +671,7 @@ def main():
             flush=True,
         )
         log = Path(result["directory"]) / "output.log"
-        if log.exists():
+        if log.exists() and (args.verbose or result["status"] != "pass"):
             content = log.read_text(errors="replace")
             print(
                 content if result["status"] == "pass" else content[-10000:],
@@ -616,6 +684,17 @@ def main():
         (directory / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         if interrupted:
             break
+    if pool:
+        pool.shutdown(wait=True, cancel_futures=True)
+    reset_cancellation()
+    summary["wall_seconds"] = round(time.monotonic() - started, 3)
+    (directory / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    if args.durations:
+        print("Slowest cases:")
+        for result in sorted(
+            summary["results"], key=lambda r: r["seconds"], reverse=True
+        )[: args.durations]:
+            print(f"  {result['seconds']:.3f}s {result['suite']}/{result['name']}")
     failed = [r for r in summary["results"] if r["status"] == "fail"]
     skipped = [r for r in summary["results"] if r["status"] == "skip"]
     print(

@@ -5,11 +5,22 @@ import os
 from pathlib import Path
 import signal
 import subprocess
+import threading
 
 LEDGER = "NVIM_TEST_PROCESS_LEDGER"
+_active = {}
+_lock = threading.RLock()
+_cancelled = False
 
 
 def spawn(*args, **kwargs):
+    with _lock:
+        if _cancelled:
+            raise InterruptedError("Test run cancelled")
+        return _spawn(*args, **kwargs)
+
+
+def _spawn(*args, **kwargs):
     kwargs.setdefault("start_new_session", True)
     process = subprocess.Popen(*args, **kwargs)
     ledger = kwargs.get("env", os.environ).get(LEDGER)
@@ -26,7 +37,28 @@ def spawn(*args, **kwargs):
         )
         with open(ledger, "a") as output:
             output.write(entry)
+    _active[process.pid] = (process, ledger)
     return process
+
+
+def release(process):
+    with _lock:
+        _active.pop(process.pid, None)
+
+
+def reset_cancellation():
+    global _cancelled
+    with _lock:
+        _cancelled = False
+
+
+def cancel_all():
+    global _cancelled
+    with _lock:
+        _cancelled = True
+        owned = list(_active.values())
+    for process, ledger in owned:
+        stop(process, ledger)
 
 
 def stop(process, ledger=None):
@@ -64,3 +96,4 @@ def stop(process, ledger=None):
         except ProcessLookupError:
             pass
     process.wait()
+    release(process)
