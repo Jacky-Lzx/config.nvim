@@ -47,6 +47,11 @@ typos = true
 save()
 assert(#diagnostics("codespell") == 0, "typos_lsp must suppress and clear codespell")
 assert(lint.status(buf)[1].reason == "condition returned false")
+typos = false
+vim.b[buf].bigfile = true
+save()
+assert(#diagnostics("codespell") == 0 and lint.status(buf)[1].reason == "condition returned false")
+vim.b[buf].bigfile = nil
 vim.api.nvim_buf_set_lines(buf, 0, -1, false, { 'print("clean")' })
 save()
 assert(#diagnostics("ruff") == 0)

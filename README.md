@@ -1102,7 +1102,9 @@ latency together rather than treating a lower startup time alone as an improveme
 
 `lua/features/files.lua` owns early startup highlighting and large/minified file
 guards. Files above 1.5 MiB or averaging over 1000 bytes per line use `bigfile`
-filetype and disable completion, Tree-sitter and expensive UI scanning.
+filetype and disable completion, Tree-sitter and expensive UI scanning. Save-time
+formatting and Codespell also skip protected or currently large/minified buffers,
+including unsaved buffers that have grown. Explicit manual formatting remains available.
 `lua/features/toggles.lua` owns native option switches and registers read-only
 state with keymap-tools; `<leader>th` retains a session-wide inlay-hint preference.
 

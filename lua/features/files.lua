@@ -4,8 +4,9 @@ local api = vim.api
 -- Mark large/minified buffers before FileType consumers enable expensive work.
 function M.detect(buf, path)
   path = path or api.nvim_buf_get_name(buf)
-  local size = vim.fn.getfsize(path)
   local lines = api.nvim_buf_line_count(buf)
+  -- Use current contents: a new or edited buffer can outgrow its file on disk.
+  local size = api.nvim_buf_is_loaded(buf) and api.nvim_buf_get_offset(buf, lines) or vim.fn.getfsize(path)
   return size > 1.5 * 1024 * 1024 or size > 0 and (size - lines) / math.max(1, lines) > 1000
 end
 

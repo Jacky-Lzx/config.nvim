@@ -12,7 +12,9 @@ return {
       linters = vim.tbl_deep_extend("force", require("languages").current().linter_options, {
         codespell = {
           condition = function(ctx)
-            return #vim.lsp.get_clients({ bufnr = ctx.bufnr, name = "typos_lsp" }) == 0
+            return not vim.b[ctx.bufnr].bigfile
+              and not require("features.files").detect(ctx.bufnr)
+              and #vim.lsp.get_clients({ bufnr = ctx.bufnr, name = "typos_lsp" }) == 0
           end,
         },
       }),

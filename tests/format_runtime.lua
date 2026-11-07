@@ -48,4 +48,19 @@ assert(vim.fn.readfile(vim.api.nvim_buf_get_name(text))[1] == "keep   ")
 vim.g.enable_autoformat = true
 save(text)
 assert(vim.fn.readfile(vim.api.nvim_buf_get_name(text))[1] == "keep")
+local large = sample("text", "large.txt", { string.rep("x", 1600000) .. "   " })
+save(large)
+assert(vim.api.nvim_buf_get_lines(large, 0, 1, false)[1]:sub(-3) == "   ", "Autoformat touched a growing large buffer")
+local minified = sample("text", "minified.txt", { string.rep("x", 2000) .. "   " })
+save(minified)
+assert(vim.api.nvim_buf_get_lines(minified, 0, 1, false)[1]:sub(-3) == "   ", "Autoformat touched a minified buffer")
+vim.b[minified].bigfile = true
+vim.api.nvim_buf_set_lines(minified, 0, -1, false, { "small but protected   " })
+save(minified)
+assert(vim.fn.readfile(vim.api.nvim_buf_get_name(minified))[1] == "small but protected   ")
+F.format({ bufnr = minified, async = false })
+assert(
+  vim.api.nvim_buf_get_lines(minified, 0, 1, false)[1] == "small but protected",
+  "Explicit formatting must remain available"
+)
 print("Configured formatting: real StyLua/Ruff, save policy, fallback trim, undo and background buffer focus passed")

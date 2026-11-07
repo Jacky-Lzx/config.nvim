@@ -16,6 +16,9 @@ return {
       ),
       formatters = require("languages").current().formatter_options,
       format_on_save = function(bufnr)
+        if vim.b[bufnr].bigfile or require("features.files").detect(bufnr) then
+          return
+        end
         -- Disable with a global or buffer-local variable
         if
           vim.g.enable_autoformat
