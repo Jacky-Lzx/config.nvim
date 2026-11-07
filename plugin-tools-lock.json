@@ -1,7 +1,11 @@
 {
   "plugins": {
+    "bigfile-tools.nvim": {
+      "commit": "f4915375989c6ce6795ea33d3400e331f820ea58",
+      "source": "https://github.com/Jacky-Lzx/bigfile-tools.nvim.git"
+    },
     "completion-tools.nvim": {
-      "commit": "95504b5fa2bed14658fef114de7a7cd0ff3f8104",
+      "commit": "e90040f05975f94d9291c37ba742b14236069ea3",
       "source": "https://github.com/Jacky-Lzx/completion-tools.nvim.git"
     },
     "crates.nvim": {
@@ -17,7 +21,7 @@
       "source": "https://github.com/Jacky-Lzx/debug-tools.nvim.git"
     },
     "editing-tools.nvim": {
-      "commit": "58c33bacc9e8dc3818c3790f7a1eb526e2d67ebd",
+      "commit": "5f95f85734e4249f24edbe31b6c1f8a25116955e",
       "source": "https://github.com/Jacky-Lzx/editing-tools.nvim.git"
     },
     "file-tools.nvim": {
@@ -41,7 +45,7 @@
       "source": "https://github.com/Jacky-Lzx/input-tools.nvim.git"
     },
     "keymap-tools.nvim": {
-      "commit": "b6423c25f8fa42caa4af24757c539dba4d7c5dd9",
+      "commit": "bc0c1d00c2586d961687e62439f778201fadcfe8",
       "source": "https://github.com/Jacky-Lzx/keymap-tools.nvim.git"
     },
     "lint-tools.nvim": {
@@ -53,7 +57,7 @@
       "source": "https://github.com/Jacky-Lzx/lsp-tools.nvim.git"
     },
     "markdown-tools.nvim": {
-      "commit": "0a21497cc0fddaff59feb546159e5fdaa4a706ab",
+      "commit": "63f3ab3ba7c95d4e46a9fdb9107af3c2e6871920",
       "source": "https://github.com/Jacky-Lzx/markdown-tools.nvim.git"
     },
     "motion-tools.nvim": {
@@ -61,7 +65,7 @@
       "source": "https://github.com/Jacky-Lzx/motion-tools.nvim.git"
     },
     "notification-tools.nvim": {
-      "commit": "4ed539d6e0a921639fc4124c08586632e272f319",
+      "commit": "15988fe800b6a5025f617d54011d7dacdfc0d210",
       "source": "https://github.com/Jacky-Lzx/notification-tools.nvim.git"
     },
     "nvim-dap": {
@@ -93,15 +97,15 @@
       "source": "https://github.com/Jacky-Lzx/selection-tools.nvim.git"
     },
     "snippet-tools.nvim": {
-      "commit": "ad6498229994730fd15f2d22582dc4a2b1dd4d4a",
+      "commit": "d13773428c639af13ce36fb7b959c27b76785ee6",
       "source": "https://github.com/Jacky-Lzx/snippet-tools.nvim.git"
     },
     "task-tools.nvim": {
-      "commit": "9a9ec828f1b6529792c34658040a5762df9f35f0",
+      "commit": "efc83af5b870df03ea8b9e455707b24c30c725f3",
       "source": "https://github.com/Jacky-Lzx/task-tools.nvim.git"
     },
     "tex-tools.nvim": {
-      "commit": "1f826724668d895f71c82904eca54d04c5ff7f11",
+      "commit": "f97e0e837b7ad2d5a57465f451619c24e5e28656",
       "source": "https://github.com/Jacky-Lzx/tex-tools.nvim.git"
     },
     "theme-tools.nvim": {
@@ -109,7 +113,7 @@
       "source": "https://github.com/Jacky-Lzx/theme-tools.nvim.git"
     },
     "toolchain-tools.nvim": {
-      "commit": "404ec37a80d68e4f7d9fa75caae34b7bc1d142c4",
+      "commit": "a181614387cbf76c5d1d6a21648e2d5e1e22a508",
       "source": "https://github.com/Jacky-Lzx/toolchain-tools.nvim.git"
     },
     "ui-tools.nvim": {
