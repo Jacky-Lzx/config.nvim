@@ -8,7 +8,7 @@ function M.setup()
 
   create("ConfigInfo", function()
     vim.print(require("config").info())
-  end, { desc = "Show active selection, tool paths and resolved plugin sources", force = true })
+  end, { desc = "Show active selection, plugin phases and integration state", force = true })
 
   if require("languages").is_enabled("python") then
     -- The alias remains available before a Python buffer has initialized its provider.

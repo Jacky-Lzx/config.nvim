@@ -36,7 +36,7 @@ parsers through toolchain-tools. System/Nix executables can satisfy requirements
 
 ## Usage
 
-- `:ConfigInfo` shows the active project, languages, tools and plugin sources.
+- `:ConfigInfo` shows the active project, languages, tools, plugin phases and integration state.
 - `:checkhealth config` validates the selected configuration.
 - `:PluginTools` inspects packages; `:PluginTools explain {id}` explains activation.
 - `Ctrl+/` opens the searchable keymap picker; `Space t` starts grouped toggles.

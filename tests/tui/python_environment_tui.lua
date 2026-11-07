@@ -61,6 +61,8 @@ end
 local function after_selection()
   assert(api.nvim_get_current_buf() == source and vim.fn.mode() == "n")
   assert(first.settings.python.pythonPath == selected)
+  local snapshot = require("config.inspect").snapshot().integrations.python
+  assert(snapshot.root == project_a and snapshot.python == selected and snapshot.source == "selection")
   local env = require("languages.python.interpreter").environment()
   local actual = vim
     .system(

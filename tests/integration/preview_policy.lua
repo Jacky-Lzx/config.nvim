@@ -13,7 +13,19 @@ local path = vim.env.NVIM_TEST_TMP .. "/policy.tex"
 vim.fn.writefile({ "\\documentclass{article}", "\\begin{document}", "plain text", "\\end{document}" }, path)
 vim.cmd.edit(path)
 local tex = require("tex-tools")
+local tex_buf = vim.api.nvim_get_current_buf()
+local bootstrap = require("image_tools.bootstrap")
+local set_automatic = bootstrap.set_auto_preview
+bootstrap.set_auto_preview = function(state)
+  assert(
+    vim.b[tex_buf].image_tools_preview_owner == (state and "tex-tools" or nil),
+    "Generic activation observed stale TeX ownership"
+  )
+  return set_automatic(state)
+end
 assert(not tex.formula_info().enabled and not tex.formula_info().images_enabled)
+local snapshot = require("config.inspect").snapshot().integrations.preview
+assert(snapshot.automatic == false and snapshot.tex.enabled == false and not snapshot.renderer_loaded)
 vim.cmd.enew()
 vim.bo.filetype = "lua"
 policy.set_enabled(true)

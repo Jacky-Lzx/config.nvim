@@ -13,6 +13,15 @@ enabled LSP servers, live tool paths, and resolved plugin directories/sources/lo
 `paths.checkout` identifies the actual configuration checkout, including explicit `-u` starts;
 `paths.config` remains Neovim's standard config directory. Inspection does not load plugins.
 
+Plugin entries expose their phase, reason, trigger and failure through the manager's
+public query APIs. Mounted plugins remain distinct from initialized plugins.
+`integrations` reports the current preview preference and TeX state, current-buffer
+completion sources and the engine's last request status, and the Python root,
+interpreter and selection source. Cold providers are marked unloaded; inspection
+does not start them. Python sources distinguish explicit selection, project venv,
+inherited environment, explicit system choice and platform fallback. Snapshots
+are independent copies and do not scan environments or write selection files.
+
 Detailed inspection commands use `Info`, including `:CompletionToolsInfo`,
 `:SnippetToolsInfo`, `:LspToolsInfo`, `:ImageInfo`, `:DapToolsInfo`, `:InputToolsInfo`,
 `:PairsInfo`, `:NotificationToolsInfo`, `:TaskInfo` and `:WorkspaceInfo`. Specialized commands such as
