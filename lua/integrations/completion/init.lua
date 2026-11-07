@@ -16,6 +16,7 @@ function M.filter_lsp_items(ctx, items)
 end
 M.source_config = {
   default = { "lsp", "path", "buffer", "snippets" },
+  groups = { { "buffer", "dictionary", "spell" }, { "snippets" }, { "lsp", "path" } },
   providers = { lsp = {}, path = {}, buffer = {}, snippets = {}, dictionary = {}, spell = {} },
 }
 

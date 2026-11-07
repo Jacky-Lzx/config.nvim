@@ -405,6 +405,10 @@ def environment(case, directory):
     )
     env.update(case.env)
     env[LEDGER] = str(directory / "process-groups.jsonl")
+    # Tests may explicitly import a pure plugin module while keeping startup isolated.
+    env["NVIM_TEST_PLUGIN_FIXTURES"] = env.get(
+        "NVIM_DEV_PLUGIN_ROOT", str(Path.home() / "Documents/Github/nvim_plugins")
+    )
     if env.get("NVIM_TEST_ISOLATE_PLUGINS") == "1":
         env.update(
             XDG_DATA_HOME=str(directory / "data"),

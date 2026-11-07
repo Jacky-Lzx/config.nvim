@@ -25,11 +25,7 @@ function M.capture()
   return load().cut_selection()
 end
 function M.expand(text, opts)
-  return load().expand(text, {
-    indent = not (opts and opts.insert_text_mode),
-    expand_tabs = not opts or opts.insert_text_mode ~= 1,
-    join_undo = true,
-  })
+  return require("snippet_tools.integrations.completion_tools").expand(text, opts)
 end
 function M.options()
   return { preset = "default", expand = M.expand, active = M.active, jump = M.jump }
@@ -38,7 +34,6 @@ function M.source()
   local source
   local function provider()
     if not source then
-      load()
       source = require("snippet_tools.integrations.completion_tools").new()
     end
     return source
