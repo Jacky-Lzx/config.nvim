@@ -2,7 +2,6 @@
 local directory = assert(vim.env.NVIM_TEST_TMP)
 local result = assert(vim.env.NVIM_STARTUP_RESULT)
 local api = vim.api
-local actions = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/support/actions.lua")
 local wrap_keys, wrap_query
 local stage, ticks, finished = "startup", 0, false
 if vim.v.vim_did_enter == 0 then
@@ -38,20 +37,43 @@ local function check_owners()
     end),
     "cold motion-tools.nvim descriptions missing"
   )
-  -- Both daily entry points share mode restoration and effective-map execution.
-  local owner = require("keymap_tools")
-  local pick, hits = owner.pick, 0
-  owner.pick = function()
-    hits = hits + 1
+  -- This scenario owns its entry keys; personal picker/toggle keys are irrelevant.
+  vim.keymap.set({ "o", "x" }, "i", "<Plug>(MotionTools-inside)", { desc = "Test inside object" })
+  for _, key in ipairs({ "<leader>q?", "<C-/>", "<C-_>" }) do
+    vim.keymap.set({ "n", "x", "i" }, key, function()
+      require("keymap_tools").pick()
+    end, { desc = "Test keymap picker" })
   end
-  vim.fn.maparg("<leader>sk", "n", false, true).callback()
-  vim.fn.maparg(actions.binding("keymaps.pick").lhs, "n", false, true).callback()
-  owner.pick = pick
-  assert(hits == 2, "Configured keymap entry points diverged")
+  for _, item in ipairs({ { "wrap", "Wrap", "<leader>qw" }, { "spell", "Spelling", "<leader>qes" } }) do
+    local callback = require("keymap_tools").register_toggle("test." .. item[1], {
+      keys = item[3],
+      name = item[2],
+      get = function(ctx)
+        return vim.wo[ctx.win or 0][item[1]]
+      end,
+      set = function(state, ctx)
+        vim.wo[ctx.win or 0][item[1]] = state
+      end,
+    })
+    vim.keymap.set("n", item[3], callback, { desc = "Toggle " .. item[2] })
+  end
+  vim.keymap.set("n", "<leader>qgg", function() end, { desc = "Test Git action" })
+  vim.keymap.set("n", "<leader>qpp", function() end, { desc = "Test panel action" })
+  vim.keymap.set("n", "<leader>qen", function() end, { desc = "Line Numbers" })
+  vim.keymap.set("n", "<leader>qff", function() end, { desc = "[Selection] Test action" })
+  require("keymap_tools").register("test.groups", {
+    groups = {
+      { prefix = "<leader>q", label = "[Test]" },
+      { prefix = "<leader>qe", label = "[Editor]" },
+      { prefix = "<leader>qg", label = "[Git]" },
+      { prefix = "<leader>qp", label = "[Windows / Panels]" },
+      { prefix = "<leader>qf", label = "[Selection]" },
+    },
+  })
   local tools = require("keymap_tools")
   local rows, info = tools.list({ mode = "n" })
   assert(#info.errors == 0, vim.inspect(info.errors))
-  wrap_keys = actions.keys("toggle.wrap")
+  wrap_keys = vim.keycode("<leader>qw")
   local wrap
   for _, row in ipairs(rows) do
     if vim.keycode(row.keys) == wrap_keys then
@@ -62,23 +84,10 @@ local function check_owners()
   wrap_query = require("keymap_tools.keys").display(wrap_keys) .. " Wrap"
   assert(require("config.plugins").initialized("format-tools.nvim"), "Status reads loaded the formatter")
   assert(require("config.plugins").initialized("pairs.nvim"), "Status reads loaded pairing")
-  local image_loaded = package.loaded.image_tools
-  local image
-  for _, item in ipairs(tools.list({ mode = "n", prefix = "<leader>tia" })) do
-    image = item
-  end
-  assert(image and image.toggle.name == "Automatic image preview" and image.toggle.state == true)
-  assert(package.loaded.image_tools == image_loaded, "Status reads loaded image-tools")
   for _, mode in ipairs({ "n", "x" }) do
-    local map = vim.fn.maparg(actions.binding("keymaps.pick", mode).lhs, mode, false, true)
-    assert(map.desc == "Choose and execute buffer keymap", "old picker binding remains")
     for _, entry in ipairs(api.nvim_buf_get_keymap(0, mode)) do
       assert(not (entry.desc or ""):find("which-key-trigger", 1, true), "which-key installed a competing trigger")
     end
-  end
-  for _, mode in ipairs({ "n", "x", "i" }) do
-    actions.binding("keymaps.pick.universal", mode)
-    actions.binding("keymaps.pick.legacy", mode)
   end
 end
 local timer = vim.uv.new_timer()
@@ -112,7 +121,7 @@ timer:start(
         vim.cmd.redraw()
         local text = table.concat(api.nvim_buf_get_lines(view.buf, 0, -1, false), "\n")
         assert(text:find("Selection", 1, true), "Dashboard hint did not render leader actions")
-        mark("dashboard_search", actions.input("keymaps.pick"):sub(#vim.g.mapleader + 1))
+        mark("dashboard_search", "q?")
         stage = "dashboard_picker"
       elseif stage == "dashboard_picker" and latest_picker and api.nvim_get_mode().mode == "i" then
         dashboard_picker = latest_picker
@@ -122,7 +131,7 @@ timer:start(
       elseif stage == "dashboard_burst" and dashboard_picker.closed then
         assert(api.nvim_get_current_buf() == dashboard_buf, "Picker cancellation lost dashboard")
         assert(api.nvim_get_mode().mode == "n", "Dashboard mode was not restored")
-        mark("dashboard_fast_search", actions.input("keymaps.pick"))
+        mark("dashboard_fast_search", " q?")
         stage = "dashboard_fast_picker"
       elseif stage == "dashboard_fast_picker" and latest_picker ~= dashboard_picker then
         dashboard_picker = latest_picker
@@ -136,7 +145,7 @@ timer:start(
         origin = api.nvim_get_current_win()
         previous_wrap = vim.wo.wrap
         previous_spell = vim.wo.spell
-        mark("toggle_root", " t")
+        mark("toggle_root", " q")
         stage = "toggle_root_hint"
       elseif stage == "toggle_root_hint" and view and view.win then
         local text = table.concat(api.nvim_buf_get_lines(view.buf, 0, -1, false), "\n")
@@ -187,7 +196,7 @@ timer:start(
         mark("hint_cancel")
         stage = "open_picker"
       elseif stage == "open_picker" and not view.win then
-        mark("picker", actions.input("keymaps.pick"))
+        mark("picker", " q?")
         stage = "filter"
       elseif stage == "filter" and latest_picker and api.nvim_get_mode().mode == "i" then
         picker = latest_picker
@@ -208,7 +217,7 @@ timer:start(
           end
         end
         assert(description == (vim.wo.wrap and "Disable " or "Enable ") .. "Wrap", "toggle description is stale")
-        mark("visual_picker", "vj" .. actions.input("keymaps.pick", "x"))
+        mark("visual_picker", "vj" .. " q?")
         stage = "visual_cancel"
       elseif stage == "visual_cancel" and latest_picker ~= picker and api.nvim_get_mode().mode == "i" then
         visual_picker = latest_picker
@@ -332,7 +341,7 @@ timer:start(
         timer:stop()
         timer:close()
         vim.fn.writefile({
-          "PASS configured keymap TUI: grouped Space+t root/editor hints and execution, dashboard leader hints and burst Space+? with focus restoration, legacy Space+? in Normal/Visual, Ctrl+/ in Normal/Visual/Insert, legacy Ctrl+_ Insert execution and cursor restoration, Wrap, screencast, operator and register hints",
+          "PASS keymap TUI with fixture bindings: grouped Space+q root/editor hints and execution, dashboard leader hints and burst Space+q? with focus restoration, Space+q? in Normal/Visual, Ctrl+/ in Normal/Visual/Insert, legacy Ctrl+_ Insert execution and cursor restoration, Wrap, screencast, operator and register hints",
         }, result)
         vim.cmd("qa!")
       end

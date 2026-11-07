@@ -145,7 +145,6 @@ return {
         },
         {
           require("config.toggle_keys").get("lsp.diagnostics").lhs,
-          id = "lsp.diagnostics",
           function()
             require("lsp-tools").diagnostics({ toggle = true })
           end,
@@ -153,7 +152,6 @@ return {
         },
         {
           require("config.toggle_keys").get("lsp.locations").lhs,
-          id = "lsp.locations",
           function()
             require("lsp-tools").locations({ toggle = true, position = "right", focus = false })
           end,
@@ -161,7 +159,6 @@ return {
         },
         {
           require("config.toggle_keys").get("lsp.loclist").lhs,
-          id = "lsp.loclist",
           function()
             require("lsp-tools").loclist({ toggle = true })
           end,
@@ -169,7 +166,6 @@ return {
         },
         {
           require("config.toggle_keys").get("lsp.quickfix").lhs,
-          id = "lsp.quickfix",
           function()
             require("lsp-tools").quickfix({ toggle = true })
           end,
@@ -198,7 +194,6 @@ return {
         },
         {
           require("config.toggle_keys").get("lsp.outline").lhs,
-          id = "lsp.outline",
           function()
             require("lsp-tools").toggle_outline()
           end,

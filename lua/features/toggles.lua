@@ -10,7 +10,7 @@ end
 -- Pure entry construction also works before plugin runtime paths are mounted.
 function M.binding(id, action, opts)
   local definition = require("config.toggle_keys").get(id)
-  return vim.tbl_extend("force", { definition.lhs, action, id = id, desc = "Toggle " .. definition.name }, opts or {})
+  return vim.tbl_extend("force", { definition.lhs, action, desc = "Toggle " .. definition.name }, opts or {})
 end
 
 function M.metadata(id, get)
@@ -57,11 +57,7 @@ function M.map(owner, lhs, opts)
     notify = owner.notify,
   })
   require("config.bindings").set(source, {
-    vim.tbl_extend(
-      "force",
-      opts,
-      { lhs, callback, id = owner.action_id or "toggle." .. owner.id, mode = mode, buffer = buf }
-    ),
+    vim.tbl_extend("force", opts, { lhs, callback, mode = mode, buffer = buf }),
   })
   return registration
 end

@@ -12,7 +12,7 @@ assert(
 )
 
 local plugins = require("config.plugins")
-local actions = dofile(root .. "/tests/support/actions.lua")
+local mappings = dofile(root .. "/tests/support/mappings.lua")
 local count = 0
 for _, entry in ipairs({
   { "editing-tools.nvim", "editing_tools" },
@@ -39,9 +39,9 @@ for _, entry in ipairs({
     assert(vim.deep_equal(handlers, vim.api.nvim_get_autocmds({})), id .. " replaced handlers on invalid setup")
     assert(api.dispose() ~= false, id .. " could not dispose an idle instance")
     assert(api.dispose() ~= false, id .. " could not dispose twice")
-    assert(actions.audit() > 0, id .. " removed personal bindings")
+    assert(mappings.audit() > 0, id .. " removed personal bindings")
     api.setup(options)
-    assert(actions.audit() > 0, id .. " replaced personal bindings on setup")
+    assert(mappings.audit() > 0, id .. " replaced personal bindings on setup")
     count = count + 1
   end
 end

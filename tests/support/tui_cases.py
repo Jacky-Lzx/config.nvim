@@ -26,7 +26,7 @@ class Scenario:
 
 KEYMAP_ACTIONS = {
     "prefix": b" ",
-    "subgroup": b"s",
+    "subgroup": b"qf",
     "hint_cancel": b"\x1b",
     "confirm": b"\r",
     "visual_cancel": b"\x1b",

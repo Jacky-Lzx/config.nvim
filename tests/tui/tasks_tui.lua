@@ -1,28 +1,27 @@
--- Physical key input is supplied by tests/support/tui.py, with the actual configuration.
+-- Invoke Lua APIs through the PTY; prompts and local UI interactions use real input.
 local function pause(ms)
   coroutine.yield(ms)
 end
-local actions = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/support/actions.lua")
-local action_ids = {
-  prompt = "tasks.prompt",
-  manual_output = "tasks.build_output",
-  quickfix = "tasks.build_quickfix",
-  terminal = "tasks.terminal",
-  terminal_hide = "tasks.terminal",
-  terminal_reopen = "tasks.terminal",
-  terminal_hide_again = "tasks.terminal",
-  rerun = "tasks.rerun",
-  list = "tasks.list",
-  select_task = "tasks.select",
-  run_args = "tasks.run_file",
-  finished_output = "tasks.finished_output",
+local actions = {
+  prompt = 'require("features.tasks").prompt()',
+  manual_output = 'require("features.tasks").output()',
+  quickfix = 'require("features.tasks").quickfix()',
+  terminal = 'require("task_tools").terminal()',
+  terminal_hide = 'require("task_tools").terminal()',
+  terminal_reopen = 'require("task_tools").terminal()',
+  terminal_hide_again = 'require("task_tools").terminal()',
+  rerun = 'require("features.tasks").rerun()',
+  list = 'require("task_tools").toggle()',
+  select_task = 'require("task_tools").select()',
+  run_args = 'require("features.tasks").run_file()',
+  finished_output = 'assert(require("task_tools.integrations.notification_tools").open_last_output())',
 }
 local stage_file = vim.env.NVIM_TEST_TMP .. "/tasks-stage"
 local function await(name, predicate)
   local lines = { name }
-  if action_ids[name] then
+  if actions[name] then
     local leave_terminal = vim.api.nvim_get_mode().mode == "t" and "\28\14" or ""
-    lines[2] = vim.json.encode(leave_terminal .. actions.input(action_ids[name], "n"))
+    lines[2] = vim.json.encode(leave_terminal .. ":lua " .. actions[name] .. "\r")
   end
   vim.fn.writefile(lines, stage_file)
   local start = vim.uv.hrtime()

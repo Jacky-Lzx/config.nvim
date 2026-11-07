@@ -382,7 +382,7 @@ class RunnerChecks(unittest.TestCase):
                 os.environ,
                 {
                     "NVIM_TEST_REFERENCE_FIRST": "1",
-                    "NVIM_TEST_REMAP_ACTIONS": "1",
+                    "NVIM_TEST_DISABLE_BINDINGS": "1",
                     "NVIM": "/foreign/rpc-socket",
                     "NVIM_APPNAME": "foreign-config",
                     "VIMINIT": "foreign-init",
@@ -390,16 +390,16 @@ class RunnerChecks(unittest.TestCase):
             ):
                 env = environment(Case("personal", []), root)
                 self.assertNotIn("NVIM_TEST_REFERENCE_FIRST", env)
-                self.assertNotIn("NVIM_TEST_REMAP_ACTIONS", env)
+                self.assertNotIn("NVIM_TEST_DISABLE_BINDINGS", env)
                 for key in ("NVIM", "NVIM_APPNAME", "VIMINIT"):
                     self.assertNotIn(key, env)
                 self.assertEqual(Path(env["XDG_CONFIG_HOME"]), root / "config")
                 self.assertEqual(Path(env["TMPDIR"]), (root / "tmp").resolve())
                 self.assertEqual(env["NVIM_TEST_ENABLE_THIRD_PARTY"], "0")
                 env = environment(
-                    Case("fixture", [], {"NVIM_TEST_REMAP_ACTIONS": "1"}), root
+                    Case("fixture", [], {"NVIM_TEST_DISABLE_BINDINGS": "1"}), root
                 )
-                self.assertEqual(env["NVIM_TEST_REMAP_ACTIONS"], "1")
+                self.assertEqual(env["NVIM_TEST_DISABLE_BINDINGS"], "1")
 
 
 if __name__ == "__main__":

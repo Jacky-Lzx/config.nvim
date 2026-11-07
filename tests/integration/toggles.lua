@@ -17,7 +17,6 @@ local copy = layout.list()
 copy.wrap.lhs = "changed"
 assert(layout.get("wrap").lhs == "<leader>tew", "Layout snapshots must be independent")
 local api = vim.api
-local actions = dofile(root .. "/tests/support/actions.lua")
 local dev = require("utils.platform").dev_plugin_root()
 local installed = vim.fn.stdpath("data") .. "/plugin-tools/"
 for _, path in ipairs({
@@ -135,13 +134,13 @@ vim.wo.wrap = true
 vim.cmd("vnew")
 local second = api.nvim_get_current_win()
 vim.wo.wrap = false
-assert(row(actions.binding("toggle.wrap").lhs, { win = first }).toggle.state == true)
-assert(row(actions.binding("toggle.wrap").lhs, { win = second }).toggle.state == false)
+assert(row(layout.get("wrap").lhs, { win = first }).toggle.state == true)
+assert(row(layout.get("wrap").lhs, { win = second }).toggle.state == false)
 assert(api.nvim_get_current_win() == second)
-toggle(actions.binding("toggle.wrap").lhs, "Wrap", true)
-assert(vim.wo.wrap and row(actions.binding("toggle.wrap").lhs).desc == "Disable Wrap")
+toggle(layout.get("wrap").lhs, "Wrap", true)
+assert(vim.wo.wrap and row(layout.get("wrap").lhs).desc == "Disable Wrap")
 local hidden = api.nvim_create_buf(false, true)
-assert(row(actions.binding("toggle.wrap").lhs, { buf = hidden }).toggle.state == nil)
+assert(row(layout.get("wrap").lhs, { buf = hidden }).toggle.state == nil)
 vim.lsp.inlay_hint.enable(true)
 toggle("<leader>tlh", "Inlay Hints", false)
 assert(row("tlh").toggle.state == false)
@@ -165,9 +164,9 @@ for _, buf in ipairs(scoped) do
 end
 for _, buf in ipairs(scoped) do
   api.nvim_buf_call(buf, function()
-    local action = actions.binding("toggle.scoped")
-    assert(action.entry.buffer == buf)
-    vim.fn.maparg(action.lhs, "n", false, true).callback()
+    local mapping = vim.fn.maparg("<leader>qz", "n", false, true)
+    assert(mapping.buffer == 1)
+    mapping.callback()
     assert(row("qz").toggle.name == "Scoped")
   end)
 end

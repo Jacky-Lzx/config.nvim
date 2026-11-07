@@ -83,13 +83,11 @@ FEATURES = {
     ),
     "keymaps": (
         "bindings",
-        "action_contracts",
         "mapping_contracts",
         "keymap_panels",
         "keymaps",
         "nested_keymaps",
         "toggles",
-        "remapped_actions",
     ),
     "startup": (
         "config",

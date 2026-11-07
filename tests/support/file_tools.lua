@@ -1,4 +1,4 @@
--- Configuration-specific assertions and physical keys for file-tools' PTY scenario.
+-- Configuration-specific assertions and Lua API invocations for file-tools' PTY scenario.
 -- The external harness owns filesystem operations and rendered workflow results.
 local M = {}
 
@@ -20,17 +20,12 @@ function M.after_open()
 end
 
 function M.actions()
-  local resolver = dofile(assert(vim.env.NVIM_CONFIG_ROOT) .. "/tests/support/actions.lua")
-  local actions = {}
-  for key, id in pairs({
-    toggle = "files.tree",
-    files = "selection.files",
-    reveal = "files.reveal",
-    cwd = "files.cwd",
-  }) do
-    actions[key] = resolver.input(id)
-  end
-  return actions
+  return {
+    toggle = ':lua require("file_tools").toggle()\r',
+    files = ':lua require("selection_tools").files()\r',
+    reveal = ':lua require("file_tools").find()\r',
+    cwd = ':lua require("file_tools").open({ root = vim.fn.getcwd() })\r',
+  }
 end
 
 return M

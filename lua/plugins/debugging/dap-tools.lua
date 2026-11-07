@@ -56,7 +56,6 @@ return {
         {
           require("config.toggle_keys").get("dap.view").lhs,
           tools.toggle,
-          id = "dap.view",
           desc = "[DAP] Toggle panel",
         },
       })

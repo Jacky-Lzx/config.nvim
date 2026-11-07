@@ -47,8 +47,8 @@ class Case:
         for key, value in self.env.items():
             if key == "NVIM_TEST_SCENARIO":
                 variants.append(value)
-            elif key == "NVIM_TEST_REMAP_ACTIONS" and value == "1":
-                variants.append("remapped")
+            elif key == "NVIM_TEST_DISABLE_BINDINGS" and value == "1":
+                variants.append("without-bindings")
             elif key in (
                 "NVIM_TEST_LINK_FIRST",
                 "NVIM_TEST_REFERENCE_FIRST",
@@ -155,7 +155,6 @@ def suites():
             "platform",
             "core",
             "bindings",
-            "action_contracts",
             "clipboard",
             "diagnostics",
             "completion",
@@ -229,7 +228,7 @@ def suites():
         for variant in ("tree", "dashboard-picker", "dashboard-tree")
     ]
     integration.append(
-        python("file_tools_tui", "tree", env={"NVIM_TEST_REMAP_ACTIONS": "1"})
+        python("file_tools_tui", "tree", env={"NVIM_TEST_DISABLE_BINDINGS": "1"})
     )
     integration += [
         tui(name)
@@ -245,8 +244,8 @@ def suites():
     integration += [tui("tasks", {"NVIM_TEST_SCENARIO": "tasks"})]
     integration += [tui("completion_policy")]
     integration += [
-        tui("keymaps", {"NVIM_TEST_REMAP_ACTIONS": "1"}),
-        tui("tasks", {"NVIM_TEST_SCENARIO": "tasks", "NVIM_TEST_REMAP_ACTIONS": "1"}),
+        tui("keymaps", {"NVIM_TEST_DISABLE_BINDINGS": "1"}),
+        tui("tasks", {"NVIM_TEST_SCENARIO": "tasks", "NVIM_TEST_DISABLE_BINDINGS": "1"}),
     ]
     integration += [
         tui(name)

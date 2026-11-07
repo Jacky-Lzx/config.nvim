@@ -57,14 +57,14 @@ for _, item in ipairs(api.nvim_get_keymap("n")) do
   assert(item.lhs ~= "<F19>", "Global mapping survived beneath a buffer-local override")
 end
 local scoped = api.nvim_create_buf(true, false)
-local owner = bindings.set_buffer("scoped", scoped, { { "<F18>", "owned", id = "fixture.scoped" } })
+local owner = bindings.set_buffer("scoped", scoped, { { "<F18>", "owned" } })
 assert(bindings.entries[owner][1].buffer == scoped)
 vim.keymap.set("n", "<F18>", "temporary", { buffer = scoped })
 bindings.set_buffer("scoped", scoped, {})
 api.nvim_buf_call(scoped, function()
   assert(vim.fn.maparg("<F18>", "n") == "temporary", "Buffer cleanup deleted a manual replacement")
 end)
-bindings.set_buffer("scoped", scoped, { { "<F18>", "owned", id = "fixture.scoped" } })
+bindings.set_buffer("scoped", scoped, { { "<F18>", "owned" } })
 api.nvim_buf_delete(scoped, { force = true })
 assert(bindings.entries[owner] == nil, "Wiped buffer retained mapping declarations")
 print(

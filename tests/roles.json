@@ -1,14 +1,13 @@
 {
   "support": {
     "tests/support/native_plugins.lua": "Shared test fixture or driver used by registered cases",
-    "tests/support/actions.lua": "Shared test fixture or driver used by registered cases",
+    "tests/support/mappings.lua": "Shared test fixture or driver used by registered cases",
     "tests/support/tui_cases.py": "Shared test fixture or driver used by registered cases",
     "tests/support/paths.py": "Shared test fixture or driver used by registered cases",
     "tests/support/registry.py": "Shared test fixture or driver used by registered cases",
     "tests/support/write_snapshot.lua": "Shared test fixture or driver used by registered cases",
     "tests/support/checked.lua": "Shared test fixture or driver used by registered cases",
     "tests/support/toolchain_sessions.lua": "Shared test fixture or driver used by registered cases",
-    "tests/support/remapped_actions.lua": "Shared test fixture or driver used by registered cases",
     "tests/support/scenarios.lua": "Shared test fixture or driver used by registered cases",
     "tests/support/file_tools.lua": "Shared test fixture or driver used by registered cases",
     "tests/support/setup.lua": "Shared test fixture or driver used by registered cases",

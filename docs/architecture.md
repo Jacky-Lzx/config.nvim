@@ -158,8 +158,8 @@ silently restarting processes.
 Historical snippet parity is an explicit `migration` suite, outside `all`.
 Each check has isolated state and bounded lifetime; independent failures are
 aggregated, with logs and a JSON summary retained. `--filter` selects a case and
-`--keep` retains evidence even on success. Stable action IDs let workflow inputs
-follow declared keys while expected results and ownership checks stay independent.
+`--keep` retains evidence even on success. Functional workflows invoke Lua APIs
+directly; keyboard behavior tests install their own fixture mappings. Expected results and ownership checks stay independent.
 The configured lifecycle check verifies that invalid setup, repeated disposal
 and reinitialization preserve personal bindings. Individual plugin repositories
 exercise their setup/disposal contracts alongside their own headless and PTY tests.
@@ -201,7 +201,7 @@ handle and delegates actual mapping ownership to `config.bindings`.
 
 Diagnostics bind through the pure entry helper before plugin bootstrap, then
 register metadata from the same owner declarations after keymap-tools is ready.
-Panel bindings share the layout and keep their existing stable action IDs.
+Panel bindings share the layout; workflow tests invoke their Lua APIs directly.
 The persistent shell toggle is Normal-mode only so ordinary terminal spaces do
 not wait for leader sequences. Text edits and local picker/menu keys keep their
 own interaction contracts.

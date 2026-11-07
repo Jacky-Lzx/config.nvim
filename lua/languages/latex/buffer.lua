@@ -44,7 +44,6 @@ function M.setup_actions(bufnr)
       entry[1],
       action,
       desc = entry[3],
-      id = "latex." .. entry[2] .. (entry[1] == "<leader>lb" and "_alias" or ""),
     }
   end
   require("config.bindings").set_buffer("latex.actions", bufnr, entries)
@@ -69,18 +68,17 @@ function M.setup(bufnr)
     return
   end
   local entries = {}
-  local function map(key, action, description, modes, id)
+  local function map(key, action, description, modes)
     entries[#entries + 1] = {
       key,
       action,
       mode = modes or "n",
       remap = true,
       desc = description,
-      id = "latex." .. id,
     }
   end
   local function plug(key, action, description, modes)
-    map(key, "<Plug>(TexTools" .. action .. ")", description, modes, action)
+    map(key, "<Plug>(TexTools" .. action .. ")", description, modes)
   end
 
   -- The plugin publishes Plug endpoints; this configuration owns physical keys.
@@ -136,12 +134,12 @@ function M.setup(bufnr)
     { "<localleader>ls", "Main select", "Select main document" },
     { "<localleader>lB", "Compiler toggle", "Switch compiler" },
   }) do
-    map(entry[1], "<Cmd>TexTools" .. entry[2] .. "<CR>", entry[3], nil, entry[2]:gsub(" ", "_"))
+    map(entry[1], "<Cmd>TexTools" .. entry[2] .. "<CR>", entry[3])
   end
   map("<localleader>lr", function()
     local viewer = require("tex-tools.viewer").detect().method
     vim.cmd("TexToolsInverseSearch " .. viewer)
-  end, "Show inverse-search setup", nil, "InverseSearch")
+  end, "Show inverse-search setup")
   bindings.set_buffer("latex.structure", bufnr, entries)
 end
 

@@ -67,8 +67,12 @@ vim.opt.runtimepath:prepend(vim.env.NVIM_CONFIG_ROOT)
 -- Explicit -u starts with an isolated XDG_CONFIG_HOME still need this checkout's
 -- native after/ hooks, just as a normal installed configuration would receive.
 vim.opt.runtimepath:append(vim.env.NVIM_CONFIG_ROOT .. "/after")
-if vim.env.NVIM_TEST_REMAP_ACTIONS == "1" then
-  dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/support/remapped_actions.lua")
+if vim.env.NVIM_TEST_DISABLE_BINDINGS == "1" then
+  local bindings = require("config.bindings")
+  local set = bindings.set
+  bindings.set = function(owner)
+    return set(owner, {})
+  end
 end
 require("config.context").initialize(selection)
 

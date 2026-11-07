@@ -13,12 +13,12 @@ local function check()
   assert(vim.fn.exists(":ConfigInfo") == 2)
   local info = require("config").info()
   assert(vim.deep_equal(info.languages.servers, context.languages.servers))
-  local actions = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/support/actions.lua")
+  local mappings = dofile(vim.env.NVIM_CONFIG_ROOT .. "/tests/support/mappings.lua")
   for _, ft in ipairs({ "lua", "python", "markdown", "tex", "typst" }) do
     vim.cmd("enew!")
     vim.bo.filetype = ft
     vim.api.nvim_buf_set_lines(0, 0, -1, false, { "unchanged source" })
-    actions.audit()
+    mappings.audit()
     assert(vim.api.nvim_get_current_line() == "unchanged source", "Filetype activation changed source: " .. ft)
   end
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))

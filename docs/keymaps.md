@@ -58,9 +58,9 @@ configured with their feature because they compose confirmation and fallback.
 
 LSP and LaTeX buffer mappings use `config.bindings.set_buffer(owner, buffer, entries)`.
 It scopes entries to that buffer, removes declarations on wipeout and preserves
-later manual replacements during cleanup. Their stable action IDs also let tests
-resolve the configured key instead of copying the physical shortcut. Repeated LSP
-attachment keeps the buffer's existing mappings.
+later manual replacements during cleanup. Repeated LSP attachment keeps the
+buffer's existing mappings. Functional tests invoke the owning Lua API directly;
+keyboard interaction tests declare their own fixture mappings.
 
 editing-tools and tex-tools no longer assign user keys by default. This config
 binds their public endpoints; explicit plugin mapping presets remain opt-in.

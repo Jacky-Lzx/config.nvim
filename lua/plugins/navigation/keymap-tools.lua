@@ -48,7 +48,6 @@ return {
             require("keymap_tools").pick()
           end,
           mode = { "n", "x", "i" },
-          id = "keymaps.pick.universal",
           desc = "Choose and execute buffer keymap",
         },
         {
@@ -57,7 +56,6 @@ return {
             require("keymap_tools").pick()
           end,
           mode = { "n", "x", "i" },
-          id = "keymaps.pick.legacy",
           desc = "Choose and execute buffer keymap",
         },
         {
@@ -66,7 +64,6 @@ return {
             require("keymap_tools").pick()
           end,
           mode = { "n", "x" },
-          id = "keymaps.pick",
           desc = "Choose and execute buffer keymap",
         },
       })

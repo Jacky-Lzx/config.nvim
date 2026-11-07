@@ -108,20 +108,19 @@ actual package graph instead of assuming home-directory development checkouts.
 
 `tests/integration/mapping_contracts.lua` audits current `config.bindings` declarations against
 effective mode/filetype mappings, including callback/target, expression and prefix
-waiting policy. Workflow tests can use a declaration's stable `id` with
-`tests/support/actions.lua`; the ID stays beside the owning plugin's key declaration.
-Tasks and Wrap/keymap-picker workflows run with both current and deliberately
-remapped declarations. File-tree/preview/picker workflows also resolve current
-action IDs and run with deliberately remapped keys; dashboard cases verify that
-opening a file reuses the startup window and removes placeholder buffers. These
-checks execute the resolved file-tools checkout against this configuration's
-isolated setup, rather than relying on a fixed home-directory checkout or the
-historical plugin manager. Terminal output and the last rendered snapshot are
-kept with the case's failure evidence.
-The expected task output, window state, focus and editing
-results remain independent assertions. Missing actions and overwritten mappings
-fail rather than being skipped. Other explicit behavior cases retain their own
-reviewable expectations; changing behavior still requires updating those cases.
+waiting policy. Functional workflows invoke the owning Lua APIs directly, including
+`selection_tools.files()`, `file_tools` and `features.tasks`; they do not resolve
+personal shortcuts or require action IDs in mapping declarations. File, task and keymap
+PTY cases also run with personal `config.bindings` declarations disabled. Keymap
+picker tests install their own fixture mappings to exercise real keyboard input,
+mode restoration, prefixes and mapping execution. Explicit configuration tests
+still verify mapping ownership and reload behavior against current declarations.
+
+File-tree/preview/picker checks execute the resolved file-tools checkout against
+this configuration's isolated setup. Dashboard cases verify that opening a file
+reuses the startup window and removes placeholder buffers. Terminal output and
+the last rendered snapshot are retained on failure. Expected output, window
+state, focus and editing results remain independent assertions.
 
 Each check gets its own cache, state, log, temporary fixtures and copy of the
 plugin lockfile. Native checks also isolate data and development-plugin paths.
