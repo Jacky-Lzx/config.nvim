@@ -33,11 +33,11 @@ Useful Markdown checks:
 - Type `mk` or `dm` outside existing math for inline/display math.
 - Select text, press backtick, type `bold` and confirm to wrap it.
 
-`tests/snippet_collections.lua` validates and renders the current declarations. New
+`tests/integration/snippet_collections.lua` validates and renders the current declarations. New
 snippets and deliberate template changes do not need an old inventory update.
 Attached-UI and PTY checks retain independent expectations for selected workflows.
 
-`tests/snippet_migration.lua` preserves the historical comparison against
+`tests/integration/snippet_migration.lua` preserves the historical comparison against
 `tests/fixtures/snippets-legacy.json`. Run it explicitly when auditing migration
 parity; it is not a daily requirement that personal definitions remain frozen.
 Do not regenerate the historical fixture from current definitions.
@@ -48,6 +48,6 @@ sh tests/smoke.sh integration
 sh tests/smoke.sh migration   # Historical parity; may differ after deliberate edits
 ```
 
-Integration checks include attached-UI scenarios in `tests/snippets.lua` and
-`tests/latex_snippets.lua`, plus real terminal input and intermediate screen states
-in `tests/snippets_tui.py` and `tests/latex_snippets_tui.py`.
+Integration checks include attached-UI scenarios in `tests/integration/snippets.lua` and
+`tests/integration/latex_snippets.lua`, plus real terminal input and intermediate screen states
+in `tests/tui/snippets_tui.py` and `tests/tui/latex_snippets_tui.py`.

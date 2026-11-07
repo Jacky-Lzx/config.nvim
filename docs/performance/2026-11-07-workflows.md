@@ -30,10 +30,10 @@ Run these commands in an otherwise idle environment, with the locked plugin
 revisions and texquill installed. Output directories must not already exist.
 
 ```sh
-TMPDIR=/private/tmp python3 tests/benchmark_workflows.py \
+TMPDIR=/private/tmp python3 tests/benchmarks/benchmark_workflows.py \
   --directory /private/tmp/nvim-workflows --sections 500 --rounds 10
 
-TMPDIR=/private/tmp python3 tests/benchmark_workflows.py \
+TMPDIR=/private/tmp python3 tests/benchmarks/benchmark_workflows.py \
   --directory /private/tmp/nvim-paper --rounds 10 \
   --project /path/to/SC_Series_Decomposition/latex --document main.tex
 ```

@@ -31,6 +31,23 @@ Run the smoke runner with:
 ./tests/smoke.sh integration --filter tui:tasks --keep
 ```
 
+Test scripts are grouped by responsibility:
+
+- `tests/native/`: offline checks for configuration policy and helpers.
+- `tests/integration/`: configured runtime, startup and explicit acceptance checks.
+- `tests/tui/`: real-terminal workflow assertions and their Python drivers.
+- `tests/support/`: setup fixtures, action helpers, synchronization and the shared PTY driver.
+- `tests/benchmarks/`: startup, first-input and TeX workflow measurements.
+- `tests/fixtures/`: retained data, including the historical snippet baseline.
+
+`tests/run.py` remains the executable suite registry behind `tests/smoke.sh`.
+Suite membership describes execution requirements independently of script location;
+case labels and `--filter` values remain stable. The runner and shared PTY driver
+resolve unique script names through `tests/support/paths.py`, rejecting missing or
+ambiguous names. Direct script invocations use their grouped paths below.
+The small root `tests/setup.lua` and `tests/actions.lua` entry points remain for
+file-tools.nvim's external configured-PTY harness; implementation lives in `support/`.
+
 No argument runs `all`. Use `native` and `integration` during daily configuration
 changes, then `compatibility` for changes involving optional owners or their
 integration. `acceptance` needs the installed language servers. Remote network
@@ -50,15 +67,15 @@ ownership of its case list and behavior assertions.
 
 The actual personal-startup check uses `lua/config/selection.lua` and current
 per-plugin enable flags. It does not restore disabled third-party plugins.
-Fixed scenarios live in `tests/scenarios.lua`; only the compatibility suite opts
-into the optional declarations through `tests/full_plugins.lua`. Shared plugin
+Fixed scenarios live in `tests/support/scenarios.lua`; only the compatibility suite opts
+into the optional declarations through `tests/support/full_plugins.lua`. Shared plugin
 algorithms belong in the owning plugin's suite; config checks concentrate on
 options, activation, mapping ownership and selected cross-plugin workflows.
 
-`tests/mapping_contracts.lua` audits current `config.bindings` declarations against
+`tests/integration/mapping_contracts.lua` audits current `config.bindings` declarations against
 effective mode/filetype mappings, including callback/target, expression and prefix
 waiting policy. Workflow tests can use a declaration's stable `id` with
-`tests/actions.lua`; the ID stays beside the owning plugin's key declaration.
+`tests/support/actions.lua`; the ID stays beside the owning plugin's key declaration.
 Tasks and Wrap/keymap-picker workflows run with both current and deliberately
 remapped declarations. File-tree/preview/picker workflows also resolve current
 action IDs and run with deliberately remapped keys; dashboard cases verify that
@@ -96,7 +113,7 @@ attachment, save-triggered compilation, PDF/SyncTeX output, manual-build
 deduplication, and compiler diagnostic refresh/clearing:
 
 ```sh
-nvim --clean --headless -i NONE -l tests/latex_build.lua
+nvim --clean --headless -i NONE -l tests/integration/latex_build.lua
 ```
 
 ## Debugging and startup performance
@@ -117,12 +134,12 @@ times and total mean/median/min/max; Enter opens source and q closes the report.
 These warm sequential runs end at `NVIM STARTED`, separately from the Lua hook
 profiler and deferred plugin readiness.
 
-`python3 tests/benchmark_startup.py --output /tmp/nvim-startup.json` repeats fresh
+`python3 tests/benchmarks/benchmark_startup.py --output /tmp/nvim-startup.json` repeats fresh
 headless startups with isolated state/cache and mocked external LSP/clipboard.
 It reports native startup and registration times, and verifies that completion,
 snippet and image engines remain uninitialized in an empty editor.
 
-`python3 tests/benchmark_interaction.py --samples 5 --output /tmp/nvim-input.json`
+`python3 tests/benchmarks/benchmark_interaction.py --samples 5 --output /tmp/nvim-input.json`
 uses fresh real PTYs for empty, Lua, Python and TeX startup, then measures the first
 insert, command line or file picker in a separate process. It isolates state/cache,
 stubs external LSP and disables AI. Input latency ends after the mode or picker is
@@ -134,7 +151,7 @@ and UI remain unloaded until input needs them.
 Deferring those imports moves work to the first input; assess startup and input
 latency together rather than treating a lower startup time alone as an improvement.
 
-`python3 tests/benchmark_workflows.py --directory /tmp/nvim-workflows --rounds 10`
+`python3 tests/benchmarks/benchmark_workflows.py --directory /tmp/nvim-workflows --rounds 10`
 measures real texquill completion in the rendered menu, 200-character PTY bursts,
 save completion and fresh native diagnostic refreshes in a multi-file TeX project.
 Use `--project /path/to/project --document main.tex` to work on an isolated copy of

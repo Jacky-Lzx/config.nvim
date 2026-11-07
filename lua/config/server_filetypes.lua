@@ -1,5 +1,5 @@
 -- Activation hints only: cmd, hooks, roots and settings remain native LSP configs.
--- Keep these lists in sync with lsp/*.lua and after/lsp/*.lua; tests/startup.lua checks them.
+-- Keep these lists in sync with lsp/*.lua and after/lsp/*.lua; tests/integration/startup.lua checks them.
 return {
   basedpyright = { "python" },
   bashls = { "sh", "bash" },

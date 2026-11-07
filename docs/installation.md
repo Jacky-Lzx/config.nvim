@@ -60,7 +60,7 @@ provide the APIs used here, including the completion/image bootstrap modules;
 synchronize compatible plugin revisions before relying on startup without those
 development directories.
 
-`python3 tests/remote_install.py` performs an explicit network acceptance check:
+`python3 tests/integration/remote_install.py` performs an explicit network acceptance check:
 it installs into isolated data/package directories, hides development checkouts,
 and verifies minimal/default startup, ordinary Markdown, a selected Obsidian vault,
 and completion/image/snippet first-use APIs.

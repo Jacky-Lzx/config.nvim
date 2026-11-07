@@ -1,0 +1,66 @@
+local root = assert(vim.env.NVIM_CONFIG_ROOT)
+vim.opt.rtp:prepend(root)
+dofile(root .. "/tests/support/toolchain_sessions.lua")
+require("config.context").initialize({ profiles = {}, features = {} })
+vim.g.loaded_wakatime = true
+vim.o.loadplugins = true
+dofile(root .. "/init.lua")
+dofile(root .. "/tests/support/native_plugins.lua")
+local plugins = require("config.plugins").nodes()
+assert(not plugins["snacks.nvim"], "Snacks image must not be configured")
+local spec = plugins["image-tools.nvim"]
+assert(spec and spec.dev and spec.source == "Jacky-Lzx/image-tools.nvim")
+assert(spec.package.source == require("config.plugins").manager.options.url_format:format(spec.source))
+local development = require("utils.platform").dev_plugin_root() .. "/image-tools.nvim"
+local local_checkout = vim.uv.fs_stat(development .. "/lua/image_tools/init.lua") ~= nil
+local expected = local_checkout and development
+  or (vim.env.NVIM_PLUGIN_ROOT or (vim.fn.stdpath("data") .. "/plugin-tools")) .. "/image-tools.nvim"
+assert(spec.dir == expected, "Prefer the local checkout and otherwise use the managed GitHub checkout")
+local available = vim.uv.fs_stat(expected .. "/lua/image_tools/init.lua") ~= nil
+if available then
+  assert(spec, "Independent preview spec missing")
+  assert(spec.dir == expected, "Independent preview must use the external checkout")
+  assert(vim.deepcopy((spec).opts).position == "bottom_right", "Preview must be configured for the bottom-right corner")
+  local options = vim.deepcopy((spec).opts)
+  assert(options.transport == "auto", "Preview should prefer file transfer with automatic direct fallback")
+  assert(not package.loaded["image_tools.runtime"], "Image Runtime must initialize on demand")
+  assert(not package.loaded.image_tools, "Empty startup must leave image preview unloaded")
+  local calls = 0
+  vim.cmd("ImagePreviewClose")
+  assert(require("config.plugins").initialized(spec.id), "Independent preview did not load")
+  local image = require("image_tools")
+  assert(
+    debug.getinfo(image.hover).source:find(expected, 1, true),
+    "Preview source was vendored or resolved incorrectly"
+  )
+  image.hover = function()
+    calls = calls + 1
+  end
+  local mapping = vim.fn.maparg(vim.g.mapleader .. "si", "n", false, true)
+  assert(mapping.callback and mapping.desc == "[Image] Preview image or formula on current line")
+  mapping.callback()
+  assert(calls == 1, "Preview key must call the independent plugin")
+  assert(not plugins["image-insert.nvim"], "Old image insertion plugin must be removed")
+  assert(image.snacks_preview == nil, "Removed Snacks API must not remain exposed")
+  assert(
+    vim.fn.exists(":ImageOpen") == 2 and vim.fn.exists(":ImagePage") == 2,
+    "Image/PDF file buffer commands missing"
+  )
+  assert(vim.fn.exists(":ImagePick") == 2, "Independent picker command missing")
+  assert(vim.fn.exists(":ImagePaste") == 2, "Independent clipboard command missing")
+  assert(vim.fn.exists(":ImageInsert") == 2, "Independent image import command missing")
+  dofile(root .. "/tests/integration/image_insertion.lua")
+  assert(vim.fn.exists(":ImagePreview") == 2, "Independent preview command missing")
+  assert(vim.fn.exists(":ImagePreviewClearCache") == 2, "Terminal cache cleanup command missing")
+else
+  assert(spec.package.managed, "Missing development checkout must select the managed GitHub source")
+end
+assert(package.loaded["snacks.image"] == nil, "Snacks image was loaded despite being disabled")
+print(
+  "image_preview: independent "
+    .. (local_checkout and "development" or "GitHub")
+    .. " plugin "
+    .. (available and "loaded" or "gracefully absent")
+    .. ", Snacks image disabled"
+)
+vim.cmd("qa!")

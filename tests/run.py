@@ -14,7 +14,8 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from support.paths import ROOT, test_path
+
 FULL = {"NVIM_TEST_SCENARIO": "full", "NVIM_TEST_ENABLE_THIRD_PARTY": "1"}
 
 
@@ -55,8 +56,8 @@ def lua(name, env=None):
             "NONE",
             "--noplugin",
             "-l",
-            str(ROOT / "tests/checked.lua"),
-            str(ROOT / "tests" / (name + ".lua")),
+            str(ROOT / "tests/support/checked.lua"),
+            str(test_path(name + ".lua")),
         ],
         env or {},
     )
@@ -71,11 +72,13 @@ def startup(name, env=None):
             "-i",
             "NONE",
             "--cmd",
-            "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/setup.lua')",
+            "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/support/setup.lua')",
             "-u",
             str(ROOT / "init.lua"),
             "-c",
-            "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/tests/" + name + ".lua')",
+            "lua dofile(vim.env.NVIM_CONFIG_ROOT .. '/"
+            + test_path(name + ".lua").relative_to(ROOT).as_posix()
+            + "')",
         ],
         env or {},
     )
@@ -84,7 +87,7 @@ def startup(name, env=None):
 def python(name, *args, env=None):
     return Case(
         name + (":" + ":".join(args) if args else ""),
-        [sys.executable, str(ROOT / "tests" / (name + ".py")), *args],
+        [sys.executable, str(test_path(name + ".py")), *args],
         env or {},
         timeout=150,
     )
@@ -244,7 +247,7 @@ def suites():
     ]
     query = startup("latex_queries", {"NVIM_TEST_SCENARIO": "writing"})
     query.command[-1] = (
-        "lua local ok, err = pcall(dofile, vim.env.NVIM_CONFIG_ROOT .. '/tests/latex_queries.lua'); "
+        "lua local ok, err = pcall(dofile, vim.env.NVIM_CONFIG_ROOT .. '/tests/integration/latex_queries.lua'); "
         "if not ok then io.stderr:write(tostring(err)); vim.cmd('cquit 1') end"
     )
     query.command.append("+qa!")

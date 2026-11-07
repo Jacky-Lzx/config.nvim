@@ -19,7 +19,7 @@ The Lua `snippet` template generates native definitions. Dynamic module names,
 computed labels, mirrors and TODO alias/signature choices use native nodes.
 The frozen export in `tests/fixtures/snippets-legacy.json` records the original
 trigger metadata and default text, with provenance in its adjacent README.
-`tests/snippet_collections.lua` compares all 154 definitions without loading the
+`tests/integration/snippet_collections.lua` compares all 154 definitions without loading the
 old engine; TeX's collection test also checks callbacks and stable reloads.
 
 Use Alt-l/Alt-h to navigate, Alt-j/Alt-k to cycle choices and Alt-c for the choice

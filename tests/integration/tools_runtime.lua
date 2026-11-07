@@ -1,0 +1,60 @@
+local root = assert(vim.env.NVIM_CONFIG_ROOT)
+vim.opt.rtp:prepend(root)
+vim.o.loadplugins = true
+dofile(root .. "/tests/support/setup.lua")
+dofile(root .. "/init.lua")
+dofile(root .. "/tests/support/native_plugins.lua")
+assert(
+  vim.wait(3000, function()
+    return vim.g.config_ready == true
+  end),
+  "ConfigReady was not reached"
+)
+local plugins = require("config.plugins").nodes()
+assert(not plugins["mason.nvim"] and not package.loaded.mason and not package.loaded["mason-registry"])
+for _, path in ipairs(vim.opt.rtp:get()) do
+  assert(not path:match("/mason%.nvim"), path)
+end
+local commands = vim.api.nvim_get_commands({})
+assert(commands.Mason ~= nil and commands.MasonToolsInstall ~= nil)
+local java_home = require("utils.platform").jdtls_java_home()
+if java_home and plugins["nvim-lspconfig"] then
+  for _, id in ipairs({ "lsp-tools.nvim" }) do
+    require("plugin_tools").activate(id)
+  end
+  assert(vim.lsp.config.jdtls.cmd_env.JAVA_HOME == java_home)
+  local owned = {}
+  for _, server in ipairs(require("lsp-tools").server_status()) do
+    owned[server.name] = server.managed or server.pending
+  end
+  assert(owned.jdtls, "lsp-tools must select the Java server for native activation")
+end
+local tools = require("toolchain.tools")
+local leases = assert(_G.config_test_toolchain_sessions)
+assert(vim.fn.isdirectory(leases) == 1, "Tool activation did not record isolated session leases")
+local session_files = vim.fn.glob(leases .. "/*/sessions/*.json", false, true)
+assert(#session_files > 0, "Missing tool session lease in temporary state")
+for _, file in ipairs(session_files) do
+  local session = vim.json.decode(table.concat(vim.fn.readfile(file), "\n"))
+  assert(session.pid == vim.uv.os_getpid() and #session.versions > 0, "Invalid live tool session")
+end
+local count = 0
+for _, requirement in ipairs(require("integrations.toolchain").requirements("tool")) do
+  local path = requirement.resolve and requirement.resolve()
+    or requirement.executable and vim.fn.exepath(requirement.executable)
+  assert(path and path ~= "" and vim.fn.executable(path) == 1, requirement.name)
+  local real = vim.uv.fs_realpath(path) or path
+  assert(not real:find("/mason/", 1, true), "Legacy dependency: " .. real)
+  count = count + 1
+end
+local python = assert(require("utils.platform").debugpy_python())
+assert(python == tools.path("debugpy", "python"))
+assert(not python:find("/mason/", 1, true))
+local server = assert(require("languages.vue.compatibility").server_path())
+assert(not server:find("/mason/", 1, true))
+local package_json = assert(io.open(server .. "/package.json"))
+package_json:close()
+assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
+io.stdout:write(
+  "Independent tools runtime: " .. count .. " configured requirements, debugpy and Vue resources passed\n"
+)

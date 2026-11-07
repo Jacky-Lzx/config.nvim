@@ -163,7 +163,7 @@ follow declared keys while expected results and ownership checks stay independen
 The configured lifecycle check verifies that invalid setup, repeated disposal
 and reinitialization preserve personal bindings. Individual plugin repositories
 exercise their setup/disposal contracts alongside their own headless and PTY tests.
-`python3 tests/remote_install.py` explicitly installs pinned GitHub versions into
+`python3 tests/integration/remote_install.py` explicitly installs pinned GitHub versions into
 isolated directories and starts editors with development paths hidden. It checks
 minimal/default startup and first-use public APIs; it requires network access.
 
