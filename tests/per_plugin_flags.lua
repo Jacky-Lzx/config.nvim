@@ -34,4 +34,13 @@ for _, module in ipairs({
   spec.enabled = original
   assert(vim.deep_equal(names(graph()), names(baseline)), "Restoring a flag changed the graph")
 end
+local markdown = require("languages.markdown.plugins")[1]
+local original = markdown.enabled
+markdown.enabled = false
+local disabled = graph()
+for _, id in ipairs({ "markdown-tools.nvim", "render-markdown.nvim", "peek.nvim" }) do
+  assert(not disabled.nodes[id] and not disabled.packages[id], "Disabling Markdown retained its subtree: " .. id)
+end
+markdown.enabled = original
+assert(vim.deep_equal(names(graph()), names(baseline)), "Restoring Markdown changed the graph")
 print("Per-plugin flags: enabled/disabled behavior and independent restoration follow current defaults")

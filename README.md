@@ -90,7 +90,9 @@ Third-party declarations are grouped by their current enabled state:
 - `lua/plugins/disabled/`: disabled third-party plugins and their language-specific
   options. CodeSnap is retained without a manifest entry.
 
-render-markdown and Peek mount and initialize only on the first Markdown buffer.
+render-markdown and Peek are children of `markdown-tools.nvim` in the plugin graph,
+with their own packages, options and enabled flags. Disabling the parent excludes
+both children. They mount and initialize only on the first Markdown buffer.
 Rendering remains off until `<leader>tmr`; `:MarkdownPreview` opens Peek after
 initialization. Peek requires Deno and its configured build task.
 

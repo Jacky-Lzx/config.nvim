@@ -6,6 +6,10 @@ return {
     main = "markdown_tools",
     mount = "on-demand",
     ft = { "markdown" },
+    children = {
+      require("plugins.third_party.peek")[1],
+      require("plugins.third_party.render-markdown")[1],
+    },
     config = function(ctx)
       require("languages.markdown.tools").setup(ctx.opts)
     end,
@@ -34,8 +38,6 @@ return {
       end,
     },
   },
-  "plugins.third_party.peek",
-  "plugins.third_party.render-markdown",
   {
     id = "obsidian-tools.nvim",
     dir = require("utils.platform").dev_plugin_root() .. "/obsidian-tools.nvim",

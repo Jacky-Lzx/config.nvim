@@ -1,5 +1,10 @@
 local function check()
   local manager = require("config.plugins").manager
+  for _, id in ipairs({ "render-markdown.nvim", "peek.nvim" }) do
+    local node = manager.graph.nodes[id]
+    assert(node.parents["markdown-tools.nvim"] and not node.roots, id .. " must be a Markdown child")
+    assert(node.owner == id and manager.graph.packages[id].managed, id .. " must retain its own package")
+  end
   local source = { "# Demand Markdown", "", "plain source", "", "- first", "- second" }
   local function cold()
     for _, id in ipairs({ "render-markdown.nvim", "peek.nvim" }) do
