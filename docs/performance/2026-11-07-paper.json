@@ -1,0 +1,582 @@
+{
+  "conditions": "real 120x40 PTY; real texquill; AI and grammar server disabled; build-on-save disabled; generated multi-file TeX",
+  "rounds": 10,
+  "sections": 500,
+  "source_project": "/Users/zexili/Research/Topics/SC_Series_Decomposition/latex",
+  "config": "a7da4468dcffa5ebe84343e609a4af177c210103",
+  "nvim": "NVIM v0.12.6",
+  "texquill": "texquill 1.0.0",
+  "records": [
+    {
+      "completed_ns": 329061689842708,
+      "round": 1,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 285.29075
+    },
+    {
+      "completed_ns": 329061754686666,
+      "round": 1,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 61.186167
+    },
+    {
+      "completed_ns": 329061892641166,
+      "round": 1,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 128.833
+    },
+    {
+      "completed_ns": 329061960234875,
+      "round": 1,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 59.024792
+    },
+    {
+      "completed_ns": 329061995387708,
+      "round": 1,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 27.520583
+    },
+    {
+      "completed_ns": 329066667957500,
+      "round": 2,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 204.947458
+    },
+    {
+      "completed_ns": 329066736203791,
+      "round": 2,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 64.014292
+    },
+    {
+      "completed_ns": 329066871100833,
+      "round": 2,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 123.983458
+    },
+    {
+      "completed_ns": 329066941147875,
+      "round": 2,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 59.0975
+    },
+    {
+      "completed_ns": 329066973000875,
+      "round": 2,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 24.611583
+    },
+    {
+      "completed_ns": 329069830153208,
+      "round": 3,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 45.675958
+    },
+    {
+      "completed_ns": 329069904040458,
+      "round": 3,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 62.405541
+    },
+    {
+      "completed_ns": 329070036925833,
+      "round": 3,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 124.853
+    },
+    {
+      "completed_ns": 329070104256958,
+      "round": 3,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 58.391125
+    },
+    {
+      "completed_ns": 329070134129750,
+      "round": 3,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 24.023709
+    },
+    {
+      "completed_ns": 329071893975625,
+      "round": 4,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 35.920125
+    },
+    {
+      "completed_ns": 329071959410750,
+      "round": 4,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 56.960542
+    },
+    {
+      "completed_ns": 329072089016708,
+      "round": 4,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 122.73425
+    },
+    {
+      "completed_ns": 329072155152250,
+      "round": 4,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 57.388959
+    },
+    {
+      "completed_ns": 329072185236666,
+      "round": 4,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 25.416625
+    },
+    {
+      "completed_ns": 329073948808208,
+      "round": 5,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 35.533667
+    },
+    {
+      "completed_ns": 329074014299541,
+      "round": 5,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 56.703291
+    },
+    {
+      "completed_ns": 329074150583666,
+      "round": 5,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 131.531667
+    },
+    {
+      "completed_ns": 329074220174875,
+      "round": 5,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 60.995
+    },
+    {
+      "completed_ns": 329074251774541,
+      "round": 5,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 25.240417
+    },
+    {
+      "completed_ns": 329078865955833,
+      "round": 6,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 43.078209
+    },
+    {
+      "completed_ns": 329078930199208,
+      "round": 6,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 58.692125
+    },
+    {
+      "completed_ns": 329079070806333,
+      "round": 6,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 132.160625
+    },
+    {
+      "completed_ns": 329079143526541,
+      "round": 6,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 61.90625
+    },
+    {
+      "completed_ns": 329079174952541,
+      "round": 6,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 24.851625
+    },
+    {
+      "completed_ns": 329080804892916,
+      "round": 7,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 39.074041
+    },
+    {
+      "completed_ns": 329080877860833,
+      "round": 7,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 62.759416
+    },
+    {
+      "completed_ns": 329081001495916,
+      "round": 7,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 117.197375
+    },
+    {
+      "completed_ns": 329081070520375,
+      "round": 7,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 58.847416
+    },
+    {
+      "completed_ns": 329081101716833,
+      "round": 7,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 25.968041
+    },
+    {
+      "completed_ns": 329082871418166,
+      "round": 8,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 40.122166
+    },
+    {
+      "completed_ns": 329082943597333,
+      "round": 8,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 63.38425
+    },
+    {
+      "completed_ns": 329083074670750,
+      "round": 8,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 125.267792
+    },
+    {
+      "completed_ns": 329083141014958,
+      "round": 8,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 56.568625
+    },
+    {
+      "completed_ns": 329083172978666,
+      "round": 8,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 25.139792
+    },
+    {
+      "completed_ns": 329084934868625,
+      "round": 9,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 36.779
+    },
+    {
+      "completed_ns": 329085002498625,
+      "round": 9,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 59.121625
+    },
+    {
+      "completed_ns": 329085142671333,
+      "round": 9,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 134.506541
+    },
+    {
+      "completed_ns": 329085212015291,
+      "round": 9,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 61.11975
+    },
+    {
+      "completed_ns": 329085245293583,
+      "round": 9,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 25.281458
+    },
+    {
+      "completed_ns": 329087167235500,
+      "round": 10,
+      "action": "completion",
+      "variant": "current",
+      "elapsed_ms": 211.118209
+    },
+    {
+      "completed_ns": 329087232534750,
+      "round": 10,
+      "action": "leave_completion",
+      "variant": "current",
+      "elapsed_ms": 58.367792
+    },
+    {
+      "completed_ns": 329087364656666,
+      "round": 10,
+      "action": "burst",
+      "variant": "current",
+      "elapsed_ms": 127.966417
+    },
+    {
+      "completed_ns": 329087431692166,
+      "round": 10,
+      "action": "leave_insert",
+      "variant": "current",
+      "elapsed_ms": 57.935125
+    },
+    {
+      "completed_ns": 329087462606333,
+      "round": 10,
+      "action": "save",
+      "variant": "current",
+      "elapsed_ms": 26.01725
+    },
+    {
+      "diagnostics": 2,
+      "round": 1,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 4457.631875,
+      "variant": "current"
+    },
+    {
+      "diagnostics": 2,
+      "round": 2,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 581.741958,
+      "variant": "current"
+    },
+    {
+      "diagnostics": 2,
+      "round": 3,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 583.638875,
+      "variant": "current"
+    },
+    {
+      "diagnostics": 2,
+      "round": 4,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 574.167458,
+      "variant": "current"
+    },
+    {
+      "diagnostics": 2,
+      "round": 5,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 582.258625,
+      "variant": "current"
+    },
+    {
+      "diagnostics": 2,
+      "round": 6,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 580.314875,
+      "variant": "current"
+    },
+    {
+      "diagnostics": 2,
+      "round": 7,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 573.678125,
+      "variant": "current"
+    },
+    {
+      "diagnostics": 2,
+      "round": 8,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 584.301333,
+      "variant": "current"
+    },
+    {
+      "diagnostics": 2,
+      "round": 9,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 573.678291,
+      "variant": "current"
+    },
+    {
+      "diagnostics": 2,
+      "round": 10,
+      "action": "diagnostic_refresh",
+      "elapsed_ms": 423.144416,
+      "variant": "current"
+    }
+  ],
+  "summary": {
+    "current": {
+      "completion": {
+        "first_ms": 285.29075,
+        "median_ms": 41.600187500000004,
+        "p95_ms": 285.29075,
+        "max_ms": 285.29075
+      },
+      "burst": {
+        "first_ms": 128.833,
+        "median_ms": 126.61710450000001,
+        "p95_ms": 134.506541,
+        "max_ms": 134.506541
+      },
+      "save": {
+        "first_ms": 27.520583,
+        "median_ms": 25.2609375,
+        "p95_ms": 27.520583,
+        "max_ms": 27.520583
+      },
+      "diagnostic_refresh": {
+        "first_ms": 4457.631875,
+        "median_ms": 581.0284165,
+        "p95_ms": 4457.631875,
+        "max_ms": 4457.631875
+      }
+    }
+  },
+  "plugins": {
+    "compile.nvim": {
+      "head": "077c4471356a54189ea38fdfa9349f345f49396f",
+      "dirty": false
+    },
+    "completion-tools.nvim": {
+      "head": "95504b5fa2bed14658fef114de7a7cd0ff3f8104",
+      "dirty": false
+    },
+    "dap-tools.nvim": {
+      "head": "f95ea5bb0e4ab49c202f140b56ebce355ec70403",
+      "dirty": false
+    },
+    "debug-tools.nvim": {
+      "head": "beb81625fdcd0fc9c9295502be4c091398776aab",
+      "dirty": false
+    },
+    "editing-tools.nvim": {
+      "head": "c0ca87bd2863fe185a837ec105a6ada83f4094c3",
+      "dirty": false
+    },
+    "file-tools.nvim": {
+      "head": "65541ba946d60098350541c30b721e2ecd472f5a",
+      "dirty": false
+    },
+    "format-tools.nvim": {
+      "head": "8727b94acfa9dabadcea08eaad88cf405f164c48",
+      "dirty": false
+    },
+    "git-tools.nvim": {
+      "head": "59b948876e7df430b9b405ec72aa0a7bfbe5f06a",
+      "dirty": false
+    },
+    "image-tools.nvim": {
+      "head": "1d4d62083c896007651d1b41e9a756deb31327b1",
+      "dirty": false
+    },
+    "input-tools.nvim": {
+      "head": "b59882f22cdacb8da250f15c1d3ca0360bef17f7",
+      "dirty": false
+    },
+    "keymap-tools.nvim": {
+      "head": "cb0b24048a966e36d3196f14b535242e19b3e553",
+      "dirty": false
+    },
+    "lint-tools.nvim": {
+      "head": "0f8e30174ea0f3e30cd51dd8ce0fe150b6ef5277",
+      "dirty": false
+    },
+    "lsp-tools.nvim": {
+      "head": "256897ca376f64bf2281b94c69841c3ae8556b97",
+      "dirty": false
+    },
+    "markdown-tools.nvim": {
+      "head": "0a21497cc0fddaff59feb546159e5fdaa4a706ab",
+      "dirty": false
+    },
+    "motion-tools.nvim": {
+      "head": "732593efbc9cacc3c20eeed74cc2016452aa8e68",
+      "dirty": false
+    },
+    "notification-tools.nvim": {
+      "head": "b4b6e54b3f66ceaf4c119df67081908a119f2f61",
+      "dirty": false
+    },
+    "obsidian-tools.nvim": {
+      "head": "921a03b660f6479cfbe90eb194b0acd1a861664e",
+      "dirty": false
+    },
+    "pairs.nvim": {
+      "head": "a0fa6d44476135bd5cb91952ac6b9f202aed8c58",
+      "dirty": false
+    },
+    "plugin-tools.nvim": {
+      "head": "8481fd046301a0590c76d14e4f71ee486823ffa4",
+      "dirty": false
+    },
+    "selection-tools.nvim": {
+      "head": "b18d217b0aaa9bec2d83e95c7625ebece427066b",
+      "dirty": false
+    },
+    "snippet-tools.nvim": {
+      "head": "1e54ee5a15b18f77312b7379dce440a146e4423c",
+      "dirty": false
+    },
+    "task-tools.nvim": {
+      "head": "9a9ec828f1b6529792c34658040a5762df9f35f0",
+      "dirty": false
+    },
+    "tex-tools.nvim": {
+      "head": "1f826724668d895f71c82904eca54d04c5ff7f11",
+      "dirty": false
+    },
+    "theme-tools.nvim": {
+      "head": "ea575718d7207d06e278d5ad2ed926b2bf38573d",
+      "dirty": false
+    },
+    "toolchain-tools.nvim": {
+      "head": "404ec37a80d68e4f7d9fa75caae34b7bc1d142c4",
+      "dirty": false
+    },
+    "ui-tools.nvim": {
+      "head": "4be5e2d5210006c4603fee3d0e439d790fa4bf1e",
+      "dirty": false
+    },
+    "workspace-tools.nvim": {
+      "head": "f245ea3508f05701b9615039ee239fc47c354439",
+      "dirty": false
+    }
+  },
+  "workloads": {
+    "current": {
+      "client": {
+        "cmd": [
+          "/Users/zexili/.cargo/bin/texquill",
+          "--stdio"
+        ],
+        "name": "texquill"
+      },
+      "lines": 375,
+      "bytes": 23383
+    }
+  }
+}

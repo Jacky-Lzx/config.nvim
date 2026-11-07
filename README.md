@@ -1105,6 +1105,18 @@ and UI remain unloaded until input needs them.
 Deferring those imports moves work to the first input; assess startup and input
 latency together rather than treating a lower startup time alone as an improvement.
 
+`python3 tests/benchmark_workflows.py --directory /tmp/nvim-workflows --rounds 10`
+measures real texquill completion in the rendered menu, 200-character PTY bursts,
+save completion and fresh native diagnostic refreshes in a multi-file TeX project.
+Use `--project /path/to/project --document main.tex` to work on an isolated copy of
+an existing manuscript; its source is never edited. AI, grammar checking and
+save-time compilation are disabled for this workload. Each output directory must
+be new and retains versions, plugin revisions, source snapshots, terminal logs,
+raw trials and first/median/p95/max measurements. `--baseline /tmp/modules.json`
+compares old module snapshots with current policy in separate processes. Variants
+run sequentially, so small differences do not establish a performance improvement.
+See [the workflow measurement record](docs/performance/2026-11-07-workflows.md).
+
 `lua/features/files.lua` owns early startup highlighting and large/minified file
 guards. Files above 1.5 MiB or averaging over 1000 bytes per line use `bigfile`
 filetype and disable completion, Tree-sitter and expensive UI scanning. Save-time
