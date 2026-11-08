@@ -28,7 +28,7 @@ local function check()
       count = count + 1
       assert(info.session == info.current, language)
       local library = vim.api.nvim_get_runtime_file("parser/" .. language .. ".so", false)[1]
-      assert(library == info.session .. "/parser/" .. language .. ".so", language)
+      assert((vim.uv.fs_realpath(library) or library) == info.session .. "/parser/" .. language .. ".so", language)
       for relative in pairs(info.receipt.artifacts) do
         if relative:match("^queries/") then
           local path = info.current .. "/" .. relative
