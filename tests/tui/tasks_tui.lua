@@ -71,6 +71,8 @@ local function check()
   end)
   assert(require("config.plugins").initialized("task-tools.nvim"))
   local tasks = require("task_tools")
+  local terminals = require("task_tools.terminal")
+  assert(require("task_tools.config").values.forward_osc133, "Personal OSC forwarding must be enabled")
   assert(plugins["task-tools.nvim"].dir == require("utils.platform").dev_plugin_root() .. "/task-tools.nvim")
   await("command", function()
     return #tasks.list() == 1 and tasks.list()[1].status == "success"
@@ -89,14 +91,14 @@ local function check()
   end)
   assert(vim.api.nvim_win_get_cursor(0)[1] == 2 and vim.api.nvim_win_get_cursor(0)[2] == 2)
   await("terminal", function()
-    return #tasks.list() == 2 and vim.api.nvim_get_mode().mode == "t"
+    return #terminals.list() == 1 and #tasks.list() == 1 and vim.api.nvim_get_mode().mode == "t"
   end)
-  local shell = tasks.list()[1]
+  local shell = terminals.list()[1]
   local win = vim.fn.win_findbuf(shell.buf)[1]
   assert(vim.api.nvim_win_get_config(win).relative == "editor", "default shell is floating")
   assert(not package.loaded["snacks.terminal"], "Snacks terminal should remain unloaded")
   await("terminal_input", function()
-    return table.concat(tasks.output(shell.id), "\n"):find("TASKS_PTY_OK", 1, true) ~= nil
+    return table.concat(vim.api.nvim_buf_get_lines(shell.buf, 0, -1, false), "\n"):find("TASKS_PTY_OK", 1, true) ~= nil
       and screen():find("TASKS_PTY_OK", 1, true) ~= nil
   end)
   await("terminal_hide", function()
@@ -105,12 +107,12 @@ local function check()
   await("terminal_reopen", function()
     return #vim.fn.win_findbuf(shell.buf) > 0 and vim.api.nvim_get_mode().mode == "t"
   end)
-  assert(tasks.get(shell.id).job == shell.job, "Terminal action must reuse the original PTY")
+  assert(terminals.get(shell.buf).job == shell.job, "Terminal action must reuse the original PTY")
   await("terminal_hide_again", function()
     return #vim.fn.win_findbuf(shell.buf) == 0 and vim.api.nvim_get_mode().mode:sub(1, 1) == "n"
   end)
   await("rerun", function()
-    return #tasks.list() == 3 and tasks.list()[1].status == "success"
+    return #tasks.list() == 2 and tasks.list()[1].status == "success"
   end)
   local repeated = tasks.list()[1]
   assert(
@@ -120,7 +122,7 @@ local function check()
   await("list", function()
     return vim.bo.filetype == "tasktools"
   end)
-  assert(screen():find("Terminal", 1, true) and screen():find("success", 1, true), "rendered task list")
+  assert(not screen():find("Terminal", 1, true) and screen():find("success", 1, true), "task list excludes shell")
   await("list_close", function()
     return vim.bo.filetype ~= "tasktools"
   end)
@@ -135,7 +137,7 @@ local function check()
     return vim.fn.getcmdtype() == "@"
   end)
   await("args", function()
-    return #tasks.list() == 4 and tasks.list()[1].status == "success"
+    return #tasks.list() == 3 and tasks.list()[1].status == "success"
   end)
   pause(80)
   assert(
@@ -153,7 +155,7 @@ local function check()
     return vim.bo.filetype == "selection_tools_input"
   end)
   await("task_choice", function()
-    return #tasks.list() == 5 and tasks.list()[1].status == "success"
+    return #tasks.list() == 4 and tasks.list()[1].status == "success"
   end)
   assert(
     table.concat(tasks.output(tasks.list()[1].id), "\n"):find("ARGS:[]", 1, true),
@@ -167,7 +169,9 @@ local function check()
       end
     end
   end
-  assert(not notice(shell.id), "Personal shell must not create a task progress row")
+  assert(not vim.iter(notices.tasks()):any(function(row)
+    return row.title == "Terminal"
+  end), "Personal shell must not create a task progress row")
   local gate = root .. "/notification-gate"
   local current_win, cursor = vim.api.nvim_get_current_win(), vim.api.nvim_win_get_cursor(0)
   local progress = assert(tasks.run({
@@ -204,7 +208,7 @@ local function check()
   await("finished_output", function()
     return vim.bo.filetype == "tasktoolsoutput" and screen():find("TASK_PROGRESS_FINISHED", 1, true)
   end)
-  tasks.stop(shell.id)
+  terminals.stop(shell.buf)
   assert(#_G.config_test_errors == 0, table.concat(_G.config_test_errors, "\n"))
 end
 vim.api.nvim_create_autocmd("User", {

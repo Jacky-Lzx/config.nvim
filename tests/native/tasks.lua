@@ -1,4 +1,5 @@
 vim.opt.rtp:prepend(assert(vim.env.NVIM_CONFIG_ROOT))
+assert(require("plugins.tasks.task-tools")[1].opts.forward_osc133 == true)
 local calls = {}
 local manual = {}
 for _, name in ipairs({ "prompt", "rerun", "stop", "output", "quickfix" }) do

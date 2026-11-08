@@ -78,11 +78,7 @@ return {
         },
       })
       require("task_tools").setup(ctx.opts)
-      require("task_tools.integrations.notification_tools").setup({
-        filter = function(task)
-          return task.name ~= "Terminal"
-        end,
-      })
+      require("task_tools.integrations.notification_tools").setup()
     end,
     id = "task-tools.nvim",
     dependencies = { { id = "notification-tools.nvim", optional = true } },
@@ -91,6 +87,7 @@ return {
     dev = true,
     main = "task_tools",
     opts = {
+      forward_osc133 = true,
       python = function(ctx)
         return require("languages.python.interpreter").current(ctx and { buf = ctx.buf } or nil)
       end,
