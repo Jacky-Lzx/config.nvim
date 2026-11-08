@@ -111,7 +111,7 @@ owners. Shared plugin configuration runs once; language contributions supply opt
 Optional executable requirements are probed through the platform resolver, which
 can be replaced in deterministic tests. Selected and enabled servers remain separate.
 
-Python's interpreter accessor stays dynamic. workspace-tools environment selection
+Python's interpreter accessor stays dynamic. python-tools environment selection
 works independently of saved sessions; LSP, tasks and DAP consume the same accessor.
 Child process environment changes do not mutate global PATH.
 

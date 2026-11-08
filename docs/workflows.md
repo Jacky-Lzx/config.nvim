@@ -519,16 +519,21 @@ Parser installation and versions remain owned by toolchain-tools.
 
 ## Python project environments
 
-`:VenvSelect` / `<leader>cv` now use workspace-tools' Python environment module.
+`:VenvSelect` / `<leader>cv` use the independent `python-tools.nvim` plugin
+and its `:PythonEnv` command.
 Select a discovered environment, enter an executable/environment path, or choose
 Automatic/System. `:VenvSelect /path/to/.venv` selects directly; `:VenvSelect!`
 clears the project override. Choices are stored per project under
-`stdpath('state')/workspace-tools/python`; missing or corrupt selections fall back
-to local `.venv`, `venv`, `env`, then inherited environment/PATH discovery.
+`stdpath('state')/python-tools`. Existing selections remain readable from
+`stdpath('state')/workspace-tools/python` when no new record exists. Clearing an
+override removes both records for that project. A custom `directory` opts out of
+legacy fallback. Missing or corrupt selections fall back to local `.venv`,
+`venv`, `env`, then inherited environment/PATH discovery.
 
-The Python profile makes the workspace-tools runtime available independently of
-the sessions feature. With sessions disabled, environment selection does not
-initialize workspace saving/restoring. BasedPyright uses the same project root
+The Python profile declares its own plugin independently of the sessions
+feature. With sessions disabled, workspace-tools is absent from the plugin graph.
+`PythonEnvironmentChanged` carries the project root, interpreter and child
+environment to consumers. BasedPyright uses the same project root
 and receives interpreter updates without restarting other clients. Tasks and DAP
 share `languages.python.interpreter`; child processes receive the selected PATH
 and environment variables without changing Neovim's global environment. `:make`

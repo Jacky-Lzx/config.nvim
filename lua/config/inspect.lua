@@ -35,7 +35,7 @@ local function integrations()
   if cmp then
     completion.last_request = vim.deepcopy(cmp.get_status())
   end
-  local environments = package.loaded["workspace_tools.environments.python"]
+  local environments = package.loaded["python_tools"]
   local python = { loaded = environments ~= nil }
   if environments then
     python = vim.deepcopy(environments.info({ buf = buf }))

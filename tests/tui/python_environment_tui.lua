@@ -146,7 +146,7 @@ local function start()
   vim.lsp.start = _G.config_test_real_lsp_start
   vim.cmd.edit(project_a .. "/main.py")
   source = api.nvim_get_current_buf()
-  environments = require("workspace_tools.environments.python")
+  environments = require("python_tools")
   environments.setup({ directory = folder .. "/store", search_paths = { folder .. "/envs" } })
   assert(require("languages.python.interpreter").current() == project_a .. "/.venv/bin/python")
   await(function()

@@ -42,7 +42,7 @@ local selected = "/selected env/bin/python"
 executables[selected] = true
 assert(platform.python() == "/project/.venv/bin/python", "Platform discovery must ignore plugin state")
 local configured = false
-package.loaded["workspace_tools.environments.python"] = {
+package.loaded["python_tools"] = {
   current = function()
     return selected
   end,
@@ -57,7 +57,7 @@ package.loaded["workspace_tools.environments.python"] = {
 require("config.context").initialize({ profiles = { "data" }, features = {} })
 require("core.commands").setup()
 local alias = vim.api.nvim_get_commands({}).VenvSelect
-local spec = require("languages.python.plugins")[1].children[1]
+local spec = require("languages.python.plugins")[1]
 spec.config({ opts = spec.opts, dir = spec.dir })
 assert(configured, "Plugin setup must connect the interpreter provider")
 assert(vim.deep_equal(alias, vim.api.nvim_get_commands({}).VenvSelect), "Python setup must preserve the config alias")

@@ -7,12 +7,17 @@ local specs = require("config.specs").build()
 local resolve = require("plugin_tools.graph").resolve
 local local_graph = resolve(specs, { dev = { path = require("utils.platform").dev_plugin_root(), fallback = true } })
 assert(not local_graph.packages["notification-tools.nvim"].managed)
-assert(local_graph.nodes["workspace-tools.python"].owner == "workspace-tools.nvim")
-assert(local_graph.nodes["workspace-tools.nvim"].start == sessions)
-assert(local_graph.nodes["workspace-tools.python"].start == false)
-assert(vim.deep_equal(local_graph.nodes["workspace-tools.python"].ft, { "python" }))
-assert(local_graph.nodes["workspace-tools.nvim"].mount == (sessions and "startup" or "on-demand"))
-assert(local_graph.nodes["workspace-tools.python"].declarations[1].origin == "languages.python.plugins")
+assert(local_graph.nodes["python-tools.nvim"].owner == "python-tools.nvim")
+assert((local_graph.nodes["workspace-tools.nvim"] ~= nil) == sessions)
+if sessions then
+  assert(local_graph.nodes["workspace-tools.nvim"].start == true)
+  assert(local_graph.nodes["workspace-tools.nvim"].mount == "startup")
+end
+assert(local_graph.nodes["python-tools.nvim"].start == false)
+assert(vim.deep_equal(local_graph.nodes["python-tools.nvim"].ft, { "python" }))
+assert(local_graph.nodes["python-tools.nvim"].mount == "on-demand")
+assert(local_graph.packages["python-tools.nvim"] ~= local_graph.packages["workspace-tools.nvim"])
+assert(local_graph.nodes["python-tools.nvim"].declarations[1].origin == "languages.python.plugins")
 assert(local_graph.nodes["notification-tools.nvim"].declarations[1].origin == "plugins.ui.notification-tools")
 assert(not local_graph.nodes["lua-tools.nvim"], "Python-only selection must not activate Lua development")
 local lua_graph = resolve(require("languages.lua").plugins, {
@@ -58,4 +63,4 @@ for _, node in pairs(local_graph.nodes) do
 end
 assert(not package.loaded.lazy and not package.loaded["image_tools.runtime"])
 assert(not package.loaded["config.bindings"], "Resolving specs must not register personal keymaps")
-print("Native manifest, Python child ownership, feature gates, local preference and remote fallback passed")
+print("Native manifest, independent Python ownership, feature gates, local preference and remote fallback passed")

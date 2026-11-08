@@ -23,9 +23,9 @@ snippets and images retain their own first-use initialization. There is no
 TeX tools mount and initialize on the first `tex`/`plaintex` buffer. The TeX
 flavor/conceal globals stay in early filetype configuration so native detection
 and ftplugins see them in time. Python environment setup waits for a Python
-buffer or `:VenvSelect`; session management can mount their shared package earlier
-without initializing the Python child. BasedPyright root resolution also ensures
-that child is ready before looking up the project environment.
+buffer or `:VenvSelect`. The independent `python-tools.nvim` package stays cold
+until then; workspace sessions do not mount it. BasedPyright root resolution
+also activates Python tools before looking up the project environment.
 
 LSP names and filetype hints register at startup. `lsp-tools` prepares the
 `nvim-lspconfig` runtime provider just before the first native server config

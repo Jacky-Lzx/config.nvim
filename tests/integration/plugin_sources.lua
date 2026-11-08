@@ -23,6 +23,7 @@ local published = {
   "motion-tools.nvim",
   "notification-tools.nvim",
   "pairs.nvim",
+  "python-tools.nvim",
   "selection-tools.nvim",
   "snippet-tools.nvim",
   "task-tools.nvim",
@@ -62,8 +63,8 @@ for _, format in ipairs({ "https://github.com/%s.git", "git@github.com:%s.git" }
     assert(fallback.packages[id].managed and fallback.packages[id].source == package.source, id)
     assert(fallback.nodes[id].dir == installed_root .. "/" .. id, id)
   end
-  assert(fallback.nodes["workspace-tools.python"].owner == "workspace-tools.nvim")
-  assert(fallback.nodes["workspace-tools.python"].dir == fallback.nodes["workspace-tools.nvim"].dir)
+  assert(fallback.nodes["python-tools.nvim"].owner == "python-tools.nvim")
+  assert(fallback.nodes["python-tools.nvim"].dir ~= fallback.nodes["workspace-tools.nvim"].dir)
 end
 assert(not package.loaded["config.bindings"], "Resolving sources must not initialize plugins")
 print("GitHub shorthand sources: shared HTTPS/SSH templates, local development preference and managed fallbacks passed")

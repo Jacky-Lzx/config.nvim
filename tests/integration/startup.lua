@@ -152,12 +152,11 @@ local function check()
   assert((vim.fn.maparg("<leader>tws", "n") ~= "") == not not features.tasks)
   assert(vim.fn.maparg("<A-i>", "n") == "" and vim.fn.maparg("<A-i>", "t") == "")
   assert(vim.fn.maparg("<leader>tws", "t") == "", "Terminal typing must not acquire a Space prefix")
-  assert(
-    (plugins["workspace-tools.nvim"] ~= nil) == (not not features.sessions or require("languages").is_enabled("python"))
-  )
+  assert((plugins["workspace-tools.nvim"] ~= nil) == not not features.sessions)
   assert(
     not plugins["venv-selector.nvim"] and not plugins["multicursor.nvim"] and not plugins["nvim-treesitter-textobjects"]
   )
+  assert((plugins["python-tools.nvim"] ~= nil) == require("languages").is_enabled("python"))
   assert(not plugins["auto-session"] and not package.loaded["auto-session"])
   for _, name in ipairs({ "barbar.nvim", "lualine.nvim", "copilot-lualine" }) do
     assert(not plugins[name], "Old bar plugin remains configured: " .. name)

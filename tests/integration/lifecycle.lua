@@ -21,6 +21,7 @@ for _, entry in ipairs({
   { "selection-tools.nvim", "selection_tools" },
   { "ui-tools.nvim", "ui_tools" },
   { "workspace-tools.nvim", "workspace_tools" },
+  { "python-tools.nvim", "python_tools" },
   { "lsp-tools.nvim", "lsp-tools" },
   { "task-tools.nvim", "task_tools" },
   { "format-tools.nvim", "format_tools" },

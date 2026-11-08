@@ -16,13 +16,13 @@ function M.apply(client)
 end
 
 function M.setup(opts)
-  local environments = require("workspace_tools.environments.python")
+  local environments = require("python_tools")
   environments.setup(opts)
   require("languages.python.interpreter").set_provider(environments.current, environments.environment)
   local group = vim.api.nvim_create_augroup("ConfigPythonEnvironment", { clear = true })
   vim.api.nvim_create_autocmd("User", {
     group = group,
-    pattern = "WorkspacePythonChanged",
+    pattern = "PythonEnvironmentChanged",
     callback = function(ev)
       for _, client in ipairs(vim.lsp.get_clients()) do
         local root = client.root_dir and (vim.uv.fs_realpath(client.root_dir) or vim.fs.normalize(client.root_dir))

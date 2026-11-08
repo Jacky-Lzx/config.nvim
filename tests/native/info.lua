@@ -108,7 +108,7 @@ for _, module in ipairs({
   "image_tools.bootstrap",
   "tex-tools",
   "completion_tools",
-  "workspace_tools.environments.python",
+  "python_tools",
 }) do
   original[module] = package.loaded[module]
 end
@@ -128,7 +128,7 @@ package.loaded.completion_tools = {
     return status
   end,
 }
-package.loaded["workspace_tools.environments.python"] = {
+package.loaded["python_tools"] = {
   info = function()
     return { root = "/fixture/project", python = "/fixture/project/.venv/bin/python", source = "project:.venv" }
   end,
@@ -148,7 +148,7 @@ for _, module in ipairs({
   "image_tools.bootstrap",
   "tex-tools",
   "completion_tools",
-  "workspace_tools.environments.python",
+  "python_tools",
 }) do
   package.loaded[module] = original[module]
 end

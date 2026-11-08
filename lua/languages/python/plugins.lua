@@ -1,30 +1,20 @@
-local sessions = require("config.context").current().selection.features.sessions
-
 return {
   {
-    id = "workspace-tools.nvim",
-    source = "Jacky-Lzx/workspace-tools.nvim",
+    id = "python-tools.nvim",
+    source = "Jacky-Lzx/python-tools.nvim",
     version = "main",
     dev = true,
-    mount = sessions and "startup" or "on-demand",
-    start = sessions,
-    children = {
-      {
-        id = "workspace-tools.python",
-        ft = { "python" },
-        opts = {
-          python = {},
-        },
-        config = function(ctx)
-          require("config.bindings").set(
-            "workspace-tools.python",
-            { { "<leader>cv", "<CMD>VenvSelect<CR>", desc = "Select VirtualEnv", ft = "python" } }
-          )
-          local opts = ctx.opts
-          require("integrations.python_environment").setup(opts.python)
-        end,
-      },
-    },
+    mount = "on-demand",
+    ft = { "python" },
+    main = "python_tools",
+    opts = {},
+    config = function(ctx)
+      require("config.bindings").set(
+        "python-tools.nvim",
+        { { "<leader>cv", "<CMD>VenvSelect<CR>", desc = "Select VirtualEnv", ft = "python" } }
+      )
+      require("integrations.python_environment").setup(ctx.opts)
+    end,
   },
   "languages.python.debug",
 }
