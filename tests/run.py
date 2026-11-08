@@ -309,6 +309,7 @@ def suites():
     )
     query.command.append("+qa!")
     compatibility.append(query)
+    compatibility.append(lua("plugin_manifest", {"NVIM_WORKSPACE_ENABLED": "1"}))
     compatibility += [
         lua("workspaces", {"NVIM_WORKSPACE_ENABLED": "0"}),
         python("workspace_tui"),

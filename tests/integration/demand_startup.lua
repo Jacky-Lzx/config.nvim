@@ -19,6 +19,13 @@ local function check()
     io.stdout:write("Demand command: VenvSelect before FileType initializes only the Python environment provider\n")
     return
   end
+  if require("config.context").current().selection.features.sessions then
+    assert(manager.graph.nodes["workspace-tools.nvim"].mount == "startup")
+    assert(plugins.initialized("workspace-tools.nvim"))
+    for _, command in ipairs({ "WorkspaceSave", "WorkspaceRestore", "WorkspaceSearch", "WorkspaceInfo" }) do
+      assert(vim.fn.exists(":" .. command) == 2, command .. " missing after native startup")
+    end
+  end
   cold("tex-tools.nvim", "tex-tools")
   cold("nvim-lspconfig", "lspconfig")
   if require("config.context").current().selection.features.debugging then

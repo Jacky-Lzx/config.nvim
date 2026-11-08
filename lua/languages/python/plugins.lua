@@ -1,11 +1,13 @@
+local sessions = require("config.context").current().selection.features.sessions
+
 return {
   {
     id = "workspace-tools.nvim",
     source = "Jacky-Lzx/workspace-tools.nvim",
     version = "main",
     dev = true,
-    mount = "on-demand",
-    start = require("config.context").current().selection.features.sessions,
+    mount = sessions and "startup" or "on-demand",
+    start = sessions,
     children = {
       {
         id = "workspace-tools.python",
