@@ -1,6 +1,6 @@
 local latex_source = {
   url = "https://github.com/Jacky-Lzx/tree-sitter-latex",
-  revision = "e1cad6c26868e986911e364cc2655fd4ec81bdf7",
+  revision = "2feffd1404a93c32576eae6bdafc5beb51828bb6",
 }
 
 return {
