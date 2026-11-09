@@ -210,18 +210,12 @@ also closes it. Previews show at most 200 lines in a window up to 100 columns an
 
 ## Writing diagnostics
 
-The writing profile uses **LTeX+** (`ltex_plus`) for English grammar in Markdown,
-plain text and TeX, alongside Marksman and TeXquill for document structure.
-Checks run when a document is opened or saved; picky style rules are disabled.
-`typos_lsp` retains spelling checks, so LTeX+'s English spelling rule is disabled.
-Use `<leader>a` on a diagnostic for replacement suggestions.
+The writing profile uses Marksman and TeXquill for document structure, with
+`typos_lsp` providing spelling checks in Markdown. Use `<leader>a` on a diagnostic
+for replacement suggestions.
 
-`after/lsp/ltex_plus.lua` owns language and grammar settings. The default is
-`en-US`; document language overrides can use LTeX+ magic comments, for example
-`<!-- LTeX: language=zh-CN -->` in Markdown or `% LTeX: language=zh-CN` in TeX.
-toolchain-tools' registry supplies official, checksum-pinned LTeX+ releases
-with a bundled Java runtime. `:ConfigToolsInstall` installs the managed version
-recorded in `toolchain-lock.json`.
+LTeX+ (`ltex_plus`) is disabled for Markdown and TeX and is not requested by
+`:ConfigToolsInstall`. Its settings remain in `after/lsp/ltex_plus.lua` for future use.
 
 ## LaTeX
 

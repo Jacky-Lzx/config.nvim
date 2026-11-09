@@ -1,7 +1,6 @@
 return {
-  servers = { "texquill", "ltex_plus" },
+  servers = { "texquill" },
   tools = {
-    { package = "ltex-ls-plus", executable = "ltex-ls-plus" },
     { package = "tex-fmt", executable = "tex-fmt" },
     {
       executable = "texquill",
