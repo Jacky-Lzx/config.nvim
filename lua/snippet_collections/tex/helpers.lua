@@ -62,7 +62,7 @@ function M.environment(name, argument)
   )
 end
 function M.label(args)
-  return args[1]:gsub("%.[^.]*$", ""):gsub("_", "-")
+  return vim.fs.basename(args[1]):gsub("%.[^.]*$", ""):gsub("_", "-")
 end
 
 -- Match the same word characters as the previous LuaSnip postfix definitions.

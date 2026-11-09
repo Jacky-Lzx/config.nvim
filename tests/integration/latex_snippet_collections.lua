@@ -31,6 +31,17 @@ assert(not package.loaded["luasnip.extras.conditions"], "Shared predicate eagerl
 assert(#native > 0, "LaTeX collection is empty")
 print("LaTeX collection: " .. #native .. " current callbacks render without a legacy engine")
 
+local label = require("snippet_collections.tex.helpers").label
+for path, expected in pairs({
+  [""] = "",
+  ["proposed_circuit.pdf"] = "proposed-circuit",
+  ["./Figures/proposed_circuit.pdf"] = "proposed-circuit",
+  ["/tmp/draft.v2/proposed_circuit.pdf"] = "proposed-circuit",
+  ["./Figures/proposed_circuit"] = "proposed-circuit",
+}) do
+  assert(label({ path }) == expected, "Unexpected figure label for " .. path)
+end
+
 local engine = require("snippet_tools")
 engine.setup({ keymap = false, paths = { root .. "/lua/snippet_collections" } })
 local before = #engine.available()

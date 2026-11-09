@@ -197,10 +197,11 @@ with workspace(prefix="latex-snippets-") as temporary:
             lambda s: s["mode"] == "s" and s["selection"] == "H" and "" in s["screen"],
             "figure placement selection and choice marker",
         )
-        send(b"\x1bj\x1bl7\x1blmy_figure.pdf\x1blCaption\x1bl!")
+        send(b"\x1bj\x1bl7\x1bldraft.v2/my_figure.pdf\x1blCaption\x1bl!")
         wait(
             lambda s: (
                 "  \\label{fig:my-figure}" in s["lines"]
+                and any("{./Figures/draft.v2/my_figure.pdf}" in line for line in s["lines"])
                 and s["lines"][-1] == "\\end{figure}!"
             ),
             "filename label linkage",
