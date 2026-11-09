@@ -33,11 +33,11 @@ local entries = {
   { "files.tree", "twf", "File tree" },
   { "tasks.list", "twt", "Task list" },
   -- { "tasks.terminal", "tws", "Terminal" },
-  { "lsp.diagnostics", "twd", "Diagnostic overview" },
+  { "lsp.diagnostics", "gd", "Diagnostic overview" },
   { "lsp.locations", "twl", "Definitions/references" },
   { "lsp.loclist", "twc", "Location list" },
   { "lsp.quickfix", "twq", "Quickfix list" },
-  { "lsp.outline", "two", "Outline" },
+  { "lsp.outline", "go", "Outline" },
   { "dap.view", "twa", "Debugger view" },
 }
 local definitions = {}
