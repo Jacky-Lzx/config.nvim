@@ -52,6 +52,10 @@ ANNOTATION_ACTIONS = {
 }
 
 TASK_ACTIONS = {
+    "terminal": b"\x1bi",
+    "terminal_hide": b"\x1bi",
+    "terminal_reopen": b"\x1bi",
+    "terminal_hide_again": b"\x1bi",
     "command": b"\x15printf 'src/failure.c:2:3: error: demo\\n'\r",
     "jump": b"\r",
     "terminal_input": b"printf 'TASKS_PTY_OK\\n'\r",

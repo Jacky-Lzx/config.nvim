@@ -69,12 +69,12 @@ return {
         },
         { "<leader>oq", "<cmd>TaskQuickfix<cr>", desc = "[Tasks] Export latest quickfix" },
         {
-          require("config.toggle_keys").get("tasks.terminal").lhs,
+          "<A-i>",
           function()
             require("task_tools").terminal()
           end,
           desc = "[Tasks] Toggle terminal",
-          mode = "n",
+          mode = { "n", "t" },
         },
       })
       require("task_tools").setup(ctx.opts)

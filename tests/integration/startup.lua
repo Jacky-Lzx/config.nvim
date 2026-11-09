@@ -149,8 +149,10 @@ local function check()
   assert((plugins["task-tools.nvim"] ~= nil) == not not features.tasks)
   assert(not plugins["overseer.nvim"] and not plugins["compile.nvim"])
   assert(not plugins["snacks.nvim"] and not package.loaded.snacks, "Snacks must be removed")
-  assert((vim.fn.maparg("<leader>tws", "n") ~= "") == not not features.tasks)
-  assert(vim.fn.maparg("<A-i>", "n") == "" and vim.fn.maparg("<A-i>", "t") == "")
+  assert(vim.fn.maparg("<leader>tws", "n") == "")
+  for _, mode in ipairs({ "n", "t" }) do
+    assert((vim.fn.maparg("<A-i>", mode) ~= "") == not not features.tasks)
+  end
   assert(vim.fn.maparg("<leader>tws", "t") == "", "Terminal typing must not acquire a Space prefix")
   assert((plugins["workspace-tools.nvim"] ~= nil) == not not features.sessions)
   assert(

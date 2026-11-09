@@ -6,16 +6,17 @@ local actions = {
   prompt = 'require("features.tasks").prompt()',
   manual_output = 'require("features.tasks").output()',
   quickfix = 'require("features.tasks").quickfix()',
-  terminal = 'require("task_tools").terminal()',
-  terminal_hide = 'require("task_tools").terminal()',
-  terminal_reopen = 'require("task_tools").terminal()',
-  terminal_hide_again = 'require("task_tools").terminal()',
   rerun = 'require("features.tasks").rerun()',
   list = 'require("task_tools").toggle()',
   select_task = 'require("task_tools").select()',
   run_args = 'require("features.tasks").run_file()',
   finished_output = 'assert(require("task_tools.integrations.notification_tools").open_last_output())',
 }
+if vim.env.NVIM_TEST_DISABLE_BINDINGS == "1" then
+  for _, name in ipairs({ "terminal", "terminal_hide", "terminal_reopen", "terminal_hide_again" }) do
+    actions[name] = 'require("task_tools").terminal()'
+  end
+end
 local stage_file = vim.env.NVIM_TEST_TMP .. "/tasks-stage"
 local function await(name, predicate)
   local lines = { name }
@@ -90,6 +91,7 @@ local function check()
     return vim.api.nvim_buf_get_name(0) == root .. "/src/failure.c"
   end)
   assert(vim.api.nvim_win_get_cursor(0)[1] == 2 and vim.api.nvim_win_get_cursor(0)[2] == 2)
+  local source_win = vim.api.nvim_get_current_win()
   await("terminal", function()
     return #terminals.list() == 1 and #tasks.list() == 1 and vim.api.nvim_get_mode().mode == "t"
   end)
@@ -104,6 +106,7 @@ local function check()
   await("terminal_hide", function()
     return #vim.fn.win_findbuf(shell.buf) == 0 and vim.api.nvim_get_mode().mode:sub(1, 1) == "n"
   end)
+  assert(vim.api.nvim_get_current_win() == source_win, "Terminal toggle must restore the source window")
   await("terminal_reopen", function()
     return #vim.fn.win_findbuf(shell.buf) > 0 and vim.api.nvim_get_mode().mode == "t"
   end)

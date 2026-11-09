@@ -32,7 +32,7 @@ local entries = {
   { "highlighted", "tdh", "Profiler Highlights" },
   { "files.tree", "twf", "File tree" },
   { "tasks.list", "twt", "Task list" },
-  { "tasks.terminal", "tws", "Terminal" },
+  -- { "tasks.terminal", "tws", "Terminal" },
   { "lsp.diagnostics", "twd", "Diagnostic overview" },
   { "lsp.locations", "twl", "Definitions/references" },
   { "lsp.loclist", "twc", "Location list" },
