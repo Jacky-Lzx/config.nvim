@@ -4,7 +4,7 @@ local function check()
   assert(not plugins["nvim-ufo"] and not plugins["promise-async"])
   assert(not package.loaded.ufo)
   assert(require("ui_tools.fold").enabled, "ui-tools must own folding")
-  for _, key in ipairs({ "zM", "zR", "zm", "zr", "zx", "zX", "zE" }) do
+  for _, key in ipairs({ "zM", "zr", "zx", "zX", "zE" }) do
     assert(vim.fn.maparg(key, "n") == "", "Native key overridden: " .. key)
   end
   local fixtures = {
@@ -19,7 +19,7 @@ local function check()
     vim.cmd.edit(path)
     assert(
       vim.wait(2000, function()
-        return vim.wo.foldlevel ~= 99
+        return vim.wo.foldlevel == 99 and vim.fn.foldlevel(1) > 0
       end),
       "Initialization timeout: " .. extension
     )

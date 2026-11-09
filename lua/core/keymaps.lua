@@ -37,6 +37,12 @@ function M.setup()
   map("n", "<leader>/", "gcc", { remap = true, desc = "Toggle comment line" })
   map("x", "<leader>/", "gc", { remap = true, desc = "Toggle comments in selection" })
 
+  map("n", "zR", function()
+    require("ui_tools.fold").open_all()
+  end, { desc = "Open all folds, including new folds" })
+  map("n", "zm", function()
+    require("ui_tools.fold").close_more(vim.v.count1)
+  end, { desc = "Fold more from the current depth" })
   map("n", "zS", function()
     if vim.v.count == 0 then
       vim.notify("Use a count to set foldlevel, e.g. 2zS; zM closes all folds", vim.log.levels.WARN)

@@ -198,8 +198,11 @@ query are available, otherwise indentation folding. Personal options live in
 path for fold expressions stored in existing sessions. Diff and special windows retain
 their own folding settings. LaTeX uses the same native folding source.
 
-Files initially open all folds; native `zM`, `zR`, `zm`, `zr`, `za`, `zo`, `zc`, `zx`,
-and `zX` control them. `2zS` sets the current window's fold level to 2. Folded lines
+Files keep all folds open, including deeper folds created while editing. `zR`
+restores this behavior; `zm` closes one level from the current document depth,
+and accepts counts. Native `zM`, `zr`, `za`, `zo`, `zc`, `zx`, and `zX` retain
+their behavior. `2zS` sets the current window's fold level to 2, so deeper folds
+are automatically closed until `zR` restores open folding. Folded lines
 retain highlighting and show the number of hidden lines after the text, separated
 by two spaces.
 

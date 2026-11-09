@@ -22,7 +22,7 @@ local function check()
   local api = vim.api
   local fold = require("ui_tools.fold")
   assert(fold.enabled and fold.options.suffix == "  󰁂 %d")
-  for _, key in ipairs({ "zM", "zR", "zm", "zr", "za", "zo", "zc", "zx", "zX" }) do
+  for _, key in ipairs({ "zM", "zr", "za", "zo", "zc", "zx", "zX" }) do
     assert(vim.fn.maparg(key, "n") == "", "Native fold key was overridden: " .. key)
   end
   local path = vim.env.NVIM_TEST_TMP .. "/folding-tui.lua"
@@ -37,9 +37,9 @@ local function check()
   }, path)
   vim.cmd.edit(path)
   await(function()
-    return vim.wo.foldmethod == "expr" and vim.wo.foldlevel == 2
+    return vim.wo.foldmethod == "expr" and vim.wo.foldlevel == 99
   end, "initial folds")
-  assert(vim.wo.foldmethod == "expr" and vim.wo.foldlevel == 2)
+  assert(vim.wo.foldmethod == "expr" and vim.wo.foldlevel == 99)
   local source = api.nvim_get_current_win()
   feed("zm")
   assert(vim.wo.foldlevel == 1 and vim.fn.foldclosed(3) == 2)
@@ -62,10 +62,10 @@ local function check()
   feed("zM")
   vim.cmd("vsplit")
   await(function()
-    return vim.wo.foldlevel == 2
+    return vim.wo.foldlevel == 99
   end, "split folds")
   local split = api.nvim_get_current_win()
-  assert(vim.wo[split].foldlevel == 2 and vim.wo[source].foldlevel == 0)
+  assert(vim.wo[split].foldlevel == 99 and vim.wo[source].foldlevel == 0)
   vim.cmd("wincmd p")
   assert(vim.fn.foldclosed(3) == 1)
   api.nvim_win_close(split, false)
@@ -78,9 +78,9 @@ local function check()
   assert(vim.wo.foldmethod == "diff")
   vim.cmd("diffoff")
   await(function()
-    return vim.wo.foldmethod == "expr" and vim.wo.foldlevel ~= 99
+    return vim.wo.foldmethod == "expr" and vim.wo.foldlevel == 2
   end, "restore folds")
-  assert(vim.wo.foldmethod == "expr" and vim.wo.foldlevel ~= 99)
+  assert(vim.wo.foldmethod == "expr" and vim.wo.foldlevel == 2)
 
   -- Exercise the first editing burst before deferred fold initialization settles.
   vim.cmd("enew")
@@ -88,16 +88,16 @@ local function check()
   vim.bo.filetype = "lua"
   feed("A" .. string.rep("abcdefghij", 50) .. "<Esc>")
   await(function()
-    return vim.wo.foldlevel ~= 99
+    return vim.wo.foldlevel == 99
   end, "first input")
   assert(api.nvim_get_current_line() == "prefix " .. string.rep("abcdefghij", 50))
-  assert(vim.wo.foldlevel ~= 99)
+  assert(vim.wo.foldlevel == 99)
 
   vim.cmd("enew!")
   api.nvim_buf_set_lines(0, 0, -1, false, { "outer", "  body", "  body", "last" })
   vim.bo.filetype = "unknown_folding_test"
   await(function()
-    return vim.wo.foldmethod == "indent" and vim.wo.foldlevel ~= 99
+    return vim.wo.foldmethod == "indent" and vim.wo.foldlevel == 99
   end, "indent fallback")
   assert(vim.wo.foldmethod == "indent")
   feed("zM")

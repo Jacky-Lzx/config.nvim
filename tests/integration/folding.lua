@@ -10,7 +10,7 @@ local declared = require("config.plugins").options("ui-tools.nvim").fold
 assert(fold.enabled and fold.options.suffix == declared.suffix)
 assert(fold.options.suffix == "  󰁂 %d")
 assert(require("features.folding") == fold)
-for _, key in ipairs({ "zM", "zR", "zm", "zr", "za", "zo", "zc", "zE", "zx", "zX" }) do
+for _, key in ipairs({ "zM", "zr", "za", "zo", "zc", "zE", "zx", "zX" }) do
   assert(vim.fn.maparg(key, "n") == "", "Native fold key overridden: " .. key)
 end
 assert(vim.deep_equal(vim.fn.maparg("K", "n", false, true), native_k))
@@ -25,7 +25,7 @@ vim.api.nvim_buf_set_lines(0, 0, -1, false, {
 })
 vim.bo.filetype = "lua"
 assert(vim.wait(2000, function()
-  return vim.wo.foldlevel ~= 99
+  return vim.wo.foldlevel == 99 and vim.fn.foldlevel(3) >= 2
 end))
 vim.cmd("normal! zM")
 local text = vim.fn.foldtextresult(1)
