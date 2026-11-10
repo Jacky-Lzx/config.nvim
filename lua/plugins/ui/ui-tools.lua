@@ -90,7 +90,12 @@ return {
           )
         end,
       },
-      bufferline = { numbers = true, auto_hide = 1, sidebar_filetypes = { ["file-tools"] = true } },
+      bufferline = {
+        numbers = false,
+        close_buttons = false,
+        auto_hide = 1,
+        sidebar_filetypes = { ["file-tools"] = true },
+      },
       statusline = {
         sections = require("features.bars").sections(),
         inactive_sections = { c = { { "filename", path = "tail" } } },
