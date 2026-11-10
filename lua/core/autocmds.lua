@@ -17,6 +17,9 @@ function M.setup()
     group = group,
     desc = "Reload externally changed files when the buffer is unmodified",
     callback = function(event)
+      if not vim.api.nvim_buf_is_valid(event.buf) then
+        return
+      end
       local buffer = vim.bo[event.buf]
       if buffer.buftype == "" and not buffer.modified and vim.fn.getcmdwintype() == "" then
         vim.cmd.checktime({ args = { tostring(event.buf) } })

@@ -87,6 +87,43 @@ vim.api.nvim_exec_autocmds("FocusGained", { buffer = target })
 assert(checked == nil, "External reload must skip the command-line window")
 vim.fn.getcmdwintype, vim.cmd.checktime = getcmdwintype, checktime
 
+-- Terminal owners may wipe the event buffer before the core TermClose callback.
+local terminal_buf = vim.api.nvim_create_buf(false, true)
+local terminal_win = vim.api.nvim_open_win(terminal_buf, true, {
+  relative = "editor",
+  width = 40,
+  height = 10,
+  row = 1,
+  col = 1,
+})
+vim.api.nvim_create_autocmd("TermClose", {
+  once = true,
+  buffer = terminal_buf,
+  callback = function(event)
+    vim.api.nvim_buf_delete(event.buf, { force = true })
+  end,
+})
+autocmds.setup()
+local terminal_closed = false
+vim.api.nvim_create_autocmd("TermClose", {
+  once = true,
+  callback = function(event)
+    assert(event.buf == terminal_buf)
+    terminal_closed = true
+  end,
+})
+local terminal_job = vim.fn.jobstart({ "sh", "-c", "read input; exit 0" }, { term = true })
+assert(terminal_job > 0)
+vim.fn.chansend(terminal_job, "exit\n")
+assert(
+  vim.wait(3000, function()
+    return terminal_closed
+  end),
+  "Terminal exit did not dispatch TermClose"
+)
+assert(not vim.api.nvim_buf_is_valid(terminal_buf) and not vim.api.nvim_win_is_valid(terminal_win))
+assert(vim.v.errmsg == "", "TermClose must tolerate an already wiped terminal buffer: " .. vim.v.errmsg)
+
 local on_yank = vim.hl.on_yank
 local highlighted = false
 vim.hl.on_yank = function(opts)
